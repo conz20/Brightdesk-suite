@@ -10,12 +10,9 @@ if (!appNames[appId]) {
 }
 
 module.exports = {
-  appId: 'org.brightdesk.' + appId,
+  appId: `org.brightdesk.${appId}`,
   productName: 'Brightdesk ' + appNames[appId],
-  extraMetadata: {
-    brightdeskAppId: appId,
-    productName: 'Brightdesk ' + appNames[appId]
-  },
+  extraMetadata: { brightdeskAppId: appId, productName: 'Brightdesk ' + appNames[appId] },
   asar: true,
   files: ['src/**/*', 'package.json', 'LICENSE', 'THIRD_PARTY_NOTICES.md', 'TERMS_AND_CONDITIONS.txt'],
   directories: { output: path.join('release', 'apps', appId) },
