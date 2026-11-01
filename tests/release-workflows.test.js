@@ -93,6 +93,11 @@ test('Node.js runtime is pinned consistently to the current 24 LTS patch', () =>
   assert.match(read('.github/workflows/security-audit.yml'), /node-version: 24\.22\.2/);
 });
 
+test('individual app installer builds explicitly disable implicit publishing', () => {
+  const builder = read('scripts/build-app.js');
+  assert.match(builder, /'--publish', 'never'/);
+});
+
 test('all customer installer build commands explicitly disable implicit publishing', () => {
   const manifest = JSON.parse(read('package.json'));
   for (const name of ['dist', 'dist:win', 'dist:mac', 'dist:linux']) {
