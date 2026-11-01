@@ -152,6 +152,14 @@ jobs:
         if: matrix.platform == 'macOS'
         run: npm run release:verify:mac
 
+      - name: Build standalone app installers
+        shell: bash
+        run: npm run dist:apps:${{ matrix.script }}
+
+      - name: Verify standalone app installers
+        shell: bash
+        run: npm run release:verify:apps:${{ matrix.script }}
+
       - name: Place verified files in platform folder
         shell: bash
         env:
@@ -159,12 +167,22 @@ jobs:
         run: |
           mkdir -p "release/$BRIGHTDESK_PLATFORM"
           node -e "const fs=require('node:fs');const p=require('node:path');const root='release';const dest=p.join(root,process.env.BRIGHTDESK_PLATFORM);for(const name of fs.readdirSync(root)){if(name===process.env.BRIGHTDESK_PLATFORM)continue;const source=p.join(root,name);if(fs.statSync(source).isFile())fs.renameSync(source,p.join(dest,name));}"
+          mkdir -p "release/apps/$BRIGHTDESK_PLATFORM"
+          node -e "const fs=require('node:fs');const p=require('node:path');const source='release/apps';const target=p.join(source,process.env.BRIGHTDESK_PLATFORM);for(const name of fs.readdirSync(source)){if(name===process.env.BRIGHTDESK_PLATFORM)continue;const from=p.join(source,name);if(fs.statSync(from).isDirectory())fs.renameSync(from,p.join(target,name));}"
 
       - name: Upload verified platform build
         uses: actions/upload-artifact@v4
         with:
           name: brightdesk-${{ matrix.platform }}
           path: release/${{ matrix.platform }}/**
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Upload standalone app installers
+        uses: actions/upload-artifact@v4
+        with:
+          name: brightdesk-apps-${{ matrix.platform }}
+          path: release/apps/${{ matrix.platform }}/**
           if-no-files-found: error
           retention-days: 14
 
@@ -190,6 +208,24 @@ jobs:
         with:
           name: brightdesk-macOS
           path: release/macOS
+
+      - name: Download verified Linux standalone apps
+        uses: actions/download-artifact@v4
+        with:
+          name: brightdesk-apps-Linux
+          path: release/apps/Linux
+
+      - name: Download verified Windows standalone apps
+        uses: actions/download-artifact@v4
+        with:
+          name: brightdesk-apps-Windows
+          path: release/apps/Windows
+
+      - name: Download verified macOS standalone apps
+        uses: actions/download-artifact@v4
+        with:
+          name: brightdesk-apps-macOS
+          path: release/apps/macOS
 
       - name: Download the exact dependency lock used for this release
         uses: actions/download-artifact@v4
