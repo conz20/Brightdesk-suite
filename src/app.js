@@ -519,7 +519,7 @@ function renderAppManager() {
 function toggleAppInstall(id) {
   if (!installableCatalog.some(item => item.id === id) || launchAppId) return;
   if (installedApp(id)) {
-    if (state.installedApps.length === 1) { alert('Keep at least one app installed in your Brightdesk workspace.'); return; }
+    if (state.installedApps.length === 1) { alert('Keep at least one product in your Brightdesk workspace.'); return; }
     state.installedApps = state.installedApps.filter(appId => appId !== id);
     if (state.app === id) { state.app = state.installedApps[0]; state.ribbonTab = 'home'; }
   } else { state.installedApps.push(id); }
@@ -527,7 +527,7 @@ function toggleAppInstall(id) {
 }
 function completeAppSetup() {
   const selected = [...state.firstRunSelection].filter(id => installableCatalog.some(item => item.id === id));
-  if (!selected.length) { alert('Choose at least one app to install.'); return; }
+  if (!selected.length) { alert('Choose at least one product.'); return; }
   state.installedApps = selected; state.setupComplete = true; state.app = selected[0]; state.view = 'workspace';
   saveAppSetup(); render();
 }
