@@ -45,18 +45,33 @@ test('Windows installer displays the Brightdesk licence and offers a normal setu
 });
 
 test('release workflow has working install and release permissions', () => {
-  const workflow = read('.github/workflows/build-release.yml');
+  const suiteWorkflowPath = path.join(root, '.github', 'workflows', 'build-release.yml');
+  if (fs.existsSync(suiteWorkflowPath)) {
+    const workflow = fs.readFileSync(suiteWorkflowPath, 'utf8');
+    assert.match(workflow, /node-version: 24\.22\.2/);
+    assert.match(workflow, /run: npm ci/);
+    assert.match(workflow, /npm run verify:licenses/);
+    assert.match(workflow, /npm run release:preflight/);
+    assert.match(workflow, /npm run release:verify:win/);
+    assert.match(workflow, /npm run release:verify:mac/);
+    assert.match(workflow, /WIN_CSC_LINK/);
+    assert.match(workflow, /MAC_INSTALLER_CSC_LINK/);
+    assert.match(workflow, /APPLE_APP_SPECIFIC_PASSWORD/);
+    assert.match(workflow, /npm run release:verify:linux/);
+    assert.match(workflow, /npm run dist:products:\$\{\{ matrix\.script \}\}/);
+    assert.match(workflow, /npm run release:verify:products:\$\{\{ matrix\.script \}\}/);
+    assert.match(workflow, /publish-release:[\s\S]*?permissions:\s*contents: write/);
+    return;
+  }
+
+  const workflow = read('.github/workflows/product-installers.yml');
   assert.match(workflow, /node-version: 24\.22\.2/);
-  assert.match(workflow, /run: npm ci/);
+  assert.match(workflow, /npm ci --no-audit --no-fund/);
   assert.match(workflow, /npm run verify:licenses/);
   assert.match(workflow, /npm run release:preflight/);
-  assert.match(workflow, /npm run release:verify:win/);
-  assert.match(workflow, /npm run release:verify:mac/);
-  assert.match(workflow, /WIN_CSC_LINK/);
-  assert.match(workflow, /MAC_INSTALLER_CSC_LINK/);
-  assert.match(workflow, /APPLE_APP_SPECIFIC_PASSWORD/);
-  assert.match(workflow, /npm run release:verify:linux/);
-  assert.match(workflow, /npm run dist:apps:\$\{\{ matrix\.script \}\}/);
-  assert.match(workflow, /npm run release:verify:apps:\$\{\{ matrix\.script \}\}/);
-  assert.match(workflow, /publish-release:[\s\S]*?permissions:\s*contents: write/);
+  assert.match(workflow, /npm run dist:product:\$\{\{ matrix\.platform \}\}/);
+  assert.match(workflow, /npm run verify:product:\$\{\{ matrix\.platform \}\}/);
+  assert.match(workflow, /publish_release:[\s\S]*?default: false/);
+  assert.match(workflow, /contents: write/);
+  assert.match(workflow, /needs: build/);
 });
