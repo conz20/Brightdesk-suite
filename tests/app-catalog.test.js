@@ -197,6 +197,6 @@ test('Linux desktop launch identity matches the installed desktop entry', () => 
   const productConfig = fs.readFileSync(path.join(root, 'electron-builder.app.config.js'), 'utf8');
   assert.equal(packageJson.desktopName, 'org.brightdesk.suite.desktop');
   assert.equal(packageJson.build.linux.syncDesktopName, true);
-  assert.match(productConfig, /desktopName: `org\\.brightdesk\\.\\$\\{appId\\}\\.desktop`/);
+  assert.ok(productConfig.includes('desktopName: `org.brightdesk.${appId}.desktop`'));
   assert.match(productConfig, /syncDesktopName: true/);
 });
