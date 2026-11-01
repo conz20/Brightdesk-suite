@@ -26,7 +26,7 @@ test('each app resolves to its own release asset on Windows, macOS and Linux', (
     const cases = [
       ['win32', `Brightdesk-${slug}-0.1.0-x64.exe`],
       ['darwin', `Brightdesk-${slug}-0.1.0-universal.dmg`],
-      ['linux', `brightdesk-${slug.toLowerCase()}-0.1.0-x64.AppImage`]
+      ['linux', `brightdesk-${slug.toLowerCase()}-0.1.0-x86_64.AppImage`]
     ];
     for (const [platform, filename] of cases) {
       const result = createStandaloneDownload({ appId, platform, version: '0.1.0' });
@@ -34,6 +34,15 @@ test('each app resolves to its own release asset on Windows, macOS and Linux', (
       assert.equal(result.url, `https://github.com/connormolloy12/Brightdesk-suite/releases/latest/download/${encodeURIComponent(filename)}`);
     }
   }
+});
+
+
+test('Linux product package verification matches Electron Builder architecture names',()=>{
+  const { expectedFilename } = require('../scripts/verify-standalone-apps');
+  assert.deepEqual(expectedFilename('pages','linux','0.1.0'),[
+    'brightdesk-pages-0.1.0-x86_64.AppImage',
+    'brightdesk-pages-0.1.0-amd64.deb'
+  ]);
 });
 
 test('standalone download rejects apps outside the approved catalogue', () => {
