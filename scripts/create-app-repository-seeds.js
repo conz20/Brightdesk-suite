@@ -189,7 +189,7 @@ jobs:
       - run: npm test
 
   build:
-    name: Build ${{ matrix.platform }} installer
+    name: Build \${{ matrix.platform }} installer
     if: github.event_name == 'workflow_dispatch'
     needs: test
     strategy:
@@ -202,7 +202,7 @@ jobs:
             runner: macos-latest
           - platform: linux
             runner: ubuntu-latest
-    runs-on: ${{ matrix.runner }}
+    runs-on: \${{ matrix.runner }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -210,11 +210,11 @@ jobs:
           node-version: 24.22.2
           cache: npm
       - run: npm ci --no-audit --no-fund
-      - run: npm run dist:app:${{ matrix.platform }}
-      - run: npm run verify:app:${{ matrix.platform }}
+      - run: npm run dist:app:\${{ matrix.platform }}
+      - run: npm run verify:app:\${{ matrix.platform }}
       - uses: actions/upload-artifact@v4
         with:
-          name: ${app.repository}-${{ matrix.platform }}
+          name: ${app.repository}-\${{ matrix.platform }}
           path: release/apps/${app.appId}/**
           if-no-files-found: error
           retention-days: 14
@@ -234,8 +234,8 @@ jobs:
           merge-multiple: true
       - uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ inputs.release_tag }}
-          name: ${app.name} ${{ inputs.release_tag }}
+          tag_name: \${{ inputs.release_tag }}
+          name: ${app.name} \${{ inputs.release_tag }}
           generate_release_notes: true
           files: release/**
 `;
