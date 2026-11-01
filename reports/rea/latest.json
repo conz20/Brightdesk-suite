@@ -1,0 +1,687 @@
+{
+  "tool": "Brightdesk REA Bench",
+  "toolVersion": "1.0.0",
+  "analysisType": "static-source-inventory",
+  "target": "/mnt/data/brightdesk-master-export",
+  "generatedAt": "2026-11-01T06:54:02.294Z",
+  "boundary": "Static source inspection only. No target execution, runtime tracing, binary decompilation, network probing, or proprietary-code extraction.",
+  "package": {
+    "name": "brightdesk-suite",
+    "version": "0.1.0",
+    "engines": {
+      "node": "24.22.2"
+    },
+    "dependencies": [
+      "docx",
+      "electron-updater",
+      "exceljs",
+      "fast-xml-parser",
+      "jszip",
+      "mammoth",
+      "nspell",
+      "pptxgenjs"
+    ],
+    "devDependencies": [
+      "electron",
+      "electron-builder"
+    ]
+  },
+  "catalogue": {
+    "apps": [
+      {
+        "id": "pages",
+        "name": "Brightdesk Pages",
+        "availability": "available",
+        "moduleVersion": "0.1.0",
+        "microsoftReference": "Word"
+      },
+      {
+        "id": "sheets",
+        "name": "Brightdesk Sheets",
+        "availability": "available",
+        "moduleVersion": "0.1.0",
+        "microsoftReference": "Excel"
+      },
+      {
+        "id": "slides",
+        "name": "Brightdesk Decks",
+        "availability": "available",
+        "moduleVersion": "0.1.0",
+        "microsoftReference": "PowerPoint"
+      },
+      {
+        "id": "notes",
+        "name": "Brightdesk Notes",
+        "availability": "available",
+        "moduleVersion": "0.1.0",
+        "microsoftReference": "OneNote"
+      },
+      {
+        "id": "database",
+        "name": "Brightdesk Database",
+        "availability": "planned",
+        "moduleVersion": "0.1.0",
+        "microsoftReference": "Access"
+      },
+      {
+        "id": "forms",
+        "name": "Brightdesk Forms",
+        "availability": "planned",
+        "moduleVersion": "0.1.0",
+        "microsoftReference": "Forms"
+      },
+      {
+        "id": "lists",
+        "name": "Brightdesk Lists",
+        "availability": "planned",
+        "moduleVersion": "0.1.0",
+        "microsoftReference": "Lists"
+      },
+      {
+        "id": "planner",
+        "name": "Brightdesk Planner",
+        "availability": "planned",
+        "moduleVersion": "0.1.0",
+        "microsoftReference": "Planner"
+      },
+      {
+        "id": "todo",
+        "name": "Brightdesk To Do",
+        "availability": "planned",
+        "moduleVersion": "0.1.0",
+        "microsoftReference": "To Do"
+      },
+      {
+        "id": "loop",
+        "name": "Brightdesk Workspace",
+        "availability": "planned",
+        "moduleVersion": "0.1.0",
+        "microsoftReference": "Loop"
+      }
+    ]
+  },
+  "inventory": {
+    "fileCount": 94,
+    "totalBytes": 1138162,
+    "byExtension": {
+      ".json": 7,
+      "(none)": 6,
+      ".yml": 3,
+      ".md": 26,
+      ".txt": 6,
+      ".js": 36,
+      ".sh": 5,
+      ".ps1": 2,
+      ".html": 2,
+      ".css": 1
+    },
+    "files": [
+      {
+        "path": ".devcontainer/devcontainer.json",
+        "size": 377,
+        "sha256": "130ce507662082c12d525b2ca53588d8926f0c0a6f38ad99099cc526d8a54002",
+        "extension": ".json"
+      },
+      {
+        "path": ".devcontainer/Dockerfile",
+        "size": 639,
+        "sha256": "a086fd675a8c8e04db56946111d159c38e9c0f87d26d9ee7150ea95d09f39f77",
+        "extension": "(none)"
+      },
+      {
+        "path": ".github/dependabot.yml",
+        "size": 261,
+        "sha256": "fe156952d1952825377de8e48c90563a3ac19bb95a6e0ced8a2f498a0f20fdf6",
+        "extension": ".yml"
+      },
+      {
+        "path": ".github/workflows/build-release.yml",
+        "size": 7943,
+        "sha256": "9b34a41866a62b5e999406dc58f4fe34246a00f32176f2bb681c8b924d898f85",
+        "extension": ".yml"
+      },
+      {
+        "path": ".github/workflows/security-audit.yml",
+        "size": 644,
+        "sha256": "bfe16fa51de1f08c09e56272a409e5429d2098a33f1c713d4e3d45020cfda5dd",
+        "extension": ".yml"
+      },
+      {
+        "path": ".gitignore",
+        "size": 61,
+        "sha256": "06e0ed46d5f967c9138433ff506337e32057e6d8bd0f0c91ca64bef89eaffbe3",
+        "extension": "(none)"
+      },
+      {
+        "path": ".node-version",
+        "size": 8,
+        "sha256": "9185b9f67843cabfa8054f65ce47ce0b52036b0bfe07ae5a6b834d97cc127140",
+        "extension": "(none)"
+      },
+      {
+        "path": ".npmrc",
+        "size": 42,
+        "sha256": "280f9216da91ef0ae6d4b783762cc5f2b6bf041323bcf3f6f3972c9ffd462dcc",
+        "extension": "(none)"
+      },
+      {
+        "path": ".nvmrc",
+        "size": 8,
+        "sha256": "9185b9f67843cabfa8054f65ce47ce0b52036b0bfe07ae5a6b834d97cc127140",
+        "extension": "(none)"
+      },
+      {
+        "path": "AGENTS.md",
+        "size": 12805,
+        "sha256": "959eced9e64ce5e94c1452f2bb4c08bf8723befb5c72b1e8fe085e87932090d3",
+        "extension": ".md"
+      },
+      {
+        "path": "APP_IMPLEMENTATION_MATRIX.md",
+        "size": 2432,
+        "sha256": "0f56a766f3c7b6f60868bb2f6c11685af201a4f408c48de888cfe23b44193619",
+        "extension": ".md"
+      },
+      {
+        "path": "ARCHITECTURE.md",
+        "size": 4364,
+        "sha256": "fc1c405fe0adbc651586f4901c893dc1e815f096cbc71167ef04ac0882f041e1",
+        "extension": ".md"
+      },
+      {
+        "path": "BRIGHTDESK_REA_BENCH.md",
+        "size": 2494,
+        "sha256": "a1b82dcd4e0a45a40805d5cf5462ed9ac9b118c861a9d9a206e499420b2975cf",
+        "extension": ".md"
+      },
+      {
+        "path": "BUILD_STATUS.md",
+        "size": 18930,
+        "sha256": "178d2e240fa1aafea6733cc0971c4d627081c0699fd1d24292dd35d3b64f693d",
+        "extension": ".md"
+      },
+      {
+        "path": "CHANGELOG.md",
+        "size": 19822,
+        "sha256": "455e12aa6185a650270a41bbf91caaddb5d444154b1b523099285825ec8a6562",
+        "extension": ".md"
+      },
+      {
+        "path": "CONSOLIDATED_CODE_EXPORT.txt",
+        "size": 578082,
+        "sha256": "bdfb955cd514b959b6ba57b5eccaac974916f28563b4005c5fd3983a344ac957",
+        "extension": ".txt"
+      },
+      {
+        "path": "DEPENDENCY_SETUP.md",
+        "size": 2249,
+        "sha256": "0a00a470761f01227f6f419a60cd2137ebdf4547c8c79070d48759c1ea84cfda",
+        "extension": ".md"
+      },
+      {
+        "path": "DICTIONARY_PACK_FORMAT.md",
+        "size": 7077,
+        "sha256": "b0e2f2c9330fc40dcf20985edcc7a6dc4d3b6bc1b44872ad516653292838f5b0",
+        "extension": ".md"
+      },
+      {
+        "path": "electron-builder.app.config.js",
+        "size": 1201,
+        "sha256": "47c9967ca141b822b7cf53814ccc756dc272d569cf31308e8f7967a33d45f3a2",
+        "extension": ".js"
+      },
+      {
+        "path": "installer/install-linux.sh",
+        "size": 1098,
+        "sha256": "762fc5068ca60271a10ef47125cebcd60f662ef4dd3857c437456ae0d7308122",
+        "extension": ".sh"
+      },
+      {
+        "path": "installer/mac-conclusion.txt",
+        "size": 215,
+        "sha256": "c86bb6037292c00bff1b15d38040712c3a87aa819e3897b7a38f71106d1fd0fe",
+        "extension": ".txt"
+      },
+      {
+        "path": "installer/mac-welcome.txt",
+        "size": 243,
+        "sha256": "e815901b642efc94db6e1740a2030a309da0300c2f29fbec3d011de7438fd140",
+        "extension": ".txt"
+      },
+      {
+        "path": "LANGUAGE_AND_DICTIONARY_PROTECTION.md",
+        "size": 2392,
+        "sha256": "b7303a026577aab58c08b3f5b68e95a41bd6dfeb51b752d2e7e4499d543bf530",
+        "extension": ".md"
+      },
+      {
+        "path": "LANGUAGE_PACK_FORMAT.md",
+        "size": 1606,
+        "sha256": "fa7e05c564aa02bac225df7cb8b6d9c993bf4f4b741d66dfc1782e9dbbe38db8",
+        "extension": ".md"
+      },
+      {
+        "path": "LICENSE",
+        "size": 821,
+        "sha256": "8fa9335ec671084af1a50768fcb78e0b3e2d89e5e3a8ee9d5afcf727f3b63478",
+        "extension": "(none)"
+      },
+      {
+        "path": "MICROSOFT_365_REVERSE_ENGINEERING_SCOPE.md",
+        "size": 1583,
+        "sha256": "092f2c3feae49c7f56af6e4be6ea8eb74c2c20372119b785d8e524d7b94d471d",
+        "extension": ".md"
+      },
+      {
+        "path": "NODE24_DEVELOPMENT_ENVIRONMENT.md",
+        "size": 3636,
+        "sha256": "ea5c5999bc0d19228ae0670dca8133efc0fa8cf99af35bda4dcf69d101e0c14a",
+        "extension": ".md"
+      },
+      {
+        "path": "NODE24_PROVISIONING_REPORT.md",
+        "size": 5807,
+        "sha256": "a2b72e27f366efac8012fa85b25ef0b89fb7523017db01a8add582edc841d594",
+        "extension": ".md"
+      },
+      {
+        "path": "NODE24_SETUP_IMPLEMENTATION_REPORT.md",
+        "size": 3001,
+        "sha256": "5e55d9d7ebbf1d7461dbc949381891b1e4fb9cb013775c5e7a9e61ffdd58e89d",
+        "extension": ".md"
+      },
+      {
+        "path": "OPEN_SOURCE_APP_POLICY.md",
+        "size": 1979,
+        "sha256": "d5815fa6500b69d25e8a78d0cc84a8996b906c3d0d910a14d5cb27c7685d129b",
+        "extension": ".md"
+      },
+      {
+        "path": "package.json",
+        "size": 4274,
+        "sha256": "ea8805ab21bc710e7f0a1432bbc3a8334bd2d39e93d37d41223b5fb0c4553a4b",
+        "extension": ".json"
+      },
+      {
+        "path": "PRODUCT_PLAN.md",
+        "size": 4895,
+        "sha256": "8403ea5e06ea6db1f029a3c6d1eaece58f3aa32747e6d81ed864317a2bbec44f",
+        "extension": ".md"
+      },
+      {
+        "path": "PRODUCT_SCOPE_LOCK.md",
+        "size": 2527,
+        "sha256": "b2c01a0730a5aba386f01b02c9baada30a58691ec1121d143ec87409dfdd4147",
+        "extension": ".md"
+      },
+      {
+        "path": "PROJECT_MEMORY.md",
+        "size": 9977,
+        "sha256": "ccf28326ca8c17664cc3aedcc6c16e0a4d446174abb24efe411d0f98d58f82d4",
+        "extension": ".md"
+      },
+      {
+        "path": "README.md",
+        "size": 18121,
+        "sha256": "95038a1365da4a49d316a8a5e629663cee0ac6d2f4471780099cc291881f7a08",
+        "extension": ".md"
+      },
+      {
+        "path": "RELEASE_READINESS.md",
+        "size": 8019,
+        "sha256": "dfca1e3d86e308693650656f4cabbee267ce268589364451381fb22a9c96e9ae",
+        "extension": ".md"
+      },
+      {
+        "path": "RELEASE_SIGNING_SETUP.md",
+        "size": 1843,
+        "sha256": "c198f0de2a12ced804d3b8c6ff56ea167a5efc3b84f8dbe56ef06029082e6b66",
+        "extension": ".md"
+      },
+      {
+        "path": "REVERSE_ENGINEERING_SOURCE_REVIEW.md",
+        "size": 15768,
+        "sha256": "ac0610b967a6a6deb7b41be97fe5cb194cdc2987890ca735c310d4d62c27af86",
+        "extension": ".md"
+      },
+      {
+        "path": "scripts/activate-node24.sh",
+        "size": 696,
+        "sha256": "0e21010b8e6799c08c33aff75d7800c37182b32a71d96e5693fb5d9550802eaf",
+        "extension": ".sh"
+      },
+      {
+        "path": "scripts/brightdesk-rea.js",
+        "size": 8288,
+        "sha256": "126cac3a8e21796a9ef9db0e65bc90e09abf5fbefa46e43b58b15db3e0e4e616",
+        "extension": ".js"
+      },
+      {
+        "path": "scripts/build-app.js",
+        "size": 1002,
+        "sha256": "9bf2a1355896043281a139a796c78dca2b28d49b733632e13f163c697bacbf1a",
+        "extension": ".js"
+      },
+      {
+        "path": "scripts/build-apps.js",
+        "size": 718,
+        "sha256": "09a240316544af30e8753849b3f29f3dbe424a33d2b1112cc1399587c71dfa40",
+        "extension": ".js"
+      },
+      {
+        "path": "scripts/check-node24.js",
+        "size": 415,
+        "sha256": "74c7f31b71ebbdd68b17ddaceff47389d2380308c4b7761e6c6422dbb09dad0e",
+        "extension": ".js"
+      },
+      {
+        "path": "scripts/fix-app-js.js",
+        "size": 1901,
+        "sha256": "7f4b7ff79941935c5dd0d53a42ba34da52eab4702859b563bd267c8e83682bc7",
+        "extension": ".js"
+      },
+      {
+        "path": "scripts/install-node24.ps1",
+        "size": 3433,
+        "sha256": "41f7ef2c9bc929ce581dea610dd8bd0ad4093280555ab19d136faed10f448a81",
+        "extension": ".ps1"
+      },
+      {
+        "path": "scripts/install-node24.sh",
+        "size": 3551,
+        "sha256": "574ea544ea983d76533105c63688bf24acfe8369b4f99cbf9f4ef7c17938b215",
+        "extension": ".sh"
+      },
+      {
+        "path": "scripts/prepare-release-assets.js",
+        "size": 1124,
+        "sha256": "17393ebaf69907654617b6342eea4e20754752b819dfd2e4ccf40fed68464623",
+        "extension": ".js"
+      },
+      {
+        "path": "scripts/release-preflight.js",
+        "size": 6654,
+        "sha256": "5f0421f4fe3440c1d84e44bfa34c6456324ba694dfcaefa5f7984fb35c9eceac",
+        "extension": ".js"
+      },
+      {
+        "path": "scripts/setup/bootstrap-dev.js",
+        "size": 1793,
+        "sha256": "52c2e9964c24dd810c46430a546c3d2a92e606de336c10978bd6ba1de9df56b8",
+        "extension": ".js"
+      },
+      {
+        "path": "scripts/setup/install-dependencies.ps1",
+        "size": 839,
+        "sha256": "908bd0bf5fd4a3ced43a97169085df5d861dd147960ff5c17384de9251eb0c28",
+        "extension": ".ps1"
+      },
+      {
+        "path": "scripts/setup/install-dependencies.sh",
+        "size": 1231,
+        "sha256": "61bba68a079a8e8c0a1d8c786ee929cfbc3b68df4f7588e791aa7a83923907cd",
+        "extension": ".sh"
+      },
+      {
+        "path": "scripts/use-node24.sh",
+        "size": 658,
+        "sha256": "482d4a5d5ecd0034b97e0a80e99abbf772153f5be7f116b924f549a3d066fea2",
+        "extension": ".sh"
+      },
+      {
+        "path": "scripts/verify-licenses.js",
+        "size": 6462,
+        "sha256": "2d5d09bc77058e9b0b310da64bb9b71e3c8f556eb355e331d6e5241759c6a753",
+        "extension": ".js"
+      },
+      {
+        "path": "scripts/verify-lockfile.js",
+        "size": 2109,
+        "sha256": "ab58958f1fb9ef992768bedcd20a9969d6f0826686680d87a12c8c531f4576b6",
+        "extension": ".js"
+      },
+      {
+        "path": "scripts/verify-release-artifacts.js",
+        "size": 3144,
+        "sha256": "3d823ba727f31170afe7b6e189e4aa389eaadb91af36fb71f3a48bd0be2ea7c9",
+        "extension": ".js"
+      },
+      {
+        "path": "SOURCE_HISTORY.md",
+        "size": 1316,
+        "sha256": "9e8297dccd0869faf509821781fe7824ee9b412d698d5c5a97194ea39d99031d",
+        "extension": ".md"
+      },
+      {
+        "path": "src/app-catalog.js",
+        "size": 3411,
+        "sha256": "3726756d6fc1746434741edf23f261ded944ec476bc981eddd32613a65708d31",
+        "extension": ".js"
+      },
+      {
+        "path": "src/app.js",
+        "size": 54235,
+        "sha256": "dc585f1ac2bc9741f4050ccd5d57d6047983619c6e39d054bee900633f0a9e21",
+        "extension": ".js"
+      },
+      {
+        "path": "src/dictionary-catalog.json",
+        "size": 30745,
+        "sha256": "919ece2c232e04525b1c6e9222a4fb202574292b165093cf886e11d37f4db4c2",
+        "extension": ".json"
+      },
+      {
+        "path": "src/dictionary-service.js",
+        "size": 31632,
+        "sha256": "481e8dc54e658fff5f0b690c4384caa21c5d22a96a716b8fd873ca9f94d6b432",
+        "extension": ".js"
+      },
+      {
+        "path": "src/file-service.js",
+        "size": 12964,
+        "sha256": "e139b109bd8370d2a68773f91a36f080afa421ce2ddb18e6c2b3b68b9d7e7f46",
+        "extension": ".js"
+      },
+      {
+        "path": "src/formula.js",
+        "size": 4334,
+        "sha256": "b8963e977972c8516e81fa281838b0eed88fcd7045d73c777895ab73bb721a42",
+        "extension": ".js"
+      },
+      {
+        "path": "src/i18n.js",
+        "size": 8187,
+        "sha256": "73ad80145aee22cf196cee8785680a21617db5943f14ccd087c04429504098b7",
+        "extension": ".js"
+      },
+      {
+        "path": "src/index.html",
+        "size": 9611,
+        "sha256": "a4aafe980559f0fcfe7e00d58f549e1f55286d53149f986df8a0ff6e26bdbbf3",
+        "extension": ".html"
+      },
+      {
+        "path": "src/language-service.js",
+        "size": 5642,
+        "sha256": "e794695204d7d639e1b2dc718477c0b9b88a717c6f8294beb3adb9abfa02b6a6",
+        "extension": ".js"
+      },
+      {
+        "path": "src/languages/de-DE.json",
+        "size": 8465,
+        "sha256": "104386c2626e6ae3fd0e760b73f565759512641e337da8c4d55e8a927c2f354e",
+        "extension": ".json"
+      },
+      {
+        "path": "src/languages/en-AU.json",
+        "size": 7859,
+        "sha256": "12bf43d4b1e35a1da8241354645691af8620b798a2b615be4c7be4e22817596d",
+        "extension": ".json"
+      },
+      {
+        "path": "src/languages/es-ES.json",
+        "size": 8504,
+        "sha256": "5309ebebaba6fa8fe275b10848ed190c72c6c2ca07b2fadb05b6760b30ea8881",
+        "extension": ".json"
+      },
+      {
+        "path": "src/languages/fr-FR.json",
+        "size": 8712,
+        "sha256": "267f3a8ef0c10424eb6cb7e12297a592deaaee85b6f42780f5c7acb2463da05d",
+        "extension": ".json"
+      },
+      {
+        "path": "src/licenses/GPL-2.0.txt",
+        "size": 17984,
+        "sha256": "edaef632cbb643e4e7a221717a6c441a4c1a7c918e6e4d56debc3d8739b233f6",
+        "extension": ".txt"
+      },
+      {
+        "path": "src/licenses/LGPL-2.1.txt",
+        "size": 26419,
+        "sha256": "20e50fe7aae3e56378ebf0417d9de904f55a0e61e4df315333e632a4d3555d95",
+        "extension": ".txt"
+      },
+      {
+        "path": "src/licenses/README.md",
+        "size": 711,
+        "sha256": "28f74ebc067dcf4dbd44905f597ff0a71b37d359cfe5b84fe9f091b435db32ee",
+        "extension": ".md"
+      },
+      {
+        "path": "src/main.js",
+        "size": 18759,
+        "sha256": "380648772292ede97b33c3bf0c2c281461fbba2f228acb65b1c0892f2a676a20",
+        "extension": ".js"
+      },
+      {
+        "path": "src/preload.js",
+        "size": 1738,
+        "sha256": "de6e056a117f9399c05ffe07072b3a5a8306ad023ad001b39b38b0d692d36e80",
+        "extension": ".js"
+      },
+      {
+        "path": "src/styles.css",
+        "size": 16794,
+        "sha256": "cefc4e2fe5cd3f4a33c8f6ffe1239664e9b8314dd6fc347430f41ab413e15792",
+        "extension": ".css"
+      },
+      {
+        "path": "src/terms-preload.js",
+        "size": 291,
+        "sha256": "d8dad2f08e8ac081fef75e7525efb959fa468829d9cae0dd01cad616ce0a95a3",
+        "extension": ".js"
+      },
+      {
+        "path": "src/terms.html",
+        "size": 1844,
+        "sha256": "db2a9a590ee8943a5541767e03a115923ad6c1f51e10784df2075bbf3741f475",
+        "extension": ".html"
+      },
+      {
+        "path": "src/terms.js",
+        "size": 900,
+        "sha256": "e0dc3b9c271ab2a45f36ce6798cd6bd1ba248ad1fc116ffeb71b0c723bb33c8a",
+        "extension": ".js"
+      },
+      {
+        "path": "TERMS_AND_CONDITIONS.txt",
+        "size": 3344,
+        "sha256": "0afd25c784b7479684fe93a2cc4e02d2564c363f1678532b63a83f873b76b05d",
+        "extension": ".txt"
+      },
+      {
+        "path": "tests/app-catalog.test.js",
+        "size": 7355,
+        "sha256": "ef6b1acdc2ecc41fd48a75498672ac21b6c08acb502e2f3b1c9c667217da37d4",
+        "extension": ".js"
+      },
+      {
+        "path": "tests/dictionary-service-live.test.js",
+        "size": 2640,
+        "sha256": "da7b8b1a0a69c55986f0b8d116c69d3227db10aa3979e6d5fd2b2db025681db6",
+        "extension": ".js"
+      },
+      {
+        "path": "tests/dictionary-service.test.js",
+        "size": 11853,
+        "sha256": "7820f66993958f2d76c1ba2b735e0fe0154a078bf9fcdd7e0ca6f392ee444243",
+        "extension": ".js"
+      },
+      {
+        "path": "tests/file-service.test.js",
+        "size": 4468,
+        "sha256": "88d1b3aada1eba6755566bad68ae9d150356453af0ae425ebcf154051c20b54c",
+        "extension": ".js"
+      },
+      {
+        "path": "tests/formula.test.js",
+        "size": 1257,
+        "sha256": "115eabab1d750f98c0f3c2fdcaed6d216edde6b8373422644567eefa816676e6",
+        "extension": ".js"
+      },
+      {
+        "path": "tests/installer-agreement.test.js",
+        "size": 3523,
+        "sha256": "fa0171276460c2908027a8428f6405a910f2f6871e684df558a5d617c4fc180e",
+        "extension": ".js"
+      },
+      {
+        "path": "tests/language-service.test.js",
+        "size": 1934,
+        "sha256": "54bed2db8efcfd9c766d7e8057301994be604fbcf88d9e52b599a276560ca236",
+        "extension": ".js"
+      },
+      {
+        "path": "tests/license-verification.test.js",
+        "size": 2708,
+        "sha256": "0c8095059a964b754411d78d1cf89f5f48718e5ca00aa409e9996d1dbddeec95",
+        "extension": ".js"
+      },
+      {
+        "path": "tests/node-runtime-setup.test.js",
+        "size": 3420,
+        "sha256": "5e8b30eeecc37388dc5bb40bfe8ac25adabd4c5cf232ec136f6e43ee8b53c4c4",
+        "extension": ".js"
+      },
+      {
+        "path": "tests/rea-bench.test.js",
+        "size": 1177,
+        "sha256": "d65859b5ec85f2cef4bab2f58df2e7097cb445cbb8e8300d7bd0b5011b0bdd8d",
+        "extension": ".js"
+      },
+      {
+        "path": "tests/release-readiness.test.js",
+        "size": 4975,
+        "sha256": "b4d7f637d6b01a3b274cf453409b7ac1ff35fcce980892a3ba1f976619379cb9",
+        "extension": ".js"
+      },
+      {
+        "path": "tests/release-workflows.test.js",
+        "size": 5177,
+        "sha256": "253798f1bd0710a5ba5ece80867a86edec911f1dc342ed8c2000c362d2929854",
+        "extension": ".js"
+      },
+      {
+        "path": "tests/resource-protection.test.js",
+        "size": 3279,
+        "sha256": "5dc844cdce15dd177eb47f6291709c04d1ca9b0ba52ddd109ed14c61930c6fc3",
+        "extension": ".js"
+      },
+      {
+        "path": "THIRD_PARTY_NOTICES.md",
+        "size": 1070,
+        "sha256": "a460c15a7136f9be17d0dcbdd3c74c8602f9afbbcef9cbeb43b28ca8cebf387a",
+        "extension": ".md"
+      },
+      {
+        "path": "WORLD_LANGUAGE_DICTIONARIES.md",
+        "size": 7663,
+        "sha256": "dd35be9371d548f851da6f06737ccbd76382a89c86570331663e117d07b25c51",
+        "extension": ".md"
+      }
+    ]
+  },
+  "findings": [],
+  "result": "no-static-findings"
+}
