@@ -16,6 +16,17 @@ on:
       - 'THIRD_PARTY_NOTICES.md'
       - '.github/workflows/build-release.yml'
   workflow_dispatch:
+    inputs:
+      publish_release:
+        description: 'Publish a GitHub Release after all installers pass verification'
+        type: boolean
+        required: true
+        default: false
+      release_tag:
+        description: 'Release tag to create or update when publishing is enabled'
+        type: string
+        required: false
+        default: 'v0.1.0'
 
 permissions:
   contents: read
@@ -109,10 +120,13 @@ jobs:
 
       - name: Build suite installer
         env:
-          CSC_LINK: ${{ github.event_name != 'pull_request' && (matrix.platform == 'Windows' || matrix.platform == 'macOS') && secrets.CSC_LINK || '' }}
-          CSC_KEY_PASSWORD: ${{ github.event_name != 'pull_request' && (matrix.platform == 'Windows' || matrix.platform == 'macOS') && secrets.CSC_KEY_PASSWORD || '' }}
-          CSC_INSTALLER_LINK: ${{ github.event_name != 'pull_request' && matrix.platform == 'macOS' && secrets.CSC_INSTALLER_LINK || '' }}
-          CSC_INSTALLER_KEY_PASSWORD: ${{ github.event_name != 'pull_request' && matrix.platform == 'macOS' && secrets.CSC_INSTALLER_KEY_PASSWORD || '' }}
+          WIN_CSC_LINK: ${{ github.event_name != 'pull_request' && matrix.platform == 'Windows' && secrets.WIN_CSC_LINK || '' }}
+          MAC_APP_CSC_LINK: ${{ github.event_name != 'pull_request' && matrix.platform == 'macOS' && secrets.MAC_APP_CSC_LINK || '' }}
+          MAC_INSTALLER_CSC_LINK: ${{ github.event_name != 'pull_request' && matrix.platform == 'macOS' && secrets.MAC_INSTALLER_CSC_LINK || '' }}
+          CSC_LINK: ${{ github.event_name != 'pull_request' && matrix.platform == 'Windows' && secrets.WIN_CSC_LINK || github.event_name != 'pull_request' && matrix.platform == 'macOS' && secrets.MAC_APP_CSC_LINK || '' }}
+          CSC_KEY_PASSWORD: ${{ github.event_name != 'pull_request' && matrix.platform == 'Windows' && secrets.WIN_CSC_KEY_PASSWORD || github.event_name != 'pull_request' && matrix.platform == 'macOS' && secrets.MAC_APP_CSC_KEY_PASSWORD || '' }}
+          CSC_INSTALLER_LINK: ${{ github.event_name != 'pull_request' && matrix.platform == 'macOS' && secrets.MAC_INSTALLER_CSC_LINK || '' }}
+          CSC_INSTALLER_KEY_PASSWORD: ${{ github.event_name != 'pull_request' && matrix.platform == 'macOS' && secrets.MAC_INSTALLER_CSC_KEY_PASSWORD || '' }}
           APPLE_ID: ${{ github.event_name != 'pull_request' && matrix.platform == 'macOS' && secrets.APPLE_ID || '' }}
           APPLE_APP_SPECIFIC_PASSWORD: ${{ github.event_name != 'pull_request' && matrix.platform == 'macOS' && secrets.APPLE_APP_SPECIFIC_PASSWORD || '' }}
           APPLE_TEAM_ID: ${{ github.event_name != 'pull_request' && matrix.platform == 'macOS' && secrets.APPLE_TEAM_ID || '' }}
@@ -173,3 +187,25 @@ jobs:
           path: release/**/**
           if-no-files-found: error
           retention-days: 30
+
+  publish-release:
+    name: Publish GitHub Release (manual approval only)
+    needs: collect
+    if: github.event_name == 'workflow_dispatch' && inputs.publish_release == true
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Download complete verified installer bundle
+        uses: actions/download-artifact@v4
+        with:
+          name: Brightdesk-0.1.0-Installers
+          path: release
+
+      - name: Publish verified installer files
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ inputs.release_tag }}
+          name: Brightdesk ${{ inputs.release_tag }}
+          generate_release_notes: true
+          files: release/**/**
