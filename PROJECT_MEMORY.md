@@ -14,9 +14,9 @@ The approved and fixed product scope is exactly ten Brightdesk products:
 - Brightdesk To Do
 - Brightdesk Workspace
 
-All ten products are integrated into Brightdesk-suite. The complete suite is delivered through one native desktop installer. Each approved product has a desktop installer build target and its own product repository containing product-specific metadata, original artwork and build workflow.
+All ten products are integrated into Brightdesk-suite and have product-specific desktop installer build targets. Brightdesk-Pages is the only separate product repository currently confirmed to exist. The other nine products are prepared as repository folders by the suite generator; they do not become GitHub repositories until each is created on GitHub and its source is pushed.
 
-The individual product repositories are generated from the same tested suite source. Each desktop build is configured for its named product, while Brightdesk-suite continues to contain all ten products together.
+Every prepared product folder is generated from the same suite source, with product-specific metadata, original artwork, locked package files and its own build workflow. Each desktop build is configured for its named product, while Brightdesk-suite continues to contain all ten products together.
 
 ## Brightdesk naming rule
 
