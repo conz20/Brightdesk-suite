@@ -5,9 +5,9 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const os = require('node:os');
 const path = require('node:path');
-const { APP_REPOSITORIES, createAppRepositorySeeds } = require('../scripts/create-app-repository-seeds');
+const { APP_REPOSITORIES, createAppRepositorySeeds, repositoryBundleReadme, repositoryReadme, socialPreview, standaloneWorkflow } = require('../scripts/create-app-repository-seeds');
 
-test('repository seed catalogue contains exactly the ten approved apps', () => {
+test('product repository catalogue contains exactly the ten approved products', () => {
   assert.equal(APP_REPOSITORIES.length, 10);
   assert.deepEqual(APP_REPOSITORIES.map(item => item.appId), ['pages','sheets','slides','notes','database','forms','lists','planner','todo','loop']);
   assert.deepEqual(APP_REPOSITORIES.map(item => item.repository), [
@@ -17,7 +17,22 @@ test('repository seed catalogue contains exactly the ten approved apps', () => {
   ]);
 });
 
-test('app repository seed exports a locked single-app package with suite source and original artwork', () => {
+
+test('generated product copy and workflow labels use approved Brightdesk wording', () => {
+  assert.doesNotMatch(repositoryBundleReadme(), /\\b(?:standalone|apps?)\\b/i);
+  for (const product of APP_REPOSITORIES) {
+    const generatedCopy = [
+      repositoryReadme(product),
+      socialPreview(product),
+      standaloneWorkflow(product)
+    ].join('\\n');
+    assert.doesNotMatch(generatedCopy, /\\b(?:standalone|apps?)\\b/i, product.name);
+    assert.match(generatedCopy, new RegExp(product.name.replace(/[.*+?^${}()|[\\]\\\\]/g, '\\\\test('product repository seed exports')));
+    assert.match(standaloneWorkflow(product), /name: Build Brightdesk .* desktop installers/);
+  }
+});
+
+test('product repository seed exports a locked product package with suite source and original artwork', () => {
   const root = path.resolve(__dirname, '..');
   const output = fs.mkdtempSync(path.join(os.tmpdir(), 'brightdesk-app-repos-'));
   try {
@@ -25,7 +40,7 @@ test('app repository seed exports a locked single-app package with suite source 
     assert.equal(result.repositories.length, 10);
     const bundleReadme = fs.readFileSync(path.join(output, 'README-START-HERE.md'), 'utf8');
     for (const item of APP_REPOSITORIES) assert.ok(bundleReadme.includes(item.repository), `bundle guide missing ${item.repository}`);
-    assert.match(bundleReadme, /Brightdesk-suite remains the complete ten-app desktop suite/);
+    assert.match(bundleReadme, /Brightdesk-suite remains the complete ten-product desktop suite/);
     for (const item of APP_REPOSITORIES) {
       const destination = path.join(output, item.repository);
       const pkg = JSON.parse(fs.readFileSync(path.join(destination, 'package.json'), 'utf8'));
