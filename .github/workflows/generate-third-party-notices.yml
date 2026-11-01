@@ -31,12 +31,12 @@ jobs:
         run: npm run verify:licenses
       - name: Commit generated notices
         run: |
-          if git diff --quiet -- THIRD_PARTY_NOTICES.md; then
+          git add THIRD_PARTY_NOTICES.md
+          if git diff --cached --quiet; then
             echo "Third-party notices are already up to date."
             exit 0
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add THIRD_PARTY_NOTICES.md
           git commit -m "Generate third-party dependency notices"
           git push
