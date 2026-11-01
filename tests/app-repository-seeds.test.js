@@ -94,6 +94,9 @@ test('product repository generation creates ten locked product folders with orig
       assert.ok(readme.includes(product.name));
       assert.ok(readme.includes('assets/brightdesk-product.svg'));
       assert.doesNotMatch(readme, /\b(?:standalone|apps?)\b/i);
+      assert.match(readme, /same checks repeat daily/i);
+      assert.match(readme, /Dependabot checks npm packages and GitHub Actions weekly/i);
+      assert.match(readme, /Publishing a GitHub Release is a separate manual choice/);
       assert.doesNotMatch(metadata, /\b(?:standalone|apps?)\b/i);
       assert.ok(fs.statSync(path.join(destination, 'assets', 'brightdesk-product.svg')).size > 0);
       assert.ok(fs.statSync(path.join(destination, 'assets', 'social-preview.svg')).size > 0);
