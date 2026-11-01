@@ -1,48 +1,47 @@
-# Brightdesk app repositories
+# Brightdesk product repositories
 
-Brightdesk keeps one complete desktop suite and gives each approved app its own repository.
+Brightdesk keeps one complete desktop suite and gives each approved product its own intended repository.
 
-- **Brightdesk-suite** remains the main repository and the complete ten-app desktop product.
-- Each app repository contains a standalone edition of that app, its own README and preview artwork, and its own build workflow.
-- The standalone edition opens directly into its named app. It does not add a new app to the approved catalogue.
-- The app repositories are generated from the same tested Brightdesk source so their features stay aligned with the suite.
+- Brightdesk-suite remains the main repository and the complete ten-product desktop suite.
+- Each product repository contains the named product's desktop edition, README, original artwork and its own desktop-installer workflow.
+- Each product repository is generated from the same tested Brightdesk source so its features stay aligned with the suite.
 
-## The ten app repositories
+## The ten intended product repositories
 
-| App | GitHub repository | App ID |
-|---|---|---|
-| Brightdesk Pages | Brightdesk-Pages | `pages` |
-| Brightdesk Sheets | Brightdesk-Sheets | `sheets` |
-| Brightdesk Decks | Brightdesk-Decks | `slides` |
-| Brightdesk Notes | Brightdesk-Notes | `notes` |
-| Brightdesk Database | Brightdesk-Database | `database` |
-| Brightdesk Forms | Brightdesk-Forms | `forms` |
-| Brightdesk Lists | Brightdesk-Lists | `lists` |
-| Brightdesk Planner | Brightdesk-Planner | `planner` |
-| Brightdesk To Do | Brightdesk-To-Do | `todo` |
-| Brightdesk Workspace | Brightdesk-Workspace | `loop` |
+| Product | GitHub repository | Product ID | Repository status |
+|---|---|---|---|
+| Brightdesk Pages | Brightdesk-Pages | pages | Created |
+| Brightdesk Sheets | Brightdesk-Sheets | sheets | Not created |
+| Brightdesk Decks | Brightdesk-Decks | slides | Not created |
+| Brightdesk Notes | Brightdesk-Notes | notes | Not created |
+| Brightdesk Database | Brightdesk-Database | database | Not created |
+| Brightdesk Forms | Brightdesk-Forms | forms | Not created |
+| Brightdesk Lists | Brightdesk-Lists | lists | Not created |
+| Brightdesk Planner | Brightdesk-Planner | planner | Not created |
+| Brightdesk To Do | Brightdesk-To-Do | todo | Not created |
+| Brightdesk Workspace | Brightdesk-Workspace | loop | Not created |
 
-These are the exact intended repository names. Each remains pending until its GitHub repository has been created and the seed has been pushed.
+These are the intended repository names. The Pages repository already exists. The other nine names are prepared as product folders but are not GitHub repositories yet.
 
-## Prepare the repository contents
+## Prepare the product folders
 
 From a checkout of Brightdesk-suite using Node.js 24.22.2, run:
 
-```sh
-npm ci
-npm run repositories:prepare
-```
+    npm ci
+    npm run repositories:prepare
 
-The generator creates ten complete folders in `release/app-repository-seeds/`. Each folder contains the standalone app source, a locked app-specific package manifest, the original app preview artwork, an app-focused README, and a separate GitHub Actions workflow.
+The generator creates ten complete folders in release/product-repository-folders/. Each folder contains the product source, a locked product package manifest, original product artwork, a product README and a GitHub Actions desktop-installer workflow.
 
-The generator does not create GitHub repositories or push code. After a repository exists, its matching seed folder can be pushed to that repository.
+The generator does not create GitHub repositories or push code. After a repository exists, its matching folder can be pushed to that repository.
 
-## Standalone releases
+## Product repository checks and releases
 
-Each app repository has its own manual release workflow. It tests the app, builds its native Windows, macOS and Linux installers, verifies the expected files and writes SHA-256 checksums. Publishing a GitHub Release is a separate manual option and is off by default.
+Each generated product repository runs its complete test suite, validates its dependency lock and third-party licences, checks release preflight and audits high-severity dependency vulnerabilities on each pull request and push. A daily scheduled check repeats those quality checks.
 
-The integrated suite also builds all ten standalone installers. The App Centre in Brightdesk-suite opens the corresponding standalone installer for the computer's operating system after the suite release has been published.
+A product installer build is started manually after the test job passes. It builds Windows, macOS and Linux desktop installers and verifies the expected files and SHA-256 checksums. Publishing a GitHub Release is a separate manual option and is off by default.
+
+The integrated suite also builds and verifies the ten product installers. The Product Centre in Brightdesk-suite opens the correct installer for the computer's operating system after the suite release has been published.
 
 ## Product scope
 
-The approved apps remain exactly Pages, Sheets, Decks, Notes, Database, Forms, Lists, Planner, To Do and Workspace. Outlook, OneDrive and Teams are excluded. Brightdesk remains an independent product and uses original names, code, artwork and interface design.
+The approved products remain exactly Pages, Sheets, Decks, Notes, Database, Forms, Lists, Planner, To Do and Workspace. Outlook, OneDrive and Teams are excluded. Brightdesk remains an independent product and uses original names, code, artwork and interface design.
