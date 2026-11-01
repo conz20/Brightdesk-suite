@@ -203,3 +203,13 @@ test('Linux desktop launch identity matches the installed desktop entry', () => 
   assert.ok(productConfig.includes('desktopName: `org.brightdesk.${appId}.desktop`'));
   assert.match(productConfig, /syncDesktopName: true/);
 });
+
+test('English navigation labels cover all ten approved Brightdesk products', () => {
+  const fs = require('node:fs');
+  const path = require('node:path');
+  const translations = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'src', 'languages', 'en-AU.json'), 'utf8')).translations;
+  for (const product of catalog) {
+    const expectedLabel = product.name.replace(/^Brightdesk /, '');
+    assert.equal(translations[`apps.${product.id}`], expectedLabel, `missing navigation label for ${product.id}`);
+  }
+});
