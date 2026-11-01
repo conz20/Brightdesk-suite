@@ -1,2 +1,7 @@
-# Brightdesk-suite
-Inspired version of Microsoft 365 app
+# Brightdesk Office Suite
+
+Brightdesk is a native desktop productivity suite.
+
+It includes Pages, Sheets, Decks and Notes.
+
+More applications are planned.
