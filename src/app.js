@@ -4,13 +4,15 @@ const defaults = {
   pages: { title: 'Untitled document', html: '' },
   sheets: { title: 'Untitled spreadsheet', cells: Array.from({ length: 20 }, () => Array(12).fill('')) },
   slides: { title: 'Untitled presentation', slides: [{ title: 'Your presentation title', body: 'Add a subtitle or a few words to introduce your idea.' }], current: 0 },
-  notes: { title: 'Untitled note', text: '' }
+  notes: { title: 'Untitled note', text: '' },
+  todo: { title: 'My tasks', tasks: [] }
 };
 const configs = {
   pages: { title: 'Brightdesk Pages', heading: 'Make room for your ideas.', desc: 'Write letters, reports and documents.' },
   sheets: { title: 'Brightdesk Sheets', heading: 'Make numbers make sense.', desc: 'Organise information, use formulas and build tables.' },
   slides: { title: 'Brightdesk Decks', heading: 'Bring your ideas to life.', desc: 'Build a presentation one slide at a time.' },
-  notes: { title: 'Brightdesk Notes', heading: 'Catch that thought.', desc: 'Keep quick notes and reminders together.' }
+  notes: { title: 'Brightdesk Notes', heading: 'Catch that thought.', desc: 'Keep quick notes and reminders together.' },
+  todo: { title: 'Brightdesk To Do', heading: 'Make time for what matters.', desc: 'Plan your day, keep track of tasks and celebrate what you finish.' }
 };
 const genericConfigs = Object.fromEntries((window.BrightdeskAppCatalog || []).filter(item => !['pages','sheets','slides','notes'].includes(item.id)).map(item => [item.id, { title: item.name, heading: item.name, desc: item.description }]));
 const fullCatalog = window.BrightdeskAppCatalog || [];
@@ -19,6 +21,7 @@ const catalog = fullCatalog;
 const installableCatalog = catalog.filter(item => item.availability === 'available');
 const state = {
   app: launchAppId || 'pages', view: 'workspace', docs: structuredClone(defaults),
+  todoView: 'my-day', todoQuery: '',
   selectedCell: { row: 0, col: 0 }, update: null, ribbonTab: 'home',
   installedApps: [], setupComplete: false, firstRunSelection: new Set(installableCatalog.map(item => item.id)),
   slideTheme: 'lavender', focusMode: false, editorZoom: 100, sheetZoom: 100,
@@ -158,7 +161,8 @@ function renderToolbar() {
     } else {
       const view = group('zoom');
       addButton(view, label('zoomOut'), () => changeEditorZoom(-10)); addButton(view, '100%', () => { state.editorZoom = 100; applyEditorZoom(); }); addButton(view, label('zoomIn'), () => changeEditorZoom(10));
-      addButton(view, label('focusMode'), () => { state.focusMode = !state.focusMode; $('workspace').classList.toggle('focus-mode', state.focusMode); });
+      addButton(view, label('focusMode'), () => { state.focusMode = !state.focusMode; $('workspace').classList.toggle('focus-mode', state.focusMode);
+    $('workspace').classList.toggle('todo-mode', isTodo); });
     }
   } else if (app === 'sheets') {
     if (tab === 'home') {
@@ -292,6 +296,72 @@ function duplicateSlide(){const d=activeDoc(),copy=clone(d.slides[d.current]);d.
 function deleteSlide(){const d=activeDoc();if(d.slides.length===1){alert('A presentation needs at least one slide.');return;}d.slides.splice(d.current,1);d.current=Math.max(0,d.current-1);renderSlides();renderToolbar();persist();}
 function presentSlides(){const d=activeDoc();let i=d.current;const overlay=document.createElement('div');overlay.className='presentation-overlay';const slide=document.createElement('div');slide.className='presentation-slide';const title=document.createElement('h1'),body=document.createElement('p'),footer=document.createElement('div');footer.className='presentation-footer';footer.textContent='Click or press an arrow key to move · Esc to exit';slide.append(title,body,footer);overlay.append(slide);document.body.append(overlay);
   const draw=()=>{title.textContent=d.slides[i].title;body.textContent=d.slides[i].body;};const key=(e)=>{if(e.key==='Escape'){overlay.remove();document.removeEventListener('keydown',key);}else if(e.key==='ArrowRight'){i=Math.min(d.slides.length-1,i+1);draw();}else if(e.key==='ArrowLeft'){i=Math.max(0,i-1);draw();}};overlay.addEventListener('click',()=>{i=Math.min(d.slides.length-1,i+1);draw();});document.addEventListener('keydown',key);draw();}
+function todoTasks() { return Array.isArray(activeDoc().tasks) ? activeDoc().tasks : (activeDoc().tasks = []); }
+function saveTodoTasks() { persist(); $('todo-status').textContent = 'Saved on this device'; }
+function replaceTodoTask(id, patch) {
+  const tasks = todoTasks();
+  const index = tasks.findIndex(task => task.id === id);
+  if (index < 0) return;
+  tasks[index] = window.BrightdeskTodoService.updateTask(tasks[index], patch);
+  saveTodoTasks(); renderTodoWorkspace();
+}
+function renderTodoWorkspace() {
+  const view = state.todoView || 'my-day';
+  const titles = { 'my-day': 'My Day', important: 'Important', planned: 'Planned', tasks: 'Tasks', completed: 'Completed' };
+  const descriptions = { 'my-day': 'Focus on what you want to get done today.', important: 'Keep your most important tasks close.', planned: 'See tasks that have a due date.', tasks: 'Everything you still need to do.', completed: 'Look back at what you have finished.' };
+  $('todo-view-title').textContent = titles[view] || 'Tasks';
+  $('todo-view-description').textContent = descriptions[view] || descriptions.tasks;
+  $('todo-search').value = state.todoQuery || '';
+  document.querySelectorAll('[data-todo-view]').forEach(button => button.classList.toggle('active', button.dataset.todoView === view));
+  const now = new Date();
+  const today = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+  const tasks = window.BrightdeskTodoService.filterTasks(todoTasks(), { view, query: state.todoQuery, today });
+  $('todo-task-count').textContent = `${tasks.length} ${tasks.length === 1 ? 'task' : 'tasks'}`;
+  const list = $('todo-task-list'); list.innerHTML = '';
+  if (!tasks.length) {
+    const empty = document.createElement('div'); empty.className = 'todo-empty';
+    const heading = document.createElement('b'); heading.textContent = state.todoQuery ? 'No matching tasks' : (view === 'completed' ? 'Nothing completed yet' : 'All clear for now');
+    const message = document.createElement('p'); message.textContent = state.todoQuery ? 'Try another search.' : (view === 'my-day' ? 'Add a task above to start your day.' : 'Tasks that match this view will appear here.');
+    empty.append(heading, message); list.append(empty); return;
+  }
+  tasks.forEach(task => {
+    const card = document.createElement('article'); card.className = 'todo-task-card'; card.setAttribute('role','listitem');
+    const main = document.createElement('div'); main.className = 'todo-task-main';
+    const check = document.createElement('input'); check.type = 'checkbox'; check.checked = task.completed; check.className = 'todo-complete'; check.setAttribute('aria-label', task.completed ? `Restore ${task.title}` : `Complete ${task.title}`);
+    check.addEventListener('change', () => { const tasksNow = todoTasks(); const i = tasksNow.findIndex(item => item.id === task.id); if (i >= 0) { tasksNow[i] = window.BrightdeskTodoService.setCompleted(tasksNow[i], check.checked); saveTodoTasks(); renderTodoWorkspace(); } });
+    const textWrap = document.createElement('div'); textWrap.className = 'todo-task-text';
+    const title = document.createElement('b'); title.className = task.completed ? 'completed' : ''; title.textContent = task.title;
+    textWrap.append(title);
+    if (task.notes) { const notes = document.createElement('p'); notes.textContent = task.notes; textWrap.append(notes); }
+    const meta = document.createElement('div'); meta.className = 'todo-task-meta';
+    if (task.dueDate) { const due = document.createElement('span'); due.textContent = `Due ${new Date(`${task.dueDate}T12:00:00`).toLocaleDateString()}`; if (!task.completed && task.dueDate < today) due.classList.add('overdue'); meta.append(due); }
+    if (task.priority !== 'normal') { const priority = document.createElement('span'); priority.className = `todo-priority ${task.priority}`; priority.textContent = `${task.priority[0].toUpperCase()}${task.priority.slice(1)} priority`; meta.append(priority); }
+    if (task.myDay) { const day = document.createElement('span'); day.textContent = 'My Day'; meta.append(day); }
+    if (meta.childNodes.length) textWrap.append(meta);
+    main.append(check, textWrap); card.append(main);
+    const actions = document.createElement('div'); actions.className = 'todo-task-actions';
+    const important = document.createElement('button'); important.type = 'button'; important.className = task.important ? 'todo-icon-button selected' : 'todo-icon-button'; important.textContent = task.important ? '★' : '☆'; important.title = task.important ? 'Remove from Important' : 'Mark as Important'; important.setAttribute('aria-label', important.title); important.addEventListener('click', () => replaceTodoTask(task.id, { important: !task.important })); actions.append(important);
+    const myDay = document.createElement('button'); myDay.type = 'button'; myDay.className = 'todo-icon-button'; myDay.textContent = task.myDay ? '−' : '+'; myDay.title = task.myDay ? 'Remove from My Day' : 'Add to My Day'; myDay.setAttribute('aria-label', myDay.title); myDay.addEventListener('click', () => replaceTodoTask(task.id, { myDay: !task.myDay })); actions.append(myDay);
+    const edit = document.createElement('button'); edit.type = 'button'; edit.className = 'todo-text-button'; edit.textContent = 'Edit'; edit.addEventListener('click', () => { const form = card.querySelector('.todo-edit-form'); if (form) { form.hidden = !form.hidden; return; } const editForm = document.createElement('form'); editForm.className = 'todo-edit-form';
+      const titleInput = document.createElement('input'); titleInput.type = 'text'; titleInput.maxLength = 240; titleInput.required = true; titleInput.value = task.title; titleInput.setAttribute('aria-label','Task title');
+      const notesInput = document.createElement('textarea'); notesInput.value = task.notes || ''; notesInput.placeholder = 'Add notes'; notesInput.setAttribute('aria-label','Task notes');
+      const dueInput = document.createElement('input'); dueInput.type = 'date'; dueInput.value = task.dueDate || ''; dueInput.setAttribute('aria-label','Due date');
+      const priorityInput = document.createElement('select'); priorityInput.setAttribute('aria-label','Priority'); [['low','Low'],['normal','Normal'],['high','High']].forEach(([value,label]) => { const option = document.createElement('option'); option.value=value; option.textContent=label; priorityInput.append(option); }); priorityInput.value=task.priority;
+      const save = document.createElement('button'); save.type='submit'; save.className='primary small-action'; save.textContent='Save'; const cancel = document.createElement('button'); cancel.type='button'; cancel.className='secondary small-action'; cancel.textContent='Cancel'; cancel.addEventListener('click',()=>editForm.remove());
+      editForm.append(titleInput,notesInput,dueInput,priorityInput,save,cancel); editForm.addEventListener('submit',event=>{event.preventDefault();try{replaceTodoTask(task.id,{title:titleInput.value,notes:notesInput.value,dueDate:dueInput.value,priority:priorityInput.value});}catch(error){$('todo-status').textContent=error.message;}}); card.append(editForm); titleInput.focus(); }); actions.append(edit);
+    const remove = document.createElement('button'); remove.type='button'; remove.className='todo-text-button danger'; remove.textContent='Delete'; remove.addEventListener('click',()=>{if(!window.confirm(`Delete “${task.title}”?`))return; activeDoc().tasks=window.BrightdeskTodoService.deleteTask(todoTasks(),task.id); saveTodoTasks(); renderTodoWorkspace();}); actions.append(remove);
+    card.append(actions); list.append(card);
+  });
+}
+function createTodoTask(event) {
+  event.preventDefault();
+  try {
+    const input = $('todo-new-title');
+    const task = window.BrightdeskTodoService.createTask({ title: input.value, myDay: state.todoView === 'my-day' });
+    todoTasks().push(task); saveTodoTasks(); input.value = ''; renderTodoWorkspace(); input.focus();
+  } catch (error) { $('todo-status').textContent = error.message; }
+}
+
 function renderGenericWorkspace() {
   const doc = activeDoc();
   editor.hidden = false; sheetWrap.hidden = true; slideWrap.hidden = true; notesWrap.hidden = true;
@@ -611,13 +681,17 @@ function render() {
     editor.setAttribute('data-placeholder', t('common.startTyping'));
     const doc = activeDoc();
     $('doc-title').value = doc.title || defaults[state.app].title;
+    const isTodo = state.app === 'todo';
+    $('todo-wrap').hidden = !isTodo;
+    $('open-button').hidden = isTodo; $('save-project').hidden = isTodo; $('export-button').hidden = isTodo;
     editor.hidden = !['pages'].includes(state.app); sheetWrap.hidden = state.app !== 'sheets'; slideWrap.hidden = state.app !== 'slides'; notesWrap.hidden = !['notes'].includes(state.app);
     editor.innerHTML = state.app === 'pages' ? safeHtml(doc.html) : '';
     if (state.app === 'pages') applyPageLayout(); else editor.removeAttribute('style');
     $('notes-editor').value = state.app === 'notes' ? (doc.text || '') : '';
     updateDocumentLanguage();
     if (state.app === 'sheets') renderSheet(); if (state.app === 'slides') renderSlides();
-    if (!['pages','sheets','slides','notes'].includes(state.app)) renderGenericWorkspace();
+    if (isTodo) renderTodoWorkspace();
+    else if (!['pages','sheets','slides','notes'].includes(state.app)) renderGenericWorkspace();
     renderToolbar();
     $('workspace').classList.toggle('focus-mode', state.focusMode);
   }
@@ -673,7 +747,7 @@ function importProject(data){
 function escapeHtml(value){return String(value).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));}
 async function openFile(){try{const data=await window.brightdesk.openFile();if(!data)return;importProject(data);persist();render();setStatus('File opened');}catch(error){alert(`Could not open file: ${error.message}`);}}
 async function saveProject(){try{const result=await window.brightdesk.saveProject({title:$('doc-title').value,docs:state.docs});if(!result?.canceled)setStatus('Project saved');}catch(error){alert(`Could not save project: ${error.message}`);}}
-function setApp(app){if((launchAppId && app !== launchAppId) || !configs[app] || !installedApp(app))return;state.app=app;state.view='workspace';state.ribbonTab='home';render();persist();}
+function setApp(app){if((launchAppId && app !== launchAppId) || !(configs[app] || genericConfigs[app]) || !installedApp(app))return;state.app=app;state.view='workspace';state.ribbonTab='home';render();persist();}
 
 document.querySelectorAll('.nav[data-app]').forEach(btn=>btn.addEventListener('click',()=>setApp(btn.dataset.app)));
 $('manage-apps').addEventListener('click',()=>{if (launchAppId) return; state.view='manager';render();});
@@ -688,6 +762,9 @@ $('finish-app-setup').addEventListener('click',()=>{if(state.setupComplete){stat
 $('doc-title').addEventListener('change',()=>{activeDoc().title=$('doc-title').value;persist();});
 editor.addEventListener('input',()=>{activeDoc().html=editor.innerHTML;persist();});
 $('notes-editor').addEventListener('input',()=>{activeDoc().text=$('notes-editor').value;persist();});
+$('todo-create-form').addEventListener('submit', createTodoTask);
+$('todo-search').addEventListener('input', event => { state.todoQuery = event.target.value; renderTodoWorkspace(); });
+document.querySelectorAll('[data-todo-view]').forEach(button => button.addEventListener('click', () => { state.todoView = button.dataset.todoView; renderTodoWorkspace(); }));
 $('export-button').addEventListener('click',exportCurrent);$('open-button').addEventListener('click',openFile);$('save-project').addEventListener('click',saveProject);
 $('updates-button').addEventListener('click',async()=>{const msg=$('update-message');msg.hidden=false;msg.textContent=t('common.updateChecking');try{const r=await window.brightdesk.checkForUpdates();if(!r?.ok)msg.textContent=r?.message||'Update checks are not configured yet.';}catch(e){msg.textContent=`Update check failed: ${e.message}`;}});
 window.brightdesk.onUpdateState?.(updateState=>{const msg=$('update-message');msg.hidden=false;msg.textContent=updateState.message;if(updateState.status==='available'){msg.textContent=updateState.message;}if(updateState.status==='downloaded'){const button=document.createElement('button');button.className='text-button';button.textContent=t('common.restartInstall');button.onclick=()=>window.brightdesk.installUpdate();msg.append(' ',button);}});
