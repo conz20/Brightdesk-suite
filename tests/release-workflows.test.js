@@ -40,6 +40,10 @@ test('release workflow builds and verifies all three desktop platforms', () => {
   assert.match(workflow, /npm run release:preflight/);
   assert.match(workflow, /npm test/);
   assert.match(workflow, /npm audit --audit-level=high/);
+  assert.match(workflow, /pull_request:\\s*branches: \\[main\\]/);
+  assert.match(workflow, /npm run repositories:prepare/);
+  assert.match(workflow, /name: Upload standalone app repository seeds/);
+  assert.match(workflow, /Brightdesk-App-Repository-Seeds/);
   assert.match(workflow, /name: Build standalone app installers/);
   assert.match(workflow, /npm run dist:apps:\$\{\{ matrix\.script \}\}/);
   assert.match(workflow, /name: Upload standalone app installers/);
