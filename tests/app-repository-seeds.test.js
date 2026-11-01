@@ -74,6 +74,14 @@ test('product repository generation creates ten locked product folders with orig
       assert.equal(pkg.brightdeskAppId, product.appId);
       assert.equal(pkg.build.appId, 'org.brightdesk.' + product.appId);
       assert.equal(pkg.build.productName, product.name);
+      assert.match(pkg.scripts.test, /node --test/);
+      for (const file of [
+        'tests/app-repository-seeds.test.js',
+        'tests/integrated-app-shell.test.js',
+        'tests/release-readiness.test.js',
+        'tests/standalone-downloads.test.js'
+      ]) assert.ok(pkg.scripts.test.includes(file), 'product test suite includes ' + file);
+      assert.doesNotMatch(pkg.scripts.test, /tests\/app-catalog\.test\.js|tests\/release-workflows\.test\.js/);
       assert.equal(lock.name, product.packageName);
       assert.equal(lock.packages[''].name, product.packageName);
       for (const platform of ['win', 'mac', 'linux']) {
