@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self'; img-src 'self' data:; connect-src 'none'; object-src 'none'; base-uri 'self';">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="light" />
+  <title>Brightdesk</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <aside class="sidebar">
+    <div class="brand"><div class="brand-mark">B</div><div><b>brightdesk</b><small data-i18n="sidebar.workspace">YOUR WORKSPACE</small></div></div>
+    <div class="section-label" data-i18n="sidebar.yourApps">YOUR APPS</div>
+    <button class="nav active" data-app="pages"><span class="app-icon pages">P</span><span><b>Brightdesk Pages</b><small data-i18n="sidebar.documents">Documents</small></span></button>
+    <button class="nav" data-app="sheets"><span class="app-icon sheets">S</span><span><b>Brightdesk Sheets</b><small data-i18n="sidebar.spreadsheets">Spreadsheets</small></span></button>
+    <button class="nav" data-app="slides"><span class="app-icon slides">D</span><span><b>Brightdesk Decks</b><small data-i18n="sidebar.presentations">Presentations</small></span></button>
+    <button class="nav" data-app="notes"><span class="app-icon notes">N</span><span><b>Brightdesk Notes</b><small data-i18n="sidebar.quickNotes">Quick notes</small></span></button>
+    <div id="dynamic-app-nav"></div>
+    <div class="sidebar-divider"></div>
+    <button class="nav manager-nav" id="manage-apps"><span class="app-icon manager-icon">＋</span><span><b data-i18n="sidebar.getApps">Get apps</b><small data-i18n="sidebar.installManage">Install and manage</small></span></button>
+    <button class="nav manager-nav" id="manage-languages"><span class="app-icon manager-icon">文</span><span><b data-i18n="sidebar.languages">Languages</b><small data-i18n="sidebar.languagePacks">Install language packs</small></span></button>
+    <div class="sidebar-bottom">
+      <div class="free-pill" data-i18n="sidebar.freeIndependent">✦ Free and independent</div>
+      <button class="text-button" id="updates-button" data-i18n="sidebar.checkUpdates">Check for updates</button>
+      <small id="platform">Desktop app</small>
+      <small id="version-label">Version 0.1.0</small>
+    </div>
+  </aside>
+  <main class="main">
+    <header class="topbar">
+      <div><div class="eyebrow" data-i18n="sidebar.workspace">YOUR WORKSPACE</div><h1 id="app-title">Brightdesk Pages</h1></div>
+      <div class="top-actions" id="top-actions"><span class="save-status" id="save-status" data-i18n="top.savedOnDevice">Saved on this device</span><button class="secondary" id="open-button" data-i18n="top.open">Open</button><button class="secondary" id="save-project" data-i18n="top.saveProject">Save project</button><button class="primary" id="export-button" data-i18n="top.export">Export</button></div>
+    </header>
+    <section class="welcome" id="welcome"><div><div class="eyebrow" data-i18n="welcome.eyebrow">YOUR WORK. ONE CONNECTED SUITE.</div><h2 id="welcome-title">Make room for your ideas.</h2><p id="welcome-desc">Create, edit and keep your work together in one place.</p></div><div class="welcome-orb">✳</div></section>
+    <section class="workspace" id="workspace">
+      <div class="document-bar"><input id="doc-title" value="Untitled document" aria-label="Document title" /><span class="local-tag" data-i18n="top.storedLocally">● Stored locally</span></div>
+      <div id="ribbon-tabs" class="ribbon-tabs" role="tablist" aria-label="Application ribbon"></div>
+      <div id="toolbar" class="toolbar" aria-label="Ribbon commands"></div>
+      <div id="editor" class="editor" contenteditable="true" spellcheck="true" aria-label="Document editor"></div>
+      <div id="sheet-wrap" class="sheet-wrap" hidden></div>
+      <div id="slide-wrap" class="slide-wrap" hidden></div>
+      <div id="notes-wrap" class="notes-wrap" hidden><textarea id="notes-editor" aria-label="Notes editor" placeholder="Type a note, idea or reminder…" data-i18n-placeholder="common.notesPlaceholder"></textarea><div class="notes-hint" data-i18n="common.notesHint">Your notes save automatically on this device.</div></div>
+    </section>
+    <section class="app-manager" id="app-manager" hidden>
+      <div class="manager-hero"><div><div class="eyebrow" data-i18n="manager.eyebrow">BRIGHTDESK APP CENTRE</div><h2 id="manager-title">Choose the apps you need</h2><p id="manager-description">Set up your workspace with the tools you want to use.</p></div><div class="manager-hero-mark">✳</div></div>
+      <div class="manager-grid" id="app-manager-grid"></div>
+      <div class="manager-bottom"><p id="manager-note">Choose one or more apps. Your documents stay on this device, even if you remove an app from your workspace.</p><button class="primary" id="finish-app-setup">Install selected apps</button></div>
+    </section>
+    <section class="language-manager" id="language-manager" hidden>
+      <div class="manager-hero"><div><div class="eyebrow" data-i18n="language.eyebrow">BRIGHTDESK LANGUAGE CENTRE</div><h2 data-i18n="language.title">Language settings</h2><p data-i18n="language.description">Choose the Brightdesk display language and the spelling language you want to use. Language-pack contents and dictionary licences are protected.</p></div><div class="manager-hero-mark">文</div></div>
+      <div class="language-settings-grid">
+        <article class="language-setting-card"><h3 data-i18n="language.displayTitle">Display language</h3><p data-i18n="language.displayDescription">Changes the language used for Brightdesk menus, buttons and tools. Changes apply straight away.</p><select id="display-language" aria-label="Display language"></select><small class="language-help" data-i18n="language.restartNotNeeded">No restart needed.</small></article>
+        <article class="language-setting-card"><h3 data-i18n="language.proofingTitle">Proofing language</h3><p data-i18n="language.proofingDescription">Sets the language used for spelling checks while you write. This setting is separate from the display language.</p><select id="proofing-language" aria-label="Proofing language"></select><small class="language-help" id="proofing-status"></small></article>
+      </div>
+      <h3 class="language-section-title" data-i18n="language.installedTitle">Installed language packs</h3>
+      <div class="manager-grid" id="installed-language-grid"></div>
+      <h3 class="language-section-title" data-i18n="language.availableTitle">Available language packs</h3>
+      <div class="manager-grid" id="available-language-grid"></div>
+      <section class="dictionary-centre" aria-labelledby="dictionary-centre-title">
+        <h3 class="language-section-title" id="dictionary-centre-title">Spelling dictionaries</h3>
+        <p class="dictionary-intro">Protected resources: you can install and select a language, but dictionary words, licences, source details and author credits cannot be edited, replaced or removed inside Brightdesk. Changes to these resources must come from an official Brightdesk release.</p>
+        <p class="dictionary-intro">Choose from the protected Brightdesk dictionary catalogue. Dictionary contents, original licence terms and attribution records cannot be edited or replaced by users.</p>
+        <article class="language-setting-card dictionary-check-card">
+          <h3>Check the current document</h3>
+          <p>Choose an installed dictionary, then run a spelling check on the open Brightdesk Pages, Sheets, Decks or Notes document.</p>
+          <div class="dictionary-check-controls"><select id="proofing-dictionary" aria-label="Spelling dictionary"></select><button class="primary" id="check-current-document">Check spelling</button></div>
+          <small class="language-help" id="dictionary-status" role="status">No separate dictionaries installed yet.</small>
+        </article>
+        <h3 class="language-section-title">Available spelling dictionaries</h3>
+        <p class="dictionary-intro">Browse the 92 language and regional variants in the built-in catalogue. Search by language, region or locale code. Installing adds the original read-only dictionary; it does not change its words, source or licence. The spelling engine supports a subset of Hunspell features, so some dictionaries may not work fully.</p>
+        <label class="dictionary-search-label" for="dictionary-search">Find a language</label>
+        <input id="dictionary-search" class="dictionary-search" type="search" placeholder="Search languages, regions or codes (for example, English Australia)" autocomplete="off">
+        <small id="dictionary-catalogue-count" class="language-help" role="status"></small>
+        <div class="manager-grid" id="available-dictionary-grid"></div>
+        <h3 class="language-section-title">Installed spelling dictionaries</h3>
+        <div class="manager-grid" id="installed-dictionary-grid"></div>
+      </section>
+      <div class="manager-bottom"><p id="language-status" role="status"></p><button class="secondary" id="back-to-apps" data-i18n="language.backToApps">Back to apps</button></div>
+    </section>
+    <div class="update-message" id="update-message" role="status" hidden></div>
+    <footer><span id="footer-version">Brightdesk 0.1.0</span> · Independent software · Not affiliated with Microsoft</footer>
+  </main>
+  <script src="formula.js"></script>
+  <script src="page-layout.js"></script>
+  <script src="app-catalog.js"></script>
+  <script src="i18n.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
