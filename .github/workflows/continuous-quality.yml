@@ -39,7 +39,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: brightdesk-daily-quality-\${{ github.ref }}
+  group: brightdesk-daily-quality-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
