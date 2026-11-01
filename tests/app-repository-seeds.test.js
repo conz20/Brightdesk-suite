@@ -79,8 +79,8 @@ test('product repository generation creates ten locked product folders with orig
       for (const platform of ['win', 'mac', 'linux']) {
         assert.ok(pkg.scripts['dist:product:' + platform]);
         assert.ok(pkg.scripts['verify:product:' + platform]);
-        assert.ok(workflow.includes('npm run dist:product:\${{ matrix.platform }}'));
-        assert.ok(workflow.includes('npm run verify:product:\${{ matrix.platform }}'));
+        assert.ok(workflow.includes('npm run dist:product:${{ matrix.platform }}'));
+        assert.ok(workflow.includes('npm run verify:product:${{ matrix.platform }}'));
       }
       assert.ok(readme.includes(product.name));
       assert.ok(readme.includes('assets/brightdesk-product.svg'));
