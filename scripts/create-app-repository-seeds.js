@@ -31,13 +31,16 @@ const PACKAGE_NAMES = Object.freeze({
   loop: 'brightdesk-workspace'
 });
 
-const APP_REPOSITORIES = Object.freeze(catalog.map(app => Object.freeze({
-  appId: app.id,
+const PRODUCT_REPOSITORIES = Object.freeze(catalog.map(product => Object.freeze({
+  appId: product.id,
   name: product.name,
   description: product.description,
-  repository: REPOSITORY_NAMES[app.id],
-  packageName: PACKAGE_NAMES[app.id]
+  repository: REPOSITORY_NAMES[product.id],
+  packageName: PACKAGE_NAMES[product.id]
 })));
+
+// Backwards-compatible internal alias used by the existing Pages test harness.
+const APP_REPOSITORIES = PRODUCT_REPOSITORIES;
 
 const excludedDirectories = new Set(['.git', 'node_modules', 'release', 'reports', 'coverage', '.next', 'dist']);
 
@@ -187,6 +190,11 @@ function productWorkflow(product) {
     '    branches: [main]',
     '  workflow_dispatch:',
     '    inputs:',
+    '      build_installers:',
+    '        description: Build the Windows, macOS and Linux desktop installers',
+    '        type: boolean',
+    '        required: true',
+    '        default: true',
     '      publish_release:',
     '        description: Publish a GitHub Release after all product installers pass verification',
     '        type: boolean',
@@ -248,7 +256,7 @@ function productWorkflow(product) {
     '',
     '  publish:',
     '    name: Publish approved ' + product.name + ' release',
-    '    if: github.event_name == \\'workflow_dispatch\\' && inputs.publish_release == true',
+    '    if: github.event_name == \\'workflow_dispatch\\' && inputs.publish_release == true && inputs.build_installers == true',
     '    needs: build',
     '    runs-on: ubuntu-latest',
     '    permissions:',
@@ -309,7 +317,7 @@ function makePackage(product, target) {
   fs.writeFileSync(lockPath, `${JSON.stringify(lock, null, 2)}\n`);
 }
 
-function createProductRepositorySeeds({ rootDir = path.resolve(__dirname, '..'), outputDir = path.join(rootDir, 'release', 'app-repository-seeds') } = {}) {
+function createProductRepositorySeeds({ rootDir = path.resolve(__dirname, '..'), outputDir = path.join(rootDir, 'release', 'product-repository-folders') } = {}) {
   const sourceRoot = path.resolve(rootDir);
   const destinationRoot = path.resolve(outputDir);
   if (sourceRoot === destinationRoot || destinationRoot.startsWith(sourceRoot + path.sep) === false && sourceRoot.startsWith(destinationRoot + path.sep)) {
@@ -320,7 +328,7 @@ function createProductRepositorySeeds({ rootDir = path.resolve(__dirname, '..'),
   fs.writeFileSync(path.join(destinationRoot, 'README-START-HERE.md'), repositoryBundleReadme());
   const results = [];
 
-  for (const app of APP_REPOSITORIES) {
+  for (const product of PRODUCT_REPOSITORIES) {
     const target = path.join(destinationRoot, product.repository);
     fs.rmSync(target, { recursive: true, force: true });
     for (const entry of fs.readdirSync(sourceRoot, { withFileTypes: true })) {
@@ -332,28 +340,28 @@ function createProductRepositorySeeds({ rootDir = path.resolve(__dirname, '..'),
       });
     }
 
-    makePackage(app, target);
+    makePackage(product, target);
     const artworkSource = path.join(sourceRoot, 'src', 'assets', 'apps', `${product.appId}.svg`);
-    if (!fs.existsSync(artworkSource)) throw new Error(`Original preview artwork is missing for ${product.name}: ${artworkSource}`);
+    if (!fs.existsSync(artworkSource)) throw new Error(`Original product artwork is missing for ${product.name}: ${artworkSource}`);
     const assets = path.join(target, 'assets');
     const workflowDirectory = path.join(target, '.github', 'workflows');
     fs.mkdirSync(assets, { recursive: true });
     fs.mkdirSync(workflowDirectory, { recursive: true });
-    fs.copyFileSync(artworkSource, path.join(assets, 'brightdesk-app.svg'));
-    fs.writeFileSync(path.join(assets, 'social-preview.svg'), socialPreview(app));
-    fs.writeFileSync(path.join(target, 'README.md'), repositoryReadme(app));
-    fs.writeFileSync(path.join(target, '.github', 'workflows', 'product-installers.yml'), productWorkflow(app));
+    fs.copyFileSync(artworkSource, path.join(assets, 'brightdesk-product.svg'));
+    fs.writeFileSync(path.join(assets, 'social-preview.svg'), socialPreview(product));
+    fs.writeFileSync(path.join(target, 'README.md'), repositoryReadme(product));
+    fs.writeFileSync(path.join(target, '.github', 'workflows', 'product-installers.yml'), productWorkflow(product));
     fs.writeFileSync(path.join(target, 'REPOSITORY_INFO.md'), `# ${product.repository}
 
 - Product: ${product.name}
-- App ID: \`${product.appId}\`
+- Product ID: \`${product.appId}\`
 - Repository visibility: choose when creating the GitHub repository
 - Description: ${product.description}
 - Main suite: https://github.com/connormolloy12/Brightdesk-suite
 
-This product folder is ready to upload to a GitHub repository named \`${product.repository}\`. It is a standalone edition locked to ${product.name}. The shared suite keeps the complete ten-app experience.
+This product folder is ready to upload to a GitHub repository named \`${product.repository}\`. It is the dedicated desktop edition of ${product.name}. The shared suite keeps the complete ten-product experience.
 `);
-    results.push({ ...app, path: target });
+    results.push({ ...product, path: target });
   }
 
   return { outputDir: destinationRoot, repositories: results };
@@ -370,4 +378,14 @@ if (require.main === module) {
   }
 }
 
-module.exports = { APP_REPOSITORIES, createProductRepositorySeeds, repositoryBundleReadme, repositoryReadme, socialPreview, productWorkflow, standaloneWorkflow: productWorkflow };
+module.exports = {
+  PRODUCT_REPOSITORIES,
+  APP_REPOSITORIES,
+  createProductRepositorySeeds,
+  createAppRepositorySeeds: createProductRepositorySeeds,
+  repositoryBundleReadme,
+  repositoryReadme,
+  socialPreview,
+  productWorkflow,
+  standaloneWorkflow: productWorkflow
+};
