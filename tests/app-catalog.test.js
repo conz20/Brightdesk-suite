@@ -183,13 +183,13 @@ test('every first-release app has its own original preview artwork and the launc
   assert.ok(renderer.includes('`${item.name} example screen`'));
 });
 
-test('README presents all ten apps as the integrated first-release lineup', () => {
+test('README presents all ten products as the integrated first-release lineup', () => {
   const fs = require('node:fs');
   const readme = fs.readFileSync(require('node:path').join(__dirname, '..', 'README.md'), 'utf8');
   for (const app of catalog) assert.ok(readme.includes(app.name), `README missing ${app.name}`);
-  assert.match(readme, /ten-app desktop suite/i);
-  assert.match(readme, /all ten.*implemented/i);
-  assert.doesNotMatch(readme, /other six.*not yet working apps/i);
+  assert.match(readme, /ten-product desktop suite/i);
+  assert.match(readme, /all ten products are integrated/i);
+  assert.doesNotMatch(readme, /six products are planned/i);
 });
 
 test('Linux desktop launch identity matches the installed desktop entry', () => {
