@@ -40,15 +40,15 @@ test('release workflow builds and verifies all three desktop platforms', () => {
   assert.match(workflow, /npm run release:preflight/);
   assert.match(workflow, /npm test/);
   assert.match(workflow, /npm audit --audit-level=high/);
-  assert.match(workflow, /pull_request:\s*branches: \[main\]/, 'standalone installer workflow runs on pull requests');
+  assert.match(workflow, /pull_request:\s*branches: \[main\]/, 'product installer workflow runs on pull requests');
   assert.match(workflow, /npm run repositories:prepare/);
-  assert.match(workflow, /name: Upload standalone app repository seeds/);
-  assert.match(workflow, /Brightdesk-App-Repository-Seeds/);
+  assert.match(workflow, /name: Upload product repository folders/);
+  assert.match(workflow, /Brightdesk-Product-Repository-Folders/);
   assert.match(workflow, /include-hidden-files: true/);
-  assert.match(workflow, /name: Build standalone app installers/);
-  assert.match(workflow, /npm run dist:apps:\$\{\{ matrix\.script \}\}/);
-  assert.match(workflow, /name: Upload standalone app installers/);
-  assert.ok(workflow.includes('path: release/apps/${{ matrix.platform }}/**'), 'standalone app artifacts use platform-specific folders');
+  assert.match(workflow, /name: Build product desktop installers/);
+  assert.match(workflow, /npm run dist:products:\$\{\{ matrix\.script \}\}/);
+  assert.match(workflow, /name: Upload product desktop installers/);
+  assert.ok(workflow.includes('path: release/apps/${{ matrix.platform }}/**'), 'product installer artifacts use platform-specific folders');
 });
 
 test('pull-request builds never receive code-signing or notarisation secrets', () => {
