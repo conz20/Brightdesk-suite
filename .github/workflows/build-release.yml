@@ -1,0 +1,175 @@
+name: Build and verify Brightdesk installers
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'package.json'
+      - 'package-lock.json'
+      - 'src/**'
+      - 'scripts/**'
+      - 'installer/**'
+      - 'tests/**'
+      - 'electron-builder.app.config.js'
+      - 'TERMS_AND_CONDITIONS.txt'
+      - 'LICENSE'
+      - 'THIRD_PARTY_NOTICES.md'
+      - '.github/workflows/build-release.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: brightdesk-installer-build-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  prepare:
+    name: Test and lock dependencies
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out Brightdesk
+        uses: actions/checkout@v4
+
+      - name: Set up required Node.js version
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24.22.2
+          cache: npm
+
+      - name: Prepare exact dependency lock
+        run: npm run lock:prepare
+
+      - name: Verify dependency lock
+        run: npm run lock:verify
+
+      - name: Install locked dependencies
+        run: npm ci --no-audit --no-fund
+
+      - name: Verify third-party licence notices
+        run: npm run verify:licenses
+
+      - name: Run automated test suite
+        run: npm test
+
+      - name: Check release readiness
+        run: npm run release:preflight
+
+      - name: Audit dependencies for high severity vulnerabilities
+        run: npm audit --audit-level=high
+
+      - name: Save the exact dependency lock used for this release
+        uses: actions/upload-artifact@v4
+        with:
+          name: brightdesk-dependency-lock
+          path: package-lock.json
+          if-no-files-found: error
+          retention-days: 7
+
+  build:
+    name: Build ${{ matrix.platform }} installer
+    needs: prepare
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: Linux
+            runner: ubuntu-latest
+            script: linux
+          - platform: Windows
+            runner: windows-latest
+            script: win
+          - platform: macOS
+            runner: macos-latest
+            script: mac
+    runs-on: ${{ matrix.runner }}
+    steps:
+      - name: Check out Brightdesk
+        uses: actions/checkout@v4
+
+      - name: Set up required Node.js version
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24.22.2
+          cache: npm
+
+      - name: Restore the exact dependency lock
+        uses: actions/download-artifact@v4
+        with:
+          name: brightdesk-dependency-lock
+          path: .
+
+      - name: Verify dependency lock
+        run: npm run lock:verify
+
+      - name: Install locked dependencies
+        run: npm ci --no-audit --no-fund
+
+      - name: Build suite installer
+        env:
+          CSC_LINK: ${{ github.event_name != 'pull_request' && (matrix.platform == 'Windows' || matrix.platform == 'macOS') && secrets.CSC_LINK || '' }}
+          CSC_KEY_PASSWORD: ${{ github.event_name != 'pull_request' && (matrix.platform == 'Windows' || matrix.platform == 'macOS') && secrets.CSC_KEY_PASSWORD || '' }}
+          CSC_INSTALLER_LINK: ${{ github.event_name != 'pull_request' && matrix.platform == 'macOS' && secrets.CSC_INSTALLER_LINK || '' }}
+          CSC_INSTALLER_KEY_PASSWORD: ${{ github.event_name != 'pull_request' && matrix.platform == 'macOS' && secrets.CSC_INSTALLER_KEY_PASSWORD || '' }}
+          APPLE_ID: ${{ github.event_name != 'pull_request' && matrix.platform == 'macOS' && secrets.APPLE_ID || '' }}
+          APPLE_APP_SPECIFIC_PASSWORD: ${{ github.event_name != 'pull_request' && matrix.platform == 'macOS' && secrets.APPLE_APP_SPECIFIC_PASSWORD || '' }}
+          APPLE_TEAM_ID: ${{ github.event_name != 'pull_request' && matrix.platform == 'macOS' && secrets.APPLE_TEAM_ID || '' }}
+        run: |
+          npm run dist:${{ matrix.script }}
+          npm run release:prepare -- ${{ matrix.script }}
+          npm run release:verify:${{ matrix.script }}
+
+      - name: Place verified files in platform folder
+        shell: bash
+        env:
+          BRIGHTDESK_PLATFORM: ${{ matrix.platform }}
+        run: |
+          mkdir -p "release/$BRIGHTDESK_PLATFORM"
+          node -e "const fs=require('node:fs');const p=require('node:path');const root='release';const dest=p.join(root,process.env.BRIGHTDESK_PLATFORM);for(const name of fs.readdirSync(root)){if(name===process.env.BRIGHTDESK_PLATFORM)continue;const source=p.join(root,name);if(fs.statSync(source).isFile())fs.renameSync(source,p.join(dest,name));}"
+
+      - name: Upload verified platform build
+        uses: actions/upload-artifact@v4
+        with:
+          name: brightdesk-${{ matrix.platform }}
+          path: release/${{ matrix.platform }}/**
+          if-no-files-found: error
+          retention-days: 14
+
+  collect:
+    name: Collect verified installers
+    needs: [prepare, build]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download verified Linux build
+        uses: actions/download-artifact@v4
+        with:
+          name: brightdesk-Linux
+          path: release/Linux
+
+      - name: Download verified Windows build
+        uses: actions/download-artifact@v4
+        with:
+          name: brightdesk-Windows
+          path: release/Windows
+
+      - name: Download verified macOS build
+        uses: actions/download-artifact@v4
+        with:
+          name: brightdesk-macOS
+          path: release/macOS
+
+      - name: Download the exact dependency lock used for this release
+        uses: actions/download-artifact@v4
+        with:
+          name: brightdesk-dependency-lock
+          path: release/build-metadata
+
+      - name: Upload complete Brightdesk installer bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: Brightdesk-0.1.0-Installers
+          path: release/**/**
+          if-no-files-found: error
+          retention-days: 30
