@@ -59,6 +59,11 @@
     "electron": "45.2.1",
     "electron-builder": "26.18.0"
   },
+  "overrides": {
+    "pptxgenjs": {
+      "image-size": "2.0.4"
+    }
+  },
   "build": {
     "appId": "org.brightdesk.suite",
     "productName": "Brightdesk",
