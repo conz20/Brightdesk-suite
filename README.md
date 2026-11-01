@@ -4,14 +4,22 @@ Brightdesk is an independent native desktop productivity suite. It is not affili
 
 ## First release
 
-Version 0.1.0 includes four implemented desktop apps:
+Version 0.1.0 is planned as a ten-app desktop suite. The complete first-release lineup is shown below, including apps still being developed:
 
-- Brightdesk Pages
-- Brightdesk Sheets
-- Brightdesk Decks
-- Brightdesk Notes
+| App | What it does | Status |
+| --- | --- | --- |
+| Brightdesk Pages | Write and format documents. | Available |
+| Brightdesk Sheets | Build spreadsheets, formulas and tables. | Available |
+| Brightdesk Decks | Create slide presentations. | Available |
+| Brightdesk Notes | Keep notes and ideas together. | Available |
+| Brightdesk Database | Organise records, tables and queries. | In development |
+| Brightdesk Forms | Create surveys, quizzes and collect responses. | In development |
+| Brightdesk Lists | Track projects, inventories and records. | In development |
+| Brightdesk Planner | Plan work, tasks and progress. | In development |
+| Brightdesk To Do | Manage daily tasks and reminders. | In development |
+| Brightdesk Workspace | Bring project notes, tasks and resources together. | In development |
 
-The approved product catalogue contains ten apps in total. Brightdesk Database, Forms, Lists, Planner, To Do and Workspace are planned and are not included as working apps in this first release.
+The four marked Available are implemented in the current 0.1.0 codebase. The other six are part of the planned first-release lineup but are not yet working apps. They will only be marked available after implementation and testing.
 
 ## Supported installer targets
 
