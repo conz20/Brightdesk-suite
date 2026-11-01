@@ -67,7 +67,8 @@
     "dist:workspace:linux": "node scripts/build-app.js loop linux",
     "release:verify:apps:win": "node scripts/verify-standalone-apps.js win",
     "release:verify:apps:mac": "node scripts/verify-standalone-apps.js mac",
-    "release:verify:apps:linux": "node scripts/verify-standalone-apps.js linux"
+    "release:verify:apps:linux": "node scripts/verify-standalone-apps.js linux",
+    "repositories:prepare": "node scripts/create-app-repository-seeds.js"
   },
   "dependencies": {
     "docx": "9.15.1",
