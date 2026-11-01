@@ -14,7 +14,7 @@ if (!apps.has(appId) || !targets[platform]) {
   process.exit(2);
 }
 const npmExec = process.platform === 'win32' ? 'npx.cmd' : 'npx';
-const result = spawnSync(npmExec, ['electron-builder', ...targets[platform], '--config', path.resolve(__dirname, '..', 'electron-builder.app.config.js')], {
+const result = spawnSync(npmExec, ['electron-builder', ...targets[platform], '--publish', 'never', '--config', path.resolve(__dirname, '..', 'electron-builder.app.config.js')], {
   cwd: path.resolve(__dirname, '..'), stdio: 'inherit', shell: process.platform === 'win32',
   env: { ...process.env, BRIGHTDESK_APP_ID: appId }
 });
