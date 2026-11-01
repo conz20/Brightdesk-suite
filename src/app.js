@@ -4,13 +4,15 @@ const defaults = {
   pages: { title: 'Untitled document', html: '' },
   sheets: { title: 'Untitled spreadsheet', cells: Array.from({ length: 20 }, () => Array(12).fill('')) },
   slides: { title: 'Untitled presentation', slides: [{ title: 'Your presentation title', body: 'Add a subtitle or a few words to introduce your idea.' }], current: 0 },
-  notes: { title: 'Untitled note', text: '' }
+  notes: { title: 'Untitled note', text: '' },
+  lists: { title: 'My lists', lists: [] }
 };
 const configs = {
   pages: { title: 'Brightdesk Pages', heading: 'Make room for your ideas.', desc: 'Write letters, reports and documents.' },
   sheets: { title: 'Brightdesk Sheets', heading: 'Make numbers make sense.', desc: 'Organise information, use formulas and build tables.' },
   slides: { title: 'Brightdesk Decks', heading: 'Bring your ideas to life.', desc: 'Build a presentation one slide at a time.' },
-  notes: { title: 'Brightdesk Notes', heading: 'Catch that thought.', desc: 'Keep quick notes and reminders together.' }
+  notes: { title: 'Brightdesk Notes', heading: 'Catch that thought.', desc: 'Keep quick notes and reminders together.' },
+  lists: { title: 'Brightdesk Lists', heading: 'Track the details that matter.', desc: 'Create structured lists, custom columns and records.' }
 };
 const genericConfigs = Object.fromEntries((window.BrightdeskAppCatalog || []).filter(item => !['pages','sheets','slides','notes'].includes(item.id)).map(item => [item.id, { title: item.name, heading: item.name, desc: item.description }]));
 const fullCatalog = window.BrightdeskAppCatalog || [];
@@ -292,6 +294,84 @@ function duplicateSlide(){const d=activeDoc(),copy=clone(d.slides[d.current]);d.
 function deleteSlide(){const d=activeDoc();if(d.slides.length===1){alert('A presentation needs at least one slide.');return;}d.slides.splice(d.current,1);d.current=Math.max(0,d.current-1);renderSlides();renderToolbar();persist();}
 function presentSlides(){const d=activeDoc();let i=d.current;const overlay=document.createElement('div');overlay.className='presentation-overlay';const slide=document.createElement('div');slide.className='presentation-slide';const title=document.createElement('h1'),body=document.createElement('p'),footer=document.createElement('div');footer.className='presentation-footer';footer.textContent='Click or press an arrow key to move · Esc to exit';slide.append(title,body,footer);overlay.append(slide);document.body.append(overlay);
   const draw=()=>{title.textContent=d.slides[i].title;body.textContent=d.slides[i].body;};const key=(e)=>{if(e.key==='Escape'){overlay.remove();document.removeEventListener('keydown',key);}else if(e.key==='ArrowRight'){i=Math.min(d.slides.length-1,i+1);draw();}else if(e.key==='ArrowLeft'){i=Math.max(0,i-1);draw();}};overlay.addEventListener('click',()=>{i=Math.min(d.slides.length-1,i+1);draw();});document.addEventListener('keydown',key);draw();}
+
+let selectedListId = null;
+let listQuery = '';
+let listStatusFilter = '';
+function allLists() { const doc = activeDoc(); if (!Array.isArray(doc.lists)) doc.lists = []; return doc.lists; }
+function currentList() { return allLists().find(list => list.id === selectedListId) || null; }
+function saveLists() { persist(); const status = $('lists-status'); if (status) status.textContent = 'Saved on this device'; }
+function renderListsWorkspace() {
+  const lists = allLists();
+  if (!selectedListId || !lists.some(list => list.id === selectedListId)) selectedListId = lists[0]?.id || null;
+  const sidebar = $('lists-sidebar-items'); sidebar.innerHTML = '';
+  lists.forEach(list => {
+    const button = document.createElement('button'); button.type = 'button'; button.className = 'lists-side-item' + (list.id === selectedListId ? ' active' : '');
+    button.textContent = list.title; button.addEventListener('click', () => { selectedListId = list.id; renderListsWorkspace(); }); sidebar.append(button);
+  });
+  const list = currentList();
+  $('lists-empty').hidden = Boolean(list);
+  $('lists-detail').hidden = !list;
+  if (!list) { $('lists-title').textContent = 'Your lists'; $('lists-record-count').textContent = '0 records'; return; }
+  $('lists-title').textContent = list.title;
+  $('lists-description').textContent = list.description || 'Keep your records organised in one place.';
+  const filtered = window.BrightdeskListsService.filterItems(list, { query: listQuery, status: listStatusFilter });
+  $('lists-record-count').textContent = `${filtered.length} of ${list.items.length} records`;
+  const table = $('lists-table'); table.innerHTML = '';
+  const head = document.createElement('thead'), headRow = document.createElement('tr');
+  list.columns.forEach(column => { const th = document.createElement('th'); th.textContent = column.name; headRow.append(th); });
+  const actionsHead = document.createElement('th'); actionsHead.textContent = 'Actions'; headRow.append(actionsHead); head.append(headRow); table.append(head);
+  const body = document.createElement('tbody');
+  filtered.forEach(item => {
+    const tr = document.createElement('tr');
+    list.columns.forEach(column => { const td = document.createElement('td'); td.textContent = item.values[column.id] || '—'; tr.append(td); });
+    const actions = document.createElement('td');
+    const edit = document.createElement('button'); edit.type='button'; edit.className='lists-row-action'; edit.textContent='Edit'; edit.addEventListener('click',()=>openListRecordForm(item)); actions.append(edit);
+    const remove = document.createElement('button'); remove.type='button'; remove.className='lists-row-action danger'; remove.textContent='Delete'; remove.addEventListener('click',()=>{if(!confirm('Delete this record?'))return;const next=window.BrightdeskListsService.deleteItem(list,item.id);replaceCurrentList(next);}); actions.append(remove);
+    tr.append(actions); body.append(tr);
+  });
+  if (!filtered.length) { const tr=document.createElement('tr'),td=document.createElement('td'); td.colSpan=list.columns.length+1; td.className='lists-no-records'; td.textContent=listQuery||listStatusFilter?'No records match these filters.':'No records yet. Add your first record above.'; tr.append(td); body.append(tr); }
+  table.append(body);
+  const columnSelect=$('lists-sort-column'); columnSelect.innerHTML='';
+  list.columns.forEach(column=>{const option=document.createElement('option');option.value=column.id;option.textContent=column.name;columnSelect.append(option);});
+}
+function replaceCurrentList(next) { const lists=allLists(),i=lists.findIndex(item=>item.id===next.id); if(i>=0)lists[i]=next; saveLists(); renderListsWorkspace(); }
+function createBrightdeskList(event) {
+  event.preventDefault();
+  try { const title=$('lists-new-name').value; const description=$('lists-new-description').value; const list=window.BrightdeskListsService.createList({title,description}); allLists().push(list); selectedListId=list.id; $('lists-new-list-form').reset(); saveLists(); renderListsWorkspace(); }
+  catch(error) { $('lists-status').textContent=error.message; }
+}
+function openListRecordForm(item=null) {
+  const list=currentList(); if(!list)return;
+  const form=$('lists-record-form'); form.innerHTML='';
+  list.columns.forEach(column=>{
+    const label=document.createElement('label'); label.className='lists-field'; label.textContent=column.name;
+    let input;
+    if(column.type==='choice'){input=document.createElement('select');(column.options||[]).forEach(value=>{const option=document.createElement('option');option.value=value;option.textContent=value;input.append(option);});}
+    else {input=document.createElement('input');input.type=column.type==='date'?'date':'text';}
+    input.name=column.id; input.value=item?.values?.[column.id]||''; if(column.required)input.required=true; label.append(input); form.append(label);
+  });
+  const save=document.createElement('button');save.type='submit';save.className='primary';save.textContent=item?'Save changes':'Add record';form.append(save);
+  const cancel=document.createElement('button');cancel.type='button';cancel.className='secondary';cancel.textContent='Cancel';cancel.addEventListener('click',()=>{form.hidden=true;});form.append(cancel);
+  form.dataset.itemId=item?.id||'';form.hidden=false;
+}
+function saveListRecord(event) {
+  event.preventDefault();const list=currentList();if(!list)return;
+  try { const values={};list.columns.forEach(column=>{values[column.id]=$('lists-record-form').elements.namedItem(column.id)?.value||'';});
+    const itemId=$('lists-record-form').dataset.itemId;
+    const next=itemId?window.BrightdeskListsService.updateItem(list,itemId,{values}):window.BrightdeskListsService.addItem(list,{values});
+    $('lists-record-form').hidden=true;replaceCurrentList(next);
+  } catch(error) {$('lists-status').textContent=error.message;}
+}
+function addBrightdeskListColumn(event) {
+  event.preventDefault();const list=currentList();if(!list)return;
+  try { const name=$('lists-column-name').value;const type=$('lists-column-type').value;const options=$('lists-column-options').value.split(',').map(v=>v.trim()).filter(Boolean);
+    const next=window.BrightdeskListsService.addColumn(list,{name,type,options});$('lists-column-form').reset();replaceCurrentList(next);
+  } catch(error) {$('lists-status').textContent=error.message;}
+}
+function renameCurrentList() { const list=currentList();if(!list)return;const title=prompt('List name',list.title);if(title===null)return;try{replaceCurrentList(window.BrightdeskListsService.renameList(list,title));}catch(error){$('lists-status').textContent=error.message;} }
+function deleteCurrentList() { const list=currentList();if(!list||!confirm(`Delete the list “${list.title}” and all its records?`))return;const lists=allLists();activeDoc().lists=lists.filter(item=>item.id!==list.id);selectedListId=null;saveLists();renderListsWorkspace(); }
+
 function renderGenericWorkspace() {
   const doc = activeDoc();
   editor.hidden = false; sheetWrap.hidden = true; slideWrap.hidden = true; notesWrap.hidden = true;
@@ -611,13 +691,17 @@ function render() {
     editor.setAttribute('data-placeholder', t('common.startTyping'));
     const doc = activeDoc();
     $('doc-title').value = doc.title || defaults[state.app].title;
+    const isLists = state.app === 'lists'; $('lists-wrap').hidden = !isLists;
+    $('open-button').hidden = isLists; $('save-project').hidden = isLists; $('export-button').hidden = isLists;
+    document.querySelector('.document-bar').hidden = isLists;
     editor.hidden = !['pages'].includes(state.app); sheetWrap.hidden = state.app !== 'sheets'; slideWrap.hidden = state.app !== 'slides'; notesWrap.hidden = !['notes'].includes(state.app);
     editor.innerHTML = state.app === 'pages' ? safeHtml(doc.html) : '';
     if (state.app === 'pages') applyPageLayout(); else editor.removeAttribute('style');
     $('notes-editor').value = state.app === 'notes' ? (doc.text || '') : '';
     updateDocumentLanguage();
     if (state.app === 'sheets') renderSheet(); if (state.app === 'slides') renderSlides();
-    if (!['pages','sheets','slides','notes'].includes(state.app)) renderGenericWorkspace();
+    if (isLists) renderListsWorkspace();
+    else if (!['pages','sheets','slides','notes'].includes(state.app)) renderGenericWorkspace();
     renderToolbar();
     $('workspace').classList.toggle('focus-mode', state.focusMode);
   }
@@ -673,7 +757,7 @@ function importProject(data){
 function escapeHtml(value){return String(value).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));}
 async function openFile(){try{const data=await window.brightdesk.openFile();if(!data)return;importProject(data);persist();render();setStatus('File opened');}catch(error){alert(`Could not open file: ${error.message}`);}}
 async function saveProject(){try{const result=await window.brightdesk.saveProject({title:$('doc-title').value,docs:state.docs});if(!result?.canceled)setStatus('Project saved');}catch(error){alert(`Could not save project: ${error.message}`);}}
-function setApp(app){if((launchAppId && app !== launchAppId) || !configs[app] || !installedApp(app))return;state.app=app;state.view='workspace';state.ribbonTab='home';render();persist();}
+function setApp(app){if((launchAppId && app !== launchAppId) || !(configs[app] || genericConfigs[app]) || !installedApp(app))return;state.app=app;state.view='workspace';state.ribbonTab='home';render();persist();}
 
 document.querySelectorAll('.nav[data-app]').forEach(btn=>btn.addEventListener('click',()=>setApp(btn.dataset.app)));
 $('manage-apps').addEventListener('click',()=>{if (launchAppId) return; state.view='manager';render();});
@@ -688,6 +772,17 @@ $('finish-app-setup').addEventListener('click',()=>{if(state.setupComplete){stat
 $('doc-title').addEventListener('change',()=>{activeDoc().title=$('doc-title').value;persist();});
 editor.addEventListener('input',()=>{activeDoc().html=editor.innerHTML;persist();});
 $('notes-editor').addEventListener('input',()=>{activeDoc().text=$('notes-editor').value;persist();});
+$('lists-new-list-form').addEventListener('submit',createBrightdeskList);
+$('lists-record-form').addEventListener('submit',saveListRecord);
+$('lists-add-record').addEventListener('click',()=>openListRecordForm());
+$('lists-column-form').addEventListener('submit',addBrightdeskListColumn);
+$('lists-search').addEventListener('input',event=>{listQuery=event.target.value;renderListsWorkspace();});
+$('lists-status-filter').addEventListener('change',event=>{listStatusFilter=event.target.value;renderListsWorkspace();});
+$('lists-sort-button').addEventListener('click',()=>{const list=currentList();if(!list)return;const sorted=window.BrightdeskListsService.sortItems(list.items,$('lists-sort-column').value,$('lists-sort-direction').value);list.items=sorted;saveLists();renderListsWorkspace();});
+$('lists-rename').addEventListener('click',renameCurrentList);
+$('lists-delete').addEventListener('click',deleteCurrentList);
+$('lists-column-type').addEventListener('change',()=>{$('lists-column-options-wrap').hidden=$('lists-column-type').value!=='choice';});
+
 $('export-button').addEventListener('click',exportCurrent);$('open-button').addEventListener('click',openFile);$('save-project').addEventListener('click',saveProject);
 $('updates-button').addEventListener('click',async()=>{const msg=$('update-message');msg.hidden=false;msg.textContent=t('common.updateChecking');try{const r=await window.brightdesk.checkForUpdates();if(!r?.ok)msg.textContent=r?.message||'Update checks are not configured yet.';}catch(e){msg.textContent=`Update check failed: ${e.message}`;}});
 window.brightdesk.onUpdateState?.(updateState=>{const msg=$('update-message');msg.hidden=false;msg.textContent=updateState.message;if(updateState.status==='available'){msg.textContent=updateState.message;}if(updateState.status==='downloaded'){const button=document.createElement('button');button.className='text-button';button.textContent=t('common.restartInstall');button.onclick=()=>window.brightdesk.installUpdate();msg.append(' ',button);}});

@@ -1,0 +1,23 @@
+name: Brightdesk Lists checks
+
+on:
+  push:
+    branches: [feature/brightdesk-lists]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24.22.2
+          cache: npm
+      - run: npm ci --no-audit --no-fund
+      - run: node --check src/app.js
+      - run: npm test
