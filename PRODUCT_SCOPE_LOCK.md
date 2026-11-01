@@ -13,6 +13,10 @@ The approved Brightdesk product scope contains exactly these ten apps:
 9. Brightdesk To Do
 10. Brightdesk Workspace
 
+## First-release lineup
+
+The first-release product lineup is all ten apps listed above. The catalogue and app manager must show every app, its original Brightdesk artwork, name, short explanation and honest availability status. Do not hide planned apps just because they are not implemented yet.
+
 ## Version 0.1.0 implementation status
 
 Implemented and available:
