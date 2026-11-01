@@ -21,9 +21,15 @@ Version 0.1.0 is the integrated ten-app desktop suite. The complete first-releas
 
 All ten apps are implemented in the integrated 0.1.0 codebase and are designed to work as part of the Brightdesk desktop suite. The first integrated release remains local-first; these modules do not claim cloud collaboration or Microsoft service integration.
 
+## Download the complete suite or one app
+
+The main Brightdesk installer contains all ten approved apps. The Brightdesk App Centre also provides a separate standalone installer for each app, so you can install only the app you need without installing the complete suite.
+
+The standalone downloads are built from the same tested source as the suite and are attached to the verified Brightdesk release. The app-specific repositories provide separate homes for each product's code, documentation and artwork; see [APP-REPOSITORIES.md](docs/APP-REPOSITORIES.md) for the repository map.
+
 ## Supported installer targets
 
-The release workflow is designed to build macOS universal DMG and PKG installers, Windows x64 EXE installers, and Linux x64 AppImage and DEB packages. A build is only considered ready after the platform artifacts, legal documents and SHA-256 checksums have been verified.
+The release workflow builds macOS universal DMG and PKG installers, Windows x64 EXE installers, and Linux x64 AppImage and DEB packages for the complete suite and each standalone app. A build is only considered ready after the platform artifacts, legal documents and SHA-256 checksums have been verified.
 
 ## Installing Brightdesk
 
