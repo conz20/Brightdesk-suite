@@ -1,4 +1,6 @@
-# Brightdesk Office Suite
+# Brightdesk Office Suite 
+
+Microsoft Office 365 inspired
 
 Brightdesk is a native desktop productivity suite.
 
