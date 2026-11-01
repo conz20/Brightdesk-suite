@@ -153,7 +153,7 @@ function auditProject({ rootDir, nodeModulesDir, outputPath }) {
       lines.push('Note: the published npm tarball omits this field; the matching upstream version metadata declares MIT/X11.');
     }
     if (item.licenseFile) {
-      lines.push(`Licence file: ${item.licenseFile}`, '', '```text', item.licenseFile.text.trim(), '```');
+      lines.push(`Licence file: ${item.licenseFile.path}`, '', '```text', item.licenseFile.text.trim(), '```');
     } else {
       lines.push('The package did not include a recognised standalone licence text file; its declared licence metadata is recorded above.');
     }
