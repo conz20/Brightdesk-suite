@@ -15,7 +15,7 @@ test('all ten approved apps are available in the integrated suite',()=>{assert.o
 test('the app shell routes each app away from the generic editor',()=>{for(const id of ['todo','lists','forms','planner','database','loop'])assert.ok(app.includes("state.app === '"+id+"'")||app.includes("state.app==='")+id+"'",id+' routing');});
 
 test('product navigation follows the saved installation selection',()=>{
-  const match=app.match(/function installedApp\\(id\\) \\{[^}]*\\}/);
+  const match=app.match(/function installedApp\(id\) \{[^}]*\}/);
   assert.ok(match,'installedApp helper exists');
   const isInstalled=vm.runInNewContext(match[0]+'; installedApp',{state:{installedApps:['pages','lists']}});
   assert.equal(isInstalled('pages'),true);
