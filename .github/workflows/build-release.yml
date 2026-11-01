@@ -131,6 +131,7 @@ jobs:
           APPLE_ID: ${{ github.event_name != 'pull_request' && matrix.platform == 'macOS' && secrets.APPLE_ID || '' }}
           APPLE_APP_SPECIFIC_PASSWORD: ${{ github.event_name != 'pull_request' && matrix.platform == 'macOS' && secrets.APPLE_APP_SPECIFIC_PASSWORD || '' }}
           APPLE_TEAM_ID: ${{ github.event_name != 'pull_request' && matrix.platform == 'macOS' && secrets.APPLE_TEAM_ID || '' }}
+        shell: bash
         run: |
           if [ "${{ matrix.script }}" = "linux" ]; then npm run dist:linux; fi
           if [ "${{ matrix.script }}" = "win" ]; then npm run dist:win; fi
@@ -141,6 +142,7 @@ jobs:
         if: github.event_name == 'pull_request' || matrix.platform == 'Linux' || (matrix.platform == 'Windows' && secrets.WIN_CSC_LINK == '') || (matrix.platform == 'macOS' && (secrets.MAC_APP_CSC_LINK == '' || secrets.MAC_INSTALLER_CSC_LINK == ''))
         env:
           CSC_IDENTITY_AUTO_DISCOVERY: false
+        shell: bash
         run: |
           if [ "${{ matrix.script }}" = "linux" ]; then npm run dist:linux; fi
           if [ "${{ matrix.script }}" = "win" ]; then npm run dist:win; fi
