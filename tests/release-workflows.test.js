@@ -113,3 +113,9 @@ test('all customer installer build commands explicitly disable implicit publishi
     assert.match(manifest.scripts[name], /--publish never$/, `${name} must build locally without publishing`);
   }
 });
+
+test('new automatic installer checks replace stale builds without cancelling manual release runs', () => {
+  const workflow = read('.github/workflows/build-release.yml');
+  assert.match(workflow, /group: brightdesk-installer-build-\$\{\{ github\.ref \}\}-\$\{\{ github\.event_name \}\}/);
+  assert.match(workflow, /cancel-in-progress: \$\{\{ github\.event_name != 'workflow_dispatch' \}\}/);
+});
