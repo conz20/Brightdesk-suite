@@ -38,7 +38,7 @@ const appSlug = appSlugs[appId];
 module.exports = {
   appId: `org.brightdesk.${appId}`,
   productName: 'Brightdesk ' + appName,
-  extraMetadata: { brightdeskAppId: appId, productName: 'Brightdesk ' + appName },
+  extraMetadata: { brightdeskAppId: appId, productName: 'Brightdesk ' + appName, desktopName: `org.brightdesk.${appId}.desktop` },
   asar: true,
   files: ['src/**/*', 'package.json', 'LICENSE', 'THIRD_PARTY_NOTICES.md', 'TERMS_AND_CONDITIONS.txt'],
   directories: { output: path.join('release', 'apps', appId) },
@@ -66,6 +66,7 @@ module.exports = {
     installLocation: '/Applications'
   },
   linux: {
+    syncDesktopName: true,
     target: ['AppImage', 'deb'],
     category: 'Office',
     artifactName: 'brightdesk-' + appSlug.toLowerCase() + '-${version}-${arch}.${ext}'
