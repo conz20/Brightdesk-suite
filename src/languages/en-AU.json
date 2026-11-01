@@ -161,6 +161,12 @@
     "language.allInstalled": "All language packs in this catalogue are installed.",
     "common.words": "words",
     "common.zoomIn": "Zoom in",
-    "common.zoomOut": "Zoom out"
+    "common.zoomOut": "Zoom out",
+    "apps.database": "Database",
+    "apps.forms": "Forms",
+    "apps.lists": "Lists",
+    "apps.planner": "Planner",
+    "apps.todo": "To Do",
+    "apps.loop": "Workspace"
   }
 }
