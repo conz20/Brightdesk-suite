@@ -613,6 +613,9 @@ function render() {
     editor.setAttribute('data-placeholder', t('common.startTyping'));
     const doc = activeDoc();
     $('doc-title').value = doc.title || defaults[state.app].title;
+    const isForms = state.app === 'forms'; $('forms-wrap').hidden = !isForms;
+    $('open-button').hidden = isForms; $('save-project').hidden = isForms; $('export-button').hidden = isForms;
+    document.querySelector('.document-bar').hidden = isForms;
     editor.hidden = !['pages'].includes(state.app); sheetWrap.hidden = state.app !== 'sheets'; slideWrap.hidden = state.app !== 'slides'; notesWrap.hidden = !['notes'].includes(state.app);
     editor.innerHTML = state.app === 'pages' ? safeHtml(doc.html) : '';
     if (state.app === 'pages') applyPageLayout(); else editor.removeAttribute('style');
