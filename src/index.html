@@ -41,6 +41,27 @@
       <div id="sheet-wrap" class="sheet-wrap" hidden></div>
       <div id="slide-wrap" class="slide-wrap" hidden></div>
       <div id="notes-wrap" class="notes-wrap" hidden><textarea id="notes-editor" aria-label="Notes editor" placeholder="Type a note, idea or reminder…" data-i18n-placeholder="common.notesPlaceholder"></textarea><div class="notes-hint" data-i18n="common.notesHint">Your notes save automatically on this device.</div></div>
+      <section id="todo-wrap" class="todo-app" aria-label="Brightdesk To Do" hidden>
+        <nav class="todo-sidebar" aria-label="Task views">
+          <h2>My tasks</h2>
+          <button type="button" class="todo-view active" data-todo-view="my-day">My Day</button>
+          <button type="button" class="todo-view" data-todo-view="important">Important</button>
+          <button type="button" class="todo-view" data-todo-view="planned">Planned</button>
+          <button type="button" class="todo-view" data-todo-view="tasks">Tasks</button>
+          <button type="button" class="todo-view" data-todo-view="completed">Completed</button>
+        </nav>
+        <div class="todo-content">
+          <header class="todo-heading"><div><div class="eyebrow">BRIGHTDESK TO DO</div><h2 id="todo-view-title">My Day</h2><p id="todo-view-description">Focus on what you want to get done today.</p></div><span id="todo-task-count" class="todo-count">0 tasks</span></header>
+          <label class="todo-search-label" for="todo-search">Search your tasks</label>
+          <input id="todo-search" class="todo-search" type="search" placeholder="Search tasks and notes" autocomplete="off">
+          <form id="todo-create-form" class="todo-create-form">
+            <input id="todo-new-title" type="text" maxlength="240" placeholder="Add a task" aria-label="New task title" required>
+            <button type="submit" class="primary">Add task</button>
+          </form>
+          <div id="todo-task-list" class="todo-task-list" role="list" aria-live="polite"></div>
+          <p id="todo-status" class="todo-status" role="status">Your tasks save on this device.</p>
+        </div>
+      </section>
     </section>
     <section class="app-manager" id="app-manager" hidden>
       <div class="manager-hero"><div><div class="eyebrow" data-i18n="manager.eyebrow">BRIGHTDESK APP CENTRE</div><h2 id="manager-title">Choose the apps you need</h2><p id="manager-description">Set up your workspace with the tools you want to use.</p></div><div class="manager-hero-mark">✳</div></div>
@@ -84,6 +105,7 @@
   <script src="formula.js"></script>
   <script src="page-layout.js"></script>
   <script src="app-catalog.js"></script>
+  <script src="todo-service.js"></script>
   <script src="i18n.js"></script>
   <script src="app.js"></script>
 </body>

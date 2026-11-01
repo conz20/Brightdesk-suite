@@ -107,3 +107,41 @@
 
 /* Original app preview artwork for the complete Brightdesk catalogue. */
 .app-preview{display:block;width:100%;height:116px;object-fit:cover;border:1px solid #e8eaf1;border-radius:7px;background:#f5f6fa}.app-card{min-height:230px}.app-card-header{margin-top:1px}
+
+
+/* Brightdesk To Do — dedicated local task workspace */
+.todo-mode .document-bar,.todo-mode .ribbon-tabs,.todo-mode .toolbar{display:none}
+.todo-app{display:grid;grid-template-columns:205px minmax(0,1fr);min-height:560px;overflow:hidden;border:1px solid #e7e8ef;border-radius:12px;background:#fff}
+.todo-sidebar{padding:22px 13px;background:#f7f7fb;border-right:1px solid #e9eaf0}
+.todo-sidebar h2{font-size:13px;margin:0 8px 17px;color:#34374c}
+.todo-view{display:flex;width:100%;align-items:center;text-align:left;border:0;border-radius:7px;padding:11px 12px;margin:3px 0;background:transparent;color:#55596d;font:inherit;font-size:12px;cursor:pointer}
+.todo-view:hover{background:#eeeff7}.todo-view.active{background:#e9e9fb;color:#4945b7;font-weight:700}
+.todo-content{min-width:0;padding:25px 28px}
+.todo-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:15px;margin-bottom:18px}
+.todo-heading h2{font-size:23px;margin:5px 0;color:#303449}.todo-heading p{font-size:12px;color:#777b8c;margin:0}
+.todo-count{white-space:nowrap;border-radius:20px;padding:7px 10px;background:#f1f1f8;color:#5d6074;font-size:11px}
+.todo-search-label{display:block;margin-bottom:6px;color:#696d80;font-size:11px}
+.todo-search{width:100%;border:1px solid #e0e2eb;border-radius:8px;padding:10px 12px;font:inherit;font-size:12px;margin-bottom:14px}
+.todo-create-form{display:flex;gap:9px;margin-bottom:18px}
+.todo-create-form input{flex:1;min-width:0;border:1px solid #dfe1e9;border-radius:8px;padding:11px 12px;font:inherit;font-size:12px}
+.todo-create-form button{white-space:nowrap}
+.todo-task-list{display:grid;gap:9px}
+.todo-task-card{border:1px solid #e7e8ef;border-radius:9px;padding:12px 13px;background:#fff}
+.todo-task-main{display:flex;align-items:flex-start;gap:11px;min-width:0}
+.todo-complete{width:17px;height:17px;margin:2px 0 0;accent-color:#5b55c8;flex-shrink:0}
+.todo-task-text{min-width:0;flex:1}.todo-task-text>b{display:block;color:#33364b;font-size:12px;line-height:1.5;overflow-wrap:anywhere}.todo-task-text>b.completed{text-decoration:line-through;color:#9699a7}
+.todo-task-text>p{margin:4px 0 0;color:#777b8c;font-size:11px;line-height:1.5;white-space:pre-wrap;overflow-wrap:anywhere}
+.todo-task-meta{display:flex;gap:9px;flex-wrap:wrap;margin-top:7px;color:#85899a;font-size:10px}
+.todo-task-meta .overdue{color:#b34b4b;font-weight:700}.todo-priority.high{color:#b34b4b}.todo-priority.low{color:#64806e}
+.todo-task-actions{display:flex;justify-content:flex-end;align-items:center;gap:5px;margin-top:8px}
+.todo-icon-button,.todo-text-button{border:0;background:transparent;border-radius:6px;padding:5px 8px;color:#777b8c;font:inherit;font-size:11px;cursor:pointer}
+.todo-icon-button{font-size:16px}.todo-icon-button:hover,.todo-text-button:hover{background:#f1f1f7}.todo-icon-button.selected{color:#c18a2c}.todo-text-button.danger{color:#b34b4b}
+.todo-edit-form{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px;padding-top:12px;border-top:1px solid #ececf2}
+.todo-edit-form input,.todo-edit-form textarea,.todo-edit-form select{width:100%;min-width:0;border:1px solid #dfe1e9;border-radius:7px;padding:8px 9px;font:inherit;font-size:11px}
+.todo-edit-form textarea{grid-column:1/-1;min-height:65px;resize:vertical}
+.todo-edit-form button{justify-self:start}
+.todo-empty{padding:42px 15px;text-align:center;border:1px dashed #e0e2eb;border-radius:9px;color:#55596d}
+.todo-empty b{font-size:13px}.todo-empty p{font-size:11px;color:#85899a;margin:7px 0 0}
+.todo-status{margin:13px 0 0;color:#85899a;font-size:10px}
+@media(max-width:760px){.todo-app{grid-template-columns:1fr}.todo-sidebar{display:flex;gap:5px;overflow-x:auto;border-right:0;border-bottom:1px solid #e9eaf0;padding:9px}.todo-sidebar h2{display:none}.todo-view{width:auto;white-space:nowrap;margin:0;padding:9px}.todo-content{padding:18px 13px}.todo-heading h2{font-size:20px}}
+@media(max-width:480px){.todo-create-form{align-items:stretch;flex-direction:column}.todo-create-form button{width:100%}.todo-edit-form{grid-template-columns:1fr}.todo-edit-form textarea{grid-column:auto}}

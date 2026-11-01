@@ -1,0 +1,47 @@
+name: Brightdesk To Do checks
+
+on:
+  push:
+    branches: [feature/brightdesk-todo]
+    paths:
+      - 'src/todo-service.js'
+      - 'src/app.js'
+      - 'src/index.html'
+      - 'src/styles.css'
+      - 'src/app-catalog.js'
+      - 'tests/todo-service.test.js'
+      - 'tests/todo-ui-integration.test.js'
+      - '.github/workflows/todo-ci.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'src/todo-service.js'
+      - 'src/app.js'
+      - 'src/index.html'
+      - 'src/styles.css'
+      - 'src/app-catalog.js'
+      - 'tests/todo-service.test.js'
+      - 'tests/todo-ui-integration.test.js'
+      - '.github/workflows/todo-ci.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Test To Do task behaviour
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out Brightdesk
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24.22.2
+          cache: npm
+      - name: Install locked dependencies
+        run: npm ci --no-audit --no-fund
+      - name: Check renderer JavaScript syntax
+        run: node --check src/app.js
+      - name: Run automated tests
+        run: npm test
