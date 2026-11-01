@@ -88,6 +88,32 @@ function socialPreview(app) {
 `;
 }
 
+function repositoryBundleReadme() {
+  const folders = APP_REPOSITORIES.map(app => `- ${app.repository} — ${app.name}`).join('\\n');
+  return `# Brightdesk standalone app repositories
+
+This bundle contains ten separate repository folders. Each folder is a standalone edition of one approved Brightdesk app, with its own package files, README, original app artwork, repository banner and GitHub Actions release workflow.
+
+## Repository folders
+
+${folders}
+
+## Add a folder to GitHub
+
+1. Create an empty GitHub repository using the matching folder name.
+2. Upload the contents of that folder to the repository root on the main branch. Keep hidden files, including .github/workflows/standalone-app.yml.
+3. Check that the repository shows its README and app artwork, and that its standalone release workflow is present.
+
+The standalone repositories are separate product homes. **Brightdesk-suite remains the complete ten-app desktop suite.**
+
+## Fixed product scope
+
+The bundle includes Pages, Sheets, Decks, Notes, Database, Forms, Lists, Planner, To Do and Workspace only. Outlook, OneDrive and Teams are excluded.
+
+Brightdesk is an independent product with original names, code, branding and artwork.
+`;
+}
+
 function repositoryReadme(app) {
   return `# ${app.name}
 
@@ -290,6 +316,7 @@ function createAppRepositorySeeds({ rootDir = path.resolve(__dirname, '..'), out
   }
 
   fs.mkdirSync(destinationRoot, { recursive: true });
+  fs.writeFileSync(path.join(destinationRoot, 'README-START-HERE.md'), repositoryBundleReadme());
   const results = [];
 
   for (const app of APP_REPOSITORIES) {
@@ -342,4 +369,4 @@ if (require.main === module) {
   }
 }
 
-module.exports = { APP_REPOSITORIES, createAppRepositorySeeds, repositoryReadme, socialPreview, standaloneWorkflow };
+module.exports = { APP_REPOSITORIES, createAppRepositorySeeds, repositoryBundleReadme, repositoryReadme, socialPreview, standaloneWorkflow };
