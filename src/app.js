@@ -499,9 +499,9 @@ function renderAppManager() {
     }
     const downloadButton = document.createElement('button');
     downloadButton.className = 'text-button small-action';
-    downloadButton.textContent = 'Download standalone';
-    downloadButton.setAttribute('aria-label', `Download ${item.name} standalone`);
-    downloadButton.title = 'Open the latest verified standalone installer for this operating system.';
+    downloadButton.textContent = 'Download desktop version';
+    downloadButton.setAttribute('aria-label', `Download ${item.name} for desktop`);
+    downloadButton.title = 'Open the verified Brightdesk desktop installer for this operating system.';
     downloadButton.addEventListener('click', async () => {
       downloadButton.disabled = true;
       try {
