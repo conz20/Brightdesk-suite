@@ -135,7 +135,8 @@
         "deb"
       ],
       "category": "Office",
-      "artifactName": "brightdesk-${version}-${arch}.${ext}"
+      "artifactName": "brightdesk-${version}-${arch}.${ext}",
+      "syncDesktopName": true
     },
     "appImage": {
       "artifactName": "Brightdesk-${version}-${arch}.${ext}"
