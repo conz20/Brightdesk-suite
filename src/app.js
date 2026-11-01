@@ -692,6 +692,8 @@ function render() {
     const doc = activeDoc();
     $('doc-title').value = doc.title || defaults[state.app].title;
     const isLists = state.app === 'lists'; $('lists-wrap').hidden = !isLists;
+    $('open-button').hidden = isLists; $('save-project').hidden = isLists; $('export-button').hidden = isLists;
+    document.querySelector('.document-bar').hidden = isLists;
     editor.hidden = !['pages'].includes(state.app); sheetWrap.hidden = state.app !== 'sheets'; slideWrap.hidden = state.app !== 'slides'; notesWrap.hidden = !['notes'].includes(state.app);
     editor.innerHTML = state.app === 'pages' ? safeHtml(doc.html) : '';
     if (state.app === 'pages') applyPageLayout(); else editor.removeAttribute('style');
