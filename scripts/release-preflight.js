@@ -32,12 +32,16 @@ function runPreflight({ rootDir, nodeVersion = process.versions.node, platform =
   add('Node.js version', nodeVersion === manifest.engines?.node, `Found ${nodeVersion}; requires exactly ${manifest.engines?.node || '24.22.2'}.`);
   let lockValid = false;
   let lockDetail = 'A verified package-lock.json generated from this exact package.json is required before npm ci.';
-  try {
-    const lockInfo = require('./verify-lockfile').verifyLockfile(root);
-    lockValid = true;
-    lockDetail = `Verified lockfile v${lockInfo.lockfileVersion} with ${lockInfo.dependencyCount} locked packages.`;
-  } catch (error) {
-    lockDetail = error.message;
+  if (nodeVersion !== manifest.engines?.node) {
+    lockDetail = `Lockfile validation requires the pinned Node.js ${manifest.engines?.node}; found ${nodeVersion}.`;
+  } else {
+    try {
+      const lockInfo = require('./verify-lockfile').verifyLockfile(root);
+      lockValid = true;
+      lockDetail = `Verified lockfile v${lockInfo.lockfileVersion} with ${lockInfo.dependencyCount} locked packages.`;
+    } catch (error) {
+      lockDetail = error.message;
+    }
   }
   add('Dependency lockfile', lockValid, lockDetail);
   add('Installed dependencies', fs.existsSync(path.join(root, 'node_modules')), 'Run npm ci after a lockfile is present.');
