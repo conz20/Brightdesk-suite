@@ -315,7 +315,7 @@ function createAppRepositorySeeds({ rootDir = path.resolve(__dirname, '..'), out
 
 - Product: ${app.name}
 - App ID: \`${app.appId}\`
-- Repository visibility recommendation: public
+- Repository visibility: choose when creating the GitHub repository
 - Description: ${app.description}
 - Main suite: https://github.com/connormolloy12/Brightdesk-suite
 
