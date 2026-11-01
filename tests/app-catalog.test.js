@@ -3,10 +3,11 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 const catalog = require('../src/app-catalog');
 
-test('app catalogue starts with the four implemented Brightdesk office apps', () => {
+test('app catalogue shows all ten first-release apps and identifies the four implemented apps', () => {
   assert.deepEqual(catalog.slice(0, 4).map(app => app.id), ['pages', 'sheets', 'slides', 'notes']);
   assert.deepEqual(catalog.slice(0, 4).map(app => app.name), ['Brightdesk Pages', 'Brightdesk Sheets', 'Brightdesk Decks', 'Brightdesk Notes']);
   assert.equal(catalog.length, 10);
+  assert.deepEqual(catalog.filter(app => app.availability === 'planned').map(app => app.id), ['database','forms','lists','planner','todo','loop']);
 });
 
 test('every app has a unique id, release version and user-facing details', () => {
@@ -139,4 +140,28 @@ test('the standalone build scripts reject unknown app and platform identifiers',
   assert.match(build, /new Set\(\['pages', 'sheets', 'slides', 'notes'\]\)/);
   const config = fs.readFileSync(path.join(root, 'electron-builder.app.config.js'), 'utf8');
   assert.match(config, /Set BRIGHTDESK_APP_ID/);
+});
+
+
+test('every first-release app has its own original preview artwork and the launcher displays it', () => {
+  const fs = require('node:fs');
+  const path = require('node:path');
+  const root = path.join(__dirname, '..');
+  for (const app of catalog) {
+    const artwork = path.join(root, 'src', 'assets', 'apps', `${app.id}.svg`);
+    assert.ok(fs.existsSync(artwork), `missing artwork for ${app.name}`);
+    assert.match(fs.readFileSync(artwork, 'utf8'), /<svg[\\s>]/);
+  }
+  const renderer = fs.readFileSync(path.join(root, 'src', 'app.js'), 'utf8');
+  assert.match(renderer, /assets\\/apps\\/\\$\\{item\\.id\\}\\.svg/);
+  assert.match(renderer, /item\\.name\\} example screen/);
+});
+
+test('README presents all ten apps as the first-release lineup without claiming all are implemented', () => {
+  const fs = require('node:fs');
+  const readme = fs.readFileSync(require('node:path').join(__dirname, '..', 'README.md'), 'utf8');
+  for (const app of catalog) assert.ok(readme.includes(app.name), `README missing ${app.name}`);
+  assert.match(readme, /ten-app desktop suite/i);
+  assert.match(readme, /four marked Available are implemented/i);
+  assert.match(readme, /other six.*not yet working apps/i);
 });
