@@ -131,9 +131,22 @@ jobs:
           APPLE_APP_SPECIFIC_PASSWORD: ${{ github.event_name != 'pull_request' && matrix.platform == 'macOS' && secrets.APPLE_APP_SPECIFIC_PASSWORD || '' }}
           APPLE_TEAM_ID: ${{ github.event_name != 'pull_request' && matrix.platform == 'macOS' && secrets.APPLE_TEAM_ID || '' }}
         run: |
-          npm run dist:${{ matrix.script }}
+          if [ "${{ matrix.script }}" = "linux" ]; then npm run dist:linux; fi
+          if [ "${{ matrix.script }}" = "win" ]; then npm run dist:win; fi
+          if [ "${{ matrix.script }}" = "mac" ]; then npm run dist:mac; fi
           npm run release:prepare -- ${{ matrix.script }}
-          npm run release:verify:${{ matrix.script }}
+
+      - name: Verify Linux installer artifacts
+        if: matrix.platform == 'Linux'
+        run: npm run release:verify:linux
+
+      - name: Verify Windows installer artifacts
+        if: matrix.platform == 'Windows'
+        run: npm run release:verify:win
+
+      - name: Verify macOS installer artifacts
+        if: matrix.platform == 'macOS'
+        run: npm run release:verify:mac
 
       - name: Place verified files in platform folder
         shell: bash
