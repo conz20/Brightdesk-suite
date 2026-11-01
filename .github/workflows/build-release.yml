@@ -119,7 +119,6 @@ jobs:
         run: npm ci --no-audit --no-fund
 
       - name: Build suite installer
-        if: github.event_name != 'pull_request' && ((matrix.platform == 'Windows' && secrets.WIN_CSC_LINK != '') || (matrix.platform == 'macOS' && secrets.MAC_APP_CSC_LINK != '' && secrets.MAC_INSTALLER_CSC_LINK != ''))
         env:
           WIN_CSC_LINK: ${{ github.event_name != 'pull_request' && matrix.platform == 'Windows' && secrets.WIN_CSC_LINK || '' }}
           MAC_APP_CSC_LINK: ${{ github.event_name != 'pull_request' && matrix.platform == 'macOS' && secrets.MAC_APP_CSC_LINK || '' }}
@@ -133,17 +132,9 @@ jobs:
           APPLE_TEAM_ID: ${{ github.event_name != 'pull_request' && matrix.platform == 'macOS' && secrets.APPLE_TEAM_ID || '' }}
         shell: bash
         run: |
-          if [ "${{ matrix.script }}" = "linux" ]; then npm run dist:linux; fi
-          if [ "${{ matrix.script }}" = "win" ]; then npm run dist:win; fi
-          if [ "${{ matrix.script }}" = "mac" ]; then npm run dist:mac; fi
-          npm run release:prepare -- ${{ matrix.script }}
-
-      - name: Build suite installer without signing
-        if: github.event_name == 'pull_request' || matrix.platform == 'Linux' || (matrix.platform == 'Windows' && secrets.WIN_CSC_LINK == '') || (matrix.platform == 'macOS' && (secrets.MAC_APP_CSC_LINK == '' || secrets.MAC_INSTALLER_CSC_LINK == ''))
-        env:
-          CSC_IDENTITY_AUTO_DISCOVERY: false
-        shell: bash
-        run: |
+          if [ -z "${CSC_LINK:-}" ]; then unset CSC_LINK CSC_KEY_PASSWORD; fi
+          if [ -z "${CSC_INSTALLER_LINK:-}" ]; then unset CSC_INSTALLER_LINK CSC_INSTALLER_KEY_PASSWORD; fi
+          if [ "${{ matrix.platform }}" = "macOS" ] && [ -z "${CSC_LINK:-}" ]; then export CSC_IDENTITY_AUTO_DISCOVERY=false; fi
           if [ "${{ matrix.script }}" = "linux" ]; then npm run dist:linux; fi
           if [ "${{ matrix.script }}" = "win" ]; then npm run dist:win; fi
           if [ "${{ matrix.script }}" = "mac" ]; then npm run dist:mac; fi
