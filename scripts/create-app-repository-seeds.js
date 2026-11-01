@@ -388,6 +388,24 @@ function createProductRepositorySeeds({ rootDir = path.resolve(__dirname, '..'),
     fs.writeFileSync(path.join(assets, 'social-preview.svg'), socialPreview(product));
     fs.writeFileSync(path.join(target, 'README.md'), repositoryReadme(product));
     fs.writeFileSync(path.join(target, '.github', 'workflows', 'product-installers.yml'), productWorkflow(product));
+    fs.writeFileSync(path.join(target, '.github', 'dependabot.yml'), [
+      'version: 2',
+      'updates:',
+      '  - package-ecosystem: npm',
+      '    directory: /',
+      '    schedule:',
+      '      interval: weekly',
+      '    open-pull-requests-limit: 5',
+      '    labels: [dependencies, security]',
+      '',
+      '  - package-ecosystem: github-actions',
+      '    directory: /',
+      '    schedule:',
+      '      interval: weekly',
+      '    open-pull-requests-limit: 5',
+      '    labels: [dependencies, ci]',
+      ''
+    ].join('\\n'));
     fs.writeFileSync(path.join(target, 'REPOSITORY_INFO.md'), `# ${product.repository}
 
 - Product: ${product.name}
