@@ -56,6 +56,7 @@ test('release workflow has working install and release permissions', () => {
   assert.match(workflow, /MAC_INSTALLER_CSC_LINK/);
   assert.match(workflow, /APPLE_APP_SPECIFIC_PASSWORD/);
   assert.match(workflow, /npm run release:verify:linux/);
-  assert.doesNotMatch(workflow, /dist:apps:/);
+  assert.match(workflow, /npm run dist:apps:\$\{\{ matrix\.script \}\}/);
+  assert.match(workflow, /npm run release:verify:apps:\$\{\{ matrix\.script \}\}/);
   assert.match(workflow, /publish-release:[\s\S]*?permissions:\s*contents: write/);
 });
