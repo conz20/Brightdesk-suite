@@ -91,6 +91,7 @@ test('offline spell check groups repeated misspellings and supplies suggestions'
     assert.equal(result.misspellings[0].word, 'wrng');
     assert.equal(result.misspellings[0].occurrences, 2);
     assert.deepEqual(result.misspellings[0].suggestions, ['wrong']);
+    await fs.chmod(path.join(dictionaryFolder, 'dictionary.dic'), 0o644);
     await fs.writeFile(path.join(dictionaryFolder, 'dictionary.dic'), '1\nchanged\n');
     service.cache.clear();
     await assert.rejects(() => service.checkText('en-AU', 'changed'), /has changed/);
