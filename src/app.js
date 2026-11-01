@@ -622,7 +622,8 @@ function render() {
     $('notes-editor').value = state.app === 'notes' ? (doc.text || '') : '';
     updateDocumentLanguage();
     if (state.app === 'sheets') renderSheet(); if (state.app === 'slides') renderSlides();
-    if (!['pages','sheets','slides','notes'].includes(state.app)) renderGenericWorkspace();
+    if (isForms) window.BrightdeskFormsUI.render();
+    else if (!['pages','sheets','slides','notes'].includes(state.app)) renderGenericWorkspace();
     renderToolbar();
     $('workspace').classList.toggle('focus-mode', state.focusMode);
   }
