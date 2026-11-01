@@ -74,7 +74,7 @@ function loadLocal() {
 function saveAppSetup() {
   localStorage.setItem('brightdesk-app-setup-v1', JSON.stringify({ installedApps: state.installedApps, setupComplete: state.setupComplete }));
 }
-function installedApp(id) { return state.installedApps.includes(id) || ['todo','lists','forms','planner','database','loop'].includes(id); }
+function installedApp(id) { return state.installedApps.includes(id); }
 function appLabel(id) { return catalog.find(item => item.id === id)?.name || id; }
 
 function safeHtml(html) {
