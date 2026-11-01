@@ -3,7 +3,10 @@
   "version": "0.1.0",
   "description": "Brightdesk — an independent desktop productivity suite for documents, spreadsheets, presentations and notes, with protected multilingual spelling resources",
   "main": "src/main.js",
-  "author": "Brightdesk Community",
+  "author": {
+    "name": "Brightdesk Community",
+    "email": "noreply@github.com"
+  },
   "license": "MIT",
   "engines": {
     "node": "24.22.2"
