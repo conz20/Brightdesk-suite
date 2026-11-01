@@ -67,14 +67,14 @@ jobs:
       - name: Run automated test suite
         run: npm test
 
-      - name: Prepare standalone app repository seeds
+      - name: Prepare product repository folders
         run: npm run repositories:prepare
 
-      - name: Upload standalone app repository seeds
+      - name: Upload product repository folders
         uses: actions/upload-artifact@v4
         with:
-          name: Brightdesk-App-Repository-Seeds
-          path: release/app-repository-seeds/**
+          name: Brightdesk-Product-Repository-Folders
+          path: release/product-repository-folders/**
           include-hidden-files: true
           if-no-files-found: error
           retention-days: 30
@@ -166,13 +166,13 @@ jobs:
         if: matrix.platform == 'macOS'
         run: npm run release:verify:mac
 
-      - name: Build standalone app installers
+      - name: Build product desktop installers
         shell: bash
-        run: npm run dist:apps:${{ matrix.script }}
+        run: npm run dist:products:${{ matrix.script }}
 
-      - name: Verify standalone app installers
+      - name: Verify product desktop installers
         shell: bash
-        run: npm run release:verify:apps:${{ matrix.script }}
+        run: npm run release:verify:products:${{ matrix.script }}
 
       - name: Place verified files in platform folder
         shell: bash
@@ -192,10 +192,10 @@ jobs:
           if-no-files-found: error
           retention-days: 14
 
-      - name: Upload standalone app installers
+      - name: Upload product desktop installers
         uses: actions/upload-artifact@v4
         with:
-          name: brightdesk-apps-${{ matrix.platform }}
+          name: brightdesk-products-${{ matrix.platform }}
           path: release/apps/${{ matrix.platform }}/**
           if-no-files-found: error
           retention-days: 14
@@ -223,22 +223,22 @@ jobs:
           name: brightdesk-macOS
           path: release/macOS
 
-      - name: Download verified Linux standalone apps
+      - name: Download verified Linux product installers
         uses: actions/download-artifact@v4
         with:
-          name: brightdesk-apps-Linux
+          name: brightdesk-products-Linux
           path: release/apps/Linux
 
-      - name: Download verified Windows standalone apps
+      - name: Download verified Windows product installers
         uses: actions/download-artifact@v4
         with:
-          name: brightdesk-apps-Windows
+          name: brightdesk-products-Windows
           path: release/apps/Windows
 
-      - name: Download verified macOS standalone apps
+      - name: Download verified macOS product installers
         uses: actions/download-artifact@v4
         with:
-          name: brightdesk-apps-macOS
+          name: brightdesk-products-macOS
           path: release/apps/macOS
 
       - name: Download the exact dependency lock used for this release
