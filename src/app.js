@@ -9,7 +9,8 @@ const defaults = {
   lists: { title: 'My lists', lists: [] },
   forms: { title: 'My forms' },
   planner: { title: 'My plans' },
-  database: { title: 'My database' }
+  database: { title: 'My database' },
+  loop: { title: 'My workspace' }
 };
 const configs = {
   pages: { title: 'Brightdesk Pages', heading: 'Make room for your ideas.', desc: 'Write letters, reports and documents.' },
@@ -20,7 +21,8 @@ const configs = {
   lists: { title: 'Brightdesk Lists', heading: 'Track the details that matter.', desc: 'Create structured lists, custom columns and records.' },
   forms: { title: 'Brightdesk Forms', heading: 'Ask. Collect. Understand.', desc: 'Create forms and surveys, then review responses.' },
   planner: { title: 'Brightdesk Planner', heading: 'Turn plans into progress.', desc: 'Organise work into buckets, tasks and priorities.' },
-  database: { title: 'Brightdesk Database', heading: 'Give your information structure.', desc: 'Build tables, define fields and manage records on your device.' }
+  database: { title: 'Brightdesk Database', heading: 'Give your information structure.', desc: 'Build tables, define fields and manage records on your device.' },
+  loop: { title: 'Brightdesk Workspace', heading: 'Bring your work together.', desc: 'Create pages, notes, checklists and project information in one place.' }
 };
 const genericConfigs = Object.fromEntries((window.BrightdeskAppCatalog || []).filter(item => !['pages','sheets','slides','notes'].includes(item.id)).map(item => [item.id, { title: item.name, heading: item.name, desc: item.description }]));
 const fullCatalog = window.BrightdeskAppCatalog || [];
@@ -753,7 +755,7 @@ function render() {
   const manager = state.view === 'manager';
   const languages = state.view === 'languages';
   $('app-manager').hidden = !manager; $('language-manager').hidden = !languages;
-  $('workspace').hidden = manager || languages; $('welcome').hidden = manager || languages || ['todo','lists','forms','planner','database'].includes(state.app);
+  $('workspace').hidden = manager || languages; $('welcome').hidden = manager || languages || ['todo','lists','forms','planner','database','loop'].includes(state.app);
   $('app-title').textContent = manager ? t('sidebar.getApps') : (languages ? t('language.title') : (catalog.find(item => item.id === state.app)?.name || state.app));
   $('top-actions').hidden = manager || languages;
   if (manager) {
@@ -771,9 +773,10 @@ function render() {
     const isForms = state.app === 'forms';
     const isPlanner = state.app === 'planner';
     const isDatabase = state.app === 'database';
-    $('todo-wrap').hidden = !isTodo; $('lists-wrap').hidden = !isLists; $('forms-wrap').hidden = !isForms; $('planner-wrap').hidden = !isPlanner; $('database-wrap').hidden = !isDatabase;
-    $('open-button').hidden = isTodo || isLists || isForms || isPlanner || isDatabase; $('save-project').hidden = isTodo || isLists || isForms || isPlanner || isDatabase; $('export-button').hidden = isTodo || isLists || isForms || isPlanner || isDatabase;
-    document.querySelector('.document-bar').hidden = isTodo || isLists || isForms || isPlanner || isDatabase; $('ribbon-tabs').hidden = isTodo || isLists || isForms || isPlanner || isDatabase; $('toolbar').hidden = isTodo || isLists || isForms || isPlanner || isDatabase;
+    const isWorkspace = state.app === 'loop';
+    $('todo-wrap').hidden = !isTodo; $('lists-wrap').hidden = !isLists; $('forms-wrap').hidden = !isForms; $('planner-wrap').hidden = !isPlanner; $('database-wrap').hidden = !isDatabase; $('workspace-app-wrap').hidden = !isWorkspace;
+    $('open-button').hidden = isTodo || isLists || isForms || isPlanner || isDatabase || isWorkspace; $('save-project').hidden = isTodo || isLists || isForms || isPlanner || isDatabase || isWorkspace; $('export-button').hidden = isTodo || isLists || isForms || isPlanner || isDatabase || isWorkspace;
+    document.querySelector('.document-bar').hidden = isTodo || isLists || isForms || isPlanner || isDatabase || isWorkspace; $('ribbon-tabs').hidden = isTodo || isLists || isForms || isPlanner || isDatabase || isWorkspace; $('toolbar').hidden = isTodo || isLists || isForms || isPlanner || isDatabase || isWorkspace;
     editor.hidden = !['pages'].includes(state.app); sheetWrap.hidden = state.app !== 'sheets'; slideWrap.hidden = state.app !== 'slides'; notesWrap.hidden = !['notes'].includes(state.app);
     editor.innerHTML = state.app === 'pages' ? safeHtml(doc.html) : '';
     if (state.app === 'pages') applyPageLayout(); else editor.removeAttribute('style');
@@ -785,6 +788,7 @@ function render() {
     else if (isForms) window.BrightdeskFormsUI.render();
     else if (isPlanner) window.BrightdeskPlannerUI.render();
     else if (isDatabase) window.BrightdeskDatabaseUI.render();
+    else if (isWorkspace) window.BrightdeskWorkspaceUI.render();
     else if (!['pages','sheets','slides','notes'].includes(state.app)) renderGenericWorkspace();
     renderToolbar();
     $('workspace').classList.toggle('focus-mode', state.focusMode);
