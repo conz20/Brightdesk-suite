@@ -119,26 +119,26 @@ The complete ten-app desktop suite remains available from [Brightdesk-suite](htt
 
 Use Node.js **24.22.2**.
 
-```sh
+\`\`\`sh
 npm ci
 npm start
-```
+\`\`\`
 
 To build an installer on its native operating system:
 
-```sh
+\`\`\`sh
 npm run dist:app:mac
 npm run verify:app:mac
-```
+\`\`\`
 
-Use `win` on Windows or `linux` on Linux instead of `mac`.
+Use \`win\` on Windows or \`linux\` on Linux instead of \`mac\`.
 
 ## Project structure
 
-- `src/` — Brightdesk desktop renderer and app modules.
-- `assets/brightdesk-app.svg` — original preview artwork for this app.
-- `scripts/` — build and release verification tools.
-- `tests/` — automated app and shared-engine tests.
+- \`src/\` — Brightdesk desktop renderer and app modules.
+- \`assets/brightdesk-app.svg\` — original preview artwork for this app.
+- \`scripts/\` — build and release verification tools.
+- \`tests/\` — automated app and shared-engine tests.
 
 ## Related project
 
