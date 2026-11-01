@@ -1,0 +1,42 @@
+name: Generate third-party notices
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "package.json"
+      - "package-lock.json"
+      - "LICENSE"
+      - "scripts/verify-licenses.js"
+      - ".github/workflows/generate-third-party-notices.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  notices:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out Brightdesk
+        uses: actions/checkout@v4
+      - name: Set up Node.js 24.22.2
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24.22.2
+          cache: npm
+      - name: Install exact locked dependencies
+        run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Generate and verify third-party notices
+        run: npm run verify:licenses
+      - name: Commit generated notices
+        run: |
+          if git diff --quiet -- THIRD_PARTY_NOTICES.md; then
+            echo "Third-party notices are already up to date."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add THIRD_PARTY_NOTICES.md
+          git commit -m "Generate third-party dependency notices"
+          git push
