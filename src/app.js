@@ -313,6 +313,7 @@ function renderAppManager() {
     const selected = state.firstRunSelection.has(item.id);
     const isInstalled = installedApp(item.id);
     const card = document.createElement('article'); card.className = 'app-card';
+    const preview = document.createElement('img'); preview.className = 'app-preview'; preview.src = `assets/apps/${item.id}.svg`; preview.alt = `${item.name} example screen`;
     const header = document.createElement('div'); header.className = 'app-card-header';
     const icon = document.createElement('span'); icon.className = `app-icon ${item.className}`; icon.textContent = item.icon;
     const heading = document.createElement('div'); heading.className = 'app-card-heading';
@@ -339,7 +340,7 @@ function renderAppManager() {
       const stateTag = document.createElement('span'); stateTag.className = isInstalled ? 'app-state installed' : 'app-state'; stateTag.textContent = isInstalled ? t('manager.inWorkspace') : t('manager.notInstalled');
       footer.append(stateTag);
     }
-    card.append(header, description, footer); grid.append(card);
+    card.append(preview, header, description, footer); grid.append(card);
   });
 }
 function toggleAppInstall(id) {
