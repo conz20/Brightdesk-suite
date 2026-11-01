@@ -17,8 +17,12 @@ The approved product catalogue contains ten apps in total. Brightdesk Database, 
 
 The release workflow is designed to build macOS universal DMG and PKG installers, Windows x64 EXE installers, and Linux x64 AppImage and DEB packages. A build is only considered ready after the platform artifacts, legal documents and SHA-256 checksums have been verified.
 
+## Installing Brightdesk
+
+**End users do not need to download or install Node.js.** The native desktop application is packaged with the Electron runtime it needs. Install Brightdesk using the installer for your operating system and open it like any other desktop app. See [INSTALLATION.md](docs/INSTALLATION.md) for instructions.
+
 ## Development
 
-Brightdesk requires exactly Node.js 24.22.2. Run `npm run setup:dev` after activating that runtime. The project uses its checked-in package lock and automated Node.js tests.
+Building and testing Brightdesk requires exactly Node.js 24.22.2. This is a developer/CI requirement only; it is not a customer installation requirement. Run `npm run setup:dev` after activating that runtime. The project uses its checked-in package lock and automated Node.js tests.
 
 Brightdesk uses original product names, code, artwork and interface design. Microsoft product names are used only as internal workflow comparisons.
