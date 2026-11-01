@@ -211,5 +211,6 @@ test('English navigation labels cover all ten approved Brightdesk products', () 
   for (const product of catalog) {
     const expectedLabel = product.name.replace(/^Brightdesk /, '');
     assert.equal(translations[`apps.${product.id}`], expectedLabel, `missing navigation label for ${product.id}`);
+    assert.ok(require('node:fs').readFileSync(require('node:path').join(__dirname, '..', 'src', 'i18n.js'), 'utf8').includes(`'apps.${product.id}':'${expectedLabel}'`), `missing fallback navigation label for ${product.id}`);
   }
 });
