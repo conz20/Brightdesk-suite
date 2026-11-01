@@ -104,3 +104,6 @@
 #dictionary-catalogue-count{display:block;margin:8px 0 12px}
 
 .page-setting{display:flex;flex-direction:column;gap:3px;padding:0 5px;color:#77798a;font-size:9px;white-space:nowrap}.page-setting-select{max-width:115px;border:1px solid #e5e7ee;border-radius:5px;background:#fff;color:#45485c;padding:5px 6px;font:inherit;font-size:10px}.page-setting-select:focus-visible{outline:2px solid #7771e6;outline-offset:2px}@media(max-width:720px){.page-setting-select{max-width:95px}}
+
+/* Original app preview artwork for the complete Brightdesk catalogue. */
+.app-preview{display:block;width:100%;height:116px;object-fit:cover;border:1px solid #e8eaf1;border-radius:7px;background:#f5f6fa}.app-card{min-height:230px}.app-card-header{margin-top:1px}
