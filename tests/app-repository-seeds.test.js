@@ -18,19 +18,22 @@ test('product repository catalogue contains exactly the ten approved products', 
 });
 
 
+
 test('generated product copy and workflow labels use approved Brightdesk wording', () => {
-  assert.doesNotMatch(repositoryBundleReadme(), /\\b(?:standalone|apps?)\\b/i);
+  assert.doesNotMatch(repositoryBundleReadme(), /\b(?:standalone|apps?)\b/i);
   for (const product of APP_REPOSITORIES) {
+    const workflow = standaloneWorkflow(product);
     const generatedCopy = [
       repositoryReadme(product),
       socialPreview(product),
-      standaloneWorkflow(product)
-    ].join('\\n');
-    assert.doesNotMatch(generatedCopy, /\\b(?:standalone|apps?)\\b/i, product.name);
-    assert.match(generatedCopy, new RegExp(product.name.replace(/[.*+?^${}()|[\\]\\\\]/g, '\\\\test('product repository seed exports')));
-    assert.match(standaloneWorkflow(product), /name: Build Brightdesk .* desktop installers/);
+      workflow
+    ].join('\n');
+    assert.doesNotMatch(generatedCopy, /\b(?:standalone|apps?)\b/i, product.name);
+    assert.ok(generatedCopy.includes(product.name), product.name);
+    assert.match(workflow, /name: Build Brightdesk .* desktop installers/);
   }
 });
+
 
 test('product repository seed exports a locked product package with suite source and original artwork', () => {
   const root = path.resolve(__dirname, '..');
