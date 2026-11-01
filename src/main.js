@@ -1,4 +1,4 @@
-const { app, BrowserWindow, Menu, ipcMain, dialog } = require('electron');
+const { app, BrowserWindow, Menu, ipcMain, dialog, shell } = require('electron');
 const packageConfig = require('../package.json');
 const path = require('node:path');
 const crypto = require('node:crypto');
@@ -6,6 +6,7 @@ const fs = require('node:fs/promises');
 const { openOfficeFile, exportOfficeFile, cleanFileName, ensureExtension } = require('./file-service');
 const { BUILTIN_LANGUAGES, validateLanguagePack, getBuiltinLanguage } = require('./language-service');
 const { DictionaryService } = require('./dictionary-service');
+const { APP_SLUGS, createStandaloneDownload } = require('./standalone-downloads');
 let mainWindow;
 let agreementWindow;
 let termsAccepted = false;
@@ -14,7 +15,12 @@ const updatePublishingConfigured = Array.isArray(packageConfig.build?.publish) &
 let updateCheckInProgress = false;
 let lastUpdateCheckAt = 0;
 let dictionaryService;
-const supportedStandaloneApps = new Set(['pages', 'sheets', 'slides', 'notes']);
+const standaloneAppNames = {
+  pages: 'Pages', sheets: 'Sheets', slides: 'Decks', notes: 'Notes',
+  database: 'Database', forms: 'Forms', lists: 'Lists', planner: 'Planner',
+  todo: 'To Do', loop: 'Workspace'
+};
+const supportedStandaloneApps = new Set(Object.keys(APP_SLUGS));
 const standaloneAppId = packageConfig.brightdeskAppId || null;
 if (standaloneAppId && !supportedStandaloneApps.has(standaloneAppId)) {
   throw new Error(`Unsupported Brightdesk standalone app: ${standaloneAppId}`);
@@ -24,7 +30,7 @@ function sendUpdateState(state) { if (mainWindow && !mainWindow.isDestroyed()) m
 function createWindow() {
   mainWindow = new BrowserWindow({
     width: 1440, height: 920, minWidth: 980, minHeight: 680,
-    title: standaloneAppId ? `Brightdesk ${({ pages: 'Pages', sheets: 'Sheets', slides: 'Decks', notes: 'Notes' })[standaloneAppId]}` : 'Brightdesk', backgroundColor: '#f5f6fa',
+    title: standaloneAppId ? `Brightdesk ${standaloneAppNames[standaloneAppId]}` : 'Brightdesk', backgroundColor: '#f5f6fa',
     webPreferences: { preload: path.join(__dirname, 'preload.js'), contextIsolation: true, nodeIntegration: false, sandbox: true, additionalArguments: standaloneAppId ? [`--brightdesk-app=${standaloneAppId}`] : [] }
   });
   mainWindow.loadFile(path.join(__dirname, 'index.html'));
@@ -92,6 +98,17 @@ ipcMain.handle('terms:decline', event => {
   return { ok: true };
 });
 ipcMain.handle('app:version', event => { if (!senderIsMain(event)) throw new Error('Invalid sender.'); return app.getVersion(); });
+
+ipcMain.handle('downloads:standalone-app', async (event, appId) => {
+  if (!senderIsMain(event)) throw new Error('Invalid sender.');
+  const download = createStandaloneDownload({
+    appId,
+    platform: process.platform,
+    version: packageConfig.version
+  });
+  await shell.openExternal(download.url);
+  return { ok: true, filename: download.filename };
+});
 
 function languagePackDirectory() {
   return path.join(app.getPath('userData'), 'language-packs');
