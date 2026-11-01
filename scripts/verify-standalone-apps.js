@@ -26,15 +26,19 @@ function expectedFilename(appId, platform, version) {
   return target.extensions.map(extension => `${base}.${extension}`);
 }
 
-function verifyStandaloneApps({ directory, platform, version }) {
+function verifyStandaloneApps({ directory, platform, version, appId = null }) {
   const target = PLATFORMS[platform];
   if (!target) throw new Error(`Unsupported platform: ${platform}`);
   if (typeof version !== 'string' || !/^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?$/.test(version)) {
     throw new Error('A valid release version is required for standalone app verification.');
   }
 
+  if (appId !== null && !APP_SLUGS[appId]) {
+    throw new Error(`Unknown approved Brightdesk app: ${appId}`);
+  }
+  const selectedApps = appId ? [[appId, APP_SLUGS[appId]]] : Object.entries(APP_SLUGS);
   const appResults = [];
-  for (const [appId, slug] of Object.entries(APP_SLUGS)) {
+  for (const [appId, slug] of selectedApps) {
     const appDirectory = path.join(directory, appId);
     if (!fs.existsSync(appDirectory) || !fs.statSync(appDirectory).isDirectory()) {
       throw new Error(`Missing standalone output folder for Brightdesk ${slug}: ${appDirectory}`);
@@ -73,8 +77,9 @@ if (require.main === module) {
   const root = path.resolve(__dirname, '..');
   const directory = path.resolve(process.argv[3] || path.join(root, 'release', 'apps'));
   const version = require('../package.json').version;
+  const appId = process.argv[4] || null;
   try {
-    const result = verifyStandaloneApps({ directory, platform, version });
+    const result = verifyStandaloneApps({ directory, platform, version, appId });
     console.log(`Verified ${result.fileCount} standalone installer(s) across all ${result.appCount} approved apps for ${platform}.`);
     for (const item of result.apps) {
       console.log(`- Brightdesk ${item.appName}: ${item.files.length} installer(s); checksum: ${path.relative(directory, item.checksumFile)}`);
