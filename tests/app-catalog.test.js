@@ -150,11 +150,11 @@ test('every first-release app has its own original preview artwork and the launc
   for (const app of catalog) {
     const artwork = path.join(root, 'src', 'assets', 'apps', `${app.id}.svg`);
     assert.ok(fs.existsSync(artwork), `missing artwork for ${app.name}`);
-    assert.match(fs.readFileSync(artwork, 'utf8'), /<svg[\\s>]/);
+    assert.ok(fs.readFileSync(artwork, 'utf8').trimStart().startsWith('<svg'), `invalid SVG artwork for ${app.name}`);
   }
   const renderer = fs.readFileSync(path.join(root, 'src', 'app.js'), 'utf8');
-  assert.match(renderer, /assets\\/apps\\/\\$\\{item\\.id\\}\\.svg/);
-  assert.match(renderer, /item\\.name\\} example screen/);
+  assert.ok(renderer.includes('assets/apps/${item.id}.svg'));
+  assert.ok(renderer.includes('`${item.name} example screen`'));
 });
 
 test('README presents all ten apps as the first-release lineup without claiming all are implemented', () => {
