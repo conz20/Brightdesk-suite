@@ -91,8 +91,9 @@ test('standalone app packaging has independent product IDs and all three platfor
   const path = require('node:path');
   const root = path.join(__dirname, '..');
   const pkg = JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8'));
-  for (const app of ['pages', 'sheets', 'decks', 'notes']) {
-    for (const platform of ['win', 'mac', 'linux']) assert.ok(pkg.scripts[`dist:${app}:${platform}`]);
+  const appScriptIds = { pages: 'pages', sheets: 'sheets', slides: 'decks', notes: 'notes', database: 'database', forms: 'forms', lists: 'lists', planner: 'planner', todo: 'todo', loop: 'workspace' };
+  for (const scriptId of Object.values(appScriptIds)) {
+    for (const platform of ['win', 'mac', 'linux']) assert.ok(pkg.scripts[`dist:${scriptId}:${platform}`], `missing ${scriptId} ${platform} installer command`);
   }
   const builder = fs.readFileSync(path.join(root, 'electron-builder.app.config.js'), 'utf8');
   assert.match(builder, /org\.brightdesk\.\$\{appId\}/);
@@ -102,7 +103,7 @@ test('standalone app packaging has independent product IDs and all three platfor
   const previousAppId = process.env.BRIGHTDESK_APP_ID;
   const products = [];
   try {
-    for (const [id, name] of [['pages','Pages'],['sheets','Sheets'],['slides','Decks'],['notes','Notes']]) {
+    for (const [id, name] of [['pages','Pages'],['sheets','Sheets'],['slides','Decks'],['notes','Notes'],['database','Database'],['forms','Forms'],['lists','Lists'],['planner','Planner'],['todo','To Do'],['loop','Workspace']]) {
       process.env.BRIGHTDESK_APP_ID = id;
       delete require.cache[require.resolve(configPath)];
       const config = require(configPath);
@@ -121,7 +122,7 @@ test('standalone app packaging has independent product IDs and all three platfor
     else process.env.BRIGHTDESK_APP_ID = previousAppId;
     delete require.cache[require.resolve(configPath)];
   }
-  assert.equal(new Set(products).size, 4);
+  assert.equal(new Set(products).size, 10);
   const main = fs.readFileSync(path.join(root, 'src', 'main.js'), 'utf8');
   assert.match(main, /--brightdesk-app=/);
   const preload = fs.readFileSync(path.join(root, 'src', 'preload.js'), 'utf8');
@@ -138,9 +139,20 @@ test('the standalone build scripts reject unknown app and platform identifiers',
   const build = fs.readFileSync(path.join(root, 'scripts', 'build-app.js'), 'utf8');
   assert.match(build, /Usage: node scripts\/build-app\.js/);
   assert.match(build, /'pkg'/);
-  assert.match(build, /new Set\(\['pages', 'sheets', 'slides', 'notes'\]\)/);
+  assert.match(build, /new Set\(\['pages', 'sheets', 'slides', 'notes', 'database', 'forms', 'lists', 'planner', 'todo', 'loop'\]\)/);
   const config = fs.readFileSync(path.join(root, 'electron-builder.app.config.js'), 'utf8');
   assert.match(config, /Set BRIGHTDESK_APP_ID/);
+  const builds = fs.readFileSync(path.join(root, 'scripts', 'build-apps.js'), 'utf8');
+  assert.match(builds, /\['pages', 'sheets', 'slides', 'notes', 'database', 'forms', 'lists', 'planner', 'todo', 'loop'\]/);
+  for (const id of ['database','forms','lists','planner','todo','loop']) {
+    assert.match(builds, new RegExp(`build-app\\.js', ${id}, platform`) .source === '' ? /never/ : new RegExp(id));
+  }
+  const main = fs.readFileSync(path.join(root, 'src', 'main.js'), 'utf8');
+  const preload = fs.readFileSync(path.join(root, 'src', 'preload.js'), 'utf8');
+  for (const id of ['pages','sheets','slides','notes','database','forms','lists','planner','todo','loop']) {
+    assert.ok(main.includes(`'${id}'`), `main process must support standalone ${id}`);
+    assert.ok(preload.includes(`'${id}'`), `preload must expose standalone ${id}`);
+  }
 });
 
 
