@@ -16,7 +16,7 @@ const APP_SLUGS = Object.freeze({
 const PLATFORM_SUFFIXES = Object.freeze({
   win32: { arch: 'x64', extension: 'exe' },
   darwin: { arch: 'universal', extension: 'dmg' },
-  linux: { arch: 'x64', extension: 'AppImage' }
+  linux: { arch: 'x86_64', extension: 'AppImage' }
 });
 
 function createStandaloneDownload({ appId, platform, version }) {
