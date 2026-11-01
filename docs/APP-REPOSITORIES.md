@@ -11,16 +11,16 @@ Brightdesk keeps one complete desktop suite and gives each approved app its own 
 
 | App | GitHub repository | App ID |
 |---|---|---|
-| Brightdesk Pages | [Brightdesk-Pages](https://github.com/connormolloy12/Brightdesk-Pages) | `pages` |
-| Brightdesk Sheets | [Brightdesk-Sheets](https://github.com/connormolloy12/Brightdesk-Sheets) | `sheets` |
-| Brightdesk Decks | [Brightdesk-Decks](https://github.com/connormolloy12/Brightdesk-Decks) | `slides` |
-| Brightdesk Notes | [Brightdesk-Notes](https://github.com/connormolloy12/Brightdesk-Notes) | `notes` |
-| Brightdesk Database | [Brightdesk-Database](https://github.com/connormolloy12/Brightdesk-Database) | `database` |
-| Brightdesk Forms | [Brightdesk-Forms](https://github.com/connormolloy12/Brightdesk-Forms) | `forms` |
-| Brightdesk Lists | [Brightdesk-Lists](https://github.com/connormolloy12/Brightdesk-Lists) | `lists` |
-| Brightdesk Planner | [Brightdesk-Planner](https://github.com/connormolloy12/Brightdesk-Planner) | `planner` |
-| Brightdesk To Do | [Brightdesk-To-Do](https://github.com/connormolloy12/Brightdesk-To-Do) | `todo` |
-| Brightdesk Workspace | [Brightdesk-Workspace](https://github.com/connormolloy12/Brightdesk-Workspace) | `loop` |
+| Brightdesk Pages | Brightdesk-Pages | `pages` |
+| Brightdesk Sheets | Brightdesk-Sheets | `sheets` |
+| Brightdesk Decks | Brightdesk-Decks | `slides` |
+| Brightdesk Notes | Brightdesk-Notes | `notes` |
+| Brightdesk Database | Brightdesk-Database | `database` |
+| Brightdesk Forms | Brightdesk-Forms | `forms` |
+| Brightdesk Lists | Brightdesk-Lists | `lists` |
+| Brightdesk Planner | Brightdesk-Planner | `planner` |
+| Brightdesk To Do | Brightdesk-To-Do | `todo` |
+| Brightdesk Workspace | Brightdesk-Workspace | `loop` |
 
 These are the exact intended repository names. Each remains pending until its GitHub repository has been created and the seed has been pushed.
 
