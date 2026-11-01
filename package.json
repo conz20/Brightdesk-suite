@@ -68,7 +68,13 @@
     "release:verify:apps:win": "node scripts/verify-standalone-apps.js win",
     "release:verify:apps:mac": "node scripts/verify-standalone-apps.js mac",
     "release:verify:apps:linux": "node scripts/verify-standalone-apps.js linux",
-    "repositories:prepare": "node scripts/create-app-repository-seeds.js"
+    "repositories:prepare": "node scripts/create-app-repository-seeds.js",
+    "dist:products:win": "node scripts/build-apps.js win",
+    "dist:products:mac": "node scripts/build-apps.js mac",
+    "dist:products:linux": "node scripts/build-apps.js linux",
+    "release:verify:products:win": "node scripts/verify-standalone-apps.js win",
+    "release:verify:products:mac": "node scripts/verify-standalone-apps.js mac",
+    "release:verify:products:linux": "node scripts/verify-standalone-apps.js linux"
   },
   "dependencies": {
     "docx": "9.15.1",
