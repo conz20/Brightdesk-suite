@@ -9,7 +9,7 @@ const { APP_SLUGS } = require('../src/standalone-downloads');
 const PLATFORMS = Object.freeze({
   win: { arch: 'x64', extensions: ['exe'] },
   mac: { arch: 'universal', extensions: ['dmg', 'pkg', 'zip'] },
-  linux: { arch: 'x64', extensions: ['AppImage', 'deb'] }
+  linux: { arch: 'x86_64', debArch: 'amd64', extensions: ['AppImage', 'deb'] }
 });
 
 function sha256File(file) {
@@ -20,10 +20,13 @@ function expectedFilename(appId, platform, version) {
   const slug = APP_SLUGS[appId];
   const target = PLATFORMS[platform];
   if (!slug || !target) throw new Error('An approved app and supported platform are required.');
-  const base = platform === 'linux'
-    ? `brightdesk-${slug.toLowerCase()}-${version}-${target.arch}`
-    : `Brightdesk-${slug}-${version}-${target.arch}`;
-  return target.extensions.map(extension => `${base}.${extension}`);
+  return target.extensions.map(extension => {
+    const arch = platform === 'linux' && extension === 'deb' ? target.debArch : target.arch;
+    const base = platform === 'linux'
+      ? `brightdesk-${slug.toLowerCase()}-${version}-${arch}`
+      : `Brightdesk-${slug}-${version}-${arch}`;
+    return `${base}.${extension}`;
+  });
 }
 
 function verifyStandaloneApps({ directory, platform, version, appId = null }) {
