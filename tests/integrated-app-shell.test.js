@@ -1,6 +1,7 @@
 'use strict';
 const test=require('node:test');
 const assert=require('node:assert/strict');
+const vm=require('node:vm');
 const fs=require('node:fs');
 const path=require('node:path');
 const root=path.join(__dirname,'..');
@@ -12,3 +13,12 @@ test('the integrated app shell loads every feature module before app.js',()=>{co
 test('the fixed product catalogue remains exactly ten approved apps',()=>{assert.deepEqual(catalog.map(x=>x.id),['pages','sheets','slides','notes','database','forms','lists','planner','todo','loop']);assert.equal(catalog.length,10);for(const id of ['outlook','onedrive','teams'])assert.equal(catalog.some(x=>x.id===id),false);});
 test('all ten approved apps are available in the integrated suite',()=>{assert.ok(catalog.every(x=>x.availability==='available'),'every approved app must be marked available once its implementation is integrated');});
 test('the app shell routes each app away from the generic editor',()=>{for(const id of ['todo','lists','forms','planner','database','loop'])assert.ok(app.includes("state.app === '"+id+"'")||app.includes("state.app==='")+id+"'",id+' routing');});
+
+test('product navigation follows the saved installation selection',()=>{
+  const match=app.match(/function installedApp\\(id\\) \\{[^}]*\\}/);
+  assert.ok(match,'installedApp helper exists');
+  const isInstalled=vm.runInNewContext(match[0]+'; installedApp',{state:{installedApps:['pages','lists']}});
+  assert.equal(isInstalled('pages'),true);
+  assert.equal(isInstalled('lists'),true);
+  for(const id of ['todo','forms','planner','database','loop']) assert.equal(isInstalled(id),false, id+' should follow saved selection');
+});
