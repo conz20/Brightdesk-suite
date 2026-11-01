@@ -4,13 +4,15 @@ const defaults = {
   pages: { title: 'Untitled document', html: '' },
   sheets: { title: 'Untitled spreadsheet', cells: Array.from({ length: 20 }, () => Array(12).fill('')) },
   slides: { title: 'Untitled presentation', slides: [{ title: 'Your presentation title', body: 'Add a subtitle or a few words to introduce your idea.' }], current: 0 },
-  notes: { title: 'Untitled note', text: '' }
+  notes: { title: 'Untitled note', text: '' },
+  forms: { title: 'My forms' }
 };
 const configs = {
   pages: { title: 'Brightdesk Pages', heading: 'Make room for your ideas.', desc: 'Write letters, reports and documents.' },
   sheets: { title: 'Brightdesk Sheets', heading: 'Make numbers make sense.', desc: 'Organise information, use formulas and build tables.' },
   slides: { title: 'Brightdesk Decks', heading: 'Bring your ideas to life.', desc: 'Build a presentation one slide at a time.' },
-  notes: { title: 'Brightdesk Notes', heading: 'Catch that thought.', desc: 'Keep quick notes and reminders together.' }
+  notes: { title: 'Brightdesk Notes', heading: 'Catch that thought.', desc: 'Keep quick notes and reminders together.' },
+  forms: { title: 'Brightdesk Forms', heading: 'Ask. Collect. Understand.', desc: 'Create forms and surveys, then review responses.' }
 };
 const genericConfigs = Object.fromEntries((window.BrightdeskAppCatalog || []).filter(item => !['pages','sheets','slides','notes'].includes(item.id)).map(item => [item.id, { title: item.name, heading: item.name, desc: item.description }]));
 const fullCatalog = window.BrightdeskAppCatalog || [];
@@ -611,13 +613,18 @@ function render() {
     editor.setAttribute('data-placeholder', t('common.startTyping'));
     const doc = activeDoc();
     $('doc-title').value = doc.title || defaults[state.app].title;
+    const isForms = state.app === 'forms'; $('forms-wrap').hidden = !isForms;
+    $('open-button').hidden = isForms; $('save-project').hidden = isForms; $('export-button').hidden = isForms;
+    document.querySelector('.document-bar').hidden = isForms;
+    $('ribbon-tabs').hidden = isForms; $('toolbar').hidden = isForms;
     editor.hidden = !['pages'].includes(state.app); sheetWrap.hidden = state.app !== 'sheets'; slideWrap.hidden = state.app !== 'slides'; notesWrap.hidden = !['notes'].includes(state.app);
     editor.innerHTML = state.app === 'pages' ? safeHtml(doc.html) : '';
     if (state.app === 'pages') applyPageLayout(); else editor.removeAttribute('style');
     $('notes-editor').value = state.app === 'notes' ? (doc.text || '') : '';
     updateDocumentLanguage();
     if (state.app === 'sheets') renderSheet(); if (state.app === 'slides') renderSlides();
-    if (!['pages','sheets','slides','notes'].includes(state.app)) renderGenericWorkspace();
+    if (isForms) window.BrightdeskFormsUI.render();
+    else if (!['pages','sheets','slides','notes'].includes(state.app)) renderGenericWorkspace();
     renderToolbar();
     $('workspace').classList.toggle('focus-mode', state.focusMode);
   }
@@ -673,7 +680,7 @@ function importProject(data){
 function escapeHtml(value){return String(value).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));}
 async function openFile(){try{const data=await window.brightdesk.openFile();if(!data)return;importProject(data);persist();render();setStatus('File opened');}catch(error){alert(`Could not open file: ${error.message}`);}}
 async function saveProject(){try{const result=await window.brightdesk.saveProject({title:$('doc-title').value,docs:state.docs});if(!result?.canceled)setStatus('Project saved');}catch(error){alert(`Could not save project: ${error.message}`);}}
-function setApp(app){if((launchAppId && app !== launchAppId) || !configs[app] || !installedApp(app))return;state.app=app;state.view='workspace';state.ribbonTab='home';render();persist();}
+function setApp(app){if((launchAppId && app !== launchAppId) || !(configs[app] || genericConfigs[app]) || !installedApp(app))return;state.app=app;state.view='workspace';state.ribbonTab='home';render();persist();}
 
 document.querySelectorAll('.nav[data-app]').forEach(btn=>btn.addEventListener('click',()=>setApp(btn.dataset.app)));
 $('manage-apps').addEventListener('click',()=>{if (launchAppId) return; state.view='manager';render();});
