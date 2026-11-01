@@ -68,6 +68,7 @@ test('product repository generation creates ten locked product folders with orig
       const lock = JSON.parse(fs.readFileSync(path.join(destination, 'package-lock.json'), 'utf8'));
       const readme = fs.readFileSync(path.join(destination, 'README.md'), 'utf8');
       const workflow = fs.readFileSync(path.join(destination, '.github', 'workflows', 'product-installers.yml'), 'utf8');
+      const dependabot = fs.readFileSync(path.join(destination, '.github', 'dependabot.yml'), 'utf8');
       const metadata = fs.readFileSync(path.join(destination, 'REPOSITORY_INFO.md'), 'utf8');
 
       assert.equal(pkg.name, product.packageName);
@@ -99,6 +100,9 @@ test('product repository generation creates ten locked product folders with orig
       assert.ok(readme.includes('assets/social-preview.svg'));
       assert.match(workflow, /node-version: 24\.22\.2/);
       assert.match(workflow, /name: Build Brightdesk .* desktop installers/);
+      assert.match(dependabot, /package-ecosystem: npm/);
+      assert.match(dependabot, /package-ecosystem: github-actions/);
+      assert.equal((dependabot.match(/interval: weekly/g) || []).length, 2);
       assert.ok(fs.existsSync(path.join(destination, 'src', 'app.js')));
       assert.ok(fs.existsSync(path.join(destination, 'src', 'main.js')));
     }
