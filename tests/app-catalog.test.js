@@ -3,11 +3,12 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 const catalog = require('../src/app-catalog');
 
-test('app catalogue shows all ten first-release apps and identifies the four implemented apps', () => {
+test('app catalogue shows all ten first-release apps and identifies the complete implemented suite', () => {
   assert.deepEqual(catalog.slice(0, 4).map(app => app.id), ['pages', 'sheets', 'slides', 'notes']);
   assert.deepEqual(catalog.slice(0, 4).map(app => app.name), ['Brightdesk Pages', 'Brightdesk Sheets', 'Brightdesk Decks', 'Brightdesk Notes']);
   assert.equal(catalog.length, 10);
-  assert.deepEqual(catalog.filter(app => app.availability === 'planned').map(app => app.id), ['database','forms','lists','planner','todo','loop']);
+  assert.deepEqual(catalog.filter(app => app.availability === 'available').map(app => app.id), ['pages','sheets','slides','notes','database','forms','lists','planner','todo','loop']);
+  assert.deepEqual(catalog.filter(app => app.availability === 'planned').map(app => app.id), []);
 });
 
 test('every app has a unique id, release version and user-facing details', () => {
@@ -79,10 +80,10 @@ test('all catalogue modules have independent Brightdesk metadata', () => {
   }
 });
 
-test('only the four implemented editor apps are marked installable', () => {
+test('all ten integrated apps are marked installable', () => {
   const available = catalog.filter(item => item.availability === 'available').map(item => item.id);
-  assert.deepEqual(available, ['pages', 'sheets', 'slides', 'notes']);
-  for (const item of catalog.filter(item => item.availability !== 'available')) assert.equal(item.availability, 'planned');
+  assert.deepEqual(available, ['pages', 'sheets', 'slides', 'notes', 'database', 'forms', 'lists', 'planner', 'todo', 'loop']);
+  assert.equal(catalog.filter(item => item.availability !== 'available').length, 0);
 });
 
 test('standalone app packaging has independent product IDs and all three platform targets', () => {
@@ -157,11 +158,11 @@ test('every first-release app has its own original preview artwork and the launc
   assert.ok(renderer.includes('`${item.name} example screen`'));
 });
 
-test('README presents all ten apps as the first-release lineup without claiming all are implemented', () => {
+test('README presents all ten apps as the integrated first-release lineup', () => {
   const fs = require('node:fs');
   const readme = fs.readFileSync(require('node:path').join(__dirname, '..', 'README.md'), 'utf8');
   for (const app of catalog) assert.ok(readme.includes(app.name), `README missing ${app.name}`);
   assert.match(readme, /ten-app desktop suite/i);
-  assert.match(readme, /four marked Available are implemented/i);
-  assert.match(readme, /other six.*not yet working apps/i);
+  assert.match(readme, /all ten.*implemented/i);
+  assert.doesNotMatch(readme, /other six.*not yet working apps/i);
 });

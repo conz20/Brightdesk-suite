@@ -4,7 +4,7 @@ Brightdesk is an independent native desktop productivity suite. It is not affili
 
 ## First release
 
-Version 0.1.0 is planned as a ten-app desktop suite. The complete first-release lineup is shown below, including apps still being developed:
+Version 0.1.0 is the integrated ten-app desktop suite. The complete first-release lineup is shown below:
 
 | App | What it does | Status |
 | --- | --- | --- |
@@ -12,14 +12,14 @@ Version 0.1.0 is planned as a ten-app desktop suite. The complete first-release 
 | Brightdesk Sheets | Build spreadsheets, formulas and tables. | Available |
 | Brightdesk Decks | Create slide presentations. | Available |
 | Brightdesk Notes | Keep notes and ideas together. | Available |
-| Brightdesk Database | Organise records, tables and queries. | In development |
-| Brightdesk Forms | Create surveys, quizzes and collect responses. | In development |
-| Brightdesk Lists | Track projects, inventories and records. | In development |
-| Brightdesk Planner | Plan work, tasks and progress. | In development |
-| Brightdesk To Do | Manage daily tasks and reminders. | In development |
-| Brightdesk Workspace | Bring project notes, tasks and resources together. | In development |
+| Brightdesk Database | Organise records, tables and structured data locally. | Available |
+| Brightdesk Forms | Create surveys, quizzes and collect responses locally. | Available |
+| Brightdesk Lists | Track projects, inventories and records locally. | Available |
+| Brightdesk Planner | Plan work, tasks and progress locally. | Available |
+| Brightdesk To Do | Manage daily tasks and reminders locally. | Available |
+| Brightdesk Workspace | Bring project notes, tasks and resources together locally. | Available |
 
-The four marked Available are implemented in the current 0.1.0 codebase. The other six are part of the planned first-release lineup but are not yet working apps. They will only be marked available after implementation and testing.
+All ten apps are implemented in the integrated 0.1.0 codebase and are designed to work as part of the Brightdesk desktop suite. The first integrated release remains local-first; these modules do not claim cloud collaboration or Microsoft service integration.
 
 ## Supported installer targets
 

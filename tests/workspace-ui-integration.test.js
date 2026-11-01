@@ -1,0 +1,14 @@
+'use strict';
+const test=require('node:test');
+const assert=require('node:assert/strict');
+const fs=require('node:fs');
+const path=require('node:path');
+const root=path.join(__dirname,'..');
+const app=fs.readFileSync(path.join(root,'src','app.js'),'utf8');
+const html=fs.readFileSync(path.join(root,'src','index.html'),'utf8');
+const css=fs.readFileSync(path.join(root,'src','styles.css'),'utf8');
+const editor=fs.readFileSync(path.join(root,'src','workspace-editor.js'),'utf8');
+test('Workspace has its own page, workspace and block interface',()=>{assert.match(html,/id="workspace-app-wrap"/);assert.match(html,/id="workspace-list"/);assert.match(html,/id="workspace-page-list"/);assert.match(html,/id="workspace-block-list"/);assert.ok(html.indexOf('src="workspace-service.js"')<html.indexOf('src="app.js"'));assert.ok(html.indexOf('src="workspace-editor.js"')<html.indexOf('src="app.js"'));});
+test('Workspace is connected to the app shell and available in the integrated catalogue',()=>{assert.match(app,/loop: \{ title: 'My workspace' \}/);assert.match(app,/loop: \{ title: 'Brightdesk Workspace'/);assert.match(app,/window\.BrightdeskWorkspaceUI\.render\(\)/);const catalog=require('../src/app-catalog');assert.equal(catalog.find(item=>item.id==='loop').availability,'available');});
+test('Workspace supports multiple workspaces, pages, content blocks and checklists',()=>{for(const id of ['workspace-add','workspace-add-page','workspace-rename-page','workspace-delete-page','workspace-rename','workspace-delete','workspace-add-block','workspace-page-search'])assert.ok(html.includes('id="'+id+'"'),id);for(const method of ['createWorkspace','addPage','renamePage','addBlock','addChecklistItem','toggleChecklistItem','moveBlock','deleteBlock'])assert.ok(editor.includes(method),method);assert.match(editor,/brightdesk-workspaces-v1/);});
+test('Workspace has accessible status and responsive dedicated styling',()=>{assert.match(html,/aria-label="Brightdesk Workspace"/);assert.match(html,/aria-live="polite"/);assert.match(css,/\.workspace-app\{/);assert.match(css,/@media\(max-width:760px\)\{\.workspace-app/);});

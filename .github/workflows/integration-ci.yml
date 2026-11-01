@@ -1,0 +1,36 @@
+name: Brightdesk integrated suite checks
+
+on:
+  push:
+    branches: [integration/brightdesk-suite]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24.22.2
+          cache: npm
+      - run: npm ci --no-audit --no-fund
+      - name: Check the shared desktop renderer
+        run: node --check src/app.js
+      - name: Check all app modules
+        run: |
+          node --check src/todo-service.js
+          node --check src/lists-service.js
+          node --check src/forms-service.js
+          node --check src/forms-workspace.js
+          node --check src/planner-service.js
+          node --check src/planner-workspace.js
+          node --check src/database-service.js
+          node --check src/database-workspace.js
+          node --check src/workspace-service.js
+          node --check src/workspace-editor.js
+      - run: npm test

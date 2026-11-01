@@ -4,13 +4,25 @@ const defaults = {
   pages: { title: 'Untitled document', html: '' },
   sheets: { title: 'Untitled spreadsheet', cells: Array.from({ length: 20 }, () => Array(12).fill('')) },
   slides: { title: 'Untitled presentation', slides: [{ title: 'Your presentation title', body: 'Add a subtitle or a few words to introduce your idea.' }], current: 0 },
-  notes: { title: 'Untitled note', text: '' }
+  notes: { title: 'Untitled note', text: '' },
+  todo: { title: 'My tasks', tasks: [] },
+  lists: { title: 'My lists', lists: [] },
+  forms: { title: 'My forms' },
+  planner: { title: 'My plans' },
+  database: { title: 'My database' },
+  loop: { title: 'My workspace' }
 };
 const configs = {
   pages: { title: 'Brightdesk Pages', heading: 'Make room for your ideas.', desc: 'Write letters, reports and documents.' },
   sheets: { title: 'Brightdesk Sheets', heading: 'Make numbers make sense.', desc: 'Organise information, use formulas and build tables.' },
   slides: { title: 'Brightdesk Decks', heading: 'Bring your ideas to life.', desc: 'Build a presentation one slide at a time.' },
-  notes: { title: 'Brightdesk Notes', heading: 'Catch that thought.', desc: 'Keep quick notes and reminders together.' }
+  notes: { title: 'Brightdesk Notes', heading: 'Catch that thought.', desc: 'Keep quick notes and reminders together.' },
+  todo: { title: 'Brightdesk To Do', heading: 'Make time for what matters.', desc: 'Plan your day, keep track of tasks and celebrate what you finish.' },
+  lists: { title: 'Brightdesk Lists', heading: 'Track the details that matter.', desc: 'Create structured lists, custom columns and records.' },
+  forms: { title: 'Brightdesk Forms', heading: 'Ask. Collect. Understand.', desc: 'Create forms and surveys, then review responses.' },
+  planner: { title: 'Brightdesk Planner', heading: 'Turn plans into progress.', desc: 'Organise work into buckets, tasks and priorities.' },
+  database: { title: 'Brightdesk Database', heading: 'Give your information structure.', desc: 'Build tables, define fields and manage records on your device.' },
+  loop: { title: 'Brightdesk Workspace', heading: 'Bring your work together.', desc: 'Create pages, notes, checklists and project information in one place.' }
 };
 const genericConfigs = Object.fromEntries((window.BrightdeskAppCatalog || []).filter(item => !['pages','sheets','slides','notes'].includes(item.id)).map(item => [item.id, { title: item.name, heading: item.name, desc: item.description }]));
 const fullCatalog = window.BrightdeskAppCatalog || [];
@@ -19,6 +31,7 @@ const catalog = fullCatalog;
 const installableCatalog = catalog.filter(item => item.availability === 'available');
 const state = {
   app: launchAppId || 'pages', view: 'workspace', docs: structuredClone(defaults),
+  todoView: 'my-day', todoQuery: '',
   selectedCell: { row: 0, col: 0 }, update: null, ribbonTab: 'home',
   installedApps: [], setupComplete: false, firstRunSelection: new Set(installableCatalog.map(item => item.id)),
   slideTheme: 'lavender', focusMode: false, editorZoom: 100, sheetZoom: 100,
@@ -53,7 +66,7 @@ function loadLocal() {
     }
     if (launchAppId) { state.app = launchAppId; state.view = 'workspace'; }
     else if (!state.setupComplete) state.view = 'manager';
-    else if (!state.installedApps.includes(state.app)) state.app = state.installedApps[0] || 'pages';
+    else if (!installedApp(state.app)) state.app = state.installedApps[0] || 'pages';
     state.displayLanguage = localStorage.getItem('brightdesk-display-language') || 'en-AU';
     state.proofingLanguage = localStorage.getItem('brightdesk-proofing-language') || state.displayLanguage;
   } catch (error) { console.warn('Local project or app settings could not be read.', error); state.view = 'manager'; }
@@ -61,7 +74,7 @@ function loadLocal() {
 function saveAppSetup() {
   localStorage.setItem('brightdesk-app-setup-v1', JSON.stringify({ installedApps: state.installedApps, setupComplete: state.setupComplete }));
 }
-function installedApp(id) { return state.installedApps.includes(id); }
+function installedApp(id) { return state.installedApps.includes(id) || ['todo','lists','forms','planner','database','loop'].includes(id); }
 function appLabel(id) { return catalog.find(item => item.id === id)?.name || id; }
 
 function safeHtml(html) {
@@ -158,7 +171,8 @@ function renderToolbar() {
     } else {
       const view = group('zoom');
       addButton(view, label('zoomOut'), () => changeEditorZoom(-10)); addButton(view, '100%', () => { state.editorZoom = 100; applyEditorZoom(); }); addButton(view, label('zoomIn'), () => changeEditorZoom(10));
-      addButton(view, label('focusMode'), () => { state.focusMode = !state.focusMode; $('workspace').classList.toggle('focus-mode', state.focusMode); });
+      addButton(view, label('focusMode'), () => { state.focusMode = !state.focusMode; $('workspace').classList.toggle('focus-mode', state.focusMode);
+    $('workspace').classList.toggle('todo-mode', isTodo); });
     }
   } else if (app === 'sheets') {
     if (tab === 'home') {
@@ -292,6 +306,149 @@ function duplicateSlide(){const d=activeDoc(),copy=clone(d.slides[d.current]);d.
 function deleteSlide(){const d=activeDoc();if(d.slides.length===1){alert('A presentation needs at least one slide.');return;}d.slides.splice(d.current,1);d.current=Math.max(0,d.current-1);renderSlides();renderToolbar();persist();}
 function presentSlides(){const d=activeDoc();let i=d.current;const overlay=document.createElement('div');overlay.className='presentation-overlay';const slide=document.createElement('div');slide.className='presentation-slide';const title=document.createElement('h1'),body=document.createElement('p'),footer=document.createElement('div');footer.className='presentation-footer';footer.textContent='Click or press an arrow key to move · Esc to exit';slide.append(title,body,footer);overlay.append(slide);document.body.append(overlay);
   const draw=()=>{title.textContent=d.slides[i].title;body.textContent=d.slides[i].body;};const key=(e)=>{if(e.key==='Escape'){overlay.remove();document.removeEventListener('keydown',key);}else if(e.key==='ArrowRight'){i=Math.min(d.slides.length-1,i+1);draw();}else if(e.key==='ArrowLeft'){i=Math.max(0,i-1);draw();}};overlay.addEventListener('click',()=>{i=Math.min(d.slides.length-1,i+1);draw();});document.addEventListener('keydown',key);draw();}
+function todoTasks() { return Array.isArray(activeDoc().tasks) ? activeDoc().tasks : (activeDoc().tasks = []); }
+function saveTodoTasks() { persist(); $('todo-status').textContent = 'Saved on this device'; }
+function replaceTodoTask(id, patch) {
+  const tasks = todoTasks();
+  const index = tasks.findIndex(task => task.id === id);
+  if (index < 0) return;
+  tasks[index] = window.BrightdeskTodoService.updateTask(tasks[index], patch);
+  saveTodoTasks(); renderTodoWorkspace();
+}
+function renderTodoWorkspace() {
+  const view = state.todoView || 'my-day';
+  const titles = { 'my-day': 'My Day', important: 'Important', planned: 'Planned', tasks: 'Tasks', completed: 'Completed' };
+  const descriptions = { 'my-day': 'Focus on what you want to get done today.', important: 'Keep your most important tasks close.', planned: 'See tasks that have a due date.', tasks: 'Everything you still need to do.', completed: 'Look back at what you have finished.' };
+  $('todo-view-title').textContent = titles[view] || 'Tasks';
+  $('todo-view-description').textContent = descriptions[view] || descriptions.tasks;
+  $('todo-search').value = state.todoQuery || '';
+  document.querySelectorAll('[data-todo-view]').forEach(button => button.classList.toggle('active', button.dataset.todoView === view));
+  const now = new Date();
+  const today = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+  const tasks = window.BrightdeskTodoService.filterTasks(todoTasks(), { view, query: state.todoQuery, today });
+  $('todo-task-count').textContent = `${tasks.length} ${tasks.length === 1 ? 'task' : 'tasks'}`;
+  const list = $('todo-task-list'); list.innerHTML = '';
+  if (!tasks.length) {
+    const empty = document.createElement('div'); empty.className = 'todo-empty';
+    const heading = document.createElement('b'); heading.textContent = state.todoQuery ? 'No matching tasks' : (view === 'completed' ? 'Nothing completed yet' : 'All clear for now');
+    const message = document.createElement('p'); message.textContent = state.todoQuery ? 'Try another search.' : (view === 'my-day' ? 'Add a task above to start your day.' : 'Tasks that match this view will appear here.');
+    empty.append(heading, message); list.append(empty); return;
+  }
+  tasks.forEach(task => {
+    const card = document.createElement('article'); card.className = 'todo-task-card'; card.setAttribute('role','listitem');
+    const main = document.createElement('div'); main.className = 'todo-task-main';
+    const check = document.createElement('input'); check.type = 'checkbox'; check.checked = task.completed; check.className = 'todo-complete'; check.setAttribute('aria-label', task.completed ? `Restore ${task.title}` : `Complete ${task.title}`);
+    check.addEventListener('change', () => { const tasksNow = todoTasks(); const i = tasksNow.findIndex(item => item.id === task.id); if (i >= 0) { tasksNow[i] = window.BrightdeskTodoService.setCompleted(tasksNow[i], check.checked); saveTodoTasks(); renderTodoWorkspace(); } });
+    const textWrap = document.createElement('div'); textWrap.className = 'todo-task-text';
+    const title = document.createElement('b'); title.className = task.completed ? 'completed' : ''; title.textContent = task.title;
+    textWrap.append(title);
+    if (task.notes) { const notes = document.createElement('p'); notes.textContent = task.notes; textWrap.append(notes); }
+    const meta = document.createElement('div'); meta.className = 'todo-task-meta';
+    if (task.dueDate) { const due = document.createElement('span'); due.textContent = `Due ${new Date(`${task.dueDate}T12:00:00`).toLocaleDateString()}`; if (!task.completed && task.dueDate < today) due.classList.add('overdue'); meta.append(due); }
+    if (task.priority !== 'normal') { const priority = document.createElement('span'); priority.className = `todo-priority ${task.priority}`; priority.textContent = `${task.priority[0].toUpperCase()}${task.priority.slice(1)} priority`; meta.append(priority); }
+    if (task.myDay) { const day = document.createElement('span'); day.textContent = 'My Day'; meta.append(day); }
+    if (meta.childNodes.length) textWrap.append(meta);
+    main.append(check, textWrap); card.append(main);
+    const actions = document.createElement('div'); actions.className = 'todo-task-actions';
+    const important = document.createElement('button'); important.type = 'button'; important.className = task.important ? 'todo-icon-button selected' : 'todo-icon-button'; important.textContent = task.important ? '★' : '☆'; important.title = task.important ? 'Remove from Important' : 'Mark as Important'; important.setAttribute('aria-label', important.title); important.addEventListener('click', () => replaceTodoTask(task.id, { important: !task.important })); actions.append(important);
+    const myDay = document.createElement('button'); myDay.type = 'button'; myDay.className = 'todo-icon-button'; myDay.textContent = task.myDay ? '−' : '+'; myDay.title = task.myDay ? 'Remove from My Day' : 'Add to My Day'; myDay.setAttribute('aria-label', myDay.title); myDay.addEventListener('click', () => replaceTodoTask(task.id, { myDay: !task.myDay })); actions.append(myDay);
+    const edit = document.createElement('button'); edit.type = 'button'; edit.className = 'todo-text-button'; edit.textContent = 'Edit'; edit.addEventListener('click', () => { const form = card.querySelector('.todo-edit-form'); if (form) { form.hidden = !form.hidden; return; } const editForm = document.createElement('form'); editForm.className = 'todo-edit-form';
+      const titleInput = document.createElement('input'); titleInput.type = 'text'; titleInput.maxLength = 240; titleInput.required = true; titleInput.value = task.title; titleInput.setAttribute('aria-label','Task title');
+      const notesInput = document.createElement('textarea'); notesInput.value = task.notes || ''; notesInput.placeholder = 'Add notes'; notesInput.setAttribute('aria-label','Task notes');
+      const dueInput = document.createElement('input'); dueInput.type = 'date'; dueInput.value = task.dueDate || ''; dueInput.setAttribute('aria-label','Due date');
+      const priorityInput = document.createElement('select'); priorityInput.setAttribute('aria-label','Priority'); [['low','Low'],['normal','Normal'],['high','High']].forEach(([value,label]) => { const option = document.createElement('option'); option.value=value; option.textContent=label; priorityInput.append(option); }); priorityInput.value=task.priority;
+      const save = document.createElement('button'); save.type='submit'; save.className='primary small-action'; save.textContent='Save'; const cancel = document.createElement('button'); cancel.type='button'; cancel.className='secondary small-action'; cancel.textContent='Cancel'; cancel.addEventListener('click',()=>editForm.remove());
+      editForm.append(titleInput,notesInput,dueInput,priorityInput,save,cancel); editForm.addEventListener('submit',event=>{event.preventDefault();try{replaceTodoTask(task.id,{title:titleInput.value,notes:notesInput.value,dueDate:dueInput.value,priority:priorityInput.value});}catch(error){$('todo-status').textContent=error.message;}}); card.append(editForm); titleInput.focus(); }); actions.append(edit);
+    const remove = document.createElement('button'); remove.type='button'; remove.className='todo-text-button danger'; remove.textContent='Delete'; remove.addEventListener('click',()=>{if(!window.confirm(`Delete “${task.title}”?`))return; activeDoc().tasks=window.BrightdeskTodoService.deleteTask(todoTasks(),task.id); saveTodoTasks(); renderTodoWorkspace();}); actions.append(remove);
+    card.append(actions); list.append(card);
+  });
+}
+function createTodoTask(event) {
+  event.preventDefault();
+  try {
+    const input = $('todo-new-title');
+    const task = window.BrightdeskTodoService.createTask({ title: input.value, myDay: state.todoView === 'my-day' });
+    todoTasks().push(task); saveTodoTasks(); input.value = ''; renderTodoWorkspace(); input.focus();
+  } catch (error) { $('todo-status').textContent = error.message; }
+}
+
+let selectedListId = null;
+let listQuery = '';
+let listStatusFilter = '';
+function allLists() { const doc = activeDoc(); if (!Array.isArray(doc.lists)) doc.lists = []; return doc.lists; }
+function currentList() { return allLists().find(list => list.id === selectedListId) || null; }
+function saveLists() { persist(); const status = $('lists-status'); if (status) status.textContent = 'Saved on this device'; }
+function renderListsWorkspace() {
+  const lists = allLists();
+  if (!selectedListId || !lists.some(list => list.id === selectedListId)) selectedListId = lists[0]?.id || null;
+  const sidebar = $('lists-sidebar-items'); sidebar.innerHTML = '';
+  lists.forEach(list => {
+    const button = document.createElement('button'); button.type = 'button'; button.className = 'lists-side-item' + (list.id === selectedListId ? ' active' : '');
+    button.textContent = list.title; button.addEventListener('click', () => { selectedListId = list.id; renderListsWorkspace(); }); sidebar.append(button);
+  });
+  const list = currentList();
+  $('lists-empty').hidden = Boolean(list);
+  $('lists-detail').hidden = !list;
+  if (!list) { $('lists-title').textContent = 'Your lists'; $('lists-record-count').textContent = '0 records'; return; }
+  $('lists-title').textContent = list.title;
+  $('lists-description').textContent = list.description || 'Keep your records organised in one place.';
+  const filtered = window.BrightdeskListsService.filterItems(list, { query: listQuery, status: listStatusFilter });
+  $('lists-record-count').textContent = `${filtered.length} of ${list.items.length} records`;
+  const table = $('lists-table'); table.innerHTML = '';
+  const head = document.createElement('thead'), headRow = document.createElement('tr');
+  list.columns.forEach(column => { const th = document.createElement('th'); th.textContent = column.name; headRow.append(th); });
+  const actionsHead = document.createElement('th'); actionsHead.textContent = 'Actions'; headRow.append(actionsHead); head.append(headRow); table.append(head);
+  const body = document.createElement('tbody');
+  filtered.forEach(item => {
+    const tr = document.createElement('tr');
+    list.columns.forEach(column => { const td = document.createElement('td'); td.textContent = item.values[column.id] || '—'; tr.append(td); });
+    const actions = document.createElement('td');
+    const edit = document.createElement('button'); edit.type='button'; edit.className='lists-row-action'; edit.textContent='Edit'; edit.addEventListener('click',()=>openListRecordForm(item)); actions.append(edit);
+    const remove = document.createElement('button'); remove.type='button'; remove.className='lists-row-action danger'; remove.textContent='Delete'; remove.addEventListener('click',()=>{if(!confirm('Delete this record?'))return;const next=window.BrightdeskListsService.deleteItem(list,item.id);replaceCurrentList(next);}); actions.append(remove);
+    tr.append(actions); body.append(tr);
+  });
+  if (!filtered.length) { const tr=document.createElement('tr'),td=document.createElement('td'); td.colSpan=list.columns.length+1; td.className='lists-no-records'; td.textContent=listQuery||listStatusFilter?'No records match these filters.':'No records yet. Add your first record above.'; tr.append(td); body.append(tr); }
+  table.append(body);
+  const columnSelect=$('lists-sort-column'); columnSelect.innerHTML='';
+  list.columns.forEach(column=>{const option=document.createElement('option');option.value=column.id;option.textContent=column.name;columnSelect.append(option);});
+}
+function replaceCurrentList(next) { const lists=allLists(),i=lists.findIndex(item=>item.id===next.id); if(i>=0)lists[i]=next; saveLists(); renderListsWorkspace(); }
+function createBrightdeskList(event) {
+  event.preventDefault();
+  try { const title=$('lists-new-name').value; const description=$('lists-new-description').value; const list=window.BrightdeskListsService.createList({title,description}); allLists().push(list); selectedListId=list.id; $('lists-new-list-form').reset(); saveLists(); renderListsWorkspace(); }
+  catch(error) { $('lists-status').textContent=error.message; }
+}
+function openListRecordForm(item=null) {
+  const list=currentList(); if(!list)return;
+  const form=$('lists-record-form'); form.innerHTML='';
+  list.columns.forEach(column=>{
+    const label=document.createElement('label'); label.className='lists-field'; label.textContent=column.name;
+    let input;
+    if(column.type==='choice'){input=document.createElement('select');(column.options||[]).forEach(value=>{const option=document.createElement('option');option.value=value;option.textContent=value;input.append(option);});}
+    else {input=document.createElement('input');input.type=column.type==='date'?'date':'text';}
+    input.name=column.id; input.value=item?.values?.[column.id]||''; if(column.required)input.required=true; label.append(input); form.append(label);
+  });
+  const save=document.createElement('button');save.type='submit';save.className='primary';save.textContent=item?'Save changes':'Add record';form.append(save);
+  const cancel=document.createElement('button');cancel.type='button';cancel.className='secondary';cancel.textContent='Cancel';cancel.addEventListener('click',()=>{form.hidden=true;});form.append(cancel);
+  form.dataset.itemId=item?.id||'';form.hidden=false;
+}
+function saveListRecord(event) {
+  event.preventDefault();const list=currentList();if(!list)return;
+  try { const values={};list.columns.forEach(column=>{values[column.id]=$('lists-record-form').elements.namedItem(column.id)?.value||'';});
+    const itemId=$('lists-record-form').dataset.itemId;
+    const next=itemId?window.BrightdeskListsService.updateItem(list,itemId,{values}):window.BrightdeskListsService.addItem(list,{values});
+    $('lists-record-form').hidden=true;replaceCurrentList(next);
+  } catch(error) {$('lists-status').textContent=error.message;}
+}
+function addBrightdeskListColumn(event) {
+  event.preventDefault();const list=currentList();if(!list)return;
+  try { const name=$('lists-column-name').value;const type=$('lists-column-type').value;const options=$('lists-column-options').value.split(',').map(v=>v.trim()).filter(Boolean);
+    const next=window.BrightdeskListsService.addColumn(list,{name,type,options});$('lists-column-form').reset();replaceCurrentList(next);
+  } catch(error) {$('lists-status').textContent=error.message;}
+}
+function renameCurrentList() { const list=currentList();if(!list)return;const title=prompt('List name',list.title);if(title===null)return;try{replaceCurrentList(window.BrightdeskListsService.renameList(list,title));}catch(error){$('lists-status').textContent=error.message;} }
+function deleteCurrentList() { const list=currentList();if(!list||!confirm(`Delete the list “${list.title}” and all its records?`))return;const lists=allLists();activeDoc().lists=lists.filter(item=>item.id!==list.id);selectedListId=null;saveLists();renderListsWorkspace(); }
+
 function renderGenericWorkspace() {
   const doc = activeDoc();
   editor.hidden = false; sheetWrap.hidden = true; slideWrap.hidden = true; notesWrap.hidden = true;
@@ -598,7 +755,7 @@ function render() {
   const manager = state.view === 'manager';
   const languages = state.view === 'languages';
   $('app-manager').hidden = !manager; $('language-manager').hidden = !languages;
-  $('workspace').hidden = manager || languages; $('welcome').hidden = manager || languages;
+  $('workspace').hidden = manager || languages; $('welcome').hidden = manager || languages || ['todo','lists','forms','planner','database','loop'].includes(state.app);
   $('app-title').textContent = manager ? t('sidebar.getApps') : (languages ? t('language.title') : (catalog.find(item => item.id === state.app)?.name || state.app));
   $('top-actions').hidden = manager || languages;
   if (manager) {
@@ -611,13 +768,28 @@ function render() {
     editor.setAttribute('data-placeholder', t('common.startTyping'));
     const doc = activeDoc();
     $('doc-title').value = doc.title || defaults[state.app].title;
+    const isTodo = state.app === 'todo';
+    const isLists = state.app === 'lists';
+    const isForms = state.app === 'forms';
+    const isPlanner = state.app === 'planner';
+    const isDatabase = state.app === 'database';
+    const isWorkspace = state.app === 'loop';
+    $('todo-wrap').hidden = !isTodo; $('lists-wrap').hidden = !isLists; $('forms-wrap').hidden = !isForms; $('planner-wrap').hidden = !isPlanner; $('database-wrap').hidden = !isDatabase; $('workspace-app-wrap').hidden = !isWorkspace;
+    $('open-button').hidden = isTodo || isLists || isForms || isPlanner || isDatabase || isWorkspace; $('save-project').hidden = isTodo || isLists || isForms || isPlanner || isDatabase || isWorkspace; $('export-button').hidden = isTodo || isLists || isForms || isPlanner || isDatabase || isWorkspace;
+    document.querySelector('.document-bar').hidden = isTodo || isLists || isForms || isPlanner || isDatabase || isWorkspace; $('ribbon-tabs').hidden = isTodo || isLists || isForms || isPlanner || isDatabase || isWorkspace; $('toolbar').hidden = isTodo || isLists || isForms || isPlanner || isDatabase || isWorkspace;
     editor.hidden = !['pages'].includes(state.app); sheetWrap.hidden = state.app !== 'sheets'; slideWrap.hidden = state.app !== 'slides'; notesWrap.hidden = !['notes'].includes(state.app);
     editor.innerHTML = state.app === 'pages' ? safeHtml(doc.html) : '';
     if (state.app === 'pages') applyPageLayout(); else editor.removeAttribute('style');
     $('notes-editor').value = state.app === 'notes' ? (doc.text || '') : '';
     updateDocumentLanguage();
     if (state.app === 'sheets') renderSheet(); if (state.app === 'slides') renderSlides();
-    if (!['pages','sheets','slides','notes'].includes(state.app)) renderGenericWorkspace();
+    if (isTodo) renderTodoWorkspace();
+    else if (isLists) renderListsWorkspace();
+    else if (isForms) window.BrightdeskFormsUI.render();
+    else if (isPlanner) window.BrightdeskPlannerUI.render();
+    else if (isDatabase) window.BrightdeskDatabaseUI.render();
+    else if (isWorkspace) window.BrightdeskWorkspaceUI.render();
+    else if (!['pages','sheets','slides','notes'].includes(state.app)) renderGenericWorkspace();
     renderToolbar();
     $('workspace').classList.toggle('focus-mode', state.focusMode);
   }
@@ -673,7 +845,7 @@ function importProject(data){
 function escapeHtml(value){return String(value).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));}
 async function openFile(){try{const data=await window.brightdesk.openFile();if(!data)return;importProject(data);persist();render();setStatus('File opened');}catch(error){alert(`Could not open file: ${error.message}`);}}
 async function saveProject(){try{const result=await window.brightdesk.saveProject({title:$('doc-title').value,docs:state.docs});if(!result?.canceled)setStatus('Project saved');}catch(error){alert(`Could not save project: ${error.message}`);}}
-function setApp(app){if((launchAppId && app !== launchAppId) || !configs[app] || !installedApp(app))return;state.app=app;state.view='workspace';state.ribbonTab='home';render();persist();}
+function setApp(app){if((launchAppId && app !== launchAppId) || !(configs[app] || genericConfigs[app]) || !installedApp(app))return;state.app=app;state.view='workspace';state.ribbonTab='home';render();persist();}
 
 document.querySelectorAll('.nav[data-app]').forEach(btn=>btn.addEventListener('click',()=>setApp(btn.dataset.app)));
 $('manage-apps').addEventListener('click',()=>{if (launchAppId) return; state.view='manager';render();});
@@ -688,6 +860,19 @@ $('finish-app-setup').addEventListener('click',()=>{if(state.setupComplete){stat
 $('doc-title').addEventListener('change',()=>{activeDoc().title=$('doc-title').value;persist();});
 editor.addEventListener('input',()=>{activeDoc().html=editor.innerHTML;persist();});
 $('notes-editor').addEventListener('input',()=>{activeDoc().text=$('notes-editor').value;persist();});
+$('todo-create-form').addEventListener('submit', createTodoTask);
+$('todo-search').addEventListener('input', event => { state.todoQuery = event.target.value; renderTodoWorkspace(); });
+document.querySelectorAll('[data-todo-view]').forEach(button => button.addEventListener('click', () => { state.todoView = button.dataset.todoView; renderTodoWorkspace(); }));
+$('lists-new-list-form').addEventListener('submit', createBrightdeskList);
+$('lists-record-form').addEventListener('submit', saveListRecord);
+$('lists-add-record').addEventListener('click',()=>openListRecordForm());
+$('lists-column-form').addEventListener('submit',addBrightdeskListColumn);
+$('lists-search').addEventListener('input',event=>{listQuery=event.target.value;renderListsWorkspace();});
+$('lists-status-filter').addEventListener('change',event=>{listStatusFilter=event.target.value;renderListsWorkspace();});
+$('lists-sort-button').addEventListener('click',()=>{const list=currentList();if(!list)return;const sorted=window.BrightdeskListsService.sortItems(list.items,$('lists-sort-column').value,$('lists-sort-direction').value);list.items=sorted;saveLists();renderListsWorkspace();});
+$('lists-rename').addEventListener('click',renameCurrentList);
+$('lists-delete').addEventListener('click',deleteCurrentList);
+$('lists-column-type').addEventListener('change',()=>{$('lists-column-options-wrap').hidden=$('lists-column-type').value!=='choice';});
 $('export-button').addEventListener('click',exportCurrent);$('open-button').addEventListener('click',openFile);$('save-project').addEventListener('click',saveProject);
 $('updates-button').addEventListener('click',async()=>{const msg=$('update-message');msg.hidden=false;msg.textContent=t('common.updateChecking');try{const r=await window.brightdesk.checkForUpdates();if(!r?.ok)msg.textContent=r?.message||'Update checks are not configured yet.';}catch(e){msg.textContent=`Update check failed: ${e.message}`;}});
 window.brightdesk.onUpdateState?.(updateState=>{const msg=$('update-message');msg.hidden=false;msg.textContent=updateState.message;if(updateState.status==='available'){msg.textContent=updateState.message;}if(updateState.status==='downloaded'){const button=document.createElement('button');button.className='text-button';button.textContent=t('common.restartInstall');button.onclick=()=>window.brightdesk.installUpdate();msg.append(' ',button);}});
