@@ -22,7 +22,7 @@ Brightdesk keeps one complete desktop suite and gives each approved app its own 
 | Brightdesk To Do | [Brightdesk-To-Do](https://github.com/connormolloy12/Brightdesk-To-Do) | `todo` |
 | Brightdesk Workspace | [Brightdesk-Workspace](https://github.com/connormolloy12/Brightdesk-Workspace) | `loop` |
 
-The links above are the intended repository names. A repository is only considered created once GitHub confirms that it exists.
+These are the exact intended repository names. Each remains pending until its GitHub repository has been created and the seed has been pushed.
 
 ## Prepare the repository contents
 
