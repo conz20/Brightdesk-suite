@@ -8,7 +8,7 @@ const path = require('node:path');
 const { versionAtLeast, runPreflight, APPROVED_IDS } = require('../scripts/release-preflight');
 const { verifyArtifacts } = require('../scripts/verify-release-artifacts');
 
- test('version comparison handles major, minor and patch versions', () => {
+test('version comparison handles major, minor and patch versions', () => {
   assert.equal(versionAtLeast('24.0.0', '24.0.0'), true);
   assert.equal(versionAtLeast('24.1.0', '24.0.0'), true);
   assert.equal(versionAtLeast('23.99.99', '24.0.0'), false);
@@ -22,6 +22,15 @@ test('release preflight reports current environment blockers without pretending 
   assert.ok(result.blockers.some(item => item.name === 'Node.js version'));
   assert.ok(result.blockers.some(item => item.name === 'Dependency lockfile'));
   assert.deepEqual(require('../src/app-catalog').map(item => item.id), APPROVED_IDS);
+});
+
+test('release preflight treats all ten approved apps as release-ready implementations', () => {
+  const root = path.resolve(__dirname, '..');
+  const result = runPreflight({ rootDir: root, nodeVersion: '24.22.2', platform: 'linux' });
+  const check = result.checks.find(item => item.name === 'All ten approved apps available');
+  assert.ok(check, 'preflight must include the integrated ten-app availability check');
+  assert.equal(check.passed, true);
+  assert.match(check.detail, /pages, sheets, slides, notes, database, forms, lists, planner, todo, loop/);
 });
 
 test('artifact verification requires all expected installer formats and writes SHA-256 sums', () => {
@@ -56,7 +65,6 @@ test('release terms are wired into native installers and the first-launch agreem
   assert.match(main, /termsSha256/);
   assert.match(main, /createAgreementWindow/);
 });
-
 
 test('exact Node.js 24.22.2 runtime is required for release preflight', () => {
   const root = path.resolve(__dirname, '..');
