@@ -144,9 +144,7 @@ test('the standalone build scripts reject unknown app and platform identifiers',
   assert.match(config, /Set BRIGHTDESK_APP_ID/);
   const builds = fs.readFileSync(path.join(root, 'scripts', 'build-apps.js'), 'utf8');
   assert.match(builds, /\['pages', 'sheets', 'slides', 'notes', 'database', 'forms', 'lists', 'planner', 'todo', 'loop'\]/);
-  for (const id of ['database','forms','lists','planner','todo','loop']) {
-    assert.match(builds, new RegExp(`build-app\\.js', ${id}, platform`) .source === '' ? /never/ : new RegExp(id));
-  }
+  assert.match(builds, /for \(const appId of apps\)/);
   const main = fs.readFileSync(path.join(root, 'src', 'main.js'), 'utf8');
   const preload = fs.readFileSync(path.join(root, 'src', 'preload.js'), 'utf8');
   for (const id of ['pages','sheets','slides','notes','database','forms','lists','planner','todo','loop']) {
@@ -155,6 +153,19 @@ test('the standalone build scripts reject unknown app and platform identifiers',
   }
 });
 
+
+test('the app centre offers a standalone download action for all ten apps', () => {
+  const fs = require('node:fs');
+  const path = require('node:path');
+  const root = path.join(__dirname, '..');
+  const renderer = fs.readFileSync(path.join(root, 'src', 'app.js'), 'utf8');
+  const preload = fs.readFileSync(path.join(root, 'src', 'preload.js'), 'utf8');
+  const main = fs.readFileSync(path.join(root, 'src', 'main.js'), 'utf8');
+  assert.match(renderer, /downloadStandaloneApp\(item\.id\)/);
+  assert.match(renderer, /Download standalone/);
+  assert.match(preload, /downloadStandaloneApp/);
+  assert.match(main, /downloads:standalone-app/);
+});
 
 test('every first-release app has its own original preview artwork and the launcher displays it', () => {
   const fs = require('node:fs');
