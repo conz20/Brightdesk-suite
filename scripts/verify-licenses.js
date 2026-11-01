@@ -75,11 +75,16 @@ function collectInstalledPackages(nodeModulesDir) {
       if (!fs.existsSync(manifestPath)) continue;
       const manifest = readJson(manifestPath, `package manifest ${manifestPath}`);
       if (typeof manifest.name === 'string' && typeof manifest.version === 'string') {
+        const packageKey = `${manifest.name}@${manifest.version}`;
+        const declaredLicense = normalizeLicense(manifest);
+        const reviewedOverride = REVIEWED_LICENSE_OVERRIDES[packageKey];
+        const license = declaredLicense || reviewedOverride?.license || '';
         packages.push({
           name: manifest.name,
           version: manifest.version,
-          license: normalizeLicense(manifest),
-          licenseFile: findLicenseFile(packageDir, normalizeLicense(manifest)),
+          license,
+          licenseSource: declaredLicense ? 'package metadata' : reviewedOverride?.source || '',
+          licenseFile: findLicenseFile(packageDir, license),
           packageDir
         });
       }
@@ -134,6 +139,10 @@ function auditProject({ rootDir, nodeModulesDir, outputPath }) {
   for (const item of packages) {
     lines.push(`## ${item.name}@${item.version}`, '');
     lines.push(`Declared licence: ${item.license || 'Not stated in package metadata; licence file supplied'}`);
+    if (item.licenseSource && item.licenseSource !== 'package metadata') {
+      lines.push(`Reviewed licence source: ${item.licenseSource}`);
+      lines.push('Note: the published npm tarball omits this field; the matching upstream version metadata declares MIT/X11.');
+    }
     if (item.licenseFile) {
       lines.push(`Licence file: ${item.licenseFile}`, '', '```text', item.licenseFile.text.trim(), '```');
     } else {
