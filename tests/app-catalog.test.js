@@ -156,7 +156,7 @@ test('the standalone build scripts reject unknown app and platform identifiers',
 });
 
 
-test('the app centre offers a standalone download action for all ten apps', () => {
+test('the Brightdesk product centre offers a desktop download for all ten products', () => {
   const fs = require('node:fs');
   const path = require('node:path');
   const root = path.join(__dirname, '..');
@@ -164,7 +164,7 @@ test('the app centre offers a standalone download action for all ten apps', () =
   const preload = fs.readFileSync(path.join(root, 'src', 'preload.js'), 'utf8');
   const main = fs.readFileSync(path.join(root, 'src', 'main.js'), 'utf8');
   assert.match(renderer, /downloadStandaloneApp\(item\.id\)/);
-  assert.match(renderer, /Download standalone/);
+  assert.match(renderer, /Download desktop version/);
   assert.match(preload, /downloadStandaloneApp/);
   assert.match(main, /downloads:standalone-app/);
 });
