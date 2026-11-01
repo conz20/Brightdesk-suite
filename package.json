@@ -146,5 +146,6 @@
       "conclusion": "installer/mac-conclusion.txt",
       "installLocation": "/Applications"
     }
-  }
+  },
+  "desktopName": "org.brightdesk.suite.desktop"
 }
