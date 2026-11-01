@@ -42,6 +42,36 @@ const PRODUCT_REPOSITORIES = Object.freeze(catalog.map(product => Object.freeze(
 // Backwards-compatible internal alias used by the existing Pages test harness.
 const APP_REPOSITORIES = PRODUCT_REPOSITORIES;
 
+const PRODUCT_TEST_FILES = Object.freeze([
+  'tests/app-repository-seeds.test.js',
+  'tests/database-service.test.js',
+  'tests/database-ui-integration.test.js',
+  'tests/dictionary-service.test.js',
+  'tests/file-service.test.js',
+  'tests/forms-service.test.js',
+  'tests/forms-ui-integration.test.js',
+  'tests/formula.test.js',
+  'tests/installer-agreement.test.js',
+  'tests/integrated-app-shell.test.js',
+  'tests/language-service.test.js',
+  'tests/license-verification.test.js',
+  'tests/lists-service.test.js',
+  'tests/lists-ui-integration.test.js',
+  'tests/node-runtime-setup.test.js',
+  'tests/page-layout.test.js',
+  'tests/planner-service.test.js',
+  'tests/planner-ui-integration.test.js',
+  'tests/rea-bench.test.js',
+  'tests/release-readiness.test.js',
+  'tests/resource-protection.test.js',
+  'tests/standalone-downloads.test.js',
+  'tests/standalone-pages.test.js',
+  'tests/todo-service.test.js',
+  'tests/todo-ui-integration.test.js',
+  'tests/workspace-service.test.js',
+  'tests/workspace-ui-integration.test.js'
+]);
+
 const excludedDirectories = new Set(['.git', 'node_modules', 'release', 'reports', 'coverage', '.next', 'dist']);
 
 function escapeHtml(value) {
@@ -306,6 +336,7 @@ function makePackage(product, target) {
   manifest.build.productName = product.name;
   manifest.build.directories = { ...(manifest.build.directories || {}), output: 'release' };
   manifest.build.publish = [];
+  manifest.scripts.test = 'node --test ' + PRODUCT_TEST_FILES.join(' ');
   manifest.scripts['dist:product:win'] = `node scripts/build-app.js ${product.appId} win`;
   manifest.scripts['dist:product:mac'] = `node scripts/build-app.js ${product.appId} mac`;
   manifest.scripts['dist:product:linux'] = `node scripts/build-app.js ${product.appId} linux`;
