@@ -47,3 +47,26 @@ test('standalone download rejects unsupported operating systems', () => {
 test('standalone download validates the release version before building a URL', () => {
   assert.throws(() => createStandaloneDownload({ appId: 'pages', platform: 'win32', version: '../latest' }), /valid release version/);
 });
+
+test('standalone verifier can verify one app repository without requiring the other nine apps', () => {
+  const fs = require('node:fs');
+  const os = require('node:os');
+  const path = require('node:path');
+  const { expectedFilename, verifyStandaloneApps } = require('../scripts/verify-standalone-apps');
+  const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'brightdesk-one-app-'));
+  try {
+    const appDirectory = path.join(directory, 'pages');
+    fs.mkdirSync(appDirectory, { recursive: true });
+    for (const filename of expectedFilename('pages', 'mac', '0.1.0')) {
+      fs.writeFileSync(path.join(appDirectory, filename), 'verified test installer');
+    }
+    const result = verifyStandaloneApps({ directory, platform: 'mac', version: '0.1.0', appId: 'pages' });
+    assert.equal(result.appCount, 1);
+    assert.equal(result.apps[0].appId, 'pages');
+    assert.equal(result.fileCount, 3);
+    assert.ok(fs.existsSync(path.join(appDirectory, 'Brightdesk-pages-SHA256SUMS-MAC.txt')));
+    assert.throws(() => verifyStandaloneApps({ directory, platform: 'mac', version: '0.1.0', appId: 'outlook' }), /approved Brightdesk app/);
+  } finally {
+    fs.rmSync(directory, { recursive: true, force: true });
+  }
+});
