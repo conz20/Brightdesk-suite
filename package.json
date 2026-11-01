@@ -51,7 +51,7 @@
     "exceljs": "4.4.0",
     "fast-xml-parser": "5.11.2",
     "jszip": "3.10.2",
-    "mammoth": "1.12.2",
+    "mammoth": "1.13.0",
     "nspell": "2.1.5",
     "pptxgenjs": "4.0.1"
   },
