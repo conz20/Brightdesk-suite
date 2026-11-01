@@ -25,7 +25,7 @@ All ten products are integrated in the 0.1.0 codebase and have dedicated workspa
 
 The main Brightdesk installer contains all ten approved products. The Brightdesk Product Centre also provides a separate desktop installer for each product, so you can install only the product you need without installing the complete suite.
 
-The product downloads are built from the same tested source as the suite and are attached to the verified Brightdesk release. The product repositories provide separate homes for each product's code, documentation and artwork; see Product repositories in docs/APP-REPOSITORIES.md for the repository map.
+The product downloads are built from the same tested source as the suite and are attached to the verified Brightdesk release. The product repository folders provide separate homes for each product's code, documentation and artwork. Brightdesk-Pages is the only separate product repository currently confirmed to exist; the other nine product folders still need their GitHub repositories created and populated. See docs/PRODUCT-REPOSITORIES.md for the repository map.
 
 ## Supported installer targets
 
