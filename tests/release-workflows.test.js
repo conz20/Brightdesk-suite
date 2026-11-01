@@ -40,6 +40,10 @@ test('release workflow builds and verifies all three desktop platforms', () => {
   assert.match(workflow, /npm run release:preflight/);
   assert.match(workflow, /npm test/);
   assert.match(workflow, /npm audit --audit-level=high/);
+  assert.match(workflow, /name: Build standalone app installers/);
+  assert.match(workflow, /npm run dist:apps:\$\{\{ matrix\.script \}\}/);
+  assert.match(workflow, /name: Upload standalone app installers/);
+  assert.match(workflow, /release\\/apps\\/\$\{\{ matrix\.platform \}\}/);
 });
 
 test('pull-request builds never receive code-signing or notarisation secrets', () => {
