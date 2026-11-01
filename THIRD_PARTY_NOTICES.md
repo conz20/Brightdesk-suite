@@ -9,7 +9,7 @@ Packages checked: 463
 ## @electron-internal/extract-zip@1.0.8
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 MIT License
@@ -38,7 +38,7 @@ SOFTWARE.
 ## @electron/asar@3.4.1
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE.md
 
 ```text
 Copyright (c) 2014 GitHub Inc.
@@ -66,7 +66,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ## @electron/fuses@1.8.0
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 Copyright (c) 2020 Electron Maintainers.
@@ -94,7 +94,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ## @electron/get@3.1.0
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 MIT License
@@ -123,7 +123,7 @@ SOFTWARE.
 ## @electron/get@5.1.0
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 MIT License
@@ -152,7 +152,7 @@ SOFTWARE.
 ## @electron/notarize@2.5.0
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 Copyright 2018 Samuel Attard and contributors
@@ -167,7 +167,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 ## @electron/osx-sign@1.3.3
 
 Declared licence: BSD-2-Clause
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 Copyright (c) Electron contributors
@@ -199,7 +199,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ## @electron/rebuild@4.2.1
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 MIT License
@@ -228,7 +228,7 @@ SOFTWARE.
 ## @electron/universal@2.0.3
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 MIT License
@@ -257,7 +257,7 @@ SOFTWARE.
 ## @electron/windows-sign@1.2.2
 
 Declared licence: BSD-2-Clause
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 Copyright (c) Felix Rieseberg
@@ -288,7 +288,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ## @fast-csv/format@4.3.5
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 The MIT License
@@ -317,7 +317,7 @@ THE SOFTWARE.
 ## @fast-csv/parse@4.3.6
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 The MIT License
@@ -346,7 +346,7 @@ THE SOFTWARE.
 ## @isaacs/fs-minipass@4.0.1
 
 Declared licence: ISC
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 The ISC License
@@ -369,7 +369,7 @@ IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 ## @malept/cross-spawn-promise@2.0.0
 
 Declared licence: Apache-2.0
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 Apache License
@@ -578,7 +578,7 @@ Apache License
 ## @malept/flatpak-bundler@0.4.0
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 Copyright (c) 2016 Endless Mobile, Inc.
@@ -605,7 +605,7 @@ SOFTWARE.
 ## @noble/hashes@1.8.0
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 The MIT License (MIT)
@@ -639,7 +639,7 @@ The package did not include a recognised standalone licence text file; its decla
 ## @peculiar/asn1-schema@2.11.1
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 MIT License
@@ -668,7 +668,7 @@ SOFTWARE.
 ## @peculiar/json-schema@1.1.12
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 MIT License
@@ -697,7 +697,7 @@ SOFTWARE.
 ## @peculiar/utils@2.0.3
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 MIT License
@@ -726,7 +726,7 @@ SOFTWARE.
 ## @peculiar/webcrypto@1.7.2
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE.md
 
 ```text
 MIT License
@@ -760,7 +760,7 @@ The package did not include a recognised standalone licence text file; its decla
 ## @szmarczak/http-timer@4.0.6
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 MIT License
@@ -789,7 +789,7 @@ SOFTWARE.
 ## @types/cacheable-request@6.0.3
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 MIT License
@@ -818,7 +818,7 @@ MIT License
 ## @types/debug@4.1.13
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 MIT License
@@ -847,7 +847,7 @@ MIT License
 ## @types/fs-extra@9.0.13
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 MIT License
@@ -876,7 +876,7 @@ MIT License
 ## @types/http-cache-semantics@4.2.0
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 MIT License
@@ -905,7 +905,7 @@ MIT License
 ## @types/keyv@3.1.4
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 MIT License
@@ -934,7 +934,7 @@ MIT License
 ## @types/ms@2.1.0
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 MIT License
@@ -963,7 +963,7 @@ MIT License
 ## @types/node@14.18.63
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 MIT License
@@ -992,7 +992,7 @@ MIT License
 ## @types/node@14.18.63
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 MIT License
@@ -1021,7 +1021,7 @@ MIT License
 ## @types/node@22.20.5
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 MIT License
@@ -1050,7 +1050,7 @@ MIT License
 ## @types/node@24.19.2
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 MIT License
@@ -1079,7 +1079,7 @@ MIT License
 ## @types/node@26.6.6
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 MIT License
@@ -1108,7 +1108,7 @@ MIT License
 ## @types/responselike@1.0.3
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 MIT License
@@ -1137,7 +1137,7 @@ MIT License
 ## @xmldom/xmldom@0.8.15
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 Copyright 2019 - present Christopher J. Brody and other contributors, as listed in: https://github.com/xmldom/xmldom/graphs/contributors
@@ -1153,7 +1153,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 ## abbrev@4.0.0
 
 Declared licence: ISC
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 This software is dual-licensed under the ISC and MIT licenses.
@@ -1207,7 +1207,7 @@ OTHER DEALINGS IN THE SOFTWARE.
 ## agent-base@7.1.4
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 (The MIT License)
@@ -1237,7 +1237,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ## ajv@8.20.0
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 The MIT License (MIT)
@@ -1276,7 +1276,7 @@ The package did not include a recognised standalone licence text file; its decla
 ## anynum@1.0.1
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 MIT License
@@ -1310,7 +1310,7 @@ The package did not include a recognised standalone licence text file; its decla
 ## archiver@5.3.2
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 Copyright (c) 2012-2014 Chris Talkington, contributors.
@@ -1340,7 +1340,7 @@ OTHER DEALINGS IN THE SOFTWARE.
 ## archiver-utils@2.1.0
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 Copyright (c) 2015 Chris Talkington.
@@ -1370,7 +1370,7 @@ OTHER DEALINGS IN THE SOFTWARE.
 ## archiver-utils@3.0.4
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 Copyright (c) 2015 Chris Talkington.
@@ -1400,7 +1400,7 @@ OTHER DEALINGS IN THE SOFTWARE.
 ## argparse@1.0.10
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 (The MIT License)
@@ -1429,7 +1429,7 @@ THE SOFTWARE.
 ## argparse@2.0.1
 
 Declared licence: Python-2.0
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 A. HISTORY OF THE SOFTWARE
@@ -1691,7 +1691,7 @@ OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 ## array-buffer-byte-length@1.0.2
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 MIT License
@@ -1720,7 +1720,7 @@ SOFTWARE.
 ## arraybuffer.prototype.slice@1.0.4
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 MIT License
@@ -1749,7 +1749,7 @@ SOFTWARE.
 ## asn1js@3.1.0
 
 Declared licence: BSD-3-Clause
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 Copyright (c) 2014, GMO GlobalSign
@@ -1787,7 +1787,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ## async@3.2.6
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 Copyright (c) 2010-2018 Caolan McMahon
@@ -1819,7 +1819,7 @@ The package did not include a recognised standalone licence text file; its decla
 ## async-function@1.0.0
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 MIT License
@@ -1848,7 +1848,7 @@ SOFTWARE.
 ## asynckit@0.4.0
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 The MIT License (MIT)
@@ -1877,7 +1877,7 @@ SOFTWARE.
 ## at-least-node@1.0.0
 
 Declared licence: ISC
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 The ISC License
@@ -1891,7 +1891,7 @@ THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH RE
 ## available-typed-arrays@1.0.7
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 MIT License
@@ -1920,7 +1920,7 @@ SOFTWARE.
 ## aws4@1.13.2
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 Copyright 2013 Michael Hart (michael.hart.au@gmail.com)
@@ -1947,7 +1947,7 @@ SOFTWARE.
 ## balanced-match@1.0.2
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE.md
 
 ```text
 (MIT)
@@ -1976,7 +1976,7 @@ SOFTWARE.
 ## balanced-match@1.0.2
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE.md
 
 ```text
 (MIT)
@@ -2005,7 +2005,7 @@ SOFTWARE.
 ## balanced-match@1.0.2
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE.md
 
 ```text
 (MIT)
@@ -2034,7 +2034,7 @@ SOFTWARE.
 ## balanced-match@1.0.2
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE.md
 
 ```text
 (MIT)
@@ -2063,7 +2063,7 @@ SOFTWARE.
 ## balanced-match@1.0.2
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE.md
 
 ```text
 (MIT)
@@ -2092,7 +2092,7 @@ SOFTWARE.
 ## balanced-match@1.0.2
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE.md
 
 ```text
 (MIT)
@@ -2121,7 +2121,7 @@ SOFTWARE.
 ## balanced-match@4.0.4
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE.md
 
 ```text
 (MIT)
@@ -2152,7 +2152,7 @@ SOFTWARE.
 ## base64-js@1.5.1
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 The MIT License (MIT)
@@ -2181,7 +2181,7 @@ THE SOFTWARE.
 ## big-integer@1.6.52
 
 Declared licence: Unlicense
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 This is free and unencumbered software released into the public domain.
@@ -2218,7 +2218,7 @@ The package did not include a recognised standalone licence text file; its decla
 ## bl@4.1.0
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE.md
 
 ```text
 The MIT License (MIT)
@@ -2239,7 +2239,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 ## bluebird@3.4.7
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 The MIT License (MIT)
@@ -2268,7 +2268,7 @@ THE SOFTWARE.
 ## bluebird@3.7.2
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 The MIT License (MIT)
@@ -2297,7 +2297,7 @@ THE SOFTWARE.
 ## boolean@3.2.0
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE.txt
 
 ```text
 The MIT License (MIT)
@@ -2313,7 +2313,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 ## brace-expansion@1.1.21
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 MIT License
@@ -2342,7 +2342,7 @@ SOFTWARE.
 ## brace-expansion@1.1.21
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 MIT License
@@ -2371,7 +2371,7 @@ SOFTWARE.
 ## brace-expansion@1.1.21
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 MIT License
@@ -2400,7 +2400,7 @@ SOFTWARE.
 ## brace-expansion@2.1.7
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 MIT License
@@ -2429,7 +2429,7 @@ SOFTWARE.
 ## brace-expansion@2.1.7
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 MIT License
@@ -2458,7 +2458,7 @@ SOFTWARE.
 ## brace-expansion@2.1.7
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 MIT License
@@ -2487,7 +2487,7 @@ SOFTWARE.
 ## brace-expansion@5.0.12
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 MIT License
@@ -2518,7 +2518,7 @@ SOFTWARE.
 ## buffer@5.7.1
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 The MIT License (MIT)
@@ -2547,7 +2547,7 @@ THE SOFTWARE.
 ## buffer-crc32@0.2.13
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 The MIT License
@@ -2574,7 +2574,7 @@ ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEAL
 ## buffer-from@1.1.2
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 MIT License
@@ -2603,7 +2603,7 @@ SOFTWARE.
 ## buffer-indexof-polyfill@1.0.2
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 The MIT License (MIT)
@@ -2639,7 +2639,7 @@ The package did not include a recognised standalone licence text file; its decla
 ## builder-util@26.16.0
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 The MIT License (MIT)
@@ -2668,7 +2668,7 @@ SOFTWARE.
 ## builder-util-runtime@9.7.0
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 The MIT License (MIT)
@@ -2697,7 +2697,7 @@ SOFTWARE.
 ## bytestreamjs@2.0.1
 
 Declared licence: BSD-3-Clause
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 Copyright (c) 2016-2022, Peculiar Ventures
@@ -2734,7 +2734,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ## cacheable-lookup@5.0.4
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 MIT License
@@ -2763,7 +2763,7 @@ SOFTWARE.
 ## cacheable-request@7.0.4
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 MIT License
@@ -2792,7 +2792,7 @@ SOFTWARE.
 ## call-bind@1.0.9
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 MIT License
@@ -2821,7 +2821,7 @@ SOFTWARE.
 ## call-bind-apply-helpers@1.0.2
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 MIT License
@@ -2850,7 +2850,7 @@ SOFTWARE.
 ## call-bound@1.0.4
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 MIT License
@@ -2889,7 +2889,7 @@ The package did not include a recognised standalone licence text file; its decla
 ## chownr@3.0.0
 
 Declared licence: BlueOak-1.0.0
-Licence file: [object Object]
+Licence file: LICENSE.md
 
 ```text
 All packages under `src/` are licensed according to the terms in
@@ -2965,7 +2965,7 @@ The package did not include a recognised standalone licence text file; its decla
 ## ci-info@4.3.1
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 The MIT License (MIT)
@@ -2994,7 +2994,7 @@ SOFTWARE.
 ## ci-info@4.4.0
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 The MIT License (MIT)
@@ -3023,7 +3023,7 @@ SOFTWARE.
 ## cliui@8.0.1
 
 Declared licence: ISC
-Licence file: [object Object]
+Licence file: LICENSE.txt
 
 ```text
 Copyright (c) 2015, Contributors
@@ -3045,7 +3045,7 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 ## clone-response@1.0.3
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 MIT License
@@ -3074,7 +3074,7 @@ SOFTWARE.
 ## color-convert@2.0.1
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 Copyright (c) 2011-2016 Heather Arthur <fayearthur@gmail.com>
@@ -3102,7 +3102,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ## color-name@1.1.4
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 The MIT License (MIT)
@@ -3123,7 +3123,7 @@ The package did not include a recognised standalone licence text file; its decla
 ## commander@5.1.0
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 (The MIT License)
@@ -3153,7 +3153,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ## commander@9.5.0
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 (The MIT License)
@@ -3188,7 +3188,7 @@ The package did not include a recognised standalone licence text file; its decla
 ## compress-commons@4.1.2
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 Copyright (c) 2014 Chris Talkington, contributors.
@@ -3218,7 +3218,7 @@ OTHER DEALINGS IN THE SOFTWARE.
 ## concat-map@0.0.1
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 This software is released under the MIT license:
@@ -3244,7 +3244,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ## core-util-is@1.0.3
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 Copyright Node.js contributors. All rights reserved.
@@ -3271,7 +3271,7 @@ IN THE SOFTWARE.
 ## crc-32@1.2.2
 
 Declared licence: Apache-2.0
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 Apache License
@@ -3480,7 +3480,7 @@ Apache License
 ## crc32-stream@4.0.3
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 Copyright (c) 2014 Chris Talkington, contributors.
@@ -3515,7 +3515,7 @@ The package did not include a recognised standalone licence text file; its decla
 ## cross-spawn@7.0.6
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 The MIT License (MIT)
@@ -3544,7 +3544,7 @@ THE SOFTWARE.
 ## data-view-buffer@1.0.2
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 MIT License
@@ -3573,7 +3573,7 @@ SOFTWARE.
 ## data-view-byte-length@1.0.2
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 MIT License
@@ -3602,7 +3602,7 @@ SOFTWARE.
 ## data-view-byte-offset@1.0.1
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 MIT License
@@ -3631,7 +3631,7 @@ SOFTWARE.
 ## dayjs@1.11.23
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 MIT License
@@ -3660,7 +3660,7 @@ SOFTWARE.
 ## debug@4.4.3
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 (The MIT License)
@@ -3692,7 +3692,7 @@ The package did not include a recognised standalone licence text file; its decla
 ## defer-to-connect@2.0.1
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 MIT License
@@ -3721,7 +3721,7 @@ SOFTWARE.
 ## define-data-property@1.1.4
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 MIT License
@@ -3750,7 +3750,7 @@ SOFTWARE.
 ## define-properties@1.2.1
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 The MIT License (MIT)
@@ -3784,7 +3784,7 @@ The package did not include a recognised standalone licence text file; its decla
 ## detect-node@2.1.0
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 MIT License
@@ -3813,7 +3813,7 @@ SOFTWARE.
 ## dingbat-to-unicode@1.0.2
 
 Declared licence: BSD-2-Clause
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 Copyright (c) 2021, Michael Williamson
@@ -3843,7 +3843,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ## dir-compare@4.2.0
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 Copyright 2014 Liviu Grigorescu (grigoresculiviu@gmail.com)
@@ -3878,7 +3878,7 @@ The package did not include a recognised standalone licence text file; its decla
 ## docx@9.15.1
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 The MIT License (MIT)
@@ -3907,7 +3907,7 @@ SOFTWARE.
 ## dotenv@16.6.1
 
 Declared licence: BSD-2-Clause
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 Copyright (c) 2015, Scott Motte
@@ -3938,7 +3938,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ## dotenv-expand@11.0.7
 
 Declared licence: BSD-2-Clause
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 Copyright (c) 2016, Scott Motte
@@ -3969,7 +3969,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ## duck@0.1.12
 
 Declared licence: BSD
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 Copyright (c) 2013, Michael Williamson
@@ -3999,7 +3999,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ## dunder-proto@1.0.1
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 MIT License
@@ -4028,7 +4028,7 @@ SOFTWARE.
 ## duplexer2@0.1.4
 
 Declared licence: BSD-3-Clause
-Licence file: [object Object]
+Licence file: LICENSE.md
 
 ```text
 Copyright (c) 2013, Deoxxa Development
@@ -4062,7 +4062,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ## ejs@3.1.10
 
 Declared licence: Apache-2.0
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 Apache License
@@ -4271,7 +4271,7 @@ Apache License
 ## electron@45.2.1
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 Copyright (c) Electron contributors
@@ -4300,7 +4300,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ## electron-builder@26.18.0
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 The MIT License (MIT)
@@ -4329,7 +4329,7 @@ SOFTWARE.
 ## electron-builder-squirrel-windows@26.18.0
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 The MIT License (MIT)
@@ -4358,7 +4358,7 @@ SOFTWARE.
 ## electron-publish@26.18.0
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 The MIT License (MIT)
@@ -4387,7 +4387,7 @@ SOFTWARE.
 ## electron-updater@6.8.11
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 The MIT License (MIT)
@@ -4416,7 +4416,7 @@ SOFTWARE.
 ## electron-winstaller@5.4.0
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 Copyright (c) 2015 GitHub Inc.
@@ -4449,7 +4449,7 @@ The package did not include a recognised standalone licence text file; its decla
 ## end-of-stream@1.4.5
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 The MIT License (MIT)
@@ -4498,7 +4498,7 @@ The package did not include a recognised standalone licence text file; its decla
 ## es-abstract@1.24.2
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 The MIT License (MIT)
@@ -4527,7 +4527,7 @@ THE SOFTWARE.
 ## es-abstract-get@1.0.0
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 MIT License
@@ -4556,7 +4556,7 @@ SOFTWARE.
 ## es-define-property@1.0.1
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 MIT License
@@ -4585,7 +4585,7 @@ SOFTWARE.
 ## es-errors@1.3.0
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 MIT License
@@ -4614,7 +4614,7 @@ SOFTWARE.
 ## es-object-atoms@1.1.2
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 MIT License
@@ -4643,7 +4643,7 @@ SOFTWARE.
 ## es-set-tostringtag@2.1.0
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 MIT License
@@ -4672,7 +4672,7 @@ SOFTWARE.
 ## es-to-primitive@1.3.4
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 The MIT License (MIT)
@@ -4701,7 +4701,7 @@ SOFTWARE.
 ## es6-error@4.1.1
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE.md
 
 ```text
 The MIT License (MIT)
@@ -4740,7 +4740,7 @@ The package did not include a recognised standalone licence text file; its decla
 ## exceljs@4.4.0
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 The MIT License (MIT)
@@ -4769,7 +4769,7 @@ SOFTWARE.
 ## exponential-backoff@3.1.3
 
 Declared licence: Apache-2.0
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 Apache License
@@ -4978,7 +4978,7 @@ Apache License
 ## fast-csv@4.3.6
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 The MIT License
@@ -5007,7 +5007,7 @@ THE SOFTWARE.
 ## fast-deep-equal@3.1.3
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 MIT License
@@ -5036,7 +5036,7 @@ SOFTWARE.
 ## fast-uri@3.1.9
 
 Declared licence: BSD-3-Clause
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 Copyright (c) 2011-2021, Gary Court until https://github.com/garycourt/uri-js/commit/a1acf730b4bba3f1097c9f52e7d9d3aba8cdcaae
@@ -5074,7 +5074,7 @@ The complete list of contributors can be found at:
 ## fast-xml-builder@1.3.1
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 MIT License
@@ -5103,7 +5103,7 @@ SOFTWARE.
 ## fast-xml-parser@5.11.2
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 MIT License
@@ -5132,7 +5132,7 @@ SOFTWARE.
 ## fdir@6.5.0
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 Copyright 2023 Abdullah Atta
@@ -5147,7 +5147,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 ## fflate@0.8.3
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 MIT License
@@ -5181,7 +5181,7 @@ The package did not include a recognised standalone licence text file; its decla
 ## for-each@0.3.5
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 The MIT License (MIT)
@@ -5215,7 +5215,7 @@ The package did not include a recognised standalone licence text file; its decla
 ## fs-constants@1.0.0
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 The MIT License (MIT)
@@ -5244,7 +5244,7 @@ THE SOFTWARE.
 ## fs-extra@10.1.0
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 (The MIT License)
@@ -5267,7 +5267,7 @@ OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHE
 ## fs-extra@11.3.1
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 (The MIT License)
@@ -5290,7 +5290,7 @@ OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHE
 ## fs-extra@11.4.1
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 (The MIT License)
@@ -5313,7 +5313,7 @@ OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHE
 ## fs-extra@11.4.1
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 (The MIT License)
@@ -5336,7 +5336,7 @@ OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHE
 ## fs-extra@7.0.1
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 (The MIT License)
@@ -5359,7 +5359,7 @@ OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHE
 ## fs-extra@8.1.0
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 (The MIT License)
@@ -5382,7 +5382,7 @@ OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHE
 ## fs-extra@9.1.0
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 (The MIT License)
@@ -5405,7 +5405,7 @@ OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHE
 ## fs-extra@9.1.0
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 (The MIT License)
@@ -5428,7 +5428,7 @@ OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHE
 ## fs-extra@9.1.0
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 (The MIT License)
@@ -5451,7 +5451,7 @@ OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHE
 ## fs.realpath@1.0.0
 
 Declared licence: ISC
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 The ISC License
@@ -5502,7 +5502,7 @@ the licensed code:
 ## fstream@1.0.12
 
 Declared licence: ISC
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 The ISC License
@@ -5525,7 +5525,7 @@ IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 ## function-bind@1.1.2
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 Copyright (c) 2013 Raynos.
@@ -5552,7 +5552,7 @@ THE SOFTWARE.
 ## function.prototype.name@1.2.0
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 The MIT License (MIT)
@@ -5581,7 +5581,7 @@ SOFTWARE.
 ## functions-have-names@1.2.3
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 MIT License
@@ -5610,7 +5610,7 @@ SOFTWARE.
 ## generator-function@2.0.1
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE.md
 
 ```text
 Copyright (c) 2015 Tiancheng “Timothy” Gu
@@ -5625,7 +5625,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 ## get-caller-file@2.0.5
 
 Declared licence: ISC
-Licence file: [object Object]
+Licence file: LICENSE.md
 
 ```text
 ISC License (ISC)
@@ -5639,7 +5639,7 @@ THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH RE
 ## get-intrinsic@1.3.0
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 MIT License
@@ -5668,7 +5668,7 @@ SOFTWARE.
 ## get-proto@1.0.1
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 MIT License
@@ -5702,7 +5702,7 @@ The package did not include a recognised standalone licence text file; its decla
 ## get-symbol-description@1.1.0
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 MIT License
@@ -5731,7 +5731,7 @@ SOFTWARE.
 ## glob@7.2.3
 
 Declared licence: ISC
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 The ISC License
@@ -5760,7 +5760,7 @@ https://creativecommons.org/licenses/by-sa/4.0/
 ## global-agent@3.0.0
 
 Declared licence: BSD-3-Clause
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 Copyright (c) 2019, Gajus Kuizinas (http://gajus.com/)
@@ -5792,7 +5792,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ## globalthis@1.0.4
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 The MIT License (MIT)
@@ -5821,7 +5821,7 @@ SOFTWARE.
 ## gopd@1.2.0
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 MIT License
@@ -5855,7 +5855,7 @@ The package did not include a recognised standalone licence text file; its decla
 ## graceful-fs@4.2.11
 
 Declared licence: ISC
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 The ISC License
@@ -5878,7 +5878,7 @@ IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 ## has-bigints@1.1.0
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 MIT License
@@ -5912,7 +5912,7 @@ The package did not include a recognised standalone licence text file; its decla
 ## has-property-descriptors@1.0.2
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 MIT License
@@ -5941,7 +5941,7 @@ SOFTWARE.
 ## has-proto@1.2.0
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 MIT License
@@ -5970,7 +5970,7 @@ SOFTWARE.
 ## has-symbols@1.1.0
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 MIT License
@@ -5999,7 +5999,7 @@ SOFTWARE.
 ## has-tostringtag@1.0.2
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 MIT License
@@ -6028,7 +6028,7 @@ SOFTWARE.
 ## hasown@2.0.4
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 MIT License
@@ -6057,7 +6057,7 @@ SOFTWARE.
 ## hosted-git-info@4.1.0
 
 Declared licence: ISC
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 Copyright (c) 2015, Rebecca Turner
@@ -6078,7 +6078,7 @@ PERFORMANCE OF THIS SOFTWARE.
 ## http-cache-semantics@4.3.0
 
 Declared licence: BSD-2-Clause
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 Copyright 2016-2018 Kornel Lesiński
@@ -6095,7 +6095,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 ## http-proxy-agent@7.0.2
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 (The MIT License)
@@ -6125,7 +6125,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ## http2-wrapper@1.0.3
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 MIT License
@@ -6159,7 +6159,7 @@ The package did not include a recognised standalone licence text file; its decla
 ## https-proxy-agent@7.0.6
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 (The MIT License)
@@ -6189,7 +6189,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ## ieee754@1.2.1
 
 Declared licence: BSD-3-Clause
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 Copyright 2008 Fair Oaks Labs, Inc.
@@ -6208,7 +6208,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 ## image-size@1.2.1
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 The MIT License (MIT)
@@ -6225,7 +6225,7 @@ THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR I
 ## immediate@3.0.6
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE.txt
 
 ```text
 Copyright (c) 2012 Barnesandnoble.com, llc, Donavon West, Domenic Denicola, Brian Cavalier
@@ -6253,7 +6253,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ## inflight@1.0.6
 
 Declared licence: ISC
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 The ISC License
@@ -6276,7 +6276,7 @@ IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 ## inherits@2.0.4
 
 Declared licence: ISC
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 The ISC License
@@ -6299,7 +6299,7 @@ PERFORMANCE OF THIS SOFTWARE.
 ## internal-slot@1.1.0
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 MIT License
@@ -6328,7 +6328,7 @@ SOFTWARE.
 ## is-array-buffer@3.0.5
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 MIT License
@@ -6357,7 +6357,7 @@ SOFTWARE.
 ## is-async-function@2.1.1
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 The MIT License (MIT)
@@ -6385,7 +6385,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ## is-bigint@1.1.0
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 MIT License
@@ -6414,7 +6414,7 @@ SOFTWARE.
 ## is-boolean-object@1.2.2
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 The MIT License (MIT)
@@ -6443,7 +6443,7 @@ SOFTWARE.
 ## is-buffer@2.0.5
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 The MIT License (MIT)
@@ -6472,7 +6472,7 @@ THE SOFTWARE.
 ## is-callable@1.2.7
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 The MIT License (MIT)
@@ -6501,7 +6501,7 @@ SOFTWARE.
 ## is-data-view@1.0.2
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 MIT License
@@ -6530,7 +6530,7 @@ SOFTWARE.
 ## is-date-object@1.1.0
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 The MIT License (MIT)
@@ -6559,7 +6559,7 @@ SOFTWARE.
 ## is-document.all@1.0.0
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 MIT License
@@ -6588,7 +6588,7 @@ SOFTWARE.
 ## is-finalizationregistry@1.1.1
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 MIT License
@@ -6622,7 +6622,7 @@ The package did not include a recognised standalone licence text file; its decla
 ## is-generator-function@1.1.2
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 The MIT License (MIT)
@@ -6650,7 +6650,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ## is-map@2.0.3
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 MIT License
@@ -6679,7 +6679,7 @@ SOFTWARE.
 ## is-negative-zero@2.0.3
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 The MIT License (MIT)
@@ -6707,7 +6707,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ## is-number-object@1.1.1
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 The MIT License (MIT)
@@ -6736,7 +6736,7 @@ SOFTWARE.
 ## is-regex@1.2.1
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 The MIT License (MIT)
@@ -6764,7 +6764,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ## is-set@2.0.3
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 MIT License
@@ -6793,7 +6793,7 @@ SOFTWARE.
 ## is-shared-array-buffer@1.0.4
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 MIT License
@@ -6822,7 +6822,7 @@ SOFTWARE.
 ## is-string@1.1.1
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 The MIT License (MIT)
@@ -6851,7 +6851,7 @@ SOFTWARE.
 ## is-symbol@1.1.1
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 The MIT License (MIT)
@@ -6880,7 +6880,7 @@ SOFTWARE.
 ## is-typed-array@1.1.15
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 The MIT License (MIT)
@@ -6909,7 +6909,7 @@ SOFTWARE.
 ## is-unsafe@2.0.2
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 MIT License
@@ -6938,7 +6938,7 @@ SOFTWARE.
 ## is-weakmap@2.0.2
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 MIT License
@@ -6967,7 +6967,7 @@ SOFTWARE.
 ## is-weakref@1.1.1
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 MIT License
@@ -6996,7 +6996,7 @@ SOFTWARE.
 ## is-weakset@2.0.4
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 MIT License
@@ -7030,7 +7030,7 @@ The package did not include a recognised standalone licence text file; its decla
 ## isarray@2.0.5
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 MIT License
@@ -7059,7 +7059,7 @@ SOFTWARE.
 ## isarray@2.0.5
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 MIT License
@@ -7088,7 +7088,7 @@ SOFTWARE.
 ## isarray@2.0.5
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 MIT License
@@ -7117,7 +7117,7 @@ SOFTWARE.
 ## isbinaryfile@4.0.10
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE.txt
 
 ```text
 Copyright (c) 2019 Garen J. Torikian
@@ -7147,7 +7147,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ## isbinaryfile@5.0.7
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE.txt
 
 ```text
 Copyright (c) 2019 Garen J. Torikian
@@ -7177,7 +7177,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ## isexe@2.0.0
 
 Declared licence: ISC
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 The ISC License
@@ -7200,7 +7200,7 @@ IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 ## isexe@3.1.5
 
 Declared licence: BlueOak-1.0.0
-Licence file: [object Object]
+Licence file: LICENSE.md
 
 ```text
 # Blue Oak Model License
@@ -7263,7 +7263,7 @@ software or this license, under any kind of legal claim.***
 ## isexe@4.0.0
 
 Declared licence: BlueOak-1.0.0
-Licence file: [object Object]
+Licence file: LICENSE.md
 
 ```text
 # Blue Oak Model License
@@ -7331,7 +7331,7 @@ The package did not include a recognised standalone licence text file; its decla
 ## jiti@2.7.0
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 MIT License
@@ -7360,7 +7360,7 @@ SOFTWARE.
 ## js-yaml@4.3.2
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 (The MIT License)
@@ -7389,7 +7389,7 @@ THE SOFTWARE.
 ## json-buffer@3.0.1
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 Copyright (c) 2013 Dominic Tarr
@@ -7419,7 +7419,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ## json-schema-traverse@1.0.0
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 MIT License
@@ -7448,7 +7448,7 @@ SOFTWARE.
 ## json-stringify-safe@5.0.1
 
 Declared licence: ISC
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 The ISC License
@@ -7471,7 +7471,7 @@ IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 ## json5@2.2.3
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE.md
 
 ```text
 MIT License
@@ -7502,7 +7502,7 @@ SOFTWARE.
 ## jsonfile@4.0.0
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 (The MIT License)
@@ -7525,7 +7525,7 @@ OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHE
 ## jsonfile@4.0.0
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 (The MIT License)
@@ -7548,7 +7548,7 @@ OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHE
 ## jsonfile@6.2.1
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 (The MIT License)
@@ -7586,7 +7586,7 @@ The package did not include a recognised standalone licence text file; its decla
 ## lazystream@1.0.1
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 Copyright (c) 2013 J. Pommerening, contributors.
@@ -7621,7 +7621,7 @@ The package did not include a recognised standalone licence text file; its decla
 ## listenercount@1.0.1
 
 Declared licence: ISC
-Licence file: [object Object]
+Licence file: LICENSE.md
 
 ```text
 Copyright (c) MMXV jden <jason@denizac.org>
@@ -7634,7 +7634,7 @@ THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH RE
 ## lodash@4.18.1
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 Copyright OpenJS Foundation and other contributors <https://openjsf.org/>
@@ -7689,7 +7689,7 @@ terms above.
 ## lodash.defaults@4.2.0
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 Copyright jQuery Foundation and other contributors <https://jquery.org/>
@@ -7744,7 +7744,7 @@ terms above.
 ## lodash.difference@4.5.0
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 Copyright jQuery Foundation and other contributors <https://jquery.org/>
@@ -7799,7 +7799,7 @@ terms above.
 ## lodash.escaperegexp@4.1.2
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 Copyright jQuery Foundation and other contributors <https://jquery.org/>
@@ -7854,7 +7854,7 @@ terms above.
 ## lodash.flatten@4.4.0
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 Copyright jQuery Foundation and other contributors <https://jquery.org/>
@@ -7909,7 +7909,7 @@ terms above.
 ## lodash.groupby@4.6.0
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 Copyright jQuery Foundation and other contributors <https://jquery.org/>
@@ -7964,7 +7964,7 @@ terms above.
 ## lodash.isboolean@3.0.3
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 Copyright 2012-2016 The Dojo Foundation <http://dojofoundation.org/>
@@ -7994,7 +7994,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ## lodash.isequal@4.5.0
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 Copyright JS Foundation and other contributors <https://js.foundation/>
@@ -8049,7 +8049,7 @@ terms above.
 ## lodash.isfunction@3.0.9
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 Copyright JS Foundation and other contributors <https://js.foundation/>
@@ -8104,7 +8104,7 @@ terms above.
 ## lodash.isnil@4.0.0
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 Copyright 2012-2016 The Dojo Foundation <http://dojofoundation.org/>
@@ -8134,7 +8134,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ## lodash.isplainobject@4.0.6
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 Copyright jQuery Foundation and other contributors <https://jquery.org/>
@@ -8189,7 +8189,7 @@ terms above.
 ## lodash.isundefined@3.0.1
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE.txt
 
 ```text
 Copyright 2012-2015 The Dojo Foundation <http://dojofoundation.org/>
@@ -8219,7 +8219,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ## lodash.union@4.6.0
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 Copyright jQuery Foundation and other contributors <https://jquery.org/>
@@ -8274,7 +8274,7 @@ terms above.
 ## lodash.uniq@4.5.0
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 Copyright jQuery Foundation and other contributors <https://jquery.org/>
@@ -8329,7 +8329,7 @@ terms above.
 ## lop@0.4.2
 
 Declared licence: BSD-2-Clause
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 Copyright (c) 2013, Michael Williamson
@@ -8364,7 +8364,7 @@ The package did not include a recognised standalone licence text file; its decla
 ## lru-cache@6.0.0
 
 Declared licence: ISC
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 The ISC License
@@ -8387,7 +8387,7 @@ IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 ## mammoth@1.12.2
 
 Declared licence: BSD-2-Clause
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 Copyright (c) 2013, Michael Williamson
@@ -8422,7 +8422,7 @@ The package did not include a recognised standalone licence text file; its decla
 ## math-intrinsics@1.1.0
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 MIT License
@@ -8451,7 +8451,7 @@ SOFTWARE.
 ## mime@2.6.0
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 The MIT License (MIT)
@@ -8480,7 +8480,7 @@ THE SOFTWARE.
 ## mime-db@1.52.0
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 (The MIT License)
@@ -8511,7 +8511,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ## mime-types@2.1.35
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 (The MIT License)
@@ -8552,7 +8552,7 @@ The package did not include a recognised standalone licence text file; its decla
 ## minimatch@10.2.6
 
 Declared licence: BlueOak-1.0.0
-Licence file: [object Object]
+Licence file: LICENSE.md
 
 ```text
 # Blue Oak Model License
@@ -8615,7 +8615,7 @@ software or this license, under any kind of legal claim._**
 ## minimatch@3.1.5
 
 Declared licence: ISC
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 The ISC License
@@ -8638,7 +8638,7 @@ IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 ## minimatch@3.1.5
 
 Declared licence: ISC
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 The ISC License
@@ -8661,7 +8661,7 @@ IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 ## minimatch@3.1.5
 
 Declared licence: ISC
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 The ISC License
@@ -8684,7 +8684,7 @@ IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 ## minimatch@5.1.9
 
 Declared licence: ISC
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 The ISC License
@@ -8707,7 +8707,7 @@ IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 ## minimatch@5.1.9
 
 Declared licence: ISC
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 The ISC License
@@ -8730,7 +8730,7 @@ IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 ## minimatch@9.0.9
 
 Declared licence: ISC
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 The ISC License
@@ -8753,7 +8753,7 @@ IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 ## minimist@1.2.8
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 This software is released under the MIT license:
@@ -8779,7 +8779,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ## minipass@7.1.3
 
 Declared licence: BlueOak-1.0.0
-Licence file: [object Object]
+Licence file: LICENSE.md
 
 ```text
 # Blue Oak Model License
@@ -8842,7 +8842,7 @@ software or this license, under any kind of legal claim.***
 ## minizlib@3.1.0
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 Minizlib was created by Isaac Z. Schlueter.
@@ -8876,7 +8876,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ## mkdirp@0.5.6
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 Copyright 2010 James Halliday (mail@substack.net)
@@ -8910,7 +8910,7 @@ The package did not include a recognised standalone licence text file; its decla
 ## nanoid@6.0.2
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 The MIT License (MIT)
@@ -8938,7 +8938,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ## node-abi@4.40.0
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 MIT License
@@ -8972,7 +8972,7 @@ The package did not include a recognised standalone licence text file; its decla
 ## node-gyp@12.4.0
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 (The MIT License)
@@ -9004,7 +9004,7 @@ OTHER DEALINGS IN THE SOFTWARE.
 ## node-int64@0.4.0
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 Copyright (c) 2014 Robert Kieffer
@@ -9031,7 +9031,7 @@ THE SOFTWARE.
 ## nopt@9.0.0
 
 Declared licence: ISC
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 The ISC License
@@ -9054,7 +9054,7 @@ IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 ## normalize-path@3.0.0
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 The MIT License (MIT)
@@ -9093,7 +9093,7 @@ The package did not include a recognised standalone licence text file; its decla
 ## object-inspect@1.13.4
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 MIT License
@@ -9122,7 +9122,7 @@ SOFTWARE.
 ## object-keys@1.1.1
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 The MIT License (MIT)
@@ -9151,7 +9151,7 @@ THE SOFTWARE.
 ## object.assign@4.1.7
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 The MIT License (MIT)
@@ -9180,7 +9180,7 @@ SOFTWARE.
 ## once@1.4.0
 
 Declared licence: ISC
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 The ISC License
@@ -9203,7 +9203,7 @@ IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 ## option@0.2.4
 
 Declared licence: BSD-2-Clause
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 Copyright (c) 2013, Michael Williamson
@@ -9233,7 +9233,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ## own-keys@1.0.2
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 MIT License
@@ -9272,7 +9272,7 @@ The package did not include a recognised standalone licence text file; its decla
 ## pako@1.0.11
 
 Declared licence: (MIT AND Zlib)
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 (The MIT License)
@@ -9301,7 +9301,7 @@ THE SOFTWARE.
 ## path-expression-matcher@1.6.2
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 MIT License
@@ -9340,7 +9340,7 @@ The package did not include a recognised standalone licence text file; its decla
 ## pe-library@0.4.1
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 MIT License
@@ -9369,7 +9369,7 @@ SOFTWARE.
 ## picocolors@1.1.1
 
 Declared licence: ISC
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 ISC License
@@ -9392,7 +9392,7 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 ## picomatch@4.0.7
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 The MIT License (MIT)
@@ -9421,7 +9421,7 @@ THE SOFTWARE.
 ## pkijs@3.4.3
 
 Declared licence: BSD-3-Clause
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 Copyright (c) 2014, GlobalSign
@@ -9459,7 +9459,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ## plist@3.1.0
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 (The MIT License)
@@ -9491,7 +9491,7 @@ OTHER DEALINGS IN THE SOFTWARE.
 ## possible-typed-array-names@1.1.0
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 MIT License
@@ -9520,7 +9520,7 @@ SOFTWARE.
 ## postject@1.0.0-alpha.6
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 Postject is licensed for use as follows:
@@ -9764,7 +9764,7 @@ The externally maintained libraries used by Postject are:
 ## pptxgenjs@4.0.1
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 The MIT License (MIT)
@@ -9793,7 +9793,7 @@ SOFTWARE.
 ## proc-log@6.1.0
 
 Declared licence: ISC
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 The ISC License
@@ -9821,7 +9821,7 @@ The package did not include a recognised standalone licence text file; its decla
 ## progress@2.0.3
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 (The MIT License)
@@ -9851,7 +9851,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ## promise-retry@2.0.1
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 Copyright (c) 2014 IndigoUnited
@@ -9878,7 +9878,7 @@ THE SOFTWARE.
 ## proper-lockfile@4.1.2
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 The MIT License (MIT)
@@ -9907,7 +9907,7 @@ THE SOFTWARE.
 ## pump@3.0.4
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 The MIT License (MIT)
@@ -9936,7 +9936,7 @@ THE SOFTWARE.
 ## pvtsutils@1.3.6
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 MIT License
@@ -9965,7 +9965,7 @@ SOFTWARE.
 ## pvutils@1.2.0
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 MIT License
@@ -9997,7 +9997,7 @@ SOFTWARE.
 ## queue@6.0.2
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 The MIT License (MIT)
@@ -10023,7 +10023,7 @@ The package did not include a recognised standalone licence text file; its decla
 ## readable-stream@2.3.8
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 Node.js is licensed for use as follows:
@@ -10078,7 +10078,7 @@ IN THE SOFTWARE.
 ## readable-stream@2.3.8
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 Node.js is licensed for use as follows:
@@ -10133,7 +10133,7 @@ IN THE SOFTWARE.
 ## readable-stream@2.3.8
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 Node.js is licensed for use as follows:
@@ -10188,7 +10188,7 @@ IN THE SOFTWARE.
 ## readable-stream@2.3.8
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 Node.js is licensed for use as follows:
@@ -10243,7 +10243,7 @@ IN THE SOFTWARE.
 ## readable-stream@2.3.8
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 Node.js is licensed for use as follows:
@@ -10298,7 +10298,7 @@ IN THE SOFTWARE.
 ## readable-stream@3.6.2
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 Node.js is licensed for use as follows:
@@ -10353,7 +10353,7 @@ IN THE SOFTWARE.
 ## readdir-glob@1.1.3
 
 Declared licence: Apache-2.0
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 Apache License
@@ -10562,7 +10562,7 @@ Apache License
 ## reflect.getprototypeof@1.0.10
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 MIT License
@@ -10591,7 +10591,7 @@ SOFTWARE.
 ## regexp.prototype.flags@1.5.4
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 The MIT License (MIT)
@@ -10620,7 +10620,7 @@ THE SOFTWARE.
 ## require-directory@2.1.1
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 The MIT License (MIT)
@@ -10655,7 +10655,7 @@ The package did not include a recognised standalone licence text file; its decla
 ## resedit@1.7.2
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 MIT License
@@ -10684,7 +10684,7 @@ SOFTWARE.
 ## resolve-alpn@1.2.1
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 MIT License
@@ -10713,7 +10713,7 @@ SOFTWARE.
 ## responselike@2.0.1
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 Copyright (c) 2017 Luke Childs
@@ -10745,7 +10745,7 @@ The package did not include a recognised standalone licence text file; its decla
 ## rimraf@2.6.3
 
 Declared licence: ISC
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 The ISC License
@@ -10768,7 +10768,7 @@ IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 ## roarr@2.15.4
 
 Declared licence: BSD-3-Clause
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 Copyright (c) 2019, Gajus Kuizinas (http://gajus.com/)
@@ -10800,7 +10800,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ## safe-array-concat@1.1.4
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 MIT License
@@ -10829,7 +10829,7 @@ SOFTWARE.
 ## safe-buffer@5.1.2
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 The MIT License (MIT)
@@ -10858,7 +10858,7 @@ THE SOFTWARE.
 ## safe-buffer@5.1.2
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 The MIT License (MIT)
@@ -10887,7 +10887,7 @@ THE SOFTWARE.
 ## safe-buffer@5.1.2
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 The MIT License (MIT)
@@ -10916,7 +10916,7 @@ THE SOFTWARE.
 ## safe-buffer@5.1.2
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 The MIT License (MIT)
@@ -10945,7 +10945,7 @@ THE SOFTWARE.
 ## safe-buffer@5.1.2
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 The MIT License (MIT)
@@ -10974,7 +10974,7 @@ THE SOFTWARE.
 ## safe-buffer@5.2.1
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 The MIT License (MIT)
@@ -11003,7 +11003,7 @@ THE SOFTWARE.
 ## safe-push-apply@1.0.0
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 MIT License
@@ -11032,7 +11032,7 @@ SOFTWARE.
 ## safe-regex-test@1.1.0
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 MIT License
@@ -11061,7 +11061,7 @@ SOFTWARE.
 ## sanitize-filename@1.6.4
 
 Declared licence: WTFPL OR ISC
-Licence file: [object Object]
+Licence file: LICENSE.md
 
 ```text
 This project is licensed under the [WTFPL][] and [ISC][] licenses.
@@ -11103,7 +11103,7 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 ## sax@1.6.1
 
 Declared licence: BlueOak-1.0.0
-Licence file: [object Object]
+Licence file: LICENSE.md
 
 ```text
 # Blue Oak Model License
@@ -11171,7 +11171,7 @@ The package did not include a recognised standalone licence text file; its decla
 ## semver@5.7.2
 
 Declared licence: ISC
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 The ISC License
@@ -11194,7 +11194,7 @@ IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 ## semver@6.3.1
 
 Declared licence: ISC
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 The ISC License
@@ -11217,7 +11217,7 @@ IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 ## semver@7.7.4
 
 Declared licence: ISC
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 The ISC License
@@ -11240,7 +11240,7 @@ IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 ## semver@7.7.4
 
 Declared licence: ISC
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 The ISC License
@@ -11263,7 +11263,7 @@ IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 ## semver@7.8.5
 
 Declared licence: ISC
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 The ISC License
@@ -11286,7 +11286,7 @@ IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 ## semver-compare@1.0.0
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 This software is released under the MIT license:
@@ -11317,7 +11317,7 @@ The package did not include a recognised standalone licence text file; its decla
 ## set-function-length@1.2.2
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 MIT License
@@ -11346,7 +11346,7 @@ SOFTWARE.
 ## set-function-name@2.0.2
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 MIT License
@@ -11375,7 +11375,7 @@ SOFTWARE.
 ## set-proto@1.0.0
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 MIT License
@@ -11404,7 +11404,7 @@ SOFTWARE.
 ## setimmediate@1.0.5
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE.txt
 
 ```text
 Copyright (c) 2012 Barnesandnoble.com, llc, Donavon West, and Domenic Denicola
@@ -11442,7 +11442,7 @@ The package did not include a recognised standalone licence text file; its decla
 ## side-channel@1.1.1
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 MIT License
@@ -11471,7 +11471,7 @@ SOFTWARE.
 ## side-channel-list@1.0.1
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 MIT License
@@ -11500,7 +11500,7 @@ SOFTWARE.
 ## side-channel-map@1.0.1
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 MIT License
@@ -11529,7 +11529,7 @@ SOFTWARE.
 ## side-channel-weakmap@1.0.2
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 MIT License
@@ -11558,7 +11558,7 @@ SOFTWARE.
 ## signal-exit@3.0.7
 
 Declared licence: ISC
-Licence file: [object Object]
+Licence file: LICENSE.txt
 
 ```text
 The ISC License
@@ -11582,7 +11582,7 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 ## simple-update-notifier@2.0.0
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 MIT License
@@ -11611,7 +11611,7 @@ SOFTWARE.
 ## source-map@0.6.1
 
 Declared licence: BSD-3-Clause
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 Copyright (c) 2009-2011, Mozilla Foundation and contributors
@@ -11646,7 +11646,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ## source-map-support@0.5.21
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE.md
 
 ```text
 The MIT License (MIT)
@@ -11675,7 +11675,7 @@ SOFTWARE.
 ## sprintf-js@1.0.3
 
 Declared licence: BSD-3-Clause
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 Copyright (c) 2007-2014, Alexandru Marasteanu <hello [at) alexei (dot] ro>
@@ -11707,7 +11707,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ## sprintf-js@1.1.3
 
 Declared licence: BSD-3-Clause
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 Copyright (c) 2007-present, Alexandru Mărășteanu <hello@alexei.ro>
@@ -11739,7 +11739,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ## stat-mode@1.0.0
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 (The MIT License)
@@ -11771,7 +11771,7 @@ OTHER DEALINGS IN THE SOFTWARE.
 ## stop-iteration-iterator@1.1.0
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 MIT License
@@ -11800,7 +11800,7 @@ SOFTWARE.
 ## string_decoder@1.1.1
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 Node.js is licensed for use as follows:
@@ -11855,7 +11855,7 @@ IN THE SOFTWARE.
 ## string_decoder@1.1.1
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 Node.js is licensed for use as follows:
@@ -11910,7 +11910,7 @@ IN THE SOFTWARE.
 ## string_decoder@1.1.1
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 Node.js is licensed for use as follows:
@@ -11965,7 +11965,7 @@ IN THE SOFTWARE.
 ## string_decoder@1.1.1
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 Node.js is licensed for use as follows:
@@ -12020,7 +12020,7 @@ IN THE SOFTWARE.
 ## string_decoder@1.1.1
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 Node.js is licensed for use as follows:
@@ -12075,7 +12075,7 @@ IN THE SOFTWARE.
 ## string_decoder@1.3.0
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 Node.js is licensed for use as follows:
@@ -12135,7 +12135,7 @@ The package did not include a recognised standalone licence text file; its decla
 ## string.prototype.trim@1.2.11
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 The MIT License (MIT)
@@ -12164,7 +12164,7 @@ SOFTWARE.
 ## string.prototype.trimend@1.0.10
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 MIT License
@@ -12193,7 +12193,7 @@ SOFTWARE.
 ## string.prototype.trimstart@1.0.8
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 MIT License
@@ -12227,7 +12227,7 @@ The package did not include a recognised standalone licence text file; its decla
 ## strnum@2.5.1
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 MIT License
@@ -12256,7 +12256,7 @@ SOFTWARE.
 ## sumchecker@3.0.1
 
 Declared licence: Apache-2.0
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 Apache License
@@ -12470,7 +12470,7 @@ The package did not include a recognised standalone licence text file; its decla
 ## tar@7.5.22
 
 Declared licence: BlueOak-1.0.0
-Licence file: [object Object]
+Licence file: LICENSE.md
 
 ```text
 # Blue Oak Model License
@@ -12533,7 +12533,7 @@ software or this license, under any kind of legal claim.***
 ## tar-stream@2.2.0
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 The MIT License (MIT)
@@ -12562,7 +12562,7 @@ THE SOFTWARE.
 ## temp@0.9.4
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 The MIT License (MIT)
@@ -12600,7 +12600,7 @@ The package did not include a recognised standalone licence text file; its decla
 ## tiny-typed-emitter@2.1.0
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 MIT License
@@ -12629,7 +12629,7 @@ SOFTWARE.
 ## tinyglobby@0.2.17
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 MIT License
@@ -12658,7 +12658,7 @@ SOFTWARE.
 ## tmp@0.2.7
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 The MIT License (MIT)
@@ -12692,7 +12692,7 @@ The package did not include a recognised standalone licence text file; its decla
 ## traverse@0.3.10
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 MIT License
@@ -12726,7 +12726,7 @@ The package did not include a recognised standalone licence text file; its decla
 ## tslib@2.9.1
 
 Declared licence: 0BSD
-Licence file: [object Object]
+Licence file: LICENSE.txt
 
 ```text
 Copyright (c) Microsoft Corporation.
@@ -12751,7 +12751,7 @@ The package did not include a recognised standalone licence text file; its decla
 ## typed-array-buffer@1.0.3
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 MIT License
@@ -12780,7 +12780,7 @@ SOFTWARE.
 ## typed-array-byte-length@1.0.3
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 MIT License
@@ -12809,7 +12809,7 @@ SOFTWARE.
 ## typed-array-byte-offset@1.0.5
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 MIT License
@@ -12838,7 +12838,7 @@ SOFTWARE.
 ## typed-array-length@1.0.8
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 MIT License
@@ -12867,7 +12867,7 @@ SOFTWARE.
 ## typedarray.prototype.slice@1.0.6
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 MIT License
@@ -12896,7 +12896,7 @@ SOFTWARE.
 ## unbox-primitive@1.1.0
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 MIT License
@@ -12925,7 +12925,7 @@ SOFTWARE.
 ## underscore@1.13.8
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 Copyright (c) 2009-2022 Jeremy Ashkenas, Julian Gonggrijp, and DocumentCloud and Investigative Reporters & Editors
@@ -12955,7 +12955,7 @@ OTHER DEALINGS IN THE SOFTWARE.
 ## undici@6.29.1
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 MIT License
@@ -12984,7 +12984,7 @@ SOFTWARE.
 ## undici@7.30.1
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 MIT License
@@ -13013,7 +13013,7 @@ SOFTWARE.
 ## undici-types@6.21.0
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 MIT License
@@ -13042,7 +13042,7 @@ SOFTWARE.
 ## undici-types@7.24.6
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 MIT License
@@ -13071,7 +13071,7 @@ SOFTWARE.
 ## undici-types@8.9.0
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 MIT License
@@ -13100,7 +13100,7 @@ SOFTWARE.
 ## universalify@0.1.2
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 (The MIT License)
@@ -13128,7 +13128,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ## universalify@0.1.2
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 (The MIT License)
@@ -13156,7 +13156,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ## universalify@2.0.1
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 (The MIT License)
@@ -13184,7 +13184,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ## unzipper@0.10.14
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 Copyright (c) 2012 - 2013 Near Infinity Corporation
@@ -13217,7 +13217,7 @@ and fall under same licence structure as the original repo (MIT)
 ## unzipper@0.12.5
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 Copyright (c) 2012 - 2013 Near Infinity Corporation
@@ -13255,7 +13255,7 @@ The package did not include a recognised standalone licence text file; its decla
 ## util-deprecate@1.0.2
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 (The MIT License)
@@ -13287,7 +13287,7 @@ OTHER DEALINGS IN THE SOFTWARE.
 ## uuid@8.3.2
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE.md
 
 ```text
 The MIT License (MIT)
@@ -13304,7 +13304,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 ## webcrypto-core@1.9.2
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 The MIT License (MIT)
@@ -13333,7 +13333,7 @@ SOFTWARE.
 ## which@2.0.2
 
 Declared licence: ISC
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 The ISC License
@@ -13356,7 +13356,7 @@ IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 ## which@5.0.0
 
 Declared licence: ISC
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 The ISC License
@@ -13379,7 +13379,7 @@ IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 ## which@6.0.1
 
 Declared licence: ISC
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 The ISC License
@@ -13402,7 +13402,7 @@ IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 ## which-boxed-primitive@1.1.1
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 MIT License
@@ -13431,7 +13431,7 @@ SOFTWARE.
 ## which-builtin-type@1.2.1
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 MIT License
@@ -13460,7 +13460,7 @@ SOFTWARE.
 ## which-collection@1.0.2
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 MIT License
@@ -13489,7 +13489,7 @@ SOFTWARE.
 ## which-typed-array@1.1.24
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 The MIT License (MIT)
@@ -13523,7 +13523,7 @@ The package did not include a recognised standalone licence text file; its decla
 ## wrappy@1.0.2
 
 Declared licence: ISC
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 The ISC License
@@ -13546,7 +13546,7 @@ IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 ## xml-naming@0.3.0
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 MIT License
@@ -13575,7 +13575,7 @@ SOFTWARE.
 ## xmlbuilder@10.1.1
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 The MIT License (MIT)
@@ -13604,7 +13604,7 @@ THE SOFTWARE.
 ## xmlbuilder@15.1.1
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 The MIT License (MIT)
@@ -13633,7 +13633,7 @@ THE SOFTWARE.
 ## xmlchars@2.2.0
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 Copyright Louis-Dominique Dubeau and contributors to xmlchars
@@ -13659,7 +13659,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ## y18n@5.0.8
 
 Declared licence: ISC
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 Copyright (c) 2015, Contributors
@@ -13680,7 +13680,7 @@ THIS SOFTWARE.
 ## yallist@4.0.0
 
 Declared licence: ISC
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 The ISC License
@@ -13703,7 +13703,7 @@ IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 ## yallist@5.0.0
 
 Declared licence: BlueOak-1.0.0
-Licence file: [object Object]
+Licence file: LICENSE.md
 
 ```text
 All packages under `src/` are licensed according to the terms in
@@ -13774,7 +13774,7 @@ software or this license, under any kind of legal claim.***
 ## yargs@17.7.3
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 MIT License
@@ -13803,7 +13803,7 @@ THE SOFTWARE.
 ## yargs-parser@21.1.1
 
 Declared licence: ISC
-Licence file: [object Object]
+Licence file: LICENSE.txt
 
 ```text
 Copyright (c) 2016, Contributors
@@ -13830,7 +13830,7 @@ The package did not include a recognised standalone licence text file; its decla
 ## zip-stream@4.1.1
 
 Declared licence: MIT
-Licence file: [object Object]
+Licence file: LICENSE
 
 ```text
 Copyright (c) 2014 Chris Talkington, contributors.
