@@ -9,6 +9,15 @@ const LICENSE_FILE_NAMES = [
 ];
 const PROPRIETARY_LICENSE = /^(?:UNLICENSED|PROPRIETARY|COMMERCIAL(?:\s+ONLY)?|SEE\s+COMMERCIAL\s+LICENSE)$/i;
 
+// Reviewed exception: the published buffers@0.1.1 tarball omits its license field,
+// while upstream metadata for the same version declares MIT/X11.
+const REVIEWED_LICENSE_OVERRIDES = {
+  'buffers@0.1.1': {
+    license: 'MIT/X11',
+    source: 'https://github.com/bitpay/node-buffers/blob/master/package.json'
+  }
+};
+
 function readJson(filePath, label) {
   try {
     return JSON.parse(fs.readFileSync(filePath, 'utf8'));
