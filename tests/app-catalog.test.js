@@ -191,3 +191,12 @@ test('README presents all ten apps as the integrated first-release lineup', () =
   assert.match(readme, /all ten.*implemented/i);
   assert.doesNotMatch(readme, /other six.*not yet working apps/i);
 });
+
+test('Linux desktop launch identity matches the installed desktop entry', () => {
+  const packageJson = JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8'));
+  const productConfig = fs.readFileSync(path.join(root, 'electron-builder.app.config.js'), 'utf8');
+  assert.equal(packageJson.desktopName, 'org.brightdesk.suite.desktop');
+  assert.equal(packageJson.build.linux.syncDesktopName, true);
+  assert.match(productConfig, /desktopName: `org\\.brightdesk\\.\\$\\{appId\\}\\.desktop`/);
+  assert.match(productConfig, /syncDesktopName: true/);
+});
