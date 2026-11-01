@@ -138,10 +138,16 @@
   }
   function sortItems(items, columnId, direction = 'asc') {
     const sign = direction === 'desc' ? -1 : 1;
+    const priorityOrder = { low: 0, normal: 1, high: 2 };
     return items.slice().sort((a, b) => {
-      const left = String(a.values[columnId] ?? '').toLocaleLowerCase();
-      const right = String(b.values[columnId] ?? '').toLocaleLowerCase();
-      return left.localeCompare(right, undefined, { numeric: true }) * sign;
+      const leftValue = String(a.values[columnId] ?? '');
+      const rightValue = String(b.values[columnId] ?? '');
+      if (columnId === 'priority') {
+        const leftRank = priorityOrder[leftValue.toLocaleLowerCase()] ?? 99;
+        const rightRank = priorityOrder[rightValue.toLocaleLowerCase()] ?? 99;
+        return (leftRank - rightRank) * sign;
+      }
+      return leftValue.toLocaleLowerCase().localeCompare(rightValue.toLocaleLowerCase(), undefined, { numeric: true }) * sign;
     });
   }
 
