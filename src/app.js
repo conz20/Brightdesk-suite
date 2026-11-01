@@ -6,7 +6,8 @@ const defaults = {
   slides: { title: 'Untitled presentation', slides: [{ title: 'Your presentation title', body: 'Add a subtitle or a few words to introduce your idea.' }], current: 0 },
   notes: { title: 'Untitled note', text: '' },
   todo: { title: 'My tasks', tasks: [] },
-  lists: { title: 'My lists', lists: [] }
+  lists: { title: 'My lists', lists: [] },
+  forms: { title: 'My forms' }
 };
 const configs = {
   pages: { title: 'Brightdesk Pages', heading: 'Make room for your ideas.', desc: 'Write letters, reports and documents.' },
@@ -14,7 +15,8 @@ const configs = {
   slides: { title: 'Brightdesk Decks', heading: 'Bring your ideas to life.', desc: 'Build a presentation one slide at a time.' },
   notes: { title: 'Brightdesk Notes', heading: 'Catch that thought.', desc: 'Keep quick notes and reminders together.' },
   todo: { title: 'Brightdesk To Do', heading: 'Make time for what matters.', desc: 'Plan your day, keep track of tasks and celebrate what you finish.' },
-  lists: { title: 'Brightdesk Lists', heading: 'Track the details that matter.', desc: 'Create structured lists, custom columns and records.' }
+  lists: { title: 'Brightdesk Lists', heading: 'Track the details that matter.', desc: 'Create structured lists, custom columns and records.' },
+  forms: { title: 'Brightdesk Forms', heading: 'Ask. Collect. Understand.', desc: 'Create forms and surveys, then review responses.' }
 };
 const genericConfigs = Object.fromEntries((window.BrightdeskAppCatalog || []).filter(item => !['pages','sheets','slides','notes'].includes(item.id)).map(item => [item.id, { title: item.name, heading: item.name, desc: item.description }]));
 const fullCatalog = window.BrightdeskAppCatalog || [];
@@ -747,7 +749,7 @@ function render() {
   const manager = state.view === 'manager';
   const languages = state.view === 'languages';
   $('app-manager').hidden = !manager; $('language-manager').hidden = !languages;
-  $('workspace').hidden = manager || languages; $('welcome').hidden = manager || languages || ['todo','lists'].includes(state.app);
+  $('workspace').hidden = manager || languages; $('welcome').hidden = manager || languages || ['todo','lists','forms'].includes(state.app);
   $('app-title').textContent = manager ? t('sidebar.getApps') : (languages ? t('language.title') : (catalog.find(item => item.id === state.app)?.name || state.app));
   $('top-actions').hidden = manager || languages;
   if (manager) {
@@ -762,9 +764,10 @@ function render() {
     $('doc-title').value = doc.title || defaults[state.app].title;
     const isTodo = state.app === 'todo';
     const isLists = state.app === 'lists';
-    $('todo-wrap').hidden = !isTodo; $('lists-wrap').hidden = !isLists;
-    $('open-button').hidden = isTodo || isLists; $('save-project').hidden = isTodo || isLists; $('export-button').hidden = isTodo || isLists;
-    document.querySelector('.document-bar').hidden = isTodo || isLists; $('ribbon-tabs').hidden = isTodo || isLists; $('toolbar').hidden = isTodo || isLists;
+    const isForms = state.app === 'forms';
+    $('todo-wrap').hidden = !isTodo; $('lists-wrap').hidden = !isLists; $('forms-wrap').hidden = !isForms;
+    $('open-button').hidden = isTodo || isLists || isForms; $('save-project').hidden = isTodo || isLists || isForms; $('export-button').hidden = isTodo || isLists || isForms;
+    document.querySelector('.document-bar').hidden = isTodo || isLists || isForms; $('ribbon-tabs').hidden = isTodo || isLists || isForms; $('toolbar').hidden = isTodo || isLists || isForms;
     editor.hidden = !['pages'].includes(state.app); sheetWrap.hidden = state.app !== 'sheets'; slideWrap.hidden = state.app !== 'slides'; notesWrap.hidden = !['notes'].includes(state.app);
     editor.innerHTML = state.app === 'pages' ? safeHtml(doc.html) : '';
     if (state.app === 'pages') applyPageLayout(); else editor.removeAttribute('style');
@@ -773,6 +776,7 @@ function render() {
     if (state.app === 'sheets') renderSheet(); if (state.app === 'slides') renderSlides();
     if (isTodo) renderTodoWorkspace();
     else if (isLists) renderListsWorkspace();
+    else if (isForms) window.BrightdeskFormsUI.render();
     else if (!['pages','sheets','slides','notes'].includes(state.app)) renderGenericWorkspace();
     renderToolbar();
     $('workspace').classList.toggle('focus-mode', state.focusMode);
