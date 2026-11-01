@@ -405,7 +405,7 @@ function createProductRepositorySeeds({ rootDir = path.resolve(__dirname, '..'),
       '    open-pull-requests-limit: 5',
       '    labels: [dependencies, ci]',
       ''
-    ].join('\\n'));
+    ].join('\n'));
     fs.writeFileSync(path.join(target, 'REPOSITORY_INFO.md'), `# ${product.repository}
 
 - Product: ${product.name}
