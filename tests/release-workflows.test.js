@@ -43,7 +43,7 @@ test('release workflow builds and verifies all three desktop platforms', () => {
   assert.match(workflow, /name: Build standalone app installers/);
   assert.match(workflow, /npm run dist:apps:\$\{\{ matrix\.script \}\}/);
   assert.match(workflow, /name: Upload standalone app installers/);
-  assert.match(workflow, /release\\/apps\\/\$\{\{ matrix\.platform \}\}/);
+  assert.ok(workflow.includes('path: release/apps/${{ matrix.platform }}/**'), 'standalone app artifacts use platform-specific folders');
 });
 
 test('pull-request builds never receive code-signing or notarisation secrets', () => {
