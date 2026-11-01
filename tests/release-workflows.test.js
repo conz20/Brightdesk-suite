@@ -27,8 +27,8 @@ test('scheduled dependency audit prepares and verifies a lockfile before blockin
 
 test('daily quality workflow checks the integrated suite without publishing a release', () => {
   const workflow = read('.github/workflows/continuous-quality.yml');
-  assert.match(workflow, /cron: '15 4 \\* \\* \\*'/);
-  assert.match(workflow, /node-version: 24\\.22\\.2/);
+  assert.ok(workflow.includes("cron: '15 4 * * *'"));
+  assert.ok(workflow.includes('node-version: 24.22.2'));
   assert.match(workflow, /npm run lock:prepare/);
   assert.match(workflow, /npm run lock:verify/);
   assert.match(workflow, /npm ci --no-audit --no-fund/);
@@ -36,7 +36,8 @@ test('daily quality workflow checks the integrated suite without publishing a re
   assert.match(workflow, /npm test/);
   assert.match(workflow, /npm run release:preflight/);
   assert.match(workflow, /npm audit --audit-level=high/);
-  assert.doesNotMatch(workflow, /softprops\\/action-gh-release|contents: write/);
+  assert.equal(workflow.includes('softprops/action-gh-release'), false);
+  assert.equal(workflow.includes('contents: write'), false);
 });
 
 test('release workflow builds and verifies all three desktop platforms', () => {
