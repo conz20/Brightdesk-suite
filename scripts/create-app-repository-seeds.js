@@ -278,8 +278,8 @@ function makePackage(app, target) {
     lock.packages[''].version = manifest.version;
   }
 
-  fs.writeFileSync(manifestPath, `${JSON.stringify(manifest, null, 2)}\\n`);
-  fs.writeFileSync(lockPath, `${JSON.stringify(lock, null, 2)}\\n`);
+  fs.writeFileSync(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`);
+  fs.writeFileSync(lockPath, `${JSON.stringify(lock, null, 2)}\n`);
 }
 
 function createAppRepositorySeeds({ rootDir = path.resolve(__dirname, '..'), outputDir = path.join(rootDir, 'release', 'app-repository-seeds') } = {}) {
