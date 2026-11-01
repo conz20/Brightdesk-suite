@@ -4,13 +4,15 @@ const defaults = {
   pages: { title: 'Untitled document', html: '' },
   sheets: { title: 'Untitled spreadsheet', cells: Array.from({ length: 20 }, () => Array(12).fill('')) },
   slides: { title: 'Untitled presentation', slides: [{ title: 'Your presentation title', body: 'Add a subtitle or a few words to introduce your idea.' }], current: 0 },
-  notes: { title: 'Untitled note', text: '' }
+  notes: { title: 'Untitled note', text: '' },
+  loop: { title: 'My workspace' }
 };
 const configs = {
   pages: { title: 'Brightdesk Pages', heading: 'Make room for your ideas.', desc: 'Write letters, reports and documents.' },
   sheets: { title: 'Brightdesk Sheets', heading: 'Make numbers make sense.', desc: 'Organise information, use formulas and build tables.' },
   slides: { title: 'Brightdesk Decks', heading: 'Bring your ideas to life.', desc: 'Build a presentation one slide at a time.' },
-  notes: { title: 'Brightdesk Notes', heading: 'Catch that thought.', desc: 'Keep quick notes and reminders together.' }
+  notes: { title: 'Brightdesk Notes', heading: 'Catch that thought.', desc: 'Keep quick notes and reminders together.' },
+  loop: { title: 'Brightdesk Workspace', heading: 'Bring your work together.', desc: 'Create pages, notes, checklists and project information in one place.' }
 };
 const genericConfigs = Object.fromEntries((window.BrightdeskAppCatalog || []).filter(item => !['pages','sheets','slides','notes'].includes(item.id)).map(item => [item.id, { title: item.name, heading: item.name, desc: item.description }]));
 const fullCatalog = window.BrightdeskAppCatalog || [];
@@ -61,7 +63,7 @@ function loadLocal() {
 function saveAppSetup() {
   localStorage.setItem('brightdesk-app-setup-v1', JSON.stringify({ installedApps: state.installedApps, setupComplete: state.setupComplete }));
 }
-function installedApp(id) { return state.installedApps.includes(id); }
+function installedApp(id) { return state.installedApps.includes(id) || id === 'loop'; }
 function appLabel(id) { return catalog.find(item => item.id === id)?.name || id; }
 
 function safeHtml(html) {
@@ -611,13 +613,17 @@ function render() {
     editor.setAttribute('data-placeholder', t('common.startTyping'));
     const doc = activeDoc();
     $('doc-title').value = doc.title || defaults[state.app].title;
+    const isWorkspace=state.app==='loop'; $('workspace-app-wrap').hidden=!isWorkspace; $('doc-title').parentElement.hidden=isWorkspace;
+    $('open-button').hidden=isWorkspace; $('save-project').hidden=isWorkspace; $('export-button').hidden=isWorkspace;
+    $('ribbon-tabs').hidden=isWorkspace; $('toolbar').hidden=isWorkspace;
     editor.hidden = !['pages'].includes(state.app); sheetWrap.hidden = state.app !== 'sheets'; slideWrap.hidden = state.app !== 'slides'; notesWrap.hidden = !['notes'].includes(state.app);
     editor.innerHTML = state.app === 'pages' ? safeHtml(doc.html) : '';
     if (state.app === 'pages') applyPageLayout(); else editor.removeAttribute('style');
     $('notes-editor').value = state.app === 'notes' ? (doc.text || '') : '';
     updateDocumentLanguage();
     if (state.app === 'sheets') renderSheet(); if (state.app === 'slides') renderSlides();
-    if (!['pages','sheets','slides','notes'].includes(state.app)) renderGenericWorkspace();
+    if (isWorkspace) window.BrightdeskWorkspaceUI.render();
+    if (!['pages','sheets','slides','notes','loop'].includes(state.app)) renderGenericWorkspace();
     renderToolbar();
     $('workspace').classList.toggle('focus-mode', state.focusMode);
   }
