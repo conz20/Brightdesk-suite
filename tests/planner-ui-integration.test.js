@@ -1,0 +1,12 @@
+'use strict';
+const test=require('node:test');
+const assert=require('node:assert/strict');
+const fs=require('node:fs');
+const path=require('node:path');
+const root=path.join(__dirname,'..');
+const app=fs.readFileSync(path.join(root,'src','app.js'),'utf8');
+const html=fs.readFileSync(path.join(root,'src','index.html'),'utf8');
+const css=fs.readFileSync(path.join(root,'src','styles.css'),'utf8');
+test('Planner has a dedicated board workspace',()=>{assert.match(html,/id="planner-wrap"/);assert.match(html,/id="planner-board"/);assert.ok(html.indexOf('src="planner-service.js"')<html.indexOf('src="app.js"'));assert.ok(html.indexOf('src="planner-workspace.js"')<html.indexOf('src="app.js"'));});
+test('Planner is connected to the app shell and its local board renderer',()=>{assert.match(app,/planner: \{ title: 'My plans' \}/);assert.match(app,/window\.BrightdeskPlannerUI\.render\(\)/);assert.match(app,/configs\[app\] \|\| genericConfigs\[app\]/);});
+test('Planner exposes bucket, task and filter controls with responsive styling',()=>{assert.match(html,/id="planner-new-bucket"/);assert.match(html,/id="planner-new-task"/);assert.match(html,/id="planner-progress-filter"/);assert.match(html,/id="planner-priority-filter"/);assert.match(html,/aria-live="polite"/);assert.match(css,/\.planner-app\{/);assert.match(css,/@media\(max-width:760px\)\{\.planner-app/);});
