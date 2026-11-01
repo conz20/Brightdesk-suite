@@ -75,6 +75,7 @@ jobs:
         with:
           name: Brightdesk-App-Repository-Seeds
           path: release/app-repository-seeds/**
+          include-hidden-files: true
           if-no-files-found: error
           retention-days: 30
 
