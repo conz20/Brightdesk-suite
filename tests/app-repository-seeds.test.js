@@ -45,6 +45,12 @@ test('generated customer copy uses approved product wording', () => {
     assert.match(workflow, /publish_release:[\s\S]*?default: false/);
     assert.match(workflow, /needs: test/);
     assert.match(workflow, /needs: build/);
+    assert.match(workflow, /cron: '17 4 \\* \\* \\*'/);
+    assert.match(workflow, /npm run lock:verify/);
+    assert.match(workflow, /npm run verify:licenses/);
+    assert.match(workflow, /npm test/);
+    assert.match(workflow, /npm run release:preflight/);
+    assert.match(workflow, /npm audit --audit-level=high/);
   }
 });
 
