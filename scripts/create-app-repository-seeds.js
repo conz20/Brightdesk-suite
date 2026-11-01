@@ -295,10 +295,14 @@ function createAppRepositorySeeds({ rootDir = path.resolve(__dirname, '..'), out
   for (const app of APP_REPOSITORIES) {
     const target = path.join(destinationRoot, app.repository);
     fs.rmSync(target, { recursive: true, force: true });
-    fs.cpSync(sourceRoot, target, {
-      recursive: true,
-      filter: source => shouldCopy(source, target, destinationRoot)
-    });
+    for (const entry of fs.readdirSync(sourceRoot, { withFileTypes: true })) {
+      const source = path.join(sourceRoot, entry.name);
+      if (!shouldCopy(source, target, destinationRoot)) continue;
+      fs.cpSync(source, path.join(target, entry.name), {
+        recursive: true,
+        filter: nestedSource => shouldCopy(nestedSource, target, destinationRoot)
+      });
+    }
 
     makePackage(app, target);
     const artworkSource = path.join(sourceRoot, 'src', 'assets', 'apps', `${app.appId}.svg`);
