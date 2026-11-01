@@ -103,14 +103,14 @@ test('standalone app packaging has independent product IDs and all three platfor
   const previousAppId = process.env.BRIGHTDESK_APP_ID;
   const products = [];
   try {
-    for (const [id, name] of [['pages','Pages'],['sheets','Sheets'],['slides','Decks'],['notes','Notes'],['database','Database'],['forms','Forms'],['lists','Lists'],['planner','Planner'],['todo','To Do'],['loop','Workspace']]) {
+    for (const [id, name, artifactSlug] of [['pages','Pages','Pages'],['sheets','Sheets','Sheets'],['slides','Decks','Decks'],['notes','Notes','Notes'],['database','Database','Database'],['forms','Forms','Forms'],['lists','Lists','Lists'],['planner','Planner','Planner'],['todo','To Do','To-Do'],['loop','Workspace','Workspace']]) {
       process.env.BRIGHTDESK_APP_ID = id;
       delete require.cache[require.resolve(configPath)];
       const config = require(configPath);
       assert.equal(config.appId, `org.brightdesk.${id}`);
       assert.equal(config.extraMetadata.brightdeskAppId, id);
       assert.equal(config.extraMetadata.productName, `Brightdesk ${name}`);
-      assert.ok(config.win.artifactName.includes(name));
+      assert.ok(config.win.artifactName.includes(artifactSlug));
       assert.equal(config.directories.output, `release/apps/${id}`);
       assert.ok(config.mac.target.includes('pkg'), `${name} mac build must include pkg for installer licence`);
       assert.ok(config.mac.target.includes('dmg'), `${name} mac build must include dmg`);
@@ -147,9 +147,11 @@ test('the standalone build scripts reject unknown app and platform identifiers',
   assert.match(builds, /for \(const appId of apps\)/);
   const main = fs.readFileSync(path.join(root, 'src', 'main.js'), 'utf8');
   const preload = fs.readFileSync(path.join(root, 'src', 'preload.js'), 'utf8');
+  const downloads = fs.readFileSync(path.join(root, 'src', 'standalone-downloads.js'), 'utf8');
+  assert.match(main, /const supportedStandaloneApps = new Set\(Object\.keys\(APP_SLUGS\)\)/);
   for (const id of ['pages','sheets','slides','notes','database','forms','lists','planner','todo','loop']) {
-    assert.ok(main.includes(`'${id}'`), `main process must support standalone ${id}`);
     assert.ok(preload.includes(`'${id}'`), `preload must expose standalone ${id}`);
+    assert.match(downloads, new RegExp(`\\b${id}: '`), `download map must include standalone ${id}`);
   }
 });
 
