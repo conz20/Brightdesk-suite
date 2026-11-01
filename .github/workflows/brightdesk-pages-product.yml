@@ -46,6 +46,6 @@ jobs:
           if (pkg.build?.appId !== 'org.brightdesk.pages') throw new Error(`Unexpected Electron app ID: ${pkg.build?.appId}`);
           if (pkg.build?.productName !== 'Brightdesk Pages') throw new Error(`Unexpected product name: ${pkg.build?.productName}`);
           if (!fs.existsSync(path.join(root, 'assets', 'brightdesk-product.svg'))) throw new Error('Pages artwork is missing.');
-          if (!fs.existsSync(path.join(root, '.github', 'workflows', 'product-installers.yml'))) throw new Error('Pages standalone workflow is missing.');
+          if (!fs.existsSync(path.join(root, '.github', 'workflows', 'product-installers.yml'))) throw new Error('Pages product installer workflow is missing.');
           console.log('Brightdesk Pages product folder verified.');
           NODE
