@@ -5,7 +5,12 @@ on:
     branches: [feature/brightdesk-todo]
     paths:
       - 'src/todo-service.js'
+      - 'src/app.js'
+      - 'src/index.html'
+      - 'src/styles.css'
+      - 'src/app-catalog.js'
       - 'tests/todo-service.test.js'
+      - 'tests/todo-ui-integration.test.js'
       - '.github/workflows/todo-ci.yml'
   pull_request:
     branches: [main]
@@ -31,5 +36,7 @@ jobs:
           cache: npm
       - name: Install locked dependencies
         run: npm ci --no-audit --no-fund
+      - name: Check renderer JavaScript syntax
+        run: node --check src/app.js
       - name: Run automated tests
         run: npm test
