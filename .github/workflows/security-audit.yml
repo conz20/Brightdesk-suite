@@ -1,0 +1,53 @@
+name: Security and dependency audit
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'package.json'
+      - 'package-lock.json'
+      - '.github/workflows/security-audit.yml'
+      - 'scripts/verify-lockfile.js'
+  pull_request:
+    paths:
+      - 'package.json'
+      - 'package-lock.json'
+      - '.github/workflows/security-audit.yml'
+      - 'scripts/verify-lockfile.js'
+  schedule:
+    - cron: '23 5 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out Brightdesk
+        uses: actions/checkout@v4
+
+      - name: Set up required Node.js version
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24.22.2
+          cache: npm
+
+      - name: Prepare exact dependency lock
+        run: npm run lock:prepare
+
+      - name: Verify dependency lock
+        run: npm run lock:verify
+
+      - name: Install locked dependencies
+        run: npm ci --no-audit --no-fund
+
+      - name: Verify third-party licence notices
+        run: npm run verify:licenses
+
+      - name: Run automated tests
+        run: npm test
+
+      - name: Audit dependencies for high severity vulnerabilities
+        run: npm audit --audit-level=high
