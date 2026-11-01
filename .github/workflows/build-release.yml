@@ -35,8 +35,8 @@ permissions:
   actions: read
 
 concurrency:
-  group: brightdesk-installer-build-${{ github.ref }}
-  cancel-in-progress: false
+  group: brightdesk-installer-build-${{ github.ref }}-${{ github.event_name }}
+  cancel-in-progress: ${{ github.event_name != 'workflow_dispatch' }}
 
 jobs:
   prepare:
