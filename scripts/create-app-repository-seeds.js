@@ -47,10 +47,53 @@ function escapeHtml(value) {
   }[character]));
 }
 
+function socialPreview(app) {
+  const accent = ({
+    pages: '#e3a23d', sheets: '#51b887', slides: '#e66a75', notes: '#7194e8',
+    database: '#49b6c8', forms: '#bd83e8', lists: '#6aa8d8', planner: '#d98c50',
+    todo: '#76b46c', loop: '#9a91e8'
+  })[app.appId] || '#6f8ee8';
+  const mark = catalog.find(item => item.id === app.appId)?.icon || 'B';
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="640" viewBox="0 0 1280 640" role="img" aria-labelledby="title desc">
+  <title id="title">${escapeHtml(app.name)} — Brightdesk</title>
+  <desc id="desc">Original Brightdesk repository banner for ${escapeHtml(app.name)}.</desc>
+  <defs>
+    <linearGradient id="background" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#111a31"/><stop offset="1" stop-color="#27324e"/></linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${accent}"/><stop offset="1" stop-color="#ffffff" stop-opacity=".65"/></linearGradient>
+  </defs>
+  <rect width="1280" height="640" rx="36" fill="url(#background)"/>
+  <circle cx="1150" cy="75" r="290" fill="${accent}" opacity=".13"/>
+  <circle cx="860" cy="610" r="230" fill="${accent}" opacity=".11"/>
+  <rect x="82" y="92" width="82" height="82" rx="24" fill="url(#accent)"/>
+  <text x="123" y="147" text-anchor="middle" font-family="Arial, sans-serif" font-size="34" font-weight="700" fill="#152039">${escapeHtml(mark)}</text>
+  <text x="190" y="145" font-family="Arial, sans-serif" font-size="24" letter-spacing="5" font-weight="700" fill="#d9e2f4">BRIGHTDESK</text>
+  <text x="86" y="318" font-family="Arial, sans-serif" font-size="72" font-weight="700" fill="#ffffff">${escapeHtml(app.name)}</text>
+  <text x="90" y="390" font-family="Arial, sans-serif" font-size="27" fill="#d7e0f2">${escapeHtml(app.description)}</text>
+  <rect x="88" y="460" width="238" height="56" rx="28" fill="${accent}"/>
+  <text x="207" y="496" text-anchor="middle" font-family="Arial, sans-serif" font-size="19" font-weight="700" fill="#142039">STANDALONE APP</text>
+  <g transform="translate(830 120)">
+    <rect x="0" y="0" width="350" height="380" rx="28" fill="#ffffff" opacity=".08" stroke="#ffffff" stroke-opacity=".22"/>
+    <rect x="24" y="24" width="302" height="332" rx="18" fill="#f7f8fc"/>
+    <rect x="46" y="47" width="90" height="12" rx="6" fill="${accent}"/>
+    <rect x="46" y="78" width="248" height="7" rx="3.5" fill="#d9deeb"/>
+    <rect x="46" y="96" width="216" height="7" rx="3.5" fill="#e4e7ef"/>
+    <rect x="46" y="134" width="258" height="150" rx="12" fill="${accent}" opacity=".16"/>
+    <rect x="64" y="153" width="140" height="12" rx="6" fill="${accent}" opacity=".8"/>
+    <rect x="64" y="178" width="220" height="7" rx="3.5" fill="#c6ccda"/>
+    <rect x="64" y="196" width="190" height="7" rx="3.5" fill="#c6ccda"/>
+    <rect x="64" y="230" width="72" height="36" rx="8" fill="${accent}" opacity=".85"/>
+    <rect x="46" y="308" width="180" height="7" rx="3.5" fill="#d9deeb"/>
+  </g>
+</svg>
+`;
+}
+
 function repositoryReadme(app) {
   return `# ${app.name}
 
-![${app.name} preview](assets/brightdesk-app.svg)
+![${app.name} repository banner](assets/social-preview.svg)
+
+![${app.name} app artwork](assets/brightdesk-app.svg)
 
 ${app.description}
 
@@ -265,6 +308,7 @@ function createAppRepositorySeeds({ rootDir = path.resolve(__dirname, '..'), out
     fs.mkdirSync(assets, { recursive: true });
     fs.mkdirSync(workflowDirectory, { recursive: true });
     fs.copyFileSync(artworkSource, path.join(assets, 'brightdesk-app.svg'));
+    fs.writeFileSync(path.join(assets, 'social-preview.svg'), socialPreview(app));
     fs.writeFileSync(path.join(target, 'README.md'), repositoryReadme(app));
     fs.writeFileSync(path.join(target, '.github', 'workflows', 'standalone-app.yml'), standaloneWorkflow(app));
     fs.writeFileSync(path.join(target, 'REPOSITORY_INFO.md'), `# ${app.repository}
@@ -294,4 +338,4 @@ if (require.main === module) {
   }
 }
 
-module.exports = { APP_REPOSITORIES, createAppRepositorySeeds, repositoryReadme, standaloneWorkflow };
+module.exports = { APP_REPOSITORIES, createAppRepositorySeeds, repositoryReadme, socialPreview, standaloneWorkflow };
