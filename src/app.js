@@ -668,7 +668,7 @@ function render() {
   const manager = state.view === 'manager';
   const languages = state.view === 'languages';
   $('app-manager').hidden = !manager; $('language-manager').hidden = !languages;
-  $('workspace').hidden = manager || languages; $('welcome').hidden = manager || languages;
+  $('workspace').hidden = manager || languages; $('welcome').hidden = manager || languages || state.app === 'todo';
   $('app-title').textContent = manager ? t('sidebar.getApps') : (languages ? t('language.title') : (catalog.find(item => item.id === state.app)?.name || state.app));
   $('top-actions').hidden = manager || languages;
   if (manager) {
