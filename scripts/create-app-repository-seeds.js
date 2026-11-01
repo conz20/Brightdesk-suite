@@ -89,7 +89,7 @@ function socialPreview(app) {
 }
 
 function repositoryBundleReadme() {
-  const folders = APP_REPOSITORIES.map(app => `- ${app.repository} — ${app.name}`).join('\\n');
+  const folders = APP_REPOSITORIES.map(app => `- ${app.repository} — ${app.name}`).join('\n');
   return `# Brightdesk standalone app repositories
 
 This bundle contains ten separate repository folders. Each folder is a standalone edition of one approved Brightdesk app, with its own package files, README, original app artwork, repository banner and GitHub Actions release workflow.
