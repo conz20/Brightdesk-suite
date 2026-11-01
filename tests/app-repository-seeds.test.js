@@ -23,6 +23,9 @@ test('app repository seed exports a locked single-app package with suite source 
   try {
     const result = createAppRepositorySeeds({ rootDir: root, outputDir: output });
     assert.equal(result.repositories.length, 10);
+    const bundleReadme = fs.readFileSync(path.join(output, 'README-START-HERE.md'), 'utf8');
+    for (const item of APP_REPOSITORIES) assert.ok(bundleReadme.includes(item.repository), `bundle guide missing ${item.repository}`);
+    assert.match(bundleReadme, /Brightdesk-suite remains the complete ten-app desktop suite/);
     for (const item of APP_REPOSITORIES) {
       const destination = path.join(output, item.repository);
       const pkg = JSON.parse(fs.readFileSync(path.join(destination, 'package.json'), 'utf8'));
