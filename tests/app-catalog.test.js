@@ -193,6 +193,9 @@ test('README presents all ten apps as the integrated first-release lineup', () =
 });
 
 test('Linux desktop launch identity matches the installed desktop entry', () => {
+  const fs = require('node:fs');
+  const path = require('node:path');
+  const root = path.join(__dirname, '..');
   const packageJson = JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8'));
   const productConfig = fs.readFileSync(path.join(root, 'electron-builder.app.config.js'), 'utf8');
   assert.equal(packageJson.desktopName, 'org.brightdesk.suite.desktop');
