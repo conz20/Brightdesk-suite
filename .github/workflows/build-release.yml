@@ -95,7 +95,7 @@ jobs:
         run: npm audit --audit-level=high
 
       - name: Upload the ten prepared product repository folders
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: Brightdesk-Product-Repositories-0.1.0
           path: release/product-repository-folders/**
@@ -199,7 +199,7 @@ jobs:
           echo "Brightdesk installers saved to: $destination"
 
       - name: Upload verified Linux installer bundle
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: Brightdesk-0.1.0-Linux
           path: |
@@ -210,7 +210,7 @@ jobs:
           retention-days: 30
 
       - name: Upload verified Windows installer bundle
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: Brightdesk-0.1.0-Windows
           path: |
@@ -220,7 +220,7 @@ jobs:
           retention-days: 30
 
       - name: Upload verified macOS installer bundle
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: Brightdesk-0.1.0-macOS
           path: |
@@ -260,7 +260,7 @@ jobs:
           fi
 
       - name: Download verified platform bundles
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
         with:
           pattern: Brightdesk-0.1.0-*
           path: release
@@ -279,7 +279,7 @@ jobs:
           done
 
       - name: Publish verified desktop installers
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@3bb12739c298aeb8a4eeaf626c5b8d85266b0e65 # v2
         with:
           tag_name: ${{ inputs.release_tag }}
           name: Brightdesk ${{ inputs.release_tag }}

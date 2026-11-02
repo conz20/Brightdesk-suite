@@ -66,8 +66,8 @@ test('release workflow builds all three platforms on the self-hosted Mac and pub
   }
   assert.ok(workflow.includes('name: Save verified build output on this Mac'));
   assert.ok(workflow.includes('Brightdesk-Builds'));
-  assert.ok(workflow.includes('actions/upload-artifact@v4'));
-  assert.ok(workflow.includes('actions/download-artifact@v4'));
+  assert.ok(workflow.includes('actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02'));
+  assert.ok(workflow.includes('actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093'));
   assert.match(workflow, /name: Brightdesk-Product-Repositories-0\.1\.0/);
   assert.match(workflow, /include-hidden-files: true/);
   assert.match(workflow, /pattern: Brightdesk-0\.1\.0-\*/);
@@ -174,4 +174,23 @@ test('new automatic installer checks replace stale builds without cancelling man
   const workflow = read('.github/workflows/build-release.yml');
   assert.match(workflow, /group: brightdesk-installer-build-\$\{\{ github\.ref \}\}-\$\{\{ github\.event_name \}\}/);
   assert.match(workflow, /cancel-in-progress: \$\{\{ github\.event_name != 'workflow_dispatch' \}\}/);
+});
+
+
+test('all suite and generated product GitHub Actions are pinned to full commit SHAs', () => {
+  const workflowDirectory = path.join(root, '.github', 'workflows');
+  const sources = fs.readdirSync(workflowDirectory)
+    .filter(file => /\.ya?ml$/i.test(file))
+    .map(file => ({ label: file, content: fs.readFileSync(path.join(workflowDirectory, file), 'utf8') }));
+  const { PRODUCT_REPOSITORIES, productWorkflow } = require('../scripts/create-app-repository-seeds');
+  for (const product of PRODUCT_REPOSITORIES) {
+    sources.push({ label: product.repository, content: productWorkflow(product) });
+  }
+
+  for (const source of sources) {
+    const references = [...source.content.matchAll(/^\s*uses:\s*([^\s#]+)/gm)].map(match => match[1]);
+    for (const reference of references) {
+      assert.match(reference, /@[a-f0-9]{40}$/i, source.label + ': ' + reference);
+    }
+  }
 });
