@@ -78,8 +78,8 @@ test('release workflow builds all three platforms sequentially on the self-hoste
 test('code-signing secrets are limited to their relevant platform build steps', () => {
   const workflow = read('.github/workflows/build-release.yml');
   assert.equal(workflow.includes('pull_request:'), false);
-  const linux = workflow.split('- name: Build Linux suite and all ten standalone apps')[1].split('- name: Build Windows suite and all ten standalone apps')[0];
-  const windows = workflow.split('- name: Build Windows suite and all ten standalone apps')[1].split('- name: Build macOS suite and all ten standalone apps')[0];
+  const windows = workflow.split('- name: Build Windows suite and all ten standalone apps')[1].split('- name: Build Linux suite and all ten standalone apps')[0];
+  const linux = workflow.split('- name: Build Linux suite and all ten standalone apps')[1].split('- name: Build macOS suite and all ten standalone apps')[0];
   const mac = workflow.split('- name: Build macOS suite and all ten standalone apps')[1].split('- name: Save verified build output on this Mac')[0];
   assert.ok(linux && windows && mac, 'all three platform build steps exist');
   assert.doesNotMatch(linux, /secrets\./);
