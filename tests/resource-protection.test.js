@@ -52,15 +52,18 @@ test('release workflow has working install and release permissions', () => {
     assert.match(workflow, /run: npm ci/);
     assert.match(workflow, /npm run verify:licenses/);
     assert.match(workflow, /npm run release:preflight/);
-    assert.match(workflow, /npm run release:verify:win/);
+    const buildHelper = fs.readFileSync(path.join(root, 'scripts', 'build-in-docker.sh'), 'utf8');
+    assert.match(buildHelper, /npm run release:verify:win/);
+    assert.match(buildHelper, /npm run release:verify:linux/);
     assert.match(workflow, /npm run release:verify:mac/);
     assert.match(workflow, /WIN_CSC_LINK/);
     assert.match(workflow, /MAC_INSTALLER_CSC_LINK/);
     assert.match(workflow, /APPLE_APP_SPECIFIC_PASSWORD/);
     assert.match(workflow, /npm run release:verify:linux/);
-    for (const command of ['npm run dist:products:linux', 'npm run dist:products:win', 'npm run dist:products:mac']) {
-      assert.ok(workflow.includes(command), `workflow includes ${command}`);
+    for (const command of ['npm run dist:products:linux', 'npm run dist:products:win']) {
+      assert.ok(buildHelper.includes(command), `Docker helper includes ${command}`);
     }
+    assert.ok(workflow.includes('npm run dist:products:mac'));
     for (const command of ['npm run release:verify:products:linux', 'npm run release:verify:products:win', 'npm run release:verify:products:mac']) {
       assert.ok(workflow.includes(command), `workflow includes ${command}`);
     }
