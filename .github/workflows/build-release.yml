@@ -92,30 +92,6 @@ jobs:
       - name: Build Windows cross-build image with Wine 10.4
         run: docker build --platform linux/amd64 --pull --tag brightdesk-electron-builder:24.22.2-windows --file .github/docker/electron-builder-windows.Dockerfile .
 
-      - name: Verify Wine 10.4 runs under Docker emulation
-        shell: bash
-        run: |
-          set -euo pipefail
-          docker run --rm --platform linux/amd64 \
-            --user "$(id -u):$(id -g)" \
-            --env HOME=/tmp/brightdesk-wine-smoke \
-            --env WINEPREFIX=/tmp/brightdesk-wine-smoke/prefix \
-            --env WINEDEBUG=-all \
-            --env DISPLAY= \
-            --env WINEDLLOVERRIDES=mscoree,mshtml= \
-            --entrypoint /bin/bash \
-            brightdesk-electron-builder:24.22.2-windows \
-            -lc 'mkdir -p "$HOME" && node --version && test "$(wine --version)" = "wine-10.4" && timeout 120s wineboot --init'
-
-      - name: Build Linux suite and all ten standalone apps
-        env:
-          CSC_LINK: ''
-          CSC_KEY_PASSWORD: ''
-        shell: bash
-        run: |
-          bash scripts/build-in-docker.sh linux
-          node scripts/collect-platform-build.js linux
-
       - name: Build Windows suite and all ten standalone apps
         env:
           WIN_CSC_LINK: ${{ github.event_name != 'pull_request' && secrets.WIN_CSC_LINK || '' }}
@@ -127,6 +103,15 @@ jobs:
           if [ -z "${CSC_LINK:-}" ]; then unset CSC_LINK CSC_KEY_PASSWORD; fi
           bash scripts/build-in-docker.sh win
           node scripts/collect-platform-build.js win
+
+      - name: Build Linux suite and all ten standalone apps
+        env:
+          CSC_LINK: ''
+          CSC_KEY_PASSWORD: ''
+        shell: bash
+        run: |
+          bash scripts/build-in-docker.sh linux
+          node scripts/collect-platform-build.js linux
 
       - name: Build macOS suite and all ten standalone apps
         env:

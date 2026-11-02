@@ -118,9 +118,8 @@ test('Windows cross-build uses Wine 10.4 to avoid the Apple Silicon Docker memor
   const workflow = read('.github/workflows/build-release.yml');
   assert.match(workflow, /brightdesk-electron-builder:24\.22\.2-linux/);
   assert.match(workflow, /brightdesk-electron-builder:24\.22\.2-windows/);
-  assert.match(workflow, /--env DISPLAY=/);
-  assert.match(workflow, /--env WINEDLLOVERRIDES=mscoree,mshtml=/);
-  assert.match(workflow, /timeout 120s wineboot --init/);
+  assert.ok(workflow.indexOf('Build Windows suite and all ten standalone apps') < workflow.indexOf('Build Linux suite and all ten standalone apps'), 'Windows is tested first so Wine failures are found before the longer Linux build');
+  assert.equal(workflow.includes('wineboot --init'), false, 'the actual Windows packaging run is the Wine integration test');
 });
 
 test('platform installer folders are assembled locally with dependency lock metadata retained', () => {
