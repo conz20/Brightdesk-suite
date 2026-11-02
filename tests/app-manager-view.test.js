@@ -12,6 +12,9 @@ const css = fs.readFileSync(path.join(root, 'src', 'styles.css'), 'utf8');
 
 test('App Centre offers accessible grid and list layouts', () => {
   assert.match(html, /role="group" aria-label="Application display"/);
+  assert.match(html, /data-i18n="manager.view"/);
+  assert.match(html, /data-i18n="manager.gridView"/);
+  assert.match(html, /data-i18n="manager.listView"/);
   assert.match(html, /id="manager-grid-view" aria-pressed="true">Grid/);
   assert.match(html, /id="manager-list-view" aria-pressed="false">List/);
   assert.match(app, /managerView: localStorage\.getItem\('brightdesk-manager-view'\)/);
