@@ -107,14 +107,16 @@
       "TERMS_AND_CONDITIONS.txt"
     ],
     "directories": {
-      "output": "release"
+      "output": "release",
+      "buildResources": "assets/branding"
     },
     "publish": [],
     "win": {
       "target": [
         "nsis"
       ],
-      "artifactName": "Brightdesk-Setup-${version}-${arch}.${ext}"
+      "artifactName": "Brightdesk-Setup-${version}-${arch}.${ext}",
+      "icon": "brightdesk-suite-mark.svg"
     },
     "nsis": {
       "oneClick": false,
@@ -130,7 +132,8 @@
         "zip"
       ],
       "category": "public.app-category.productivity",
-      "artifactName": "Brightdesk-${version}-${arch}.${ext}"
+      "artifactName": "Brightdesk-${version}-${arch}.${ext}",
+      "icon": "brightdesk-suite-mark.svg"
     },
     "dmg": {
       "sign": false
@@ -142,7 +145,8 @@
       ],
       "category": "Office",
       "artifactName": "brightdesk-${version}-${arch}.${ext}",
-      "syncDesktopName": true
+      "syncDesktopName": true,
+      "icon": "brightdesk-suite-mark.svg"
     },
     "appImage": {
       "artifactName": "Brightdesk-${version}-${arch}.${ext}"
