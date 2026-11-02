@@ -32,6 +32,8 @@ docker run --rm --platform linux/amd64 \
   --env HOME=/home/brightdesk \
   --env WINEPREFIX=/home/brightdesk/.wine \
   --env WINEDEBUG=-all \
+  --env DISPLAY= \
+  --env WINEDLLOVERRIDES=mscoree,mshtml= \
   --env ELECTRON_CACHE=/home/brightdesk/.cache/electron \
   --env ELECTRON_BUILDER_CACHE=/home/brightdesk/.cache/electron-builder \
   --env npm_config_cache=/home/brightdesk/.npm \

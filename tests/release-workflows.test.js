@@ -95,6 +95,8 @@ test('Windows cross-build uses Wine 10.4 to avoid the Apple Silicon Docker memor
   assert.match(helper, /docker run --rm --platform linux\/amd64/);
   assert.match(helper, /--user/);
   assert.match(helper, /npm run check:node/);
+  assert.match(helper, /--env DISPLAY=/);
+  assert.match(helper, /--env WINEDLLOVERRIDES=mscoree,mshtml=/);
   assert.match(helper, /npm ci --no-audit --no-fund/);
   assert.match(helper, /linux\) builder_image="brightdesk-electron-builder:24\.22\.2-linux"/);
   assert.match(helper, /win\) builder_image="brightdesk-electron-builder:24\.22\.2-windows"/);
