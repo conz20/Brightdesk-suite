@@ -2,7 +2,7 @@ name: Build and verify Brightdesk installers
 
 on:
   push:
-    branches: [main]
+    branches: [main, feature/standalone-downloads-all-ten]
     paths:
       - 'package.json'
       - 'package-lock.json'
