@@ -16,6 +16,20 @@ test('suite installers use the original SVG master icon on all platforms', () =>
   for (const platform of ['win', 'mac', 'linux']) {
     assert.equal(build[platform].icon, 'brightdesk-suite-mark.svg');
   }
+  const previousAppId = process.env.BRIGHTDESK_APP_ID;
+  try {
+    for (const appId of ['pages','sheets','slides','notes']) {
+      process.env.BRIGHTDESK_APP_ID = appId;
+      delete require.cache[require.resolve('../electron-builder.app.config.js')];
+      const config = require('../electron-builder.app.config.js');
+      assert.equal(config.directories.buildResources, 'assets/branding');
+      for (const platform of ['win','mac','linux']) assert.equal(config[platform].icon, 'brightdesk-suite-mark.svg');
+    }
+  } finally {
+    if (previousAppId === undefined) delete process.env.BRIGHTDESK_APP_ID;
+    else process.env.BRIGHTDESK_APP_ID = previousAppId;
+    delete require.cache[require.resolve('../electron-builder.app.config.js')];
+  }
   assert.ok(fs.existsSync(path.join(root, 'assets', 'branding', 'brightdesk-suite-mark.svg')));
 });
 
