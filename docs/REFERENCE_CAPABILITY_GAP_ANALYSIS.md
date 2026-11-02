@@ -99,3 +99,15 @@ Storytold's Rust architecture is a useful reference, but Brightdesk should not r
 3. Merge the ten-product build/repository preparation only after the full suite and all ten product installers pass native CI.
 4. Finish and verify the launcher download/checksum/update lifecycle.
 5. Improve one app at a time, beginning with Pages and Sheets, using acceptance tests and real file round-trip fixtures before expanding features.
+
+
+## Code-level reference observations
+
+The public source repositories expose useful engineering patterns beyond their screenshots and feature lists:
+
+- WordCraft's `crates/engine/src/lib.rs` documents one shared `Session::run` command path used by the ribbon, keyboard shortcuts, command palette, CLI, JSON control channel and MCP server. Its `crates/mcp/src/server.rs` and `docs/mcp.md` show the separate protocol layer. Brightdesk can borrow the architectural principle of one tested command/action layer, without copying its implementation.
+- GridCraft's `docs/architecture.md` separates the workbook model, formula evaluator/dependency graph, XLSX reader/writer, UI, CLI and MCP. Its documentation describes dynamic arrays, formula functions, PivotTables and file round-trip testing. Brightdesk should similarly keep formula evaluation and workbook persistence independent from the grid UI.
+- DeckCraft's `docs/architecture.md`, `docs/parity-checklist.md`, `docs/animation-parity.md` and `docs/slideshow-parity.md` separate the presentation model, rendering, file format, command engine and presentation runtime. The parity documents also record incomplete areas and known defects rather than presenting every feature as finished.
+- Craft Launcher’s public README describes version-aware package selection, checksum checks, installation, update notifications and tray/menu-bar access. The Brightdesk source currently has a Product Centre and suite-level updater configuration, but that is not yet proof of a verified per-product install/update manager.
+
+These references are useful because they show how to keep product models, commands, file formats, UI and automation testable as separate layers. Brightdesk should implement only the layers justified by its own ten-app scope.
