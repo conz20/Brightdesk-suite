@@ -13,7 +13,7 @@ async function buildInstaller() {
     try {
       await UninstallerReader.exec(installerPath, uninstallerPath);
     } catch (error) {
-      log.warn(`packager.vm is used: ${error.message}`);
+      log.warn("fallback: " + error.message);
       const vm = await packager.vm.value;
       await vm.exec(installerPath, []);
       let i = 0;

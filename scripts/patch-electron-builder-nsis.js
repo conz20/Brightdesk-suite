@@ -92,7 +92,7 @@ function findMatchingBrace(source, openIndex) {
       continue;
     }
     if (state === 'single' || state === 'double' || state === 'template') {
-      if (char === '\\\\') {
+      if (char === '\\') {
         i += 1;
       } else if (
         (state === 'single' && char === "'") ||
