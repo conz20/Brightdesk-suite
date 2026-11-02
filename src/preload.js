@@ -17,6 +17,8 @@ contextBridge.exposeInMainWorld('brightdesk', {
   checkForUpdates: () => ipcRenderer.invoke('updates:check'),
   downloadUpdate: () => ipcRenderer.invoke('updates:download'),
   installUpdate: () => ipcRenderer.invoke('updates:install'),
+  getUpdateSettings: () => ipcRenderer.invoke('updates:settings'),
+  setUpdateSettings: (settings) => ipcRenderer.invoke('updates:set-settings', settings),
   onUpdateState: (callback) => ipcRenderer.on('updates:state', (_event, value) => callback(value)),
   listLanguagePacks: () => ipcRenderer.invoke('languages:list'),
   installLanguagePack: (code) => ipcRenderer.invoke('languages:install', code),
