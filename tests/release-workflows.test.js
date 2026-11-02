@@ -61,15 +61,17 @@ test('release workflow builds and verifies all three desktop platforms', () => {
   assert.match(workflow, /name: Upload product repository folders/);
   assert.match(workflow, /Brightdesk-Product-Repository-Folders/);
   assert.match(workflow, /include-hidden-files: true/);
-  assert.match(workflow, /name: Build product desktop installers/);
-  assert.match(workflow, /npm run dist:products:\$\{\{ matrix\.script \}\}/);
+  assert.match(workflow, /name: Build suite and ten standalone installers/);
+  for (const command of ['npm run dist:products:linux', 'npm run dist:products:win', 'npm run dist:products:mac']) {
+    assert.ok(workflow.includes(command), `workflow includes ${command}`);
+  }
   assert.match(workflow, /name: Upload product desktop installers/);
   assert.ok(workflow.includes('path: release/apps/${{ matrix.platform }}/**'), 'product installer artifacts use platform-specific folders');
 });
 
 test('pull-request builds never receive code-signing or notarisation secrets', () => {
   const workflow = read('.github/workflows/build-release.yml');
-  const buildStep = workflow.split('- name: Build suite installer')[1];
+  const buildStep = workflow.split('- name: Build suite and ten standalone installers')[1];
   assert.ok(buildStep, 'build installer step exists');
   for (const secret of ['CSC_LINK', 'CSC_KEY_PASSWORD', 'CSC_INSTALLER_LINK', 'CSC_INSTALLER_KEY_PASSWORD', 'APPLE_ID', 'APPLE_APP_SPECIFIC_PASSWORD', 'APPLE_TEAM_ID']) {
     const line = buildStep.split('\n').find((item) => item.trimStart().startsWith(`${secret}:`));
