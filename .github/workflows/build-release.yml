@@ -40,6 +40,25 @@ jobs:
           node-version: 24.22.2
           cache: npm
 
+      - name: Detect and expose Docker Desktop CLI
+        shell: bash
+        run: |
+          set -euo pipefail
+          docker_directory=""
+          for candidate in "$HOME/.docker/bin" /Applications/Docker.app/Contents/Resources/bin /usr/local/bin /opt/homebrew/bin; do
+            if [ -x "$candidate/docker" ]; then
+              docker_directory="$candidate"
+              break
+            fi
+          done
+          if [ -z "$docker_directory" ]; then
+            echo "Docker Desktop CLI was not found in the standard macOS locations." >&2
+            exit 1
+          fi
+          echo "$docker_directory" >> "$GITHUB_PATH"
+          export PATH="$docker_directory:$PATH"
+          docker version
+
       - name: Prepare exact dependency lock
         run: npm run lock:prepare
 
