@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+  <title id="title">Brightdesk application mark</title>
+  <desc id="desc">An original white folded-ribbon B mark with a teal highlight on a deep ink background.</desc>
+  <defs>
+    <linearGradient id="bg" x1="48" y1="36" x2="464" y2="480" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#263653"/>
+      <stop offset="1" stop-color="#111B30"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="328" y1="105" x2="406" y2="196" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#63E0CF"/>
+      <stop offset="1" stop-color="#36BDAE"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="url(#bg)"/>
+  <path d="M151 117h133c75 0 112 37 112 91 0 43-24 70-65 83 50 10 80 43 80 91 0 66-48 113-132 113H151V117Zm76 65v80h53c27 0 42-14 42-40 0-27-16-40-46-40h-49Zm0 145v98h58c34 0 52-17 52-49 0-32-19-49-55-49h-55Z" fill="#F7F8FC"/>
+  <path d="M151 117h76v357h-76z" fill="#F7F8FC"/>
+  <path d="M326 105c38 0 67 12 86 35l-48 47c-9-11-23-17-42-17h-19v-65h23Z" fill="url(#accent)"/>
+  <path d="M151 117h76v65h-76z" fill="#DDE6F4"/>
+  <path d="M151 427h76v47h-76z" fill="#DDE6F4"/>
+</svg>
