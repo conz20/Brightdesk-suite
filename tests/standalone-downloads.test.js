@@ -79,3 +79,37 @@ test('standalone verifier can verify one app repository without requiring the ot
     fs.rmSync(directory, { recursive: true, force: true });
   }
 });
+
+test('product checksum manifests are re-read and checked against the exact installer bytes', () => {
+  const fs = require('node:fs');
+  const os = require('node:os');
+  const path = require('node:path');
+  const { expectedFilename, verifyStandaloneApps, verifyChecksumManifest } = require('../scripts/verify-standalone-apps');
+  const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'brightdesk-checksum-'));
+  try {
+    const appDirectory = path.join(directory, 'pages');
+    fs.mkdirSync(appDirectory, { recursive: true });
+    for (const filename of expectedFilename('pages', 'mac', '0.1.0')) {
+      fs.writeFileSync(path.join(appDirectory, filename), 'verified test installer');
+    }
+
+    const result = verifyStandaloneApps({ directory, platform: 'mac', version: '0.1.0', appId: 'pages' });
+    const checksumFile = path.join(appDirectory, 'Brightdesk-pages-SHA256SUMS-MAC.txt');
+    const checked = verifyChecksumManifest({ directory: appDirectory, checksumFile });
+    assert.equal(checked.fileCount, 3);
+    assert.equal(result.apps[0].files.length, 3);
+    for (const item of result.apps[0].files) {
+      assert.match(item.sha256, /^[a-f0-9]{64}$/);
+      assert.equal(fs.readFileSync(checksumFile, 'utf8').includes(item.sha256), true);
+    }
+
+    fs.writeFileSync(path.join(appDirectory, path.basename(result.apps[0].files[0].file)), 'tampered installer');
+    assert.throws(
+      () => verifyChecksumManifest({ directory: appDirectory, checksumFile }),
+      /SHA-256 mismatch/
+    );
+  } finally {
+    fs.rmSync(directory, { recursive: true, force: true });
+  }
+});
+
