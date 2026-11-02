@@ -41,9 +41,10 @@ module.exports = {
   extraMetadata: { brightdeskAppId: appId, productName: 'Brightdesk ' + appName, desktopName: `org.brightdesk.${appId}.desktop` },
   asar: true,
   files: ['src/**/*', 'package.json', 'LICENSE', 'THIRD_PARTY_NOTICES.md', 'TERMS_AND_CONDITIONS.txt'],
-  directories: { output: path.join('release', 'apps', appId) },
+  directories: { output: path.join('release', 'apps', appId), buildResources: 'assets/branding' },
   publish: [],
   win: {
+    icon: 'brightdesk-suite-mark.svg',
     target: ['nsis'],
     artifactName: 'Brightdesk-' + appSlug + '-${version}-${arch}.${ext}'
   },
@@ -55,6 +56,7 @@ module.exports = {
     license: 'TERMS_AND_CONDITIONS.txt'
   },
   mac: {
+    icon: 'brightdesk-suite-mark.svg',
     target: ['dmg', 'pkg', 'zip'],
     category: 'public.app-category.productivity',
     artifactName: 'Brightdesk-' + appSlug + '-${version}-${arch}.${ext}'
@@ -66,6 +68,7 @@ module.exports = {
     installLocation: '/Applications'
   },
   linux: {
+    icon: 'brightdesk-suite-mark.svg',
     syncDesktopName: true,
     target: ['AppImage', 'deb'],
     category: 'Office',
