@@ -44,7 +44,7 @@ Outlook, OneDrive and Teams are excluded. Do not add them or any other product.
 ## Standalone installer work
 - PR #15 (`feature/standalone-downloads-all-ten`) prepares separate installer builds for all ten products and a downloadable bundle of ten product repository folders.
 - Its installer workflow now uses native hosted Ubuntu, Windows and macOS runners; it no longer depends on an unregistered self-hosted Mac runner or Docker/Wine cross-builds.
-- The workflow prepares repository folders but does not create remote GitHub repositories automatically. Remote repo creation and initial upload remain outstanding.
+- Six product repositories already exist and are populated: Pages, Sheets, Decks, Notes, Database and Forms. Four remote repositories are still missing: Lists, Planner, To Do and Workspace. The seed generator prepares all ten product folders but does not create remote repositories or push code; after the Actions artifact is available, create the four missing repos and populate them from the matching folders. Existing repositories should be synced to the final validated suite source before release.
 - PR #15 remains a draft until native CI builds and verifies all platform artifacts.
 
 ## Design and ownership
