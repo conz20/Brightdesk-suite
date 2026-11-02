@@ -95,6 +95,8 @@ jobs:
         run: npm audit --audit-level=high
 
       - name: Upload the ten prepared product repository folders
+        id: product-folders-artifact
+        continue-on-error: true
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: Brightdesk-Product-Repositories-0.1.0
@@ -102,6 +104,10 @@ jobs:
           if-no-files-found: error
           include-hidden-files: true
           retention-days: 30
+
+      - name: Report optional artifact upload status
+        if: steps.product-folders-artifact.outcome == 'failure'
+        run: echo "::warning::GitHub artifact storage is currently full. Product folders remain in the build workspace; continuing with installer builds."
 
       - name: Build pinned Linux cross-build image
         run: docker build --platform linux/amd64 --pull --tag brightdesk-electron-builder:24.22.2-linux --file .github/docker/electron-builder.Dockerfile .
