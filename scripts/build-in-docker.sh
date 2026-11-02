@@ -3,7 +3,8 @@ set -euo pipefail
 
 target="${1:-}"
 case "$target" in
-  linux|win) ;;
+  linux) builder_image="brightdesk-electron-builder:24.22.2-linux" ;;
+  win) builder_image="brightdesk-electron-builder:24.22.2-windows" ;;
   *)
     echo "Usage: bash scripts/build-in-docker.sh <linux|win>" >&2
     exit 2
@@ -41,7 +42,7 @@ docker run --rm --platform linux/amd64 \
   --volume "$container_home:/home/brightdesk" \
   --workdir /project \
   --entrypoint /bin/bash \
-  brightdesk-electron-builder:24.22.2 \
+  "$builder_image" \
   -lc '
     set -euo pipefail
     mkdir -p "$HOME"

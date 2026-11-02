@@ -90,19 +90,33 @@ test('code-signing secrets are limited to their relevant platform build steps', 
   assert.match(mac, /secrets\.APPLE_APP_SPECIFIC_PASSWORD/);
 });
 
-test('Windows and Linux cross-builds use the pinned Node.js and Wine container helper', () => {
+test('Windows cross-build uses Wine 10.4 to avoid the Apple Silicon Docker memory assertion', () => {
   const helper = read('scripts/build-in-docker.sh');
   assert.match(helper, /docker run --rm --platform linux\/amd64/);
   assert.match(helper, /--user/);
   assert.match(helper, /npm run check:node/);
   assert.match(helper, /npm ci --no-audit --no-fund/);
+  assert.match(helper, /linux\) builder_image="brightdesk-electron-builder:24\.22\.2-linux"/);
+  assert.match(helper, /win\) builder_image="brightdesk-electron-builder:24\.22\.2-windows"/);
+  assert.match(helper, /"$builder_image"/);
   for (const command of ['npm run dist:win', 'npm run dist:linux', 'npm run dist:products:win', 'npm run dist:products:linux']) {
     assert.ok(helper.includes(command), `container helper includes ${command}`);
   }
-  const dockerfile = read('.github/docker/electron-builder.Dockerfile');
-  assert.match(dockerfile, /FROM electronuserland\/builder:wine@sha256:f3a8d451994c881d0972e7b1846ee4d4fdc15eb41fc6b1f350b38cbf99ca90fe/);
-  assert.match(dockerfile, /ARG NODE_VERSION=24\.22\.2/);
-  assert.match(dockerfile, /361718c444e49af2ca5a110c83ba6a8901143f23ab285ebbef0341f391f482a9/);
+
+  const linuxDockerfile = read('.github/docker/electron-builder.Dockerfile');
+  assert.match(linuxDockerfile, /FROM electronuserland\/builder:wine@sha256:f3a8d451994c881d0972e7b1846ee4d4fdc15eb41fc6b1f350b38cbf99ca90fe/);
+  assert.match(linuxDockerfile, /ARG NODE_VERSION=24\.22\.2/);
+  assert.match(linuxDockerfile, /361718c444e49af2ca5a110c83ba6a8901143f23ab285ebbef0341f391f482a9/);
+
+  const windowsDockerfile = read('.github/docker/electron-builder-windows.Dockerfile');
+  assert.match(windowsDockerfile, /FROM scottyhardy\/docker-wine:devel-10\.4/);
+  assert.match(windowsDockerfile, /ARG NODE_VERSION=24\.22\.2/);
+  assert.match(windowsDockerfile, /test "\$\(wine --version\)" = "wine-10\.4"/);
+
+  const workflow = read('.github/workflows/build-release.yml');
+  assert.match(workflow, /brightdesk-electron-builder:24\.22\.2-linux/);
+  assert.match(workflow, /brightdesk-electron-builder:24\.22\.2-windows/);
+  assert.match(workflow, /wineboot --init/);
 });
 
 test('platform installer folders are assembled locally with dependency lock metadata retained', () => {

@@ -83,11 +83,27 @@ jobs:
       - name: Audit dependencies for high severity vulnerabilities
         run: npm audit --audit-level=high
 
-      - name: Build the pinned Linux and Windows cross-build image
-        run: docker build --platform linux/amd64 --pull --tag brightdesk-electron-builder:24.22.2 --file .github/docker/electron-builder.Dockerfile .
+      - name: Build pinned Linux cross-build image
+        run: docker build --platform linux/amd64 --pull --tag brightdesk-electron-builder:24.22.2-linux --file .github/docker/electron-builder.Dockerfile .
 
-      - name: Verify the cross-build image toolchain
-        run: docker run --rm --platform linux/amd64 --entrypoint /bin/bash brightdesk-electron-builder:24.22.2 -lc 'node --version && wine --version'
+      - name: Verify pinned Linux build image
+        run: docker run --rm --platform linux/amd64 --entrypoint /bin/bash brightdesk-electron-builder:24.22.2-linux -lc 'node --version'
+
+      - name: Build Windows cross-build image with Wine 10.4
+        run: docker build --platform linux/amd64 --pull --tag brightdesk-electron-builder:24.22.2-windows --file .github/docker/electron-builder-windows.Dockerfile .
+
+      - name: Verify Wine 10.4 runs under Docker emulation
+        shell: bash
+        run: |
+          set -euo pipefail
+          docker run --rm --platform linux/amd64 \
+            --user "$(id -u):$(id -g)" \
+            --env HOME=/tmp/brightdesk-wine-smoke \
+            --env WINEPREFIX=/tmp/brightdesk-wine-smoke/prefix \
+            --env WINEDEBUG=-all \
+            --entrypoint /bin/bash \
+            brightdesk-electron-builder:24.22.2-windows \
+            -lc 'mkdir -p "$HOME" && node --version && test "$(wine --version)" = "wine-10.4" && wineboot --init'
 
       - name: Build Linux suite and all ten standalone apps
         env:
