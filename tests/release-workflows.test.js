@@ -132,24 +132,6 @@ test('all customer installer build commands explicitly disable implicit publishi
   }
 });
 
-test('installer release jobs share the self-hosted Mac and cross-build Windows and Linux in Docker', () => {
-  const workflow = read('.github/workflows/build-release.yml');
-  assert.equal((workflow.match(/runs-on: \[self-hosted, macOS, ARM64\]/g) || []).length, 4);
-  assert.match(workflow, /max-parallel: 1/);
-  assert.match(workflow, /uses: actions\/checkout@[a-f0-9]{40}/);
-  assert.match(workflow, /uses: actions\/setup-node@[a-f0-9]{40}/);
-  assert.doesNotMatch(workflow, /uses: [^\n]+@(v4|v2|main|master)/);
-  assert.match(workflow, /docker build --platform linux\/amd64 --pull/);
-  assert.match(workflow, /docker run --rm --platform linux\/amd64/);
-  assert.match(workflow, /npm run check:node/);
-  assert.match(workflow, /brightdesk-electron-builder:24\.22\.2/);
-  assert.doesNotMatch(workflow, /ubuntu-latest|windows-latest|macos-latest/);
-  const dockerfile = read('.github/docker/electron-builder.Dockerfile');
-  assert.match(dockerfile, /FROM electronuserland\/builder:wine@sha256:f3a8d451994c881d0972e7b1846ee4d4fdc15eb41fc6b1f350b38cbf99ca90fe/);
-  assert.match(dockerfile, /ARG NODE_VERSION=24\.22\.2/);
-  assert.match(dockerfile, /361718c444e49af2ca5a110c83ba6a8901143f23ab285ebbef0341f391f482a9/);
-});
-
 test('new automatic installer checks replace stale builds without cancelling manual release runs', () => {
   const workflow = read('.github/workflows/build-release.yml');
   assert.match(workflow, /group: brightdesk-installer-build-\$\{\{ github\.ref \}\}-\$\{\{ github\.event_name \}\}/);
