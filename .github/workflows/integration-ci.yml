@@ -3,8 +3,6 @@ name: Brightdesk integrated suite checks
 on:
   push:
     branches: [integration/brightdesk-suite]
-  pull_request:
-    branches: [main]
 
 permissions:
   contents: read
