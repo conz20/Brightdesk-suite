@@ -119,9 +119,13 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          test -d release/Linux
+          test -d release/Windows
+          test -d release/macOS
+          test -f release/Linux/Brightdesk-SHA256SUMS-LINUX.txt
+          test -f release/Windows/Brightdesk-SHA256SUMS-WIN.txt
+          test -f release/macOS/Brightdesk-SHA256SUMS-MAC.txt
           for platform in Linux Windows macOS; do
-            test -d "release/$platform"
-            test -f "release/$platform/Brightdesk-SHA256SUMS-${platform^^}.txt"
             test -d "release/apps/$platform"
             count=$(find "release/apps/$platform" -mindepth 1 -maxdepth 1 -type d | wc -l | tr -d ' ')
             test "$count" = "10"
