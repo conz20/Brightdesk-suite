@@ -68,6 +68,10 @@ test('release workflow builds all three platforms sequentially on the self-hoste
   assert.ok(workflow.includes('Brightdesk-Builds'));
   assert.equal(workflow.includes('actions/upload-artifact'), false);
   assert.equal(workflow.includes('actions/download-artifact'), false);
+  assert.match(workflow, /Detect and expose Docker Desktop CLI/);
+  assert.match(workflow, /\/Applications\/Docker\.app\/Contents\/Resources\/bin/);
+  assert.match(workflow, /\$GITHUB_PATH/);
+  assert.match(workflow, /docker version/);
   assert.equal(workflow.includes('publish-release:'), false);
 });
 
