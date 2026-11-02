@@ -86,7 +86,7 @@ test('pull-request builds never receive code-signing or notarisation secrets', (
 
 test('Linux builds do not receive Windows or macOS signing credentials', () => {
   const workflow = read('.github/workflows/build-release.yml');
-  const buildStep = workflow.split('- name: Build suite installer')[1];
+  const buildStep = workflow.split('- name: Build suite and ten standalone installers')[1];
   for (const key of ['CSC_LINK', 'CSC_KEY_PASSWORD']) {
     const line = buildStep.split('\n').find((item) => item.trimStart().startsWith(`${key}:`));
     assert.match(line, /matrix\.platform == 'Windows'/);
