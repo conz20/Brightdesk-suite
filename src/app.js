@@ -34,6 +34,7 @@ const state = {
   todoView: 'my-day', todoQuery: '',
   selectedCell: { row: 0, col: 0 }, update: null, ribbonTab: 'home',
   installedApps: [], setupComplete: false, firstRunSelection: new Set(installableCatalog.map(item => item.id)),
+  managerView: localStorage.getItem('brightdesk-manager-view') === 'list' ? 'list' : 'grid',
   slideTheme: 'lavender', focusMode: false, editorZoom: 100, sheetZoom: 100,
   languageCatalog: [], installedLanguagePacks: [], spellCheckerLanguages: [], usesNativeMacSpellChecker: false,
   displayLanguage: 'en-AU', proofingLanguage: 'en-AU',
@@ -74,7 +75,7 @@ function loadLocal() {
 function saveAppSetup() {
   localStorage.setItem('brightdesk-app-setup-v1', JSON.stringify({ installedApps: state.installedApps, setupComplete: state.setupComplete }));
 }
-function installedApp(id) { return state.installedApps.includes(id) || ['todo','lists','forms','planner','database','loop'].includes(id); }
+function installedApp(id) { return state.installedApps.includes(id); }
 function appLabel(id) { return catalog.find(item => item.id === id)?.name || id; }
 
 function safeHtml(html) {
@@ -458,7 +459,11 @@ function renderGenericWorkspace() {
 }
 
 function renderAppManager() {
-  const grid = $('app-manager-grid'); grid.innerHTML = '';
+  const grid = $('app-manager-grid');
+  grid.classList.toggle('list-view', state.managerView === 'list');
+  $('manager-grid-view').setAttribute('aria-pressed', String(state.managerView === 'grid'));
+  $('manager-list-view').setAttribute('aria-pressed', String(state.managerView === 'list'));
+  grid.innerHTML = '';
   $('manager-title').textContent = state.setupComplete ? t('manager.manageTitle') : t('manager.chooseTitle');
   $('manager-description').textContent = state.setupComplete
     ? t('manager.manageDesc')
@@ -497,13 +502,29 @@ function renderAppManager() {
       const stateTag = document.createElement('span'); stateTag.className = isInstalled ? 'app-state installed' : 'app-state'; stateTag.textContent = isInstalled ? t('manager.inWorkspace') : t('manager.notInstalled');
       footer.append(stateTag);
     }
+    const downloadButton = document.createElement('button');
+    downloadButton.className = 'text-button small-action';
+    downloadButton.textContent = 'Download desktop version';
+    downloadButton.setAttribute('aria-label', `Download ${item.name} for desktop`);
+    downloadButton.title = 'Open the verified Brightdesk desktop installer for this operating system.';
+    downloadButton.addEventListener('click', async () => {
+      downloadButton.disabled = true;
+      try {
+        await window.brightdesk.downloadStandaloneApp(item.id);
+      } catch (error) {
+        alert(`Could not open the ${item.name} download: ${error.message}`);
+      } finally {
+        downloadButton.disabled = false;
+      }
+    });
+    footer.append(downloadButton);
     card.append(preview, header, description, footer); grid.append(card);
   });
 }
 function toggleAppInstall(id) {
   if (!installableCatalog.some(item => item.id === id) || launchAppId) return;
   if (installedApp(id)) {
-    if (state.installedApps.length === 1) { alert('Keep at least one app installed in your Brightdesk workspace.'); return; }
+    if (state.installedApps.length === 1) { alert('Keep at least one product in your Brightdesk workspace.'); return; }
     state.installedApps = state.installedApps.filter(appId => appId !== id);
     if (state.app === id) { state.app = state.installedApps[0]; state.ribbonTab = 'home'; }
   } else { state.installedApps.push(id); }
@@ -511,7 +532,7 @@ function toggleAppInstall(id) {
 }
 function completeAppSetup() {
   const selected = [...state.firstRunSelection].filter(id => installableCatalog.some(item => item.id === id));
-  if (!selected.length) { alert('Choose at least one app to install.'); return; }
+  if (!selected.length) { alert('Choose at least one product.'); return; }
   state.installedApps = selected; state.setupComplete = true; state.app = selected[0]; state.view = 'workspace';
   saveAppSetup(); render();
 }
@@ -856,6 +877,8 @@ $('dictionary-search').addEventListener('input',renderAvailableDictionaryCatalog
 $('proofing-dictionary').addEventListener('change',event=>{state.selectedDictionary=event.target.value;localStorage.setItem('brightdesk-selected-dictionary',state.selectedDictionary);renderToolbar();});
 $('check-current-document').addEventListener('click',checkCurrentDocumentSpelling);
 $('back-to-apps').addEventListener('click',()=>{state.view=state.setupComplete?'workspace':'manager';render();});
+$('manager-grid-view').addEventListener('click', () => { state.managerView = 'grid'; localStorage.setItem('brightdesk-manager-view', state.managerView); renderAppManager(); });
+$('manager-list-view').addEventListener('click', () => { state.managerView = 'list'; localStorage.setItem('brightdesk-manager-view', state.managerView); renderAppManager(); });
 $('finish-app-setup').addEventListener('click',()=>{if(state.setupComplete){state.view='workspace';render();}else completeAppSetup();});
 $('doc-title').addEventListener('change',()=>{activeDoc().title=$('doc-title').value;persist();});
 editor.addEventListener('input',()=>{activeDoc().html=editor.innerHTML;persist();});
@@ -876,7 +899,7 @@ $('lists-column-type').addEventListener('change',()=>{$('lists-column-options-wr
 $('export-button').addEventListener('click',exportCurrent);$('open-button').addEventListener('click',openFile);$('save-project').addEventListener('click',saveProject);
 $('updates-button').addEventListener('click',async()=>{const msg=$('update-message');msg.hidden=false;msg.textContent=t('common.updateChecking');try{const r=await window.brightdesk.checkForUpdates();if(!r?.ok)msg.textContent=r?.message||'Update checks are not configured yet.';}catch(e){msg.textContent=`Update check failed: ${e.message}`;}});
 window.brightdesk.onUpdateState?.(updateState=>{const msg=$('update-message');msg.hidden=false;msg.textContent=updateState.message;if(updateState.status==='available'){msg.textContent=updateState.message;}if(updateState.status==='downloaded'){const button=document.createElement('button');button.className='text-button';button.textContent=t('common.restartInstall');button.onclick=()=>window.brightdesk.installUpdate();msg.append(' ',button);}});
-loadLocal();$('platform').textContent=`Desktop app · ${window.brightdesk.platform}`;
+loadLocal();$('platform').textContent=`Brightdesk desktop · ${window.brightdesk.platform}`;
 (async()=>{
   try {
     const version = await window.brightdesk.getVersion();

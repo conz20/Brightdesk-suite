@@ -1,0 +1,41 @@
+name: Brightdesk Pages product checks
+
+on:
+  schedule:
+    - cron: '47 4 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    name: Verify Brightdesk Pages product package
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 24.22.2
+          cache: npm
+      - run: npm ci --no-audit --no-fund
+      - name: Run Pages product contract test
+        run: node --test tests/standalone-pages.test.js
+      - name: Prepare product folders and verify Pages product folder
+        run: npm run repositories:prepare
+      - name: Verify Pages product folder is locked to Pages
+        shell: bash
+        run: |
+          node - <<'NODE'
+          const fs = require('node:fs');
+          const path = require('node:path');
+          const root = path.join('release', 'product-repository-folders', 'Brightdesk-Pages');
+          const pkg = JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8'));
+          if (pkg.name !== 'brightdesk-pages') throw new Error(`Unexpected package name: ${pkg.name}`);
+          if (pkg.brightdeskAppId !== 'pages') throw new Error(`Unexpected app ID: ${pkg.brightdeskAppId}`);
+          if (pkg.build?.appId !== 'org.brightdesk.pages') throw new Error(`Unexpected Electron app ID: ${pkg.build?.appId}`);
+          if (pkg.build?.productName !== 'Brightdesk Pages') throw new Error(`Unexpected product name: ${pkg.build?.productName}`);
+          if (!fs.existsSync(path.join(root, 'assets', 'brightdesk-product.svg'))) throw new Error('Pages artwork is missing.');
+          if (!fs.existsSync(path.join(root, '.github', 'workflows', 'product-installers.yml'))) throw new Error('Pages product installer workflow is missing.');
+          console.log('Brightdesk Pages product folder verified.');
+          NODE

@@ -7,6 +7,7 @@ on:
       - 'package.json'
       - 'package-lock.json'
       - 'src/**'
+      - 'assets/branding/**'
       - 'scripts/**'
       - 'installer/**'
       - 'tests/**'
@@ -14,41 +15,64 @@ on:
       - 'TERMS_AND_CONDITIONS.txt'
       - 'LICENSE'
       - 'THIRD_PARTY_NOTICES.md'
-      - '.github/workflows/build-release.yml'
+      - '.github/workflows/**'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'package.json'
+      - 'package-lock.json'
+      - 'src/**'
+      - 'assets/branding/**'
+      - 'scripts/**'
+      - 'installer/**'
+      - 'tests/**'
+      - 'electron-builder.app.config.js'
+      - 'TERMS_AND_CONDITIONS.txt'
+      - 'LICENSE'
+      - 'THIRD_PARTY_NOTICES.md'
+      - '.github/workflows/**'
   workflow_dispatch:
     inputs:
+      build_installers:
+        description: Build and verify suite and ten product installers
+        type: boolean
+        required: true
+        default: true
       publish_release:
-        description: 'Publish a GitHub Release after all installers pass verification'
+        description: Publish the verified installer bundle as a GitHub Release
         type: boolean
         required: true
         default: false
       release_tag:
-        description: 'Release tag to create or update when publishing is enabled'
+        description: Release tag to publish after verification
         type: string
-        required: false
-        default: 'v0.1.0'
+        required: true
+        default: v0.1.0
 
 permissions:
   contents: read
-  actions: read
 
 concurrency:
-  group: brightdesk-installer-build-${{ github.ref }}
-  cancel-in-progress: false
+  group: brightdesk-installer-build-${{ github.ref }}-${{ github.event_name }}
+  cancel-in-progress: ${{ github.event_name != 'workflow_dispatch' }}
 
 jobs:
   prepare:
-    name: Test and lock dependencies
+    name: Test, audit and prepare product repositories
     runs-on: ubuntu-latest
+    timeout-minutes: 45
     steps:
       - name: Check out Brightdesk
-        uses: actions/checkout@v4
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
       - name: Set up required Node.js version
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7
         with:
           node-version: 24.22.2
           cache: npm
+
+      - name: Verify exact Node.js runtime
+        run: npm run check:node
 
       - name: Prepare exact dependency lock
         run: npm run lock:prepare
@@ -65,25 +89,39 @@ jobs:
       - name: Run automated test suite
         run: npm test
 
+      - name: Prepare the ten product repository folders
+        run: npm run repositories:prepare
+
       - name: Check release readiness
         run: npm run release:preflight
 
       - name: Audit dependencies for high severity vulnerabilities
         run: npm audit --audit-level=high
 
-      - name: Save the exact dependency lock used for this release
-        uses: actions/upload-artifact@v4
+      - name: Save exact dependency lock
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
         with:
           name: brightdesk-dependency-lock
           path: package-lock.json
           if-no-files-found: error
           retention-days: 7
 
+      - name: Upload the ten prepared product repository folders
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        with:
+          name: Brightdesk-Product-Repositories-0.1.0
+          path: release/product-repository-folders/**
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 14
+
   build:
-    name: Build ${{ matrix.platform }} installer
+    name: Build ${{ matrix.platform }} suite and product installers
     needs: prepare
+    if: github.event_name != 'workflow_dispatch' || inputs.build_installers == true
     strategy:
       fail-fast: false
+      max-parallel: 3
       matrix:
         include:
           - platform: Linux
@@ -96,18 +134,19 @@ jobs:
             runner: macos-latest
             script: mac
     runs-on: ${{ matrix.runner }}
+    timeout-minutes: 180
     steps:
       - name: Check out Brightdesk
-        uses: actions/checkout@v4
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
       - name: Set up required Node.js version
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7
         with:
           node-version: 24.22.2
           cache: npm
 
       - name: Restore the exact dependency lock
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8
         with:
           name: brightdesk-dependency-lock
           path: .
@@ -118,111 +157,167 @@ jobs:
       - name: Install locked dependencies
         run: npm ci --no-audit --no-fund
 
-      - name: Build suite installer
+      - name: Verify third-party licence notices
+        run: npm run verify:licenses
+
+      - name: Build Windows suite and all ten product installers
+        if: matrix.script == 'win'
         env:
-          WIN_CSC_LINK: ${{ github.event_name != 'pull_request' && matrix.platform == 'Windows' && secrets.WIN_CSC_LINK || '' }}
-          MAC_APP_CSC_LINK: ${{ github.event_name != 'pull_request' && matrix.platform == 'macOS' && secrets.MAC_APP_CSC_LINK || '' }}
-          MAC_INSTALLER_CSC_LINK: ${{ github.event_name != 'pull_request' && matrix.platform == 'macOS' && secrets.MAC_INSTALLER_CSC_LINK || '' }}
-          CSC_LINK: ${{ github.event_name != 'pull_request' && matrix.platform == 'Windows' && secrets.WIN_CSC_LINK || github.event_name != 'pull_request' && matrix.platform == 'macOS' && secrets.MAC_APP_CSC_LINK || '' }}
-          CSC_KEY_PASSWORD: ${{ github.event_name != 'pull_request' && matrix.platform == 'Windows' && secrets.WIN_CSC_KEY_PASSWORD || github.event_name != 'pull_request' && matrix.platform == 'macOS' && secrets.MAC_APP_CSC_KEY_PASSWORD || '' }}
-          CSC_INSTALLER_LINK: ${{ github.event_name != 'pull_request' && matrix.platform == 'macOS' && secrets.MAC_INSTALLER_CSC_LINK || '' }}
-          CSC_INSTALLER_KEY_PASSWORD: ${{ github.event_name != 'pull_request' && matrix.platform == 'macOS' && secrets.MAC_INSTALLER_CSC_KEY_PASSWORD || '' }}
-          APPLE_ID: ${{ github.event_name != 'pull_request' && matrix.platform == 'macOS' && secrets.APPLE_ID || '' }}
-          APPLE_APP_SPECIFIC_PASSWORD: ${{ github.event_name != 'pull_request' && matrix.platform == 'macOS' && secrets.APPLE_APP_SPECIFIC_PASSWORD || '' }}
-          APPLE_TEAM_ID: ${{ github.event_name != 'pull_request' && matrix.platform == 'macOS' && secrets.APPLE_TEAM_ID || '' }}
+          WIN_CSC_LINK: ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/main' && secrets.WIN_CSC_LINK || '' }}
+          WIN_CSC_KEY_PASSWORD: ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/main' && secrets.WIN_CSC_KEY_PASSWORD || '' }}
+          CSC_LINK: ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/main' && secrets.WIN_CSC_LINK || '' }}
+          CSC_KEY_PASSWORD: ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/main' && secrets.WIN_CSC_KEY_PASSWORD || '' }}
         shell: bash
         run: |
           if [ -z "${CSC_LINK:-}" ]; then unset CSC_LINK CSC_KEY_PASSWORD; fi
-          if [ -z "${CSC_INSTALLER_LINK:-}" ]; then unset CSC_INSTALLER_LINK CSC_INSTALLER_KEY_PASSWORD; fi
-          if [ "${{ matrix.platform }}" = "macOS" ] && [ -z "${CSC_LINK:-}" ]; then export CSC_IDENTITY_AUTO_DISCOVERY=false; fi
-          if [ "${{ matrix.script }}" = "linux" ]; then npm run dist:linux; fi
-          if [ "${{ matrix.script }}" = "win" ]; then npm run dist:win; fi
-          if [ "${{ matrix.script }}" = "mac" ]; then npm run dist:mac; fi
-          npm run release:prepare -- ${{ matrix.script }}
+          npm run dist:win
+          npm run release:prepare -- win
+          npm run release:verify:win
+          npm run dist:products:win
+          npm run release:verify:products:win
+          node scripts/collect-platform-build.js win
 
-      - name: Verify Linux installer artifacts
-        if: matrix.platform == 'Linux'
-        run: npm run release:verify:linux
-
-      - name: Verify Windows installer artifacts
-        if: matrix.platform == 'Windows'
-        run: npm run release:verify:win
-
-      - name: Verify macOS installer artifacts
-        if: matrix.platform == 'macOS'
-        run: npm run release:verify:mac
-
-      - name: Place verified files in platform folder
+      - name: Build Linux suite and all ten product installers
+        if: matrix.script == 'linux'
         shell: bash
-        env:
-          BRIGHTDESK_PLATFORM: ${{ matrix.platform }}
         run: |
-          mkdir -p "release/$BRIGHTDESK_PLATFORM"
-          node -e "const fs=require('node:fs');const p=require('node:path');const root='release';const dest=p.join(root,process.env.BRIGHTDESK_PLATFORM);for(const name of fs.readdirSync(root)){if(name===process.env.BRIGHTDESK_PLATFORM)continue;const source=p.join(root,name);if(fs.statSync(source).isFile())fs.renameSync(source,p.join(dest,name));}"
+          npm run dist:linux
+          npm run release:prepare -- linux
+          npm run release:verify:linux
+          npm run dist:products:linux
+          npm run release:verify:products:linux
+          node scripts/collect-platform-build.js linux
 
-      - name: Upload verified platform build
-        uses: actions/upload-artifact@v4
+      - name: Build macOS suite and all ten product installers
+        if: matrix.script == 'mac'
+        env:
+          MAC_APP_CSC_LINK: ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/main' && secrets.MAC_APP_CSC_LINK || '' }}
+          MAC_APP_CSC_KEY_PASSWORD: ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/main' && secrets.MAC_APP_CSC_KEY_PASSWORD || '' }}
+          MAC_INSTALLER_CSC_LINK: ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/main' && secrets.MAC_INSTALLER_CSC_LINK || '' }}
+          MAC_INSTALLER_CSC_KEY_PASSWORD: ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/main' && secrets.MAC_INSTALLER_CSC_KEY_PASSWORD || '' }}
+          CSC_LINK: ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/main' && secrets.MAC_APP_CSC_LINK || '' }}
+          CSC_KEY_PASSWORD: ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/main' && secrets.MAC_APP_CSC_KEY_PASSWORD || '' }}
+          CSC_INSTALLER_LINK: ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/main' && secrets.MAC_INSTALLER_CSC_LINK || '' }}
+          CSC_INSTALLER_KEY_PASSWORD: ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/main' && secrets.MAC_INSTALLER_CSC_KEY_PASSWORD || '' }}
+          APPLE_ID: ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/main' && secrets.APPLE_ID || '' }}
+          APPLE_APP_SPECIFIC_PASSWORD: ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/main' && secrets.APPLE_APP_SPECIFIC_PASSWORD || '' }}
+          APPLE_TEAM_ID: ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/main' && secrets.APPLE_TEAM_ID || '' }}
+        shell: bash
+        run: |
+          if [ -z "${CSC_LINK:-}" ]; then unset CSC_LINK CSC_KEY_PASSWORD; export CSC_IDENTITY_AUTO_DISCOVERY=false; fi
+          if [ -z "${CSC_INSTALLER_LINK:-}" ]; then unset CSC_INSTALLER_LINK CSC_INSTALLER_KEY_PASSWORD; fi
+          npm run dist:mac
+          npm run release:prepare -- mac
+          npm run release:verify:mac
+          npm run dist:products:mac
+          npm run release:verify:products:mac
+          node scripts/collect-platform-build.js mac
+
+      - name: Upload verified platform installer bundle
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
         with:
-          name: brightdesk-${{ matrix.platform }}
-          path: release/${{ matrix.platform }}/**
+          name: Brightdesk-0.1.0-${{ matrix.platform }}
+          path: |
+            release/${{ matrix.platform }}/**
+            release/apps/${{ matrix.platform }}/**
           if-no-files-found: error
-          retention-days: 14
+          retention-days: 1
 
   collect:
-    name: Collect verified installers
+    name: Collect and verify all platform installers
     needs: [prepare, build]
+    if: github.event_name != 'workflow_dispatch' || inputs.build_installers == true
     runs-on: ubuntu-latest
     steps:
-      - name: Download verified Linux build
-        uses: actions/download-artifact@v4
+      - name: Download verified Linux installer bundle
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8
         with:
-          name: brightdesk-Linux
-          path: release/Linux
+          name: Brightdesk-0.1.0-Linux
+          path: release
 
-      - name: Download verified Windows build
-        uses: actions/download-artifact@v4
+      - name: Download verified Windows installer bundle
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8
         with:
-          name: brightdesk-Windows
-          path: release/Windows
+          name: Brightdesk-0.1.0-Windows
+          path: release
 
-      - name: Download verified macOS build
-        uses: actions/download-artifact@v4
+      - name: Download verified macOS installer bundle
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8
         with:
-          name: brightdesk-macOS
-          path: release/macOS
+          name: Brightdesk-0.1.0-macOS
+          path: release
 
-      - name: Download the exact dependency lock used for this release
-        uses: actions/download-artifact@v4
+      - name: Download exact dependency lock
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8
         with:
           name: brightdesk-dependency-lock
           path: release/build-metadata
 
-      - name: Upload complete Brightdesk installer bundle
-        uses: actions/upload-artifact@v4
+      - name: Verify the complete installer bundle
+        shell: bash
+        run: |
+          set -euo pipefail
+          for platform in Linux Windows macOS; do
+            test -d "release/$platform"
+            case "$platform" in
+              Linux) checksum_file="Brightdesk-SHA256SUMS-LINUX.txt" ;;
+              Windows) checksum_file="Brightdesk-SHA256SUMS-WIN.txt" ;;
+              macOS) checksum_file="Brightdesk-SHA256SUMS-MAC.txt" ;;
+            esac
+            test -f "release/$platform/$checksum_file"
+            test -d "release/apps/$platform"
+            count=$(find "release/apps/$platform" -mindepth 1 -maxdepth 1 -type d | wc -l | tr -d ' ')
+            test "$count" = "10"
+          done
+          test -f release/build-metadata/package-lock.json
+
+      - name: Upload complete verified Brightdesk installer bundle
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
         with:
           name: Brightdesk-0.1.0-Installers
-          path: release/**/**
+          path: release/**
           if-no-files-found: error
-          retention-days: 30
+          retention-days: 14
 
   publish-release:
-    name: Publish GitHub Release (manual approval only)
+    name: Publish approved Brightdesk release
     needs: collect
-    if: github.event_name == 'workflow_dispatch' && inputs.publish_release == true
+    if: github.event_name == 'workflow_dispatch' && inputs.build_installers == true && inputs.publish_release == true && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     permissions:
       contents: write
     steps:
+      - name: Check out the release source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
       - name: Download complete verified installer bundle
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8
         with:
           name: Brightdesk-0.1.0-Installers
           path: release
 
-      - name: Publish verified installer files
-        uses: softprops/action-gh-release@v2
+      - name: Verify release tag matches package version
+        env:
+          RELEASE_TAG: ${{ inputs.release_tag }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          version=$(node -p "require('./package.json').version")
+          expected_tag="v${version}"
+          if [ "$RELEASE_TAG" != "$expected_tag" ]; then
+            echo "Refusing to publish $RELEASE_TAG; this source requires $expected_tag." >&2
+            exit 1
+          fi
+
+      - name: Publish verified desktop installers
+        uses: softprops/action-gh-release@efb35369e0ad2afab669f228072c1b0d510eae64 # v3
         with:
           tag_name: ${{ inputs.release_tag }}
           name: Brightdesk ${{ inputs.release_tag }}
           generate_release_notes: true
-          files: release/**/**
+          fail_on_unmatched_files: true
+          files: |
+            release/Linux/**
+            release/Windows/**
+            release/macOS/**
+            release/apps/**

@@ -1,0 +1,65 @@
+name: Brightdesk daily product quality checks
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'package.json'
+      - 'package-lock.json'
+      - 'src/**'
+      - 'scripts/**'
+      - 'tests/**'
+      - 'installer/**'
+      - 'docs/**'
+      - 'PRODUCT_SCOPE_LOCK.md'
+      - 'TERMS_AND_CONDITIONS.txt'
+      - 'LICENSE'
+      - 'THIRD_PARTY_NOTICES.md'
+      - '.github/workflows/**'
+  schedule:
+    - cron: '15 4 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: brightdesk-daily-quality-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    name: Test, audit and verify release readiness
+    runs-on: ubuntu-latest
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    timeout-minutes: 30
+    steps:
+      - name: Check out Brightdesk
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - name: Set up the required Node.js runtime
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7
+        with:
+          node-version: 24.22.2
+          cache: npm
+
+      - name: Prepare the exact dependency lock
+        run: npm run lock:prepare
+
+      - name: Verify the dependency lock
+        run: npm run lock:verify
+
+      - name: Install locked dependencies
+        run: npm ci --no-audit --no-fund
+
+      - name: Verify third-party licences
+        run: npm run verify:licenses
+
+      - name: Run every automated test
+        run: npm test
+
+      - name: Verify product and release configuration
+        run: npm run release:preflight
+
+      - name: Block high-severity dependency vulnerabilities
+        run: npm audit --audit-level=high

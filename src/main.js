@@ -1,4 +1,4 @@
-const { app, BrowserWindow, Menu, ipcMain, dialog } = require('electron');
+const { app, BrowserWindow, Menu, ipcMain, dialog, shell } = require('electron');
 const packageConfig = require('../package.json');
 const path = require('node:path');
 const crypto = require('node:crypto');
@@ -6,6 +6,7 @@ const fs = require('node:fs/promises');
 const { openOfficeFile, exportOfficeFile, cleanFileName, ensureExtension } = require('./file-service');
 const { BUILTIN_LANGUAGES, validateLanguagePack, getBuiltinLanguage } = require('./language-service');
 const { DictionaryService } = require('./dictionary-service');
+const { APP_SLUGS, createStandaloneDownload } = require('./standalone-downloads');
 let mainWindow;
 let agreementWindow;
 let termsAccepted = false;
@@ -14,12 +15,18 @@ const updatePublishingConfigured = Array.isArray(packageConfig.build?.publish) &
 let updateCheckInProgress = false;
 let lastUpdateCheckAt = 0;
 let dictionaryService;
-const supportedApplications = new Set(['pages', 'sheets', 'slides', 'notes']);
-const applicationId = packageConfig.brightdeskAppId || null;
-if (applicationId && !supportedApplications.has(applicationId)) {
-  throw new Error(`Unsupported Brightdesk application: ${applicationId}`);
+const standaloneAppNames = {
+  pages: 'Pages', sheets: 'Sheets', slides: 'Decks', notes: 'Notes',
+  database: 'Database', forms: 'Forms', lists: 'Lists', planner: 'Planner',
+  todo: 'To Do', loop: 'Workspace'
+};
+const supportedStandaloneApps = new Set(Object.keys(APP_SLUGS));
+const standaloneAppId = packageConfig.brightdeskAppId || null;
+if (standaloneAppId && !supportedStandaloneApps.has(standaloneAppId)) {
+  throw new Error(`Unsupported Brightdesk product: ${standaloneAppId}`);
 }
 
+function sendUpdateState(state) { if (mainWindow && !mainWindow.isDestroyed()) mainWindow.webContents.send('updates:state', state); }
 const updateSettingsPath = path.join(app.getPath('userData'), 'update-settings.json');
 const defaultUpdateSettings = { autoCheck: true, autoDownload: true, autoInstall: false };
 
@@ -40,13 +47,11 @@ async function writeUpdateSettings(settings = {}) {
   await fs.writeFile(updateSettingsPath, `${JSON.stringify(next, null, 2)}\n`, { mode: 0o600 });
   return next;
 }
-
-function sendUpdateState(state) { if (mainWindow && !mainWindow.isDestroyed()) mainWindow.webContents.send('updates:state', state); }
 function createWindow() {
   mainWindow = new BrowserWindow({
     width: 1440, height: 920, minWidth: 980, minHeight: 680,
-    title: applicationId ? `Brightdesk ${({ pages: 'Pages', sheets: 'Sheets', slides: 'Decks', notes: 'Notes' })[applicationId]}` : 'Brightdesk', backgroundColor: '#f5f6fa',
-    webPreferences: { preload: path.join(__dirname, 'preload.js'), contextIsolation: true, nodeIntegration: false, sandbox: true, additionalArguments: applicationId ? [`--brightdesk-app=${applicationId}`] : [] }
+    title: standaloneAppId ? `Brightdesk ${standaloneAppNames[standaloneAppId]}` : 'Brightdesk', backgroundColor: '#f5f6fa',
+    webPreferences: { preload: path.join(__dirname, 'preload.js'), contextIsolation: true, nodeIntegration: false, sandbox: true, additionalArguments: standaloneAppId ? [`--brightdesk-app=${standaloneAppId}`] : [] }
   });
   mainWindow.loadFile(path.join(__dirname, 'index.html'));
   mainWindow.webContents.setWindowOpenHandler(() => ({ action: 'deny' }));
@@ -113,6 +118,17 @@ ipcMain.handle('terms:decline', event => {
   return { ok: true };
 });
 ipcMain.handle('app:version', event => { if (!senderIsMain(event)) throw new Error('Invalid sender.'); return app.getVersion(); });
+
+ipcMain.handle('downloads:standalone-app', async (event, appId) => {
+  if (!senderIsMain(event)) throw new Error('Invalid sender.');
+  const download = createStandaloneDownload({
+    appId,
+    platform: process.platform,
+    version: packageConfig.version
+  });
+  await shell.openExternal(download.url);
+  return { ok: true, filename: download.filename };
+});
 
 function languagePackDirectory() {
   return path.join(app.getPath('userData'), 'language-packs');
@@ -253,7 +269,6 @@ async function checkForUpdates({ quiet = false, force = false } = {}) {
     return { ok: false, message: error.message || 'Could not check for updates.' };
   } finally { updateCheckInProgress = false; }
 }
-
 async function initUpdater() {
   if (!app.isPackaged) return;
   const settings = await readUpdateSettings();
@@ -271,11 +286,12 @@ async function initUpdater() {
     autoUpdater.autoInstallOnAppQuit = settings.autoInstall === true;
     autoUpdater.allowUnverifiedLinuxPackages = false;
     autoUpdater.on('checking-for-update', () => sendUpdateState({ status: 'checking', message: 'Checking for updates…' }));
-    autoUpdater.on('update-available', info => sendUpdateState({ status: 'available', message: `Brightdesk ${info.version} is available. Download from the update settings or let the app continue to recommend updates.` }));
+    autoUpdater.on('update-available', info => sendUpdateState({ status: 'available', message: `Brightdesk ${info.version} is available. Your update settings control how it is downloaded and installed.` }));
     autoUpdater.on('update-not-available', () => sendUpdateState({ status: 'current', message: 'Brightdesk is up to date.' }));
     autoUpdater.on('download-progress', p => sendUpdateState({ status: 'downloading', message: `Downloading update: ${Math.round(p.percent)}%` }));
     autoUpdater.on('update-downloaded', info => sendUpdateState({ status: 'downloaded', message: `Brightdesk ${info.version} is ready to install. Use Install now when you are ready.` }));
     autoUpdater.on('error', err => sendUpdateState({ status: 'error', message: err.message || 'Update check failed.' }));
+    /* The suite installer contains all product modules. A suite release updates the shell and every changed product together. */
     if (settings.autoCheck !== false) {
       setTimeout(() => checkForUpdates({ quiet: true, force: true }), 12000);
       setInterval(() => checkForUpdates({ quiet: true, force: true }), 6 * 60 * 60 * 1000);
@@ -346,4 +362,3 @@ ipcMain.handle('updates:set-settings', async (event, payload) => {
 
 app.whenReady().then(async () => { app.setName(packageConfig.productName || 'Brightdesk'); dictionaryService = new DictionaryService(app.getPath('userData')); Menu.setApplicationMenu(null); termsAccepted = await hasCurrentTermsAcceptance(); if (termsAccepted) { createWindow(); initUpdater(); } else { createAgreementWindow(); } app.on('activate', () => { if (BrowserWindow.getAllWindows().length === 0) { if (termsAccepted) createWindow(); else createAgreementWindow(); } }); });
 app.on('window-all-closed', () => { if (process.platform !== 'darwin') app.quit(); });
-

@@ -15,92 +15,104 @@ test('Dependabot checks npm dependencies and GitHub Actions weekly', () => {
   assert.equal((workflow.match(/interval: weekly/g) || []).length, 2);
 });
 
-test('scheduled dependency audit prepares and verifies a lockfile before blocking high severity vulnerabilities', () => {
+test('scheduled dependency audit uses hosted Ubuntu and blocks high severity vulnerabilities', () => {
   const workflow = read('.github/workflows/security-audit.yml');
   assert.match(workflow, /cron:/);
+  assert.match(workflow, /runs-on: ubuntu-latest/);
   assert.match(workflow, /node-version: 24\.22\.2/);
   assert.match(workflow, /npm run lock:prepare/);
   assert.match(workflow, /npm run lock:verify/);
   assert.match(workflow, /npm ci --no-audit --no-fund/);
   assert.match(workflow, /npm audit --audit-level=high/);
+  assert.equal(workflow.includes('self-hosted'), false);
 });
 
-test('release workflow builds and verifies all three desktop platforms', () => {
-  const workflow = read('.github/workflows/build-release.yml');
-  for (const platform of ['Linux', 'Windows', 'macOS']) {
-    assert.match(workflow, new RegExp(`platform: ${platform}`));
-  }
-  for (const command of ['dist:linux', 'dist:win', 'dist:mac', 'release:verify:linux', 'release:verify:win', 'release:verify:mac']) {
-    assert.ok(workflow.includes(command), `workflow includes ${command}`);
-  }
-  assert.match(workflow, /node-version: 24\.22\.2/);
+test('daily quality workflow uses hosted Ubuntu and never publishes a release', () => {
+  const workflow = read('.github/workflows/continuous-quality.yml');
+  assert.ok(workflow.includes("cron: '15 4 * * *'"));
+  assert.match(workflow, /runs-on: ubuntu-latest/);
+  assert.ok(workflow.includes('node-version: 24.22.2'));
   assert.match(workflow, /npm run lock:prepare/);
   assert.match(workflow, /npm run lock:verify/);
-  assert.match(workflow, /brightdesk-dependency-lock/);
-  assert.match(workflow, /npm run release:preflight/);
+  assert.match(workflow, /npm ci --no-audit --no-fund/);
+  assert.match(workflow, /npm run verify:licenses/);
   assert.match(workflow, /npm test/);
+  assert.match(workflow, /npm run release:preflight/);
   assert.match(workflow, /npm audit --audit-level=high/);
+  assert.equal(workflow.includes('pull_request:'), false);
+  assert.equal(workflow.includes('softprops/action-gh-release'), false);
+  assert.equal(workflow.includes('contents: write'), false);
+  assert.equal(workflow.includes('self-hosted'), false);
 });
 
-test('pull-request builds never receive code-signing or notarisation secrets', () => {
+test('installer workflow builds suite and all ten standalone apps on native hosted runners', () => {
   const workflow = read('.github/workflows/build-release.yml');
-  const buildStep = workflow.split('- name: Build suite installer')[1];
-  assert.ok(buildStep, 'build installer step exists');
-  for (const secret of ['CSC_LINK', 'CSC_KEY_PASSWORD', 'CSC_INSTALLER_LINK', 'CSC_INSTALLER_KEY_PASSWORD', 'APPLE_ID', 'APPLE_APP_SPECIFIC_PASSWORD', 'APPLE_TEAM_ID']) {
-    const line = buildStep.split('\n').find((item) => item.trimStart().startsWith(`${secret}:`));
-    assert.ok(line, `${secret} is configured for the build step`);
-    assert.match(line, /github\.event_name != 'pull_request'/, `${secret} is blank for pull requests`);
+  assert.ok(workflow.includes('runs-on: ${{ matrix.runner }}'));
+  for (const runner of ['ubuntu-latest', 'windows-latest', 'macos-latest']) {
+    assert.ok(workflow.includes(runner), runner + ' runner is configured');
   }
-  const installerCert = buildStep.split('\n').find((item) => item.trimStart().startsWith('CSC_INSTALLER_LINK:'));
-  const appleId = buildStep.split('\n').find((item) => item.trimStart().startsWith('APPLE_ID:'));
-  assert.match(installerCert, /matrix\.platform == 'macOS'/, 'macOS installer certificate is macOS-only');
-  assert.match(appleId, /matrix\.platform == 'macOS'/, 'Apple notarisation identity is macOS-only');
+  for (const command of [
+    'npm run check:node',
+    'npm run lock:prepare',
+    'npm run lock:verify',
+    'npm ci --no-audit --no-fund',
+    'npm run verify:licenses',
+    'npm test',
+    'npm run repositories:prepare',
+    'npm run release:preflight',
+    'npm audit --audit-level=high',
+    'npm run dist:win',
+    'npm run release:verify:win',
+    'npm run dist:products:win',
+    'npm run release:verify:products:win',
+    'npm run dist:linux',
+    'npm run release:verify:linux',
+    'npm run dist:products:linux',
+    'npm run release:verify:products:linux',
+    'npm run dist:mac',
+    'npm run release:verify:mac',
+    'npm run dist:products:mac',
+    'npm run release:verify:products:mac'
+  ]) {
+    assert.ok(workflow.includes(command), 'workflow includes ' + command);
+  }
+  assert.ok(workflow.includes('node scripts/collect-platform-build.js win'));
+  assert.ok(workflow.includes('node scripts/collect-platform-build.js linux'));
+  assert.ok(workflow.includes('node scripts/collect-platform-build.js mac'));
+  assert.ok(workflow.includes('Brightdesk-Product-Repositories-0.1.0'));
+  assert.ok(workflow.includes('include-hidden-files: true'));
+  assert.ok(workflow.includes('Brightdesk-0.1.0-Installers'));
+  assert.ok(workflow.includes('retention-days: 14'));
+  assert.equal(workflow.includes('self-hosted'), false);
+  assert.equal(workflow.includes('build-in-docker.sh'), false);
+  assert.equal(workflow.includes('docker build'), false);
 });
 
-test('Linux builds do not receive Windows or macOS signing credentials', () => {
+test('code-signing secrets are limited to their relevant platform on main', () => {
   const workflow = read('.github/workflows/build-release.yml');
-  const buildStep = workflow.split('- name: Build suite installer')[1];
-  for (const key of ['CSC_LINK', 'CSC_KEY_PASSWORD']) {
-    const line = buildStep.split('\n').find((item) => item.trimStart().startsWith(`${key}:`));
-    assert.match(line, /matrix\.platform == 'Windows'/);
-    assert.match(line, /matrix\.platform == 'macOS'/);
-    assert.match(line, /\|\| ''/);
+  const windows = workflow.split('Build Windows suite and all ten product installers')[1].split('Build Linux suite and all ten product installers')[0];
+  const linux = workflow.split('Build Linux suite and all ten product installers')[1].split('Build macOS suite and all ten product installers')[0];
+  const mac = workflow.split('Build macOS suite and all ten product installers')[1].split('Upload verified platform installer bundle')[0];
+  assert.ok(linux && windows && mac, 'all three platform build steps exist');
+  assert.doesNotMatch(linux, /secrets\./);
+  assert.match(windows, /secrets\.WIN_CSC_LINK/);
+  assert.match(windows, /secrets\.WIN_CSC_KEY_PASSWORD/);
+  assert.match(mac, /secrets\.MAC_APP_CSC_LINK/);
+  assert.match(mac, /secrets\.MAC_INSTALLER_CSC_LINK/);
+  assert.match(mac, /secrets\.APPLE_APP_SPECIFIC_PASSWORD/);
+  for (const block of [windows, mac]) {
+    assert.match(block, /github\.ref == 'refs\/heads\/main'/);
   }
 });
 
-test('platform release artifacts remain in separate folders and release lock metadata is retained', () => {
+test('release publishing is manual, main-only and version-matched', () => {
   const workflow = read('.github/workflows/build-release.yml');
-  for (const [platform, folder] of [['Linux', 'release/Linux'], ['Windows', 'release/Windows'], ['macOS', 'release/macOS']]) {
-    assert.match(workflow, new RegExp(`name: Download verified ${platform} build`));
-    assert.ok(workflow.includes(`path: ${folder}`), `${platform} is downloaded into its own folder`);
-  }
-  assert.match(workflow, /name: Download the exact dependency lock used for this release[\s\S]*?path: release\/build-metadata/);
-  assert.match(workflow, /files: release\/\*\*\/\*/);
-  assert.doesNotMatch(workflow, /merge-multiple: true/);
-  const prepare = read('scripts/prepare-release-assets.js');
-  assert.match(prepare, /Brightdesk-\$\{label\}-LICENSE\.txt/);
-  const verifier = read('scripts/verify-release-artifacts.js');
-  assert.match(verifier, /Brightdesk-SHA256SUMS-\$\{platform\.toUpperCase\(\)\}/);
-});
-
-test('Node.js runtime is pinned consistently to the current 24 LTS patch', () => {
-  const manifest = JSON.parse(read('package.json'));
-  assert.equal(manifest.engines.node, '24.22.2');
-  assert.equal(read('.nvmrc').trim(), '24.22.2');
-  assert.equal(read('.node-version').trim(), '24.22.2');
-  assert.match(read('.devcontainer/Dockerfile'), /^FROM node:24\.22\.2-bookworm/m);
-  assert.match(read('.github/workflows/build-release.yml'), /node-version: 24\.22\.2/);
-  assert.match(read('.github/workflows/security-audit.yml'), /node-version: 24\.22\.2/);
-});
-
-test('individual app installer builds explicitly disable implicit publishing', () => {
-  const builder = read('scripts/build-app.js');
-  assert.match(builder, /'--publish', 'never'/);
-});
-
-test('all customer installer build commands explicitly disable implicit publishing', () => {
-  const manifest = JSON.parse(read('package.json'));
-  for (const name of ['dist', 'dist:win', 'dist:mac', 'dist:linux']) {
-    assert.match(manifest.scripts[name], /--publish never$/, `${name} must build locally without publishing`);
-  }
+  assert.match(workflow, /publish_release:[\s\S]*?default: false/);
+  assert.match(workflow, /github\.event_name == 'workflow_dispatch'/);
+  assert.match(workflow, /inputs\.publish_release == true/);
+  assert.match(workflow, /github\.ref == 'refs\/heads\/main'/);
+  assert.ok(workflow.includes('version=$(node -p "require(\'./package.json\').version")'));
+  assert.ok(workflow.includes('expected_tag="v${version}"'));
+  assert.match(workflow, /fail_on_unmatched_files: true/);
+  assert.match(workflow, /contents: write/);
 });

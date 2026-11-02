@@ -45,17 +45,49 @@ test('Windows installer displays the Brightdesk licence and offers a normal setu
 });
 
 test('release workflow has working install and release permissions', () => {
-  const workflow = read('.github/workflows/build-release.yml');
+  const suiteWorkflowPath = path.join(root, '.github', 'workflows', 'build-release.yml');
+  if (fs.existsSync(suiteWorkflowPath)) {
+    const workflow = fs.readFileSync(suiteWorkflowPath, 'utf8');
+    assert.match(workflow, /node-version: 24\.22\.2/);
+    assert.match(workflow, /run: npm ci/);
+    assert.match(workflow, /npm run verify:licenses/);
+    assert.match(workflow, /npm run release:preflight/);
+    const buildHelper = fs.readFileSync(path.join(root, 'scripts', 'build-in-docker.sh'), 'utf8');
+    assert.match(buildHelper, /npm run release:verify:win/);
+    assert.match(buildHelper, /npm run release:verify:linux/);
+    assert.match(workflow, /npm run release:verify:mac/);
+    assert.match(workflow, /WIN_CSC_LINK/);
+    assert.match(workflow, /MAC_INSTALLER_CSC_LINK/);
+    assert.match(workflow, /APPLE_APP_SPECIFIC_PASSWORD/);
+    for (const command of ['npm run dist:products:linux', 'npm run dist:products:win']) {
+      assert.ok(buildHelper.includes(command), `Docker helper includes ${command}`);
+    }
+    assert.ok(workflow.includes('npm run dist:products:mac'));
+    for (const command of ['npm run release:verify:products:linux', 'npm run release:verify:products:win']) {
+      assert.ok(buildHelper.includes(command), `Docker helper includes ${command}`);
+    }
+    assert.ok(workflow.includes('npm run release:verify:products:mac'));
+    assert.match(workflow, /Brightdesk-Builds/);
+    assert.match(workflow, /uses: actions\/upload-artifact@[a-f0-9]{40}/);
+    assert.match(workflow, /uses: actions\/download-artifact@[a-f0-9]{40}/);
+    const buildJob = workflow.split('  publish-release:')[0];
+    const publishJob = workflow.split('  publish-release:')[1] || '';
+    assert.doesNotMatch(buildJob, /contents:\s*write/);
+    assert.match(publishJob, /permissions:\s*\n\s+contents:\s*write/);
+    return;
+  }
+
+  const workflow = read('.github/workflows/product-installers.yml');
   assert.match(workflow, /node-version: 24\.22\.2/);
-  assert.match(workflow, /run: npm ci/);
+  assert.match(workflow, /npm ci --no-audit --no-fund/);
   assert.match(workflow, /npm run verify:licenses/);
   assert.match(workflow, /npm run release:preflight/);
-  assert.match(workflow, /npm run release:verify:win/);
-  assert.match(workflow, /npm run release:verify:mac/);
-  assert.match(workflow, /WIN_CSC_LINK/);
-  assert.match(workflow, /MAC_INSTALLER_CSC_LINK/);
-  assert.match(workflow, /APPLE_APP_SPECIFIC_PASSWORD/);
-  assert.match(workflow, /npm run release:verify:linux/);
-  assert.doesNotMatch(workflow, /dist:apps:/);
-  assert.match(workflow, /publish-release:[\s\S]*?permissions:\s*contents: write/);
+  assert.match(workflow, /npm run dist:product:\$\{\{ matrix\.platform \}\}/);
+  assert.match(workflow, /npm run verify:product:\$\{\{ matrix\.platform \}\}/);
+  assert.match(workflow, /publish_release:[\s\S]*?default: false/);
+  assert.match(workflow, /contents: write/);
+  assert.match(workflow, /needs: build/);
+  const actionReferences = [...workflow.matchAll(/^\s*(?:-\s*)?uses:\s*([^\s#]+)/gm)].map(match => match[1]);
+  assert.ok(actionReferences.length > 0, 'product installer workflow uses pinned actions');
+  for (const reference of actionReferences) assert.match(reference, /@[a-f0-9]{40}$/i, reference);
 });

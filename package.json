@@ -1,7 +1,7 @@
 {
   "name": "brightdesk-suite",
   "version": "0.1.0",
-  "description": "Brightdesk — an independent desktop productivity suite for documents, spreadsheets, presentations and notes, with protected multilingual spelling resources",
+  "description": "Brightdesk — an independent native desktop suite with ten integrated products and individual desktop installers",
   "main": "src/main.js",
   "author": {
     "name": "Brightdesk Community",
@@ -46,7 +46,35 @@
     "release:prepare": "node scripts/prepare-release-assets.js",
     "lock:prepare": "npm install --package-lock-only --ignore-scripts --no-audit --no-fund",
     "lock:verify": "node scripts/verify-lockfile.js",
-    "setup:dev": "node scripts/setup/bootstrap-dev.js"
+    "setup:dev": "node scripts/setup/bootstrap-dev.js",
+    "dist:database:win": "node scripts/build-app.js database win",
+    "dist:database:mac": "node scripts/build-app.js database mac",
+    "dist:database:linux": "node scripts/build-app.js database linux",
+    "dist:forms:win": "node scripts/build-app.js forms win",
+    "dist:forms:mac": "node scripts/build-app.js forms mac",
+    "dist:forms:linux": "node scripts/build-app.js forms linux",
+    "dist:lists:win": "node scripts/build-app.js lists win",
+    "dist:lists:mac": "node scripts/build-app.js lists mac",
+    "dist:lists:linux": "node scripts/build-app.js lists linux",
+    "dist:planner:win": "node scripts/build-app.js planner win",
+    "dist:planner:mac": "node scripts/build-app.js planner mac",
+    "dist:planner:linux": "node scripts/build-app.js planner linux",
+    "dist:todo:win": "node scripts/build-app.js todo win",
+    "dist:todo:mac": "node scripts/build-app.js todo mac",
+    "dist:todo:linux": "node scripts/build-app.js todo linux",
+    "dist:workspace:win": "node scripts/build-app.js loop win",
+    "dist:workspace:mac": "node scripts/build-app.js loop mac",
+    "dist:workspace:linux": "node scripts/build-app.js loop linux",
+    "release:verify:apps:win": "node scripts/verify-standalone-apps.js win",
+    "release:verify:apps:mac": "node scripts/verify-standalone-apps.js mac",
+    "release:verify:apps:linux": "node scripts/verify-standalone-apps.js linux",
+    "repositories:prepare": "node scripts/create-app-repository-seeds.js",
+    "dist:products:win": "node scripts/build-apps.js win",
+    "dist:products:mac": "node scripts/build-apps.js mac",
+    "dist:products:linux": "node scripts/build-apps.js linux",
+    "release:verify:products:win": "node scripts/verify-standalone-apps.js win",
+    "release:verify:products:mac": "node scripts/verify-standalone-apps.js mac",
+    "release:verify:products:linux": "node scripts/verify-standalone-apps.js linux"
   },
   "dependencies": {
     "docx": "9.15.1",
@@ -54,7 +82,7 @@
     "exceljs": "4.4.0",
     "fast-xml-parser": "5.11.2",
     "jszip": "3.10.2",
-    "mammoth": "1.12.2",
+    "mammoth": "1.13.0",
     "nspell": "2.1.5",
     "pptxgenjs": "4.0.1"
   },
@@ -79,14 +107,16 @@
       "TERMS_AND_CONDITIONS.txt"
     ],
     "directories": {
-      "output": "release"
+      "output": "release",
+      "buildResources": "assets/branding"
     },
     "publish": [],
     "win": {
       "target": [
         "nsis"
       ],
-      "artifactName": "Brightdesk-Setup-${version}-${arch}.${ext}"
+      "artifactName": "Brightdesk-Setup-${version}-${arch}.${ext}",
+      "icon": "brightdesk-suite-mark.svg"
     },
     "nsis": {
       "oneClick": false,
@@ -102,7 +132,8 @@
         "zip"
       ],
       "category": "public.app-category.productivity",
-      "artifactName": "Brightdesk-${version}-${arch}.${ext}"
+      "artifactName": "Brightdesk-${version}-${arch}.${ext}",
+      "icon": "brightdesk-suite-mark.svg"
     },
     "dmg": {
       "sign": false
@@ -113,7 +144,9 @@
         "deb"
       ],
       "category": "Office",
-      "artifactName": "brightdesk-${version}-${arch}.${ext}"
+      "artifactName": "brightdesk-${version}-${arch}.${ext}",
+      "syncDesktopName": true,
+      "icon": "brightdesk-suite-mark.svg"
     },
     "appImage": {
       "artifactName": "Brightdesk-${version}-${arch}.${ext}"
@@ -124,5 +157,6 @@
       "conclusion": "installer/mac-conclusion.txt",
       "installLocation": "/Applications"
     }
-  }
+  },
+  "desktopName": "org.brightdesk.suite.desktop"
 }
