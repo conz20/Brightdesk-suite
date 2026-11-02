@@ -41,76 +41,75 @@ test('daily quality workflow checks the integrated suite without publishing a re
   assert.equal(workflow.includes('contents: write'), false);
 });
 
-test('release workflow builds and verifies all three desktop platforms', () => {
+test('release workflow builds all three platforms sequentially on the self-hosted Mac without GitHub artifacts', () => {
   const workflow = read('.github/workflows/build-release.yml');
-  for (const platform of ['Linux', 'Windows', 'macOS']) {
-    assert.match(workflow, new RegExp(`platform: ${platform}`));
-  }
-  for (const command of ['dist:linux', 'dist:win', 'dist:mac', 'release:verify:linux', 'release:verify:win', 'release:verify:mac']) {
-    assert.ok(workflow.includes(command), `workflow includes ${command}`);
-  }
-  assert.match(workflow, /node-version: 24\.22\.2/);
-  assert.match(workflow, /npm run lock:prepare/);
-  assert.match(workflow, /npm run lock:verify/);
-  assert.match(workflow, /brightdesk-dependency-lock/);
-  assert.match(workflow, /npm run release:preflight/);
-  assert.match(workflow, /npm test/);
-  assert.match(workflow, /npm audit --audit-level=high/);
-  assert.doesNotMatch(workflow, /^  pull_request:/m, 'expensive installer builds stay off pull requests; continuous-quality.yml is the PR gate');
+  assert.ok(workflow.includes('runs-on: [self-hosted, macOS, ARM64]'));
+  assert.equal((workflow.match(/runs-on: \[self-hosted, macOS, ARM64\]/g) || []).length, 1);
   assert.ok(workflow.includes('branches: [main, feature/standalone-downloads-all-ten]'));
-  assert.match(workflow, /npm run repositories:prepare/);
-  assert.match(workflow, /name: Upload product repository folders/);
-  assert.match(workflow, /Brightdesk-Product-Repository-Folders/);
-  assert.match(workflow, /include-hidden-files: true/);
-  assert.match(workflow, /name: Build suite and ten standalone installers/);
-  for (const command of ['npm run dist:products:linux', 'npm run dist:products:win', 'npm run dist:products:mac']) {
+  assert.equal(workflow.includes('pull_request:'), false);
+  assert.match(workflow, /node-version: 24\.22\.2/);
+  for (const command of ['npm run lock:prepare', 'npm run lock:verify', 'npm ci --no-audit --no-fund', 'npm test', 'npm run verify:licenses', 'npm run release:preflight', 'npm audit --audit-level=high']) {
     assert.ok(workflow.includes(command), `workflow includes ${command}`);
   }
-  assert.match(workflow, /name: Upload product desktop installers/);
-  assert.ok(workflow.includes('path: release/apps/${{ matrix.platform }}/**'), 'product installer artifacts use platform-specific folders');
+  for (const platform of ['linux', 'win', 'mac']) {
+    assert.ok(workflow.includes(`npm run release:verify:${platform}`), `${platform} suite verifier is included`);
+    assert.ok(workflow.includes(`npm run release:verify:products:${platform}`), `${platform} product verifier is included`);
+    assert.ok(workflow.includes(`node scripts/collect-platform-build.js ${platform}`), `${platform} files are collected locally`);
+  }
+  assert.ok(workflow.includes('bash scripts/build-in-docker.sh linux'));
+  assert.ok(workflow.includes('bash scripts/build-in-docker.sh win'));
+  assert.ok(workflow.includes('npm run dist:mac'));
+  assert.ok(workflow.includes('npm run dist:products:mac'));
+  assert.ok(workflow.includes('name: Save verified build output on this Mac'));
+  assert.ok(workflow.includes('Brightdesk-Builds'));
+  assert.equal(workflow.includes('actions/upload-artifact'), false);
+  assert.equal(workflow.includes('actions/download-artifact'), false);
+  assert.equal(workflow.includes('publish-release:'), false);
 });
 
-test('pull-request builds never receive code-signing or notarisation secrets', () => {
+test('code-signing secrets are limited to their relevant platform build steps', () => {
   const workflow = read('.github/workflows/build-release.yml');
-  const buildStep = workflow.split('- name: Build suite and ten standalone installers')[1];
-  assert.ok(buildStep, 'build installer step exists');
-  for (const secret of ['CSC_LINK', 'CSC_KEY_PASSWORD', 'CSC_INSTALLER_LINK', 'CSC_INSTALLER_KEY_PASSWORD', 'APPLE_ID', 'APPLE_APP_SPECIFIC_PASSWORD', 'APPLE_TEAM_ID']) {
-    const line = buildStep.split('\n').find((item) => item.trimStart().startsWith(`${secret}:`));
-    assert.ok(line, `${secret} is configured for the build step`);
-    assert.match(line, /github\.event_name != 'pull_request'/, `${secret} is blank for pull requests`);
-  }
-  const installerCert = buildStep.split('\n').find((item) => item.trimStart().startsWith('CSC_INSTALLER_LINK:'));
-  const appleId = buildStep.split('\n').find((item) => item.trimStart().startsWith('APPLE_ID:'));
-  assert.match(installerCert, /matrix\.platform == 'macOS'/, 'macOS installer certificate is macOS-only');
-  assert.match(appleId, /matrix\.platform == 'macOS'/, 'Apple notarisation identity is macOS-only');
+  assert.equal(workflow.includes('pull_request:'), false);
+  const linux = workflow.split('- name: Build Linux suite and all ten standalone apps')[1].split('- name: Build Windows suite and all ten standalone apps')[0];
+  const windows = workflow.split('- name: Build Windows suite and all ten standalone apps')[1].split('- name: Build macOS suite and all ten standalone apps')[0];
+  const mac = workflow.split('- name: Build macOS suite and all ten standalone apps')[1].split('- name: Save verified build output on this Mac')[0];
+  assert.ok(linux && windows && mac, 'all three platform build steps exist');
+  assert.doesNotMatch(linux, /secrets\./);
+  assert.match(windows, /secrets\.WIN_CSC_LINK/);
+  assert.match(windows, /secrets\.WIN_CSC_KEY_PASSWORD/);
+  assert.match(mac, /secrets\.MAC_APP_CSC_LINK/);
+  assert.match(mac, /secrets\.MAC_INSTALLER_CSC_LINK/);
+  assert.match(mac, /secrets\.APPLE_APP_SPECIFIC_PASSWORD/);
 });
 
-test('Linux builds do not receive Windows or macOS signing credentials', () => {
-  const workflow = read('.github/workflows/build-release.yml');
-  const buildStep = workflow.split('- name: Build suite and ten standalone installers')[1];
-  for (const key of ['CSC_LINK', 'CSC_KEY_PASSWORD']) {
-    const line = buildStep.split('\n').find((item) => item.trimStart().startsWith(`${key}:`));
-    assert.match(line, /matrix\.platform == 'Windows'/);
-    assert.match(line, /matrix\.platform == 'macOS'/);
-    assert.match(line, /\|\| ''/);
+test('Windows and Linux cross-builds use the pinned Node.js and Wine container helper', () => {
+  const helper = read('scripts/build-in-docker.sh');
+  assert.match(helper, /docker run --rm --platform linux\/amd64/);
+  assert.match(helper, /--user/);
+  assert.match(helper, /npm run check:node/);
+  assert.match(helper, /npm ci --no-audit --no-fund/);
+  for (const command of ['npm run dist:win', 'npm run dist:linux', 'npm run dist:products:win', 'npm run dist:products:linux']) {
+    assert.ok(helper.includes(command), `container helper includes ${command}`);
   }
+  const dockerfile = read('.github/docker/electron-builder.Dockerfile');
+  assert.match(dockerfile, /FROM electronuserland\/builder:wine@sha256:f3a8d451994c881d0972e7b1846ee4d4fdc15eb41fc6b1f350b38cbf99ca90fe/);
+  assert.match(dockerfile, /ARG NODE_VERSION=24\.22\.2/);
+  assert.match(dockerfile, /361718c444e49af2ca5a110c83ba6a8901143f23ab285ebbef0341f391f482a9/);
 });
 
-test('platform release artifacts remain in separate folders and release lock metadata is retained', () => {
+test('platform installer folders are assembled locally with dependency lock metadata retained', () => {
   const workflow = read('.github/workflows/build-release.yml');
-  for (const [platform, folder] of [['Linux', 'release/Linux'], ['Windows', 'release/Windows'], ['macOS', 'release/macOS']]) {
-    assert.match(workflow, new RegExp(`name: Download verified ${platform} build`));
-    assert.ok(workflow.includes(`path: ${folder}`), `${platform} is downloaded into its own folder`);
-  }
-  assert.match(workflow, /name: Download the exact dependency lock used for this release[\s\S]*?path: release\/build-metadata/);
-  assert.match(workflow, /files: release\/\*\*\/\*/);
-  assert.doesNotMatch(workflow, /merge-multiple: true/);
+  const collector = read('scripts/collect-platform-build.js');
+  for (const label of ['Linux', 'Windows', 'macOS']) assert.ok(collector.includes(label));
+  assert.match(workflow, /release\/build-metadata/);
+  assert.match(workflow, /Brightdesk-Builds/);
+  assert.match(workflow, /ditto -c -k/);
+  assert.match(collector, /Refusing to overwrite/);
   const prepare = read('scripts/prepare-release-assets.js');
   assert.match(prepare, /Brightdesk-\$\{label\}-LICENSE\.txt/);
   const verifier = read('scripts/verify-release-artifacts.js');
   assert.match(verifier, /Brightdesk-SHA256SUMS-\$\{platform\.toUpperCase\(\)\}/);
 });
-
 test('Node.js runtime is pinned consistently to the current 24 LTS patch', () => {
   const manifest = JSON.parse(read('package.json'));
   assert.equal(manifest.engines.node, '24.22.2');
