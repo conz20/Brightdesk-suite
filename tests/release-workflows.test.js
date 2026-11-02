@@ -98,7 +98,7 @@ test('Windows cross-build uses Wine 10.4 to avoid the Apple Silicon Docker memor
   assert.match(helper, /npm ci --no-audit --no-fund/);
   assert.match(helper, /linux\) builder_image="brightdesk-electron-builder:24\.22\.2-linux"/);
   assert.match(helper, /win\) builder_image="brightdesk-electron-builder:24\.22\.2-windows"/);
-  assert.match(helper, /"$builder_image"/);
+  assert.ok(helper.includes('"$builder_image"'), 'the selected build image is passed to Docker');
   for (const command of ['npm run dist:win', 'npm run dist:linux', 'npm run dist:products:win', 'npm run dist:products:linux']) {
     assert.ok(helper.includes(command), `container helper includes ${command}`);
   }
