@@ -1,16 +1,6 @@
 name: Brightdesk Pages product checks
 
 on:
-  pull_request:
-    branches: [main]
-    paths:
-      - 'src/**'
-      - 'scripts/**'
-      - 'tests/**'
-      - 'package.json'
-      - 'package-lock.json'
-      - 'electron-builder.app.config.js'
-      - '.github/workflows/brightdesk-pages-product.yml'
   schedule:
     - cron: '47 4 * * *'
   workflow_dispatch:
