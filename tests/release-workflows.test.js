@@ -188,7 +188,8 @@ test('all suite and generated product GitHub Actions are pinned to full commit S
   }
 
   for (const source of sources) {
-    const references = [...source.content.matchAll(/^\s*uses:\s*([^\s#]+)/gm)].map(match => match[1]);
+    const references = [...source.content.matchAll(/^\s*(?:-\s*)?uses:\s*([^\s#]+)/gm)].map(match => match[1]);
+    assert.ok(references.length > 0, source.label + ' declares actions');
     for (const reference of references) {
       assert.match(reference, /@[a-f0-9]{40}$/i, source.label + ': ' + reference);
     }

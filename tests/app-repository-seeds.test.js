@@ -51,7 +51,7 @@ test('generated customer copy uses approved product wording', () => {
     assert.match(workflow, /npm test/);
     assert.match(workflow, /npm run release:preflight/);
     assert.match(workflow, /npm audit --audit-level=high/);
-    const actionReferences = [...workflow.matchAll(/^\s*uses:\s*([^\s#]+)/gm)].map(match => match[1]);
+    const actionReferences = [...workflow.matchAll(/^\s*(?:-\s*)?uses:\s*([^\s#]+)/gm)].map(match => match[1]);
     assert.ok(actionReferences.length > 0, 'generated product workflow includes actions');
     for (const reference of actionReferences) assert.match(reference, /@[a-f0-9]{40}$/i, reference);
   }
