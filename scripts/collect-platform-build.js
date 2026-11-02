@@ -65,7 +65,7 @@ if (require.main === module) {
     const platform = process.argv[2];
     const rootDir = path.resolve(__dirname, '..');
     const result = collectPlatformBuild({ rootDir, platform });
-    console.log(`Collected ${result.suiteFiles} ${result.platform} suite file(s) and ${result.appFolders} standalone app folder(s).`);
+    console.log(`Collected ${result.suiteFiles} ${result.platform} suite file(s) and ${result.appFolders} product folder(s).`);
     console.log(`Platform output: ${result.platformDir}`);
   } catch (error) {
     console.error(error.message);

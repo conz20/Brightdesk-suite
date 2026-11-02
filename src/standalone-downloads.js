@@ -21,11 +21,11 @@ const PLATFORM_SUFFIXES = Object.freeze({
 
 function createStandaloneDownload({ appId, platform, version }) {
   const slug = APP_SLUGS[appId];
-  if (!slug) throw new Error(`Brightdesk app "${appId}" is not available as a standalone download.`);
+  if (!slug) throw new Error(`Brightdesk product "${appId}" is not available for individual download.`);
   const target = PLATFORM_SUFFIXES[platform];
-  if (!target) throw new Error(`Standalone downloads are not supported on ${platform}.`);
+  if (!target) throw new Error(`Product downloads are not supported on ${platform}.`);
   if (typeof version !== 'string' || !/^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?$/.test(version)) {
-    throw new Error('A valid release version is required to create a standalone download.');
+    throw new Error('A valid release version is required to create a product download.');
   }
 
   const filename = platform === 'linux'

@@ -1,7 +1,7 @@
 {
   "name": "brightdesk-suite",
   "version": "0.1.0",
-  "description": "Brightdesk — an independent native desktop suite with ten integrated productivity apps and separate standalone app installers",
+  "description": "Brightdesk — an independent native desktop suite with ten integrated products and individual desktop installers",
   "main": "src/main.js",
   "author": {
     "name": "Brightdesk Community",

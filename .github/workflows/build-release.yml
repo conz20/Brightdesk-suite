@@ -92,7 +92,7 @@ jobs:
       - name: Build Windows cross-build image with Wine 10.4
         run: docker build --platform linux/amd64 --pull --tag brightdesk-electron-builder:24.22.2-windows --file .github/docker/electron-builder-windows.Dockerfile .
 
-      - name: Build Windows suite and all ten standalone apps
+      - name: Build Windows suite and all ten product installers
         env:
           WIN_CSC_LINK: ${{ github.event_name != 'pull_request' && secrets.WIN_CSC_LINK || '' }}
           WIN_CSC_KEY_PASSWORD: ${{ github.event_name != 'pull_request' && secrets.WIN_CSC_KEY_PASSWORD || '' }}
@@ -104,7 +104,7 @@ jobs:
           bash scripts/build-in-docker.sh win
           node scripts/collect-platform-build.js win
 
-      - name: Build Linux suite and all ten standalone apps
+      - name: Build Linux suite and all ten product installers
         env:
           CSC_LINK: ''
           CSC_KEY_PASSWORD: ''
@@ -113,7 +113,7 @@ jobs:
           bash scripts/build-in-docker.sh linux
           node scripts/collect-platform-build.js linux
 
-      - name: Build macOS suite and all ten standalone apps
+      - name: Build macOS suite and all ten product installers
         env:
           MAC_APP_CSC_LINK: ${{ github.event_name != 'pull_request' && secrets.MAC_APP_CSC_LINK || '' }}
           MAC_APP_CSC_KEY_PASSWORD: ${{ github.event_name != 'pull_request' && secrets.MAC_APP_CSC_KEY_PASSWORD || '' }}

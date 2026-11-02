@@ -214,3 +214,19 @@ test('English navigation labels cover all ten approved Brightdesk products', () 
     assert.ok(require('node:fs').readFileSync(require('node:path').join(__dirname, '..', 'src', 'i18n.js'), 'utf8').includes(`'apps.${product.id}':'${expectedLabel}'`), `missing fallback navigation label for ${product.id}`);
   }
 });
+
+
+test('customer-facing Brightdesk copy uses product and desktop-installer wording', () => {
+  const fs = require('node:fs');
+  const path = require('node:path');
+  const root = path.join(__dirname, '..');
+  const manifest = JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8'));
+  const readme = fs.readFileSync(path.join(root, 'README.md'), 'utf8');
+  const main = fs.readFileSync(path.join(root, 'src', 'main.js'), 'utf8');
+  const downloads = fs.readFileSync(path.join(root, 'src', 'standalone-downloads.js'), 'utf8');
+
+  assert.doesNotMatch(manifest.description, /\\bapps?\\b|\\bstandalone\\b/i);
+  assert.doesNotMatch(readme, /\\bapps?\\b|\\bstandalone\\b/i);
+  assert.doesNotMatch(main, /Unsupported Brightdesk standalone app|app modules/i);
+  assert.doesNotMatch(downloads, /Brightdesk app|Standalone downloads/i);
+});

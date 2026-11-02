@@ -16,6 +16,42 @@ function sha256File(file) {
   return crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex');
 }
 
+
+function verifyChecksumManifest({ directory, checksumFile }) {
+  const root = path.resolve(directory);
+  const manifestPath = path.resolve(checksumFile);
+  const relativeManifest = path.relative(root, manifestPath);
+  if (!relativeManifest || relativeManifest === '..' || relativeManifest.startsWith(`..${path.sep}`) || path.isAbsolute(relativeManifest)) {
+    throw new Error('Checksum manifest must be inside the product output folder.');
+  }
+
+  const content = fs.readFileSync(manifestPath, 'utf8');
+  const lines = content.split(/\r?\n/);
+  if (lines[lines.length - 1] === '') lines.pop();
+  if (!lines.length) throw new Error('Checksum manifest is empty.');
+
+  const seen = new Set();
+  const files = lines.map(line => {
+    const match = /^([a-f0-9]{64})  ([A-Za-z0-9][A-Za-z0-9._-]*)$/.exec(line);
+    if (!match) throw new Error(`Invalid SHA-256 manifest row: ${line}`);
+    const [, expected, filename] = match;
+    if (seen.has(filename)) throw new Error(`Duplicate checksum entry: ${filename}`);
+    seen.add(filename);
+
+    const file = path.join(root, filename);
+    if (!fs.existsSync(file) || !fs.statSync(file).isFile()) {
+      throw new Error(`Checksum target is missing: ${filename}`);
+    }
+    const actual = sha256File(file);
+    if (actual !== expected) {
+      throw new Error(`SHA-256 mismatch for ${filename}: expected ${expected}, received ${actual}`);
+    }
+    return { filename, sha256: actual };
+  });
+
+  return { fileCount: files.length, files };
+}
+
 function expectedFilename(appId, platform, version) {
   const slug = APP_SLUGS[appId];
   const target = PLATFORMS[platform];
@@ -83,9 +119,10 @@ if (require.main === module) {
   const appId = process.argv[4] || null;
   try {
     const result = verifyStandaloneApps({ directory, platform, version, appId });
-    console.log(`Verified ${result.fileCount} standalone installer(s) across all ${result.appCount} approved apps for ${platform}.`);
+    console.log(`Verified ${result.fileCount} product installer(s) across all ${result.appCount} approved products for ${platform}.`);
     for (const item of result.apps) {
-      console.log(`- Brightdesk ${item.appName}: ${item.files.length} installer(s); checksum: ${path.relative(directory, item.checksumFile)}`);
+      console.log(`- Brightdesk ${item.appName}: ${item.files.length} installer(s); SHA-256 manifest: ${path.relative(directory, item.checksumFile)}`);
+      for (const file of item.files) console.log(`  ${file.file} (${file.bytes} bytes) SHA-256 ${file.sha256}`);
     }
   } catch (error) {
     console.error(error.message);
@@ -93,4 +130,4 @@ if (require.main === module) {
   }
 }
 
-module.exports = { PLATFORMS, expectedFilename, sha256File, verifyStandaloneApps };
+module.exports = { PLATFORMS, expectedFilename, sha256File, verifyChecksumManifest, verifyStandaloneApps };

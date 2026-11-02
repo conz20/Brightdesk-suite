@@ -23,7 +23,7 @@ const standaloneAppNames = {
 const supportedStandaloneApps = new Set(Object.keys(APP_SLUGS));
 const standaloneAppId = packageConfig.brightdeskAppId || null;
 if (standaloneAppId && !supportedStandaloneApps.has(standaloneAppId)) {
-  throw new Error(`Unsupported Brightdesk standalone app: ${standaloneAppId}`);
+  throw new Error(`Unsupported Brightdesk product: ${standaloneAppId}`);
 }
 
 function sendUpdateState(state) { if (mainWindow && !mainWindow.isDestroyed()) mainWindow.webContents.send('updates:state', state); }
@@ -265,12 +265,12 @@ function initUpdater() {
     autoUpdater.autoInstallOnAppQuit = true;
     autoUpdater.allowUnverifiedLinuxPackages = false;
     autoUpdater.on('checking-for-update', () => sendUpdateState({ status: 'checking', message: 'Checking for updates…' }));
-    autoUpdater.on('update-available', info => sendUpdateState({ status: 'available', message: `Brightdesk ${info.version} is available. Downloading the suite and changed app modules automatically…` }));
+    autoUpdater.on('update-available', info => sendUpdateState({ status: 'available', message: `Brightdesk ${info.version} is available. Downloading the suite and product updates automatically…` }));
     autoUpdater.on('update-not-available', () => sendUpdateState({ status: 'current', message: 'Brightdesk is up to date.' }));
     autoUpdater.on('download-progress', p => sendUpdateState({ status: 'downloading', message: `Downloading update: ${Math.round(p.percent)}%` }));
-    autoUpdater.on('update-downloaded', info => sendUpdateState({ status: 'downloaded', message: `Brightdesk ${info.version} and its updated app modules are ready. Restart to apply the update.` }));
+    autoUpdater.on('update-downloaded', info => sendUpdateState({ status: 'downloaded', message: `Brightdesk ${info.version} and its updated products are ready. Restart to apply the update.` }));
     autoUpdater.on('error', err => sendUpdateState({ status: 'error', message: err.message || 'Update check failed.' }));
-    /* The suite installer contains the app modules. A suite release updates the shell and every changed module together. */
+    /* The suite installer contains all product modules. A suite release updates the shell and every changed product together. */
     setTimeout(() => checkForUpdates({ quiet: true, force: true }), 12000);
     setInterval(() => checkForUpdates({ quiet: true, force: true }), 6 * 60 * 60 * 1000);
   } catch (error) { sendUpdateState({ status: 'unavailable', message: 'Update service is not configured in this build.' }); }
