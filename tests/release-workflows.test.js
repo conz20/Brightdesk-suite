@@ -57,6 +57,7 @@ test('release workflow builds and verifies all three desktop platforms', () => {
   assert.match(workflow, /npm test/);
   assert.match(workflow, /npm audit --audit-level=high/);
   assert.doesNotMatch(workflow, /^  pull_request:/m, 'expensive installer builds stay off pull requests; continuous-quality.yml is the PR gate');
+  assert.match(workflow, /branches: \\[main, feature\\/standalone-downloads-all-ten\\]/);
   assert.match(workflow, /npm run repositories:prepare/);
   assert.match(workflow, /name: Upload product repository folders/);
   assert.match(workflow, /Brightdesk-Product-Repository-Folders/);
