@@ -72,8 +72,8 @@ test('release workflow has working install and release permissions', () => {
     assert.match(workflow, /uses: actions\/download-artifact@[a-f0-9]{40}/);
     const buildJob = workflow.split('  publish-release:')[0];
     const publishJob = workflow.split('  publish-release:')[1] || '';
-    assert.doesNotMatch(buildJob, /contents:\\s*write/);
-    assert.match(publishJob, /permissions:\\s*\\n\\s+contents:\\s*write/);
+    assert.doesNotMatch(buildJob, /contents:\s*write/);
+    assert.match(publishJob, /permissions:\s*\n\s+contents:\s*write/);
     return;
   }
 
