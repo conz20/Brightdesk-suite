@@ -116,7 +116,9 @@ test('Windows cross-build uses Wine 10.4 to avoid the Apple Silicon Docker memor
   const workflow = read('.github/workflows/build-release.yml');
   assert.match(workflow, /brightdesk-electron-builder:24\.22\.2-linux/);
   assert.match(workflow, /brightdesk-electron-builder:24\.22\.2-windows/);
-  assert.match(workflow, /wineboot --init/);
+  assert.match(workflow, /--env DISPLAY=/);
+  assert.match(workflow, /--env WINEDLLOVERRIDES=mscoree,mshtml=/);
+  assert.match(workflow, /timeout 120s wineboot --init/);
 });
 
 test('platform installer folders are assembled locally with dependency lock metadata retained', () => {

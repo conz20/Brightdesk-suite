@@ -101,9 +101,11 @@ jobs:
             --env HOME=/tmp/brightdesk-wine-smoke \
             --env WINEPREFIX=/tmp/brightdesk-wine-smoke/prefix \
             --env WINEDEBUG=-all \
+            --env DISPLAY= \
+            --env WINEDLLOVERRIDES=mscoree,mshtml= \
             --entrypoint /bin/bash \
             brightdesk-electron-builder:24.22.2-windows \
-            -lc 'mkdir -p "$HOME" && node --version && test "$(wine --version)" = "wine-10.4" && wineboot --init'
+            -lc 'mkdir -p "$HOME" && node --version && test "$(wine --version)" = "wine-10.4" && timeout 120s wineboot --init'
 
       - name: Build Linux suite and all ten standalone apps
         env:
