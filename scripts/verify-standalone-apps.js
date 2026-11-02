@@ -55,7 +55,7 @@ function verifyChecksumManifest({ directory, checksumFile }) {
 function expectedFilename(appId, platform, version) {
   const slug = APP_SLUGS[appId];
   const target = PLATFORMS[platform];
-  if (!slug || !target) throw new Error('An approved app and supported platform are required.');
+  if (!slug || !target) throw new Error('An approved product and supported platform are required.');
   return target.extensions.map(extension => {
     const arch = platform === 'linux' && extension === 'deb' ? target.debArch : target.arch;
     const base = platform === 'linux'
@@ -69,18 +69,18 @@ function verifyStandaloneApps({ directory, platform, version, appId = null }) {
   const target = PLATFORMS[platform];
   if (!target) throw new Error(`Unsupported platform: ${platform}`);
   if (typeof version !== 'string' || !/^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?$/.test(version)) {
-    throw new Error('A valid release version is required for standalone app verification.');
+    throw new Error('A valid release version is required for product installer verification.');
   }
 
   if (appId !== null && !APP_SLUGS[appId]) {
-    throw new Error(`Unknown approved Brightdesk app: ${appId}`);
+    throw new Error(`Unknown approved Brightdesk product: ${appId}`);
   }
   const selectedApps = appId ? [[appId, APP_SLUGS[appId]]] : Object.entries(APP_SLUGS);
   const appResults = [];
   for (const [appId, slug] of selectedApps) {
     const appDirectory = path.join(directory, appId);
     if (!fs.existsSync(appDirectory) || !fs.statSync(appDirectory).isDirectory()) {
-      throw new Error(`Missing standalone output folder for Brightdesk ${slug}: ${appDirectory}`);
+      throw new Error(`Missing product output folder for Brightdesk ${slug}: ${appDirectory}`);
     }
     const expected = expectedFilename(appId, platform, version);
     const files = expected.map(filename => path.join(appDirectory, filename));
@@ -90,7 +90,7 @@ function verifyStandaloneApps({ directory, platform, version, appId = null }) {
     }
     const rows = files.map(file => {
       const bytes = fs.statSync(file).size;
-      if (bytes <= 0) throw new Error(`Standalone installer is empty: ${file}`);
+      if (bytes <= 0) throw new Error(`Product installer is empty: ${file}`);
       return {
         file: path.relative(directory, file).split(path.sep).join('/'),
         bytes,
@@ -99,7 +99,12 @@ function verifyStandaloneApps({ directory, platform, version, appId = null }) {
     });
     const checksumFile = path.join(appDirectory, `Brightdesk-${appId}-SHA256SUMS-${platform.toUpperCase()}.txt`);
     fs.writeFileSync(checksumFile, `${rows.map(row => `${row.sha256}  ${path.basename(row.file)}`).join('\n')}\n`);
-    appResults.push({ appId, appName: slug, files: rows, checksumFile });
+    const checksumVerification = verifyChecksumManifest({ directory: appDirectory, checksumFile });
+    const expectedNames = new Set(rows.map(row => path.basename(row.file)));
+    if (checksumVerification.fileCount !== expectedNames.size || checksumVerification.files.some(file => !expectedNames.has(file.filename))) {
+      throw new Error(`Checksum manifest does not match the expected product installers for Brightdesk ${slug}.`);
+    }
+    appResults.push({ appId, appName: slug, files: rows, checksumFile, checksumVerification });
   }
 
   return {

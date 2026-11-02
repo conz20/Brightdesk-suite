@@ -225,8 +225,8 @@ test('customer-facing Brightdesk copy uses product and desktop-installer wording
   const main = fs.readFileSync(path.join(root, 'src', 'main.js'), 'utf8');
   const downloads = fs.readFileSync(path.join(root, 'src', 'standalone-downloads.js'), 'utf8');
 
-  assert.doesNotMatch(manifest.description, /\\bapps?\\b|\\bstandalone\\b/i);
-  assert.doesNotMatch(readme, /\\bapps?\\b|\\bstandalone\\b/i);
+  assert.doesNotMatch(manifest.description, /\bapps?\b|\bstandalone\b/i);
+  assert.doesNotMatch(readme, /\bapps?\b|\bstandalone\b/i);
   assert.doesNotMatch(main, /Unsupported Brightdesk standalone app|app modules/i);
   assert.doesNotMatch(downloads, /Brightdesk app|Standalone downloads/i);
 });

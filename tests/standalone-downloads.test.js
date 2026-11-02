@@ -98,6 +98,7 @@ test('product checksum manifests are re-read and checked against the exact insta
     const checked = verifyChecksumManifest({ directory: appDirectory, checksumFile });
     assert.equal(checked.fileCount, 3);
     assert.equal(result.apps[0].files.length, 3);
+    assert.equal(result.apps[0].checksumVerification.fileCount, 3);
     for (const item of result.apps[0].files) {
       assert.match(item.sha256, /^[a-f0-9]{64}$/);
       assert.equal(fs.readFileSync(checksumFile, 'utf8').includes(item.sha256), true);
