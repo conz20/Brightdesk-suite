@@ -20,8 +20,11 @@ test('suite installers use the original SVG master icon on all platforms', () =>
 });
 
 test('App Centre renders the original Brightdesk master mark accessibly', () => {
+  assert.match(html, /class="brand-logo"/);
   assert.match(html, /class="manager-hero-logo"/);
   assert.match(html, /src="assets\/brand\/brightdesk-suite-mark\.svg"/);
   assert.match(html, /alt="Brightdesk"/);
   assert.match(css, /\.manager-hero-logo\{/);
+  assert.match(css, /--bd-accent:#36c7b4/);
+  assert.match(css, /\.sidebar\{background:var\(--bd-ink\)/);
 });
