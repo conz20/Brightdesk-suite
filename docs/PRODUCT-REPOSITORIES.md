@@ -11,17 +11,17 @@ Brightdesk keeps one complete desktop suite and gives each approved product its 
 | Product | GitHub repository | Product ID | Repository status |
 |---|---|---|---|
 | Brightdesk Pages | Brightdesk-Pages | pages | Created and populated |
-| Brightdesk Sheets | Brightdesk-Sheets | sheets | Created — empty |
-| Brightdesk Decks | Brightdesk-Decks | slides | Created — empty |
-| Brightdesk Notes | Brightdesk-Notes | notes | Created — empty |
-| Brightdesk Database | Brightdesk-Database | database | Not created |
-| Brightdesk Forms | Brightdesk-Forms | forms | Not created |
+| Brightdesk Sheets | Brightdesk-Sheets | sheets | Created and populated |
+| Brightdesk Decks | Brightdesk-Decks | slides | Created and populated |
+| Brightdesk Notes | Brightdesk-Notes | notes | Created and populated |
+| Brightdesk Database | Brightdesk-Database | database | Created and populated |
+| Brightdesk Forms | Brightdesk-Forms | forms | Created — README only |
 | Brightdesk Lists | Brightdesk-Lists | lists | Not created |
 | Brightdesk Planner | Brightdesk-Planner | planner | Not created |
 | Brightdesk To Do | Brightdesk-To-Do | todo | Not created |
 | Brightdesk Workspace | Brightdesk-Workspace | loop | Not created |
 
-Repository status was checked against GitHub on 3 November 2026. Brightdesk-Pages exists and contains source files. Brightdesk-Sheets, Brightdesk-Decks and Brightdesk-Notes exist but have no repository files yet. Brightdesk-Database, Brightdesk-Forms, Brightdesk-Lists, Brightdesk-Planner, Brightdesk-To-Do and Brightdesk-Workspace do not exist yet.
+Repository status was checked against GitHub on 3 November 2026. Brightdesk-Pages, Brightdesk-Sheets, Brightdesk-Decks, Brightdesk-Notes and Brightdesk-Database exist and contain product-specific source packages. Brightdesk-Forms exists but currently contains only README.md; its source, assets, tests and installer workflow still need to be added. Brightdesk-Lists, Brightdesk-Planner, Brightdesk-To-Do and Brightdesk-Workspace do not exist yet.
 
 ## Prepare the product folders
 
