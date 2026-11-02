@@ -68,8 +68,12 @@ test('release workflow has working install and release permissions', () => {
     }
     assert.ok(workflow.includes('npm run release:verify:products:mac'));
     assert.match(workflow, /Brightdesk-Builds/);
-    assert.doesNotMatch(workflow, /actions\/(?:upload|download)-artifact/);
-    assert.doesNotMatch(workflow, /contents: write/);
+    assert.match(workflow, /uses: actions\/upload-artifact@[a-f0-9]{40}/);
+    assert.match(workflow, /uses: actions\/download-artifact@[a-f0-9]{40}/);
+    const buildJob = workflow.split('  publish-release:')[0];
+    const publishJob = workflow.split('  publish-release:')[1] || '';
+    assert.doesNotMatch(buildJob, /contents:\\s*write/);
+    assert.match(publishJob, /permissions:\\s*\\n\\s+contents:\\s*write/);
     return;
   }
 
@@ -83,4 +87,7 @@ test('release workflow has working install and release permissions', () => {
   assert.match(workflow, /publish_release:[\s\S]*?default: false/);
   assert.match(workflow, /contents: write/);
   assert.match(workflow, /needs: build/);
+  const actionReferences = [...workflow.matchAll(/^\s*uses:\s*([^\s#]+)/gm)].map(match => match[1]);
+  assert.ok(actionReferences.length > 0, 'product installer workflow uses pinned actions');
+  for (const reference of actionReferences) assert.match(reference, /@[a-f0-9]{40}$/i, reference);
 });
