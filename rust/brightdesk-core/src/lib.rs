@@ -20,6 +20,9 @@ impl CellAddress {
     }
 
     /// Parses an A1-style address such as A1, BC27 or $C$9.
+    ///
+    /// # Errors
+    /// Returns an error for empty, malformed, zero-row or out-of-range addresses.
     pub fn parse(input: &str) -> Result<Self, AddressError> {
         let normalized = input.trim().replace('$', "");
         if normalized.is_empty() {
@@ -56,6 +59,9 @@ impl CellAddress {
     }
 
     /// Formats the coordinate as an A1-style address.
+    ///
+    /// # Panics
+    /// This method relies on the invariant that a base-26 remainder is below 26.
     #[must_use]
     pub fn to_a1(self) -> String {
         let mut value = self.column + 1;
