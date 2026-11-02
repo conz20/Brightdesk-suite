@@ -68,7 +68,8 @@ impl CellAddress {
         let mut letters = Vec::new();
         while value > 0 {
             let remainder = (value - 1) % 26;
-            letters.push(char::from(b'A' + u8::try_from(remainder).expect("remainder is below 26")));
+            let letter_offset = u8::try_from(remainder).expect("remainder is below 26");
+            letters.push(char::from(b'A' + letter_offset));
             value = (value - 1) / 26;
         }
         letters.reverse();
