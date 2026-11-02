@@ -51,15 +51,19 @@ test('release workflow builds all three platforms sequentially on the self-hoste
   for (const command of ['npm run lock:prepare', 'npm run lock:verify', 'npm ci --no-audit --no-fund', 'npm test', 'npm run verify:licenses', 'npm run release:preflight', 'npm audit --audit-level=high']) {
     assert.ok(workflow.includes(command), `workflow includes ${command}`);
   }
+  const dockerHelper = read('scripts/build-in-docker.sh');
+  for (const platform of ['linux', 'win']) {
+    assert.ok(dockerHelper.includes(`npm run release:verify:${platform}`), `${platform} suite verifier is included`);
+    assert.ok(dockerHelper.includes(`npm run release:verify:products:${platform}`), `${platform} product verifier is included`);
+    assert.ok(dockerHelper.includes(`npm run dist:products:${platform}`), `${platform} product build is included`);
+    assert.ok(workflow.includes(`bash scripts/build-in-docker.sh ${platform}`), `${platform} container helper is called`);
+  }
+  for (const command of ['npm run dist:mac', 'npm run release:verify:mac', 'npm run dist:products:mac', 'npm run release:verify:products:mac']) {
+    assert.ok(workflow.includes(command), `workflow includes ${command}`);
+  }
   for (const platform of ['linux', 'win', 'mac']) {
-    assert.ok(workflow.includes(`npm run release:verify:${platform}`), `${platform} suite verifier is included`);
-    assert.ok(workflow.includes(`npm run release:verify:products:${platform}`), `${platform} product verifier is included`);
     assert.ok(workflow.includes(`node scripts/collect-platform-build.js ${platform}`), `${platform} files are collected locally`);
   }
-  assert.ok(workflow.includes('bash scripts/build-in-docker.sh linux'));
-  assert.ok(workflow.includes('bash scripts/build-in-docker.sh win'));
-  assert.ok(workflow.includes('npm run dist:mac'));
-  assert.ok(workflow.includes('npm run dist:products:mac'));
   assert.ok(workflow.includes('name: Save verified build output on this Mac'));
   assert.ok(workflow.includes('Brightdesk-Builds'));
   assert.equal(workflow.includes('actions/upload-artifact'), false);
