@@ -9,6 +9,7 @@ Brightdesk already has native packaging configuration for:
 - macOS: DMG, PKG and ZIP targets; the DMG/PKG remain unsigned until signing credentials are configured.
 - Linux: AppImage and DEB packages.
 - Existing release scripts perform preflight, legal-file checks, artifact verification and SHA-256 manifest preparation.
+- The integrated suite's original SVG master mark is wired into the Windows, macOS and Linux application icon configuration through electron-builder's SVG conversion support.
 - GitHub Release publication is a separate manual workflow input and must remain disabled by default.
 
 ## Brightdesk installer experience
