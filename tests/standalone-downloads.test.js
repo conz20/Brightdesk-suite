@@ -57,7 +57,7 @@ test('standalone download validates the release version before building a URL', 
   assert.throws(() => createStandaloneDownload({ appId: 'pages', platform: 'win32', version: '../latest' }), /valid release version/);
 });
 
-test('standalone verifier can verify one app repository without requiring the other nine apps', () => {
+test('product installer verifier can verify one product repository without requiring the other nine products', () => {
   const fs = require('node:fs');
   const os = require('node:os');
   const path = require('node:path');
@@ -74,7 +74,7 @@ test('standalone verifier can verify one app repository without requiring the ot
     assert.equal(result.apps[0].appId, 'pages');
     assert.equal(result.fileCount, 3);
     assert.ok(fs.existsSync(path.join(appDirectory, 'Brightdesk-pages-SHA256SUMS-MAC.txt')));
-    assert.throws(() => verifyStandaloneApps({ directory, platform: 'mac', version: '0.1.0', appId: 'outlook' }), /approved Brightdesk app/);
+    assert.throws(() => verifyStandaloneApps({ directory, platform: 'mac', version: '0.1.0', appId: 'outlook' }), /approved Brightdesk product/);
   } finally {
     fs.rmSync(directory, { recursive: true, force: true });
   }

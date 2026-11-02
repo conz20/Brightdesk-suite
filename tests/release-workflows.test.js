@@ -41,10 +41,10 @@ test('daily quality workflow checks the integrated suite without publishing a re
   assert.equal(workflow.includes('contents: write'), false);
 });
 
-test('release workflow builds all three platforms sequentially on the self-hosted Mac without GitHub artifacts', () => {
+test('release workflow builds all three platforms on the self-hosted Mac and publishes verified artifacts', () => {
   const workflow = read('.github/workflows/build-release.yml');
   assert.ok(workflow.includes('runs-on: [self-hosted, macOS, ARM64]'));
-  assert.equal((workflow.match(/runs-on: \[self-hosted, macOS, ARM64\]/g) || []).length, 1);
+  assert.equal((workflow.match(/runs-on: \[self-hosted, macOS, ARM64\]/g) || []).length, 2);
   assert.ok(workflow.includes('branches: [main, feature/standalone-downloads-all-ten]'));
   assert.equal(workflow.includes('pull_request:'), false);
   assert.match(workflow, /node-version: 24\.22\.2/);
@@ -66,13 +66,22 @@ test('release workflow builds all three platforms sequentially on the self-hoste
   }
   assert.ok(workflow.includes('name: Save verified build output on this Mac'));
   assert.ok(workflow.includes('Brightdesk-Builds'));
-  assert.equal(workflow.includes('actions/upload-artifact'), false);
-  assert.equal(workflow.includes('actions/download-artifact'), false);
+  assert.ok(workflow.includes('actions/upload-artifact@v4'));
+  assert.ok(workflow.includes('actions/download-artifact@v4'));
+  assert.match(workflow, /name: Brightdesk-Product-Repositories-0\.1\.0/);
+  assert.match(workflow, /include-hidden-files: true/);
+  assert.match(workflow, /pattern: Brightdesk-0\.1\.0-\*/);
+  assert.match(workflow, /merge-multiple: true/);
+  assert.match(workflow, /retention-days: 30/);
+  assert.match(workflow, /fail_on_unmatched_files: true/);
+  assert.match(workflow, /github\.ref == 'refs\/heads\/main'/);
+  assert.match(workflow, /publish-release:[\s\S]*?runs-on: \[self-hosted, macOS, ARM64\]/);
+  assert.match(workflow, /publish-release:[\s\S]*?node-version: 24\.22\.2/);
   assert.match(workflow, /Detect and expose Docker Desktop CLI/);
   assert.match(workflow, /\/Applications\/Docker\.app\/Contents\/Resources\/bin/);
   assert.match(workflow, /\$GITHUB_PATH/);
   assert.match(workflow, /docker version/);
-  assert.equal(workflow.includes('publish-release:'), false);
+  assert.ok(workflow.includes('publish-release:'));
 });
 
 test('code-signing secrets are limited to their relevant platform build steps', () => {
@@ -149,7 +158,7 @@ test('Node.js runtime is pinned consistently to the current 24 LTS patch', () =>
   assert.match(read('.github/workflows/security-audit.yml'), /node-version: 24\.22\.2/);
 });
 
-test('individual app installer builds explicitly disable implicit publishing', () => {
+test('individual product installer builds explicitly disable implicit publishing', () => {
   const builder = read('scripts/build-app.js');
   assert.match(builder, /'--publish', 'never'/);
 });

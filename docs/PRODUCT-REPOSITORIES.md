@@ -10,10 +10,10 @@ Brightdesk keeps one complete desktop suite and gives each approved product its 
 
 | Product | GitHub repository | Product ID | Repository status |
 |---|---|---|---|
-| Brightdesk Pages | Brightdesk-Pages | pages | Created |
-| Brightdesk Sheets | Brightdesk-Sheets | sheets | Not created |
-| Brightdesk Decks | Brightdesk-Decks | slides | Not created |
-| Brightdesk Notes | Brightdesk-Notes | notes | Not created |
+| Brightdesk Pages | Brightdesk-Pages | pages | Created and populated |
+| Brightdesk Sheets | Brightdesk-Sheets | sheets | Created — empty |
+| Brightdesk Decks | Brightdesk-Decks | slides | Created — empty |
+| Brightdesk Notes | Brightdesk-Notes | notes | Created — empty |
 | Brightdesk Database | Brightdesk-Database | database | Not created |
 | Brightdesk Forms | Brightdesk-Forms | forms | Not created |
 | Brightdesk Lists | Brightdesk-Lists | lists | Not created |
@@ -21,7 +21,7 @@ Brightdesk keeps one complete desktop suite and gives each approved product its 
 | Brightdesk To Do | Brightdesk-To-Do | todo | Not created |
 | Brightdesk Workspace | Brightdesk-Workspace | loop | Not created |
 
-These are the intended repository names. The Pages repository already exists. The other nine names are prepared as product folders but are not GitHub repositories yet.
+Repository status was checked against GitHub on 3 November 2026. Brightdesk-Pages exists and contains source files. Brightdesk-Sheets, Brightdesk-Decks and Brightdesk-Notes exist but have no repository files yet. Brightdesk-Database, Brightdesk-Forms, Brightdesk-Lists, Brightdesk-Planner, Brightdesk-To-Do and Brightdesk-Workspace do not exist yet.
 
 ## Prepare the product folders
 
@@ -32,7 +32,7 @@ From a checkout of Brightdesk-suite using Node.js 24.22.2, run:
 
 The generator creates ten complete folders in release/product-repository-folders/. Each folder contains the product source, a locked product package manifest, original product artwork, a product README and a GitHub Actions desktop-installer workflow.
 
-The generator does not create GitHub repositories or push code. After a repository exists, its matching folder can be pushed to that repository.
+The generator does not create GitHub repositories or push code. After a repository exists, its matching folder can be pushed to that repository. The suite build workflow is configured to upload the generated ten-folder bundle as a GitHub Actions artifact, including hidden GitHub workflow files. After a successful updated build, download that artifact from the Actions run and use the matching folder to populate each repository.
 
 ## Product repository checks and releases
 

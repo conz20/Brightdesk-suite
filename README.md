@@ -25,7 +25,7 @@ All ten products are integrated in the 0.1.0 codebase and have dedicated workspa
 
 The main Brightdesk installer contains all ten approved products. The Brightdesk Product Centre also provides an individual desktop installer for each product, so you can install only the product you need without installing the complete suite.
 
-The product installers are built from the same tested source as the suite and are checked as part of each release build. The product repository folders provide separate homes for each product's code, documentation and artwork. Brightdesk-Pages is the only separate product repository currently confirmed to exist; the other nine product folders still need their GitHub repositories created and populated. See docs/PRODUCT-REPOSITORIES.md for the repository map.
+The product installers are built from the same tested source as the suite and are checked as part of each release build. The product repository folders provide separate homes for each product's code, documentation and artwork. As verified on 3 November 2026, four product repositories exist: Brightdesk-Pages contains source files, while Brightdesk-Sheets, Brightdesk-Decks and Brightdesk-Notes are currently empty. The remaining six repositories — Brightdesk-Database, Brightdesk-Forms, Brightdesk-Lists, Brightdesk-Planner, Brightdesk-To-Do and Brightdesk-Workspace — still need to be created and populated. See docs/PRODUCT-REPOSITORIES.md for the repository map.
 
 ## Supported installer targets
 

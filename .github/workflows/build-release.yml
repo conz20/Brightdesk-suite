@@ -17,6 +17,17 @@ on:
       - '.github/workflows/build-release.yml'
       - '.github/docker/**'
   workflow_dispatch:
+    inputs:
+      publish_release:
+        description: Publish the verified Brightdesk 0.1.0 installers as a GitHub Release
+        type: boolean
+        required: true
+        default: false
+      release_tag:
+        description: Release tag to publish after verification
+        type: string
+        required: true
+        default: v0.1.0
 
 permissions:
   contents: read
@@ -82,6 +93,15 @@ jobs:
 
       - name: Audit dependencies for high severity vulnerabilities
         run: npm audit --audit-level=high
+
+      - name: Upload the ten prepared product repository folders
+        uses: actions/upload-artifact@v4
+        with:
+          name: Brightdesk-Product-Repositories-0.1.0
+          path: release/product-repository-folders/**
+          if-no-files-found: error
+          include-hidden-files: true
+          retention-days: 30
 
       - name: Build pinned Linux cross-build image
         run: docker build --platform linux/amd64 --pull --tag brightdesk-electron-builder:24.22.2-linux --file .github/docker/electron-builder.Dockerfile .
@@ -161,18 +181,112 @@ jobs:
           set -euo pipefail
           destination="$HOME/Brightdesk-Builds/Brightdesk-0.1.0-${GITHUB_RUN_ID}"
           mkdir -p "$destination"
-          ditto release "$destination/release"
-          cat > "$destination/BUILD-REPORT.txt" <<EOF
+          cat > release/build-metadata/BUILD-REPORT.txt <<EOF
           Brightdesk 0.1.0 installer build
           GitHub Actions run: ${GITHUB_RUN_ID}
           Source branch: ${GITHUB_REF_NAME}
           Node.js: $(node --version)
-          Linux: x86_64 AppImage and deb suite/app installers
-          Windows: x64 NSIS exe suite/app installers
-          macOS: universal dmg, pkg and zip suite/app installers
-          Verification: all three suite and ten-app platform verifiers passed
-          GitHub artifact storage: not used; files are saved locally on this Mac
+          Linux: x86_64 AppImage and deb installers for the suite and all ten products
+          Windows: x64 NSIS exe installers for the suite and all ten products
+          macOS: universal dmg, pkg and zip installers for the suite and all ten products
+          Verification: suite and all ten product installer checks passed on all three platforms
+          Artifact policy: upload the product repository bundle and three verified platform bundles; release publication remains manual
           EOF
+          cp release/build-metadata/BUILD-REPORT.txt "$destination/BUILD-REPORT.txt"
+          ditto release "$destination/release"
           ditto -c -k --sequesterRsrc --keepParent "$destination/release" "$destination/Brightdesk-0.1.0-Installers.zip"
           test -s "$destination/Brightdesk-0.1.0-Installers.zip"
           echo "Brightdesk installers saved to: $destination"
+
+      - name: Upload verified Linux installer bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: Brightdesk-0.1.0-Linux
+          path: |
+            release/Linux/**
+            release/apps/Linux/**
+            release/build-metadata/**
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Upload verified Windows installer bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: Brightdesk-0.1.0-Windows
+          path: |
+            release/Windows/**
+            release/apps/Windows/**
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Upload verified macOS installer bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: Brightdesk-0.1.0-macOS
+          path: |
+            release/macOS/**
+            release/apps/macOS/**
+          if-no-files-found: error
+          retention-days: 30
+
+
+  publish-release:
+    name: Publish approved Brightdesk release
+    needs: build
+    if: github.event_name == 'workflow_dispatch' && inputs.publish_release == true && github.ref == 'refs/heads/main'
+    runs-on: [self-hosted, macOS, ARM64]
+    permissions:
+      contents: write
+    steps:
+      - name: Check out the release source
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+
+      - name: Set up required Node.js version
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 24.22.2
+          cache: npm
+
+      - name: Verify release tag matches package version
+        env:
+          RELEASE_TAG: ${{ inputs.release_tag }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          expected_tag="v$(node -p "require('./package.json').version")"
+          if [ "$RELEASE_TAG" != "$expected_tag" ]; then
+            echo "Refusing to publish $RELEASE_TAG; this source version requires $expected_tag." >&2
+            exit 1
+          fi
+
+      - name: Download verified platform bundles
+        uses: actions/download-artifact@v4
+        with:
+          pattern: Brightdesk-0.1.0-*
+          path: release
+          merge-multiple: true
+
+      - name: Verify downloaded release contents
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f release/Linux/Brightdesk-SHA256SUMS-LINUX.txt
+          test -f release/Windows/Brightdesk-SHA256SUMS-WIN.txt
+          test -f release/macOS/Brightdesk-SHA256SUMS-MAC.txt
+          for platform in Linux Windows macOS; do
+            count=$(find "release/apps/$platform" -mindepth 1 -maxdepth 1 -type d | wc -l | tr -d ' ')
+            test "$count" = "10"
+          done
+
+      - name: Publish verified desktop installers
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ inputs.release_tag }}
+          name: Brightdesk ${{ inputs.release_tag }}
+          generate_release_notes: true
+          fail_on_unmatched_files: true
+          files: |
+            release/Linux/**
+            release/Windows/**
+            release/macOS/**
+            release/apps/**
