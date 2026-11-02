@@ -3,8 +3,6 @@ name: Brightdesk Lists checks
 on:
   push:
     branches: [feature/brightdesk-lists]
-  pull_request:
-    branches: [main]
 
 permissions:
   contents: read
