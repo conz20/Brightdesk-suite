@@ -1,18 +1,17 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 300" role="img" aria-labelledby="title desc">
-<title id="title">Brightdesk SHEETS preview</title><desc id="desc">Build tables, use formulas and organise data.</desc>
-<rect width="640" height="300" rx="24" fill="#f5f6fa"/>
-<rect x="22" y="22" width="596" height="256" rx="17" fill="#fff" stroke="#e2e5ee" stroke-width="2"/>
-<rect x="22" y="22" width="596" height="38" rx="17" fill="#f0f1f6"/>
-<circle cx="44" cy="41" r="5" fill="#d3d5df"/><circle cx="62" cy="41" r="5" fill="#d3d5df"/><circle cx="80" cy="41" r="5" fill="#d3d5df"/>
-<rect x="42" y="79" width="105" height="178" rx="9" fill="#16845b" opacity=".12"/>
-<rect x="56" y="95" width="77" height="8" rx="4" fill="#16845b" opacity=".85"/>
-<rect x="56" y="116" width="62" height="6" rx="3" fill="#16845b" opacity=".35"/>
-<rect x="56" y="132" width="70" height="6" rx="3" fill="#16845b" opacity=".35"/>
-<rect x="56" y="148" width="52" height="6" rx="3" fill="#16845b" opacity=".35"/>
-<rect x="174" y="82" width="416" height="36" rx="8" fill="#16845b" opacity=".12"/>
-<text x="192" y="105" font-family="Arial,sans-serif" font-size="14" font-weight="700" fill="#16845b">A1 B1 C1</text>
-<text x="177" y="153" font-family="Arial,sans-serif" font-size="19" font-weight="700" fill="#303449">Revenue</text>
-<text x="177" y="183" font-family="Arial,sans-serif" font-size="14" fill="#73788b">=SUM(B2:B8)</text>
-<rect x="177" y="207" width="180" height="28" rx="6" fill="#16845b" opacity=".16"/>
-<rect x="369" y="207" width="110" height="28" rx="6" fill="#eceef4"/>
+<title id="title">Brightdesk SHEETS workspace preview</title>
+<desc id="desc">Original Brightdesk interface illustration showing sheets tools and workspace layout.</desc>
+<rect width="640" height="300" rx="18" fill="#f2f5f9"/>
+<rect x="14" y="14" width="612" height="272" rx="12" fill="#fff" stroke="#dfe5ee"/>
+<rect x="14" y="14" width="612" height="32" rx="12" fill="#f7f9fc"/>
+<circle cx="32" cy="30" r="4" fill="#c5ceda"/><circle cx="46" cy="30" r="4" fill="#c5ceda"/><circle cx="60" cy="30" r="4" fill="#c5ceda"/>
+<rect x="28" y="58" width="135" height="214" rx="6" fill="#f7f9fc"/>
+<rect x="43" y="75" width="78" height="7" rx="3" fill="#16845b"/>
+<rect x="43" y="96" width="100" height="5" rx="2" fill="#cbd4e1"/>
+<rect x="43" y="113" width="88" height="5" rx="2" fill="#d7dee8"/>
+<rect x="43" y="137" width="100" height="25" rx="4" fill="#e5f4ed"/>
+<rect x="43" y="174" width="94" height="5" rx="2" fill="#d7dee8"/>
+<rect x="43" y="190" width="80" height="5" rx="2" fill="#d7dee8"/>
+<rect x="43" y="206" width="92" height="5" rx="2" fill="#d7dee8"/>
+<rect x="188" y="65" width="420" height="190" rx="5" fill="#fff" stroke="#dfe5ee"/><g stroke="#e3e9f0"><path d="M188 93H608M188 121H608M188 149H608M188 177H608M188 205H608M188 233H608M245 65V255M310 65V255M375 65V255M440 65V255M505 65V255M570 65V255"/></g><rect x="245" y="93" width="65" height="28" fill="#e5f4ed"/><rect x="310" y="93" width="65" height="28" fill="#e5f4ed"/><rect x="375" y="93" width="65" height="28" fill="#e5f4ed"/><path d="M270 220L330 190L390 205L450 150L510 165L570 115" fill="none" stroke="#16845b" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><circle cx="570" cy="115" r="5" fill="#16845b"/>
 </svg>

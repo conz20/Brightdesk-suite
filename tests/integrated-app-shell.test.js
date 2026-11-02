@@ -37,3 +37,19 @@ test('product centre uses approved Brightdesk desktop wording',()=>{
   assert.doesNotMatch(html,/YOUR APPS|Get apps|Desktop app|Back to apps/i);
   assert.doesNotMatch(app,/Keep at least one app installed|Choose at least one app to install|Desktop app ·/i);
 });
+
+
+test('the original Brightdesk office design system is loaded for the integrated suite',()=>{
+  assert.ok(html.includes('href="design-system.css"'),'design system stylesheet is loaded');
+  const css=fs.readFileSync(path.join(root,'src','design-system.css'),'utf8');
+  for(const token of ['--bd-accent:#315fce','prefers-reduced-motion:reduce','.ribbon-tabs','.app-card:hover','.database-app','.planner-app']) assert.ok(css.includes(token),token+' design rule');
+});
+
+test('all ten product previews are original SVG assets with accessible titles and descriptions',()=>{
+  for(const id of ['pages','sheets','slides','notes','database','forms','lists','planner','todo','loop']){
+    const svg=fs.readFileSync(path.join(root,'src','assets','apps',id+'.svg'),'utf8');
+    assert.match(svg,/<title id="title">Brightdesk /,id+' title');
+    assert.match(svg,/<desc id="desc">Original Brightdesk interface illustration/,id+' description');
+    assert.match(svg,/<svg[^>]+viewBox="0 0 640 300"/,id+' viewBox');
+  }
+});
