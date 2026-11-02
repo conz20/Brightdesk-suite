@@ -53,8 +53,8 @@ permissions:
   contents: read
 
 concurrency:
-  group: brightdesk-installer-build-\${{ github.ref }}-\${{ github.event_name }}
-  cancel-in-progress: \${{ github.event_name != 'workflow_dispatch' }}
+  group: brightdesk-installer-build-${{ github.ref }}-${{ github.event_name }}
+  cancel-in-progress: ${{ github.event_name != 'workflow_dispatch' }}
 
 jobs:
   prepare:
@@ -116,7 +116,7 @@ jobs:
           retention-days: 14
 
   build:
-    name: Build \${{ matrix.platform }} suite and product installers
+    name: Build ${{ matrix.platform }} suite and product installers
     needs: prepare
     if: github.event_name != 'workflow_dispatch' || inputs.build_installers == true
     strategy:
@@ -133,7 +133,7 @@ jobs:
           - platform: macOS
             runner: macos-latest
             script: mac
-    runs-on: \${{ matrix.runner }}
+    runs-on: ${{ matrix.runner }}
     timeout-minutes: 180
     steps:
       - name: Check out Brightdesk
@@ -163,13 +163,13 @@ jobs:
       - name: Build Windows suite and all ten product installers
         if: matrix.script == 'win'
         env:
-          WIN_CSC_LINK: \${{ github.event_name != 'pull_request' && secrets.WIN_CSC_LINK || '' }}
-          WIN_CSC_KEY_PASSWORD: \${{ github.event_name != 'pull_request' && secrets.WIN_CSC_KEY_PASSWORD || '' }}
-          CSC_LINK: \${{ github.event_name != 'pull_request' && secrets.WIN_CSC_LINK || '' }}
-          CSC_KEY_PASSWORD: \${{ github.event_name != 'pull_request' && secrets.WIN_CSC_KEY_PASSWORD || '' }}
+          WIN_CSC_LINK: ${{ github.event_name != 'pull_request' && secrets.WIN_CSC_LINK || '' }}
+          WIN_CSC_KEY_PASSWORD: ${{ github.event_name != 'pull_request' && secrets.WIN_CSC_KEY_PASSWORD || '' }}
+          CSC_LINK: ${{ github.event_name != 'pull_request' && secrets.WIN_CSC_LINK || '' }}
+          CSC_KEY_PASSWORD: ${{ github.event_name != 'pull_request' && secrets.WIN_CSC_KEY_PASSWORD || '' }}
         shell: bash
         run: |
-          if [ -z "\${CSC_LINK:-}" ]; then unset CSC_LINK CSC_KEY_PASSWORD; fi
+          if [ -z "${CSC_LINK:-}" ]; then unset CSC_LINK CSC_KEY_PASSWORD; fi
           npm run dist:win
           npm run release:prepare -- win
           npm run release:verify:win
@@ -191,21 +191,21 @@ jobs:
       - name: Build macOS suite and all ten product installers
         if: matrix.script == 'mac'
         env:
-          MAC_APP_CSC_LINK: \${{ github.event_name != 'pull_request' && secrets.MAC_APP_CSC_LINK || '' }}
-          MAC_APP_CSC_KEY_PASSWORD: \${{ github.event_name != 'pull_request' && secrets.MAC_APP_CSC_KEY_PASSWORD || '' }}
-          MAC_INSTALLER_CSC_LINK: \${{ github.event_name != 'pull_request' && secrets.MAC_INSTALLER_CSC_LINK || '' }}
-          MAC_INSTALLER_CSC_KEY_PASSWORD: \${{ github.event_name != 'pull_request' && secrets.MAC_INSTALLER_CSC_KEY_PASSWORD || '' }}
-          CSC_LINK: \${{ github.event_name != 'pull_request' && secrets.MAC_APP_CSC_LINK || '' }}
-          CSC_KEY_PASSWORD: \${{ github.event_name != 'pull_request' && secrets.MAC_APP_CSC_KEY_PASSWORD || '' }}
-          CSC_INSTALLER_LINK: \${{ github.event_name != 'pull_request' && secrets.MAC_INSTALLER_CSC_LINK || '' }}
-          CSC_INSTALLER_KEY_PASSWORD: \${{ github.event_name != 'pull_request' && secrets.MAC_INSTALLER_CSC_KEY_PASSWORD || '' }}
-          APPLE_ID: \${{ github.event_name != 'pull_request' && secrets.APPLE_ID || '' }}
-          APPLE_APP_SPECIFIC_PASSWORD: \${{ github.event_name != 'pull_request' && secrets.APPLE_APP_SPECIFIC_PASSWORD || '' }}
-          APPLE_TEAM_ID: \${{ github.event_name != 'pull_request' && secrets.APPLE_TEAM_ID || '' }}
+          MAC_APP_CSC_LINK: ${{ github.event_name != 'pull_request' && secrets.MAC_APP_CSC_LINK || '' }}
+          MAC_APP_CSC_KEY_PASSWORD: ${{ github.event_name != 'pull_request' && secrets.MAC_APP_CSC_KEY_PASSWORD || '' }}
+          MAC_INSTALLER_CSC_LINK: ${{ github.event_name != 'pull_request' && secrets.MAC_INSTALLER_CSC_LINK || '' }}
+          MAC_INSTALLER_CSC_KEY_PASSWORD: ${{ github.event_name != 'pull_request' && secrets.MAC_INSTALLER_CSC_KEY_PASSWORD || '' }}
+          CSC_LINK: ${{ github.event_name != 'pull_request' && secrets.MAC_APP_CSC_LINK || '' }}
+          CSC_KEY_PASSWORD: ${{ github.event_name != 'pull_request' && secrets.MAC_APP_CSC_KEY_PASSWORD || '' }}
+          CSC_INSTALLER_LINK: ${{ github.event_name != 'pull_request' && secrets.MAC_INSTALLER_CSC_LINK || '' }}
+          CSC_INSTALLER_KEY_PASSWORD: ${{ github.event_name != 'pull_request' && secrets.MAC_INSTALLER_CSC_KEY_PASSWORD || '' }}
+          APPLE_ID: ${{ github.event_name != 'pull_request' && secrets.APPLE_ID || '' }}
+          APPLE_APP_SPECIFIC_PASSWORD: ${{ github.event_name != 'pull_request' && secrets.APPLE_APP_SPECIFIC_PASSWORD || '' }}
+          APPLE_TEAM_ID: ${{ github.event_name != 'pull_request' && secrets.APPLE_TEAM_ID || '' }}
         shell: bash
         run: |
-          if [ -z "\${CSC_LINK:-}" ]; then unset CSC_LINK CSC_KEY_PASSWORD; export CSC_IDENTITY_AUTO_DISCOVERY=false; fi
-          if [ -z "\${CSC_INSTALLER_LINK:-}" ]; then unset CSC_INSTALLER_LINK CSC_INSTALLER_KEY_PASSWORD; fi
+          if [ -z "${CSC_LINK:-}" ]; then unset CSC_LINK CSC_KEY_PASSWORD; export CSC_IDENTITY_AUTO_DISCOVERY=false; fi
+          if [ -z "${CSC_INSTALLER_LINK:-}" ]; then unset CSC_INSTALLER_LINK CSC_INSTALLER_KEY_PASSWORD; fi
           npm run dist:mac
           npm run release:prepare -- mac
           npm run release:verify:mac
@@ -216,10 +216,10 @@ jobs:
       - name: Upload verified platform installer bundle
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
         with:
-          name: Brightdesk-0.1.0-\${{ matrix.platform }}
+          name: Brightdesk-0.1.0-${{ matrix.platform }}
           path: |
-            release/\${{ matrix.platform }}/**
-            release/apps/\${{ matrix.platform }}/**
+            release/${{ matrix.platform }}/**
+            release/apps/${{ matrix.platform }}/**
           if-no-files-found: error
           retention-days: 1
 
@@ -259,7 +259,12 @@ jobs:
           set -euo pipefail
           for platform in Linux Windows macOS; do
             test -d "release/$platform"
-            test -f "release/$platform/Brightdesk-SHA256SUMS-\${platform^^}.txt"
+            case "$platform" in
+              Linux) checksum_file="Brightdesk-SHA256SUMS-LINUX.txt" ;;
+              Windows) checksum_file="Brightdesk-SHA256SUMS-WIN.txt" ;;
+              macOS) checksum_file="Brightdesk-SHA256SUMS-MAC.txt" ;;
+            esac
+            test -f "release/$platform/$checksum_file"
             test -d "release/apps/$platform"
             count=$(find "release/apps/$platform" -mindepth 1 -maxdepth 1 -type d | wc -l | tr -d ' ')
             test "$count" = "10"
@@ -282,6 +287,9 @@ jobs:
     permissions:
       contents: write
     steps:
+      - name: Check out the release source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
       - name: Download complete verified installer bundle
         uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8
         with:
@@ -290,7 +298,7 @@ jobs:
 
       - name: Verify release tag matches package version
         env:
-          RELEASE_TAG: \${{ inputs.release_tag }}
+          RELEASE_TAG: ${{ inputs.release_tag }}
         shell: bash
         run: |
           set -euo pipefail
@@ -300,14 +308,11 @@ jobs:
             exit 1
           fi
 
-      - name: Check out the release source
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
-
       - name: Publish verified desktop installers
         uses: softprops/action-gh-release@efb35369e0ad2afab669f228072c1b0d510eae64 # v3
         with:
-          tag_name: \${{ inputs.release_tag }}
-          name: Brightdesk \${{ inputs.release_tag }}
+          tag_name: ${{ inputs.release_tag }}
+          name: Brightdesk ${{ inputs.release_tag }}
           generate_release_notes: true
           fail_on_unmatched_files: true
           files: |
