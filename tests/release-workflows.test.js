@@ -111,7 +111,7 @@ test('release publishing is manual, main-only and version-matched', () => {
   assert.match(workflow, /github\.event_name == 'workflow_dispatch'/);
   assert.match(workflow, /inputs\.publish_release == true/);
   assert.match(workflow, /github\.ref == 'refs\/heads\/main'/);
-  assert.ok(workflow.includes('version=$(node -p "require(\\'./package.json\\').version")'));
+  assert.ok(workflow.includes('version=$(node -p "require(\'./package.json\').version")'));
   assert.ok(workflow.includes('expected_tag="v${version}"'));
   assert.match(workflow, /fail_on_unmatched_files: true/);
   assert.match(workflow, /contents: write/);
