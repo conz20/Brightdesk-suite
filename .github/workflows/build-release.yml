@@ -163,10 +163,10 @@ jobs:
       - name: Build Windows suite and all ten product installers
         if: matrix.script == 'win'
         env:
-          WIN_CSC_LINK: ${{ github.event_name != 'pull_request' && secrets.WIN_CSC_LINK || '' }}
-          WIN_CSC_KEY_PASSWORD: ${{ github.event_name != 'pull_request' && secrets.WIN_CSC_KEY_PASSWORD || '' }}
-          CSC_LINK: ${{ github.event_name != 'pull_request' && secrets.WIN_CSC_LINK || '' }}
-          CSC_KEY_PASSWORD: ${{ github.event_name != 'pull_request' && secrets.WIN_CSC_KEY_PASSWORD || '' }}
+          WIN_CSC_LINK: ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/main' && secrets.WIN_CSC_LINK || '' }}
+          WIN_CSC_KEY_PASSWORD: ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/main' && secrets.WIN_CSC_KEY_PASSWORD || '' }}
+          CSC_LINK: ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/main' && secrets.WIN_CSC_LINK || '' }}
+          CSC_KEY_PASSWORD: ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/main' && secrets.WIN_CSC_KEY_PASSWORD || '' }}
         shell: bash
         run: |
           if [ -z "${CSC_LINK:-}" ]; then unset CSC_LINK CSC_KEY_PASSWORD; fi
@@ -191,17 +191,17 @@ jobs:
       - name: Build macOS suite and all ten product installers
         if: matrix.script == 'mac'
         env:
-          MAC_APP_CSC_LINK: ${{ github.event_name != 'pull_request' && secrets.MAC_APP_CSC_LINK || '' }}
-          MAC_APP_CSC_KEY_PASSWORD: ${{ github.event_name != 'pull_request' && secrets.MAC_APP_CSC_KEY_PASSWORD || '' }}
-          MAC_INSTALLER_CSC_LINK: ${{ github.event_name != 'pull_request' && secrets.MAC_INSTALLER_CSC_LINK || '' }}
-          MAC_INSTALLER_CSC_KEY_PASSWORD: ${{ github.event_name != 'pull_request' && secrets.MAC_INSTALLER_CSC_KEY_PASSWORD || '' }}
-          CSC_LINK: ${{ github.event_name != 'pull_request' && secrets.MAC_APP_CSC_LINK || '' }}
-          CSC_KEY_PASSWORD: ${{ github.event_name != 'pull_request' && secrets.MAC_APP_CSC_KEY_PASSWORD || '' }}
-          CSC_INSTALLER_LINK: ${{ github.event_name != 'pull_request' && secrets.MAC_INSTALLER_CSC_LINK || '' }}
-          CSC_INSTALLER_KEY_PASSWORD: ${{ github.event_name != 'pull_request' && secrets.MAC_INSTALLER_CSC_KEY_PASSWORD || '' }}
-          APPLE_ID: ${{ github.event_name != 'pull_request' && secrets.APPLE_ID || '' }}
-          APPLE_APP_SPECIFIC_PASSWORD: ${{ github.event_name != 'pull_request' && secrets.APPLE_APP_SPECIFIC_PASSWORD || '' }}
-          APPLE_TEAM_ID: ${{ github.event_name != 'pull_request' && secrets.APPLE_TEAM_ID || '' }}
+          MAC_APP_CSC_LINK: ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/main' && secrets.MAC_APP_CSC_LINK || '' }}
+          MAC_APP_CSC_KEY_PASSWORD: ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/main' && secrets.MAC_APP_CSC_KEY_PASSWORD || '' }}
+          MAC_INSTALLER_CSC_LINK: ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/main' && secrets.MAC_INSTALLER_CSC_LINK || '' }}
+          MAC_INSTALLER_CSC_KEY_PASSWORD: ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/main' && secrets.MAC_INSTALLER_CSC_KEY_PASSWORD || '' }}
+          CSC_LINK: ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/main' && secrets.MAC_APP_CSC_LINK || '' }}
+          CSC_KEY_PASSWORD: ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/main' && secrets.MAC_APP_CSC_KEY_PASSWORD || '' }}
+          CSC_INSTALLER_LINK: ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/main' && secrets.MAC_INSTALLER_CSC_LINK || '' }}
+          CSC_INSTALLER_KEY_PASSWORD: ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/main' && secrets.MAC_INSTALLER_CSC_KEY_PASSWORD || '' }}
+          APPLE_ID: ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/main' && secrets.APPLE_ID || '' }}
+          APPLE_APP_SPECIFIC_PASSWORD: ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/main' && secrets.APPLE_APP_SPECIFIC_PASSWORD || '' }}
+          APPLE_TEAM_ID: ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/main' && secrets.APPLE_TEAM_ID || '' }}
         shell: bash
         run: |
           if [ -z "${CSC_LINK:-}" ]; then unset CSC_LINK CSC_KEY_PASSWORD; export CSC_IDENTITY_AUTO_DISCOVERY=false; fi
