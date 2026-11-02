@@ -36,7 +36,7 @@ Use platform UI fonts with a clear sans-serif fallback stack. Maintain readable 
 
 ## App icon family
 
-Each of the ten approved apps receives an original icon built from a shared rounded-square container and consistent geometry. The central glyph should communicate the app's purpose; app accents distinguish tools without changing the family identity. The suite mark is at assets/branding/brightdesk-suite-mark.svg.
+Each of the ten approved apps receives an original icon built from a shared rounded-square container and consistent geometry. The central glyph should communicate the app's purpose; app accents distinguish tools without changing the family identity. The suite master mark is at assets/branding/brightdesk-suite-mark.svg and is now displayed in the App Centre. The integrated suite installer uses this SVG as the source icon for Windows, macOS and Linux through electron-builder's SVG icon support; a renderer copy is packaged at src/assets/brand/brightdesk-suite-mark.svg.
 
 ## Ownership
 
