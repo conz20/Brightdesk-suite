@@ -28,6 +28,7 @@ test('scheduled dependency audit prepares and verifies a lockfile before blockin
 test('daily quality workflow checks the integrated suite without publishing a release', () => {
   const workflow = read('.github/workflows/continuous-quality.yml');
   assert.ok(workflow.includes("cron: '15 4 * * *'"));
+  assert.match(workflow, /if: github.event_name != 'pull_request' \\|\\| github.event.pull_request.head.repo.full_name == github.repository/);
   assert.ok(workflow.includes('node-version: 24.22.2'));
   assert.match(workflow, /npm run lock:prepare/);
   assert.match(workflow, /npm run lock:verify/);
@@ -133,9 +134,9 @@ test('installer release jobs share the self-hosted Mac and cross-build Windows a
   const workflow = read('.github/workflows/build-release.yml');
   assert.equal((workflow.match(/runs-on: \[self-hosted, macOS, ARM64\]/g) || []).length, 4);
   assert.match(workflow, /max-parallel: 1/);
-  assert.match(workflow, /uses: actions\\/checkout@[a-f0-9]{40}/);
-  assert.match(workflow, /uses: actions\\/setup-node@[a-f0-9]{40}/);
-  assert.doesNotMatch(workflow, /uses: [^\\n]+@(?:v\\d+|main|master)\\b/);
+  assert.match(workflow, /uses: actions\/checkout@[a-f0-9]{40}/);
+  assert.match(workflow, /uses: actions\/setup-node@[a-f0-9]{40}/);
+  assert.doesNotMatch(workflow, /uses: [^\n]+@(?:v\\d+|main|master)\b/);
   assert.match(workflow, /docker build --platform linux\/amd64 --pull/);
   assert.match(workflow, /docker run --rm --platform linux\/amd64/);
   assert.match(workflow, /npm run check:node/);
