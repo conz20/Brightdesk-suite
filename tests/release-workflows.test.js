@@ -147,7 +147,7 @@ test('installer release jobs share the self-hosted Mac and cross-build Windows a
   const dockerfile = read('.github/docker/electron-builder.Dockerfile');
   assert.match(dockerfile, /FROM electronuserland\/builder:wine@sha256:f3a8d451994c881d0972e7b1846ee4d4fdc15eb41fc6b1f350b38cbf99ca90fe/);
   assert.match(dockerfile, /ARG NODE_VERSION=24\.22\.2/);
-  assert.match(dockerfile, /48cc0e21e048790e54c0cf5749c2725005313d652651c40b7a21feb9697aaf75/);
+  assert.match(dockerfile, /361718c444e49af2ca5a110c83ba6a8901143f23ab285ebbef0341f391f482a9/);
 });
 
 test('new automatic installer checks replace stale builds without cancelling manual release runs', () => {
