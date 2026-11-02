@@ -12,17 +12,6 @@ on:
       - 'tests/todo-service.test.js'
       - 'tests/todo-ui-integration.test.js'
       - '.github/workflows/todo-ci.yml'
-  pull_request:
-    branches: [main]
-    paths:
-      - 'src/todo-service.js'
-      - 'src/app.js'
-      - 'src/index.html'
-      - 'src/styles.css'
-      - 'src/app-catalog.js'
-      - 'tests/todo-service.test.js'
-      - 'tests/todo-ui-integration.test.js'
-      - '.github/workflows/todo-ci.yml'
 
 permissions:
   contents: read
