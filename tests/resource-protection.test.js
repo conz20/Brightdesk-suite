@@ -61,8 +61,12 @@ test('release workflow has working install and release permissions', () => {
     for (const command of ['npm run dist:products:linux', 'npm run dist:products:win', 'npm run dist:products:mac']) {
       assert.ok(workflow.includes(command), `workflow includes ${command}`);
     }
-    assert.match(workflow, /npm run release:verify:products:\$\{\{ matrix\.script \}\}/);
-    assert.match(workflow, /publish-release:[\s\S]*?permissions:\s*contents: write/);
+    for (const command of ['npm run release:verify:products:linux', 'npm run release:verify:products:win', 'npm run release:verify:products:mac']) {
+      assert.ok(workflow.includes(command), `workflow includes ${command}`);
+    }
+    assert.match(workflow, /Brightdesk-Builds/);
+    assert.doesNotMatch(workflow, /actions\/(?:upload|download)-artifact/);
+    assert.doesNotMatch(workflow, /contents: write/);
     return;
   }
 
