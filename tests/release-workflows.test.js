@@ -98,6 +98,10 @@ test('Windows cross-build uses Wine 10.4 to avoid the Apple Silicon Docker memor
   assert.match(helper, /--env DISPLAY=/);
   assert.match(helper, /--env WINEDLLOVERRIDES=mscoree,mshtml=/);
   assert.match(helper, /npm ci --no-audit --no-fund/);
+  assert.match(helper, /node scripts\/patch-electron-builder-nsis\.js/);
+  const nsisPatch = read('scripts/patch-electron-builder-nsis.js');
+  assert.match(nsisPatch, /Expected app-builder-lib 26\.18\.0/);
+  assert.match(nsisPatch, /UninstallerReader/);
   assert.match(helper, /linux\) builder_image="brightdesk-electron-builder:24\.22\.2-linux"/);
   assert.match(helper, /win\) builder_image="brightdesk-electron-builder:24\.22\.2-windows"/);
   assert.ok(helper.includes('"$builder_image"'), 'the selected build image is passed to Docker');

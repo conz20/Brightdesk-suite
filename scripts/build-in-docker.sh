@@ -54,6 +54,7 @@ docker run --rm --platform linux/amd64 \
     npm ci --no-audit --no-fund
 
     if [ "$BRIGHTDESK_BUILD_TARGET" = "win" ]; then
+      node scripts/patch-electron-builder-nsis.js
       npm run dist:win
       npm run release:prepare -- win
       npm run release:verify:win
