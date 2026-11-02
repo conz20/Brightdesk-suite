@@ -1,8 +1,6 @@
 name: Build and verify Brightdesk installers
 
 on:
-  pull_request:
-    branches: [main]
   push:
     branches: [main]
     paths:
@@ -45,31 +43,23 @@ jobs:
     steps:
       - name: Check out Brightdesk
         uses: actions/checkout@v4
-
       - name: Set up required Node.js version
         uses: actions/setup-node@v4
         with:
           node-version: 24.22.2
           cache: npm
-
       - name: Prepare exact dependency lock
         run: npm run lock:prepare
-
       - name: Verify dependency lock
         run: npm run lock:verify
-
       - name: Install locked dependencies
         run: npm ci --no-audit --no-fund
-
       - name: Verify third-party licence notices
         run: npm run verify:licenses
-
       - name: Run automated test suite
         run: npm test
-
       - name: Prepare product repository folders
         run: npm run repositories:prepare
-
       - name: Upload product repository folders
         uses: actions/upload-artifact@v4
         with:
@@ -78,13 +68,10 @@ jobs:
           include-hidden-files: true
           if-no-files-found: error
           retention-days: 30
-
       - name: Check release readiness
         run: npm run release:preflight
-
       - name: Audit dependencies for high severity vulnerabilities
         run: npm audit --audit-level=high
-
       - name: Save the exact dependency lock used for this release
         uses: actions/upload-artifact@v4
         with:
@@ -113,25 +100,20 @@ jobs:
     steps:
       - name: Check out Brightdesk
         uses: actions/checkout@v4
-
       - name: Set up required Node.js version
         uses: actions/setup-node@v4
         with:
           node-version: 24.22.2
           cache: npm
-
       - name: Restore the exact dependency lock
         uses: actions/download-artifact@v4
         with:
           name: brightdesk-dependency-lock
           path: .
-
       - name: Verify dependency lock
         run: npm run lock:verify
-
       - name: Install locked dependencies
         run: npm ci --no-audit --no-fund
-
       - name: Build suite installer
         env:
           WIN_CSC_LINK: ${{ github.event_name != 'pull_request' && matrix.platform == 'Windows' && secrets.WIN_CSC_LINK || '' }}
@@ -153,27 +135,21 @@ jobs:
           if [ "${{ matrix.script }}" = "win" ]; then npm run dist:win; fi
           if [ "${{ matrix.script }}" = "mac" ]; then npm run dist:mac; fi
           npm run release:prepare -- ${{ matrix.script }}
-
       - name: Verify Linux installer artifacts
         if: matrix.platform == 'Linux'
         run: npm run release:verify:linux
-
       - name: Verify Windows installer artifacts
         if: matrix.platform == 'Windows'
         run: npm run release:verify:win
-
       - name: Verify macOS installer artifacts
         if: matrix.platform == 'macOS'
         run: npm run release:verify:mac
-
       - name: Build product desktop installers
         shell: bash
         run: npm run dist:products:${{ matrix.script }}
-
       - name: Verify product desktop installers
         shell: bash
         run: npm run release:verify:products:${{ matrix.script }}
-
       - name: Place verified files in platform folder
         shell: bash
         env:
@@ -183,7 +159,6 @@ jobs:
           node -e "const fs=require('node:fs');const p=require('node:path');const root='release';const dest=p.join(root,process.env.BRIGHTDESK_PLATFORM);for(const name of fs.readdirSync(root)){if(name===process.env.BRIGHTDESK_PLATFORM)continue;const source=p.join(root,name);if(fs.statSync(source).isFile())fs.renameSync(source,p.join(dest,name));}"
           mkdir -p "release/apps/$BRIGHTDESK_PLATFORM"
           node -e "const fs=require('node:fs');const p=require('node:path');const source='release/apps';const target=p.join(source,process.env.BRIGHTDESK_PLATFORM);for(const name of fs.readdirSync(source)){if(name===process.env.BRIGHTDESK_PLATFORM)continue;const from=p.join(source,name);if(fs.statSync(from).isDirectory())fs.renameSync(from,p.join(target,name));}"
-
       - name: Upload verified platform build
         uses: actions/upload-artifact@v4
         with:
@@ -191,7 +166,6 @@ jobs:
           path: release/${{ matrix.platform }}/**
           if-no-files-found: error
           retention-days: 14
-
       - name: Upload product desktop installers
         uses: actions/upload-artifact@v4
         with:
@@ -210,43 +184,36 @@ jobs:
         with:
           name: brightdesk-Linux
           path: release/Linux
-
       - name: Download verified Windows build
         uses: actions/download-artifact@v4
         with:
           name: brightdesk-Windows
           path: release/Windows
-
       - name: Download verified macOS build
         uses: actions/download-artifact@v4
         with:
           name: brightdesk-macOS
           path: release/macOS
-
       - name: Download verified Linux product installers
         uses: actions/download-artifact@v4
         with:
           name: brightdesk-products-Linux
           path: release/apps/Linux
-
       - name: Download verified Windows product installers
         uses: actions/download-artifact@v4
         with:
           name: brightdesk-products-Windows
           path: release/apps/Windows
-
       - name: Download verified macOS product installers
         uses: actions/download-artifact@v4
         with:
           name: brightdesk-products-macOS
           path: release/apps/macOS
-
       - name: Download the exact dependency lock used for this release
         uses: actions/download-artifact@v4
         with:
           name: brightdesk-dependency-lock
           path: release/build-metadata
-
       - name: Upload complete Brightdesk installer bundle
         uses: actions/upload-artifact@v4
         with:
@@ -268,7 +235,6 @@ jobs:
         with:
           name: Brightdesk-0.1.0-Installers
           path: release
-
       - name: Publish verified installer files
         uses: softprops/action-gh-release@v2
         with:
