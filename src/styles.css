@@ -166,3 +166,39 @@
 .manager-grid.list-view .app-card>p{grid-area:desc}
 .manager-grid.list-view .app-card-footer{grid-area:footer;flex-direction:column;align-items:flex-end;justify-content:center;margin-top:0;padding-top:0;border-top:0}
 @media(max-width:760px){.manager-grid.list-view .app-card{grid-template-columns:120px minmax(0,1fr);grid-template-areas:"preview header" "preview desc" "footer footer"}.manager-grid.list-view .app-card-footer{flex-direction:row;align-items:center;justify-content:space-between}}
+
+
+:root{--bd-accent:#36c7b4;--bd-accent-strong:#249f94;--bd-ink:#18233b;--bd-page:#f3f6fa;--bd-surface:#fff;--bd-border:#e0e7ef;--bd-muted:#64748b}
+.brand-logo{display:block;width:38px;height:38px;flex:0 0 auto;border-radius:12px;box-shadow:0 4px 12px #0c172a33}
+.sidebar{background:var(--bd-ink);border-right:1px solid #2b3852;color:#f7f8fc}
+.brand b{color:#f7f8fc}
+.brand small,.nav small{color:#9aa8bd}
+.section-label,.eyebrow{color:#8798b3}
+.nav{color:#d5deeb}
+.nav.active{background:rgba(54,199,180,.16);color:#7be1d4}
+.nav:hover:not(.active){background:rgba(255,255,255,.06)}
+.app-icon.manager-icon{background:#263550;color:#8fe5da}
+.sidebar-divider{background:#2b3852}
+.free-pill{background:#263550;color:#7fe1d5}
+.text-button{color:#6de0d2}
+.sidebar-bottom small{color:#8d9bb0}
+.main{background:var(--bd-page)}
+.topbar h1{color:var(--bd-ink)}
+.primary{background:var(--bd-accent);color:#10233b}
+.primary:hover{background:#2fb6a5}
+.secondary{border-color:var(--bd-border);color:var(--bd-ink)}
+.welcome{background:linear-gradient(110deg,#e5f7f4,#f1f4fa 65%,#eaf0fb);border:1px solid #d9ece9}
+.welcome-orb{color:#35bcae}
+.workspace{border-color:var(--bd-border);box-shadow:0 8px 30px #18233b0b}
+.tool:hover{background:#e7f7f4}
+.tool:focus-visible,.primary:focus-visible,.secondary:focus-visible,.nav:focus-visible{outline-color:var(--bd-accent)}
+.manager-hero{background:linear-gradient(110deg,#e2f5f2,#f7f8fc 70%,#edf1fb);border-color:#dbece9}
+.manager-hero h2{color:var(--bd-ink)}
+.manager-view-button[aria-pressed="true"]{background:var(--bd-ink);border-color:var(--bd-ink);color:#fff}
+.app-card{border-radius:14px;border-color:var(--bd-border);box-shadow:0 4px 16px #18233b0a}
+.app-card:hover{border-color:#b7ded8;box-shadow:0 8px 24px #18233b12}
+.app-card-heading b{color:var(--bd-ink)}
+.app-card p{color:#64748b}
+.app-card-footer{border-color:#edf1f5}
+.app-state.installed{color:#27866f}
+.app-select-label input{accent-color:var(--bd-accent)}
