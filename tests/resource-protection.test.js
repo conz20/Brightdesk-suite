@@ -58,7 +58,9 @@ test('release workflow has working install and release permissions', () => {
     assert.match(workflow, /MAC_INSTALLER_CSC_LINK/);
     assert.match(workflow, /APPLE_APP_SPECIFIC_PASSWORD/);
     assert.match(workflow, /npm run release:verify:linux/);
-    assert.match(workflow, /npm run dist:products:\$\{\{ matrix\.script \}\}/);
+    for (const command of ['npm run dist:products:linux', 'npm run dist:products:win', 'npm run dist:products:mac']) {
+      assert.ok(workflow.includes(command), `workflow includes ${command}`);
+    }
     assert.match(workflow, /npm run release:verify:products:\$\{\{ matrix\.script \}\}/);
     assert.match(workflow, /publish-release:[\s\S]*?permissions:\s*contents: write/);
     return;
