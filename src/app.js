@@ -34,6 +34,7 @@ const state = {
   todoView: 'my-day', todoQuery: '',
   selectedCell: { row: 0, col: 0 }, update: null, ribbonTab: 'home',
   installedApps: [], setupComplete: false, firstRunSelection: new Set(installableCatalog.map(item => item.id)),
+  managerView: localStorage.getItem('brightdesk-manager-view') === 'list' ? 'list' : 'grid',
   slideTheme: 'lavender', focusMode: false, editorZoom: 100, sheetZoom: 100,
   languageCatalog: [], installedLanguagePacks: [], spellCheckerLanguages: [], usesNativeMacSpellChecker: false,
   displayLanguage: 'en-AU', proofingLanguage: 'en-AU',
@@ -458,7 +459,11 @@ function renderGenericWorkspace() {
 }
 
 function renderAppManager() {
-  const grid = $('app-manager-grid'); grid.innerHTML = '';
+  const grid = $('app-manager-grid');
+  grid.classList.toggle('list-view', state.managerView === 'list');
+  $('manager-grid-view').setAttribute('aria-pressed', String(state.managerView === 'grid'));
+  $('manager-list-view').setAttribute('aria-pressed', String(state.managerView === 'list'));
+  grid.innerHTML = '';
   $('manager-title').textContent = state.setupComplete ? t('manager.manageTitle') : t('manager.chooseTitle');
   $('manager-description').textContent = state.setupComplete
     ? t('manager.manageDesc')
@@ -872,6 +877,8 @@ $('dictionary-search').addEventListener('input',renderAvailableDictionaryCatalog
 $('proofing-dictionary').addEventListener('change',event=>{state.selectedDictionary=event.target.value;localStorage.setItem('brightdesk-selected-dictionary',state.selectedDictionary);renderToolbar();});
 $('check-current-document').addEventListener('click',checkCurrentDocumentSpelling);
 $('back-to-apps').addEventListener('click',()=>{state.view=state.setupComplete?'workspace':'manager';render();});
+$('manager-grid-view').addEventListener('click', () => { state.managerView = 'grid'; localStorage.setItem('brightdesk-manager-view', state.managerView); renderAppManager(); });
+$('manager-list-view').addEventListener('click', () => { state.managerView = 'list'; localStorage.setItem('brightdesk-manager-view', state.managerView); renderAppManager(); });
 $('finish-app-setup').addEventListener('click',()=>{if(state.setupComplete){state.view='workspace';render();}else completeAppSetup();});
 $('doc-title').addEventListener('change',()=>{activeDoc().title=$('doc-title').value;persist();});
 editor.addEventListener('input',()=>{activeDoc().html=editor.innerHTML;persist();});
