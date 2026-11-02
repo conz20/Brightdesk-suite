@@ -12,8 +12,8 @@ const css = fs.readFileSync(path.join(root, 'src', 'styles.css'), 'utf8');
 
 test('Product Centre offers accessible grid and list layouts', () => {
   assert.match(html, /role="group" aria-label="Product display"/);
-  assert.match(html, /id="manager-grid-view" aria-pressed="true">Grid/);
-  assert.match(html, /id="manager-list-view" aria-pressed="false">List/);
+  assert.match(html, /id="manager-grid-view" aria-pressed="true" data-i18n="manager.gridView">Grid/);
+  assert.match(html, /id="manager-list-view" aria-pressed="false" data-i18n="manager.listView">List/);
   assert.match(app, /managerView: localStorage\.getItem\('brightdesk-manager-view'\)/);
   assert.match(app, /grid\.classList\.toggle\('list-view', state\.managerView === 'list'\)/);
   assert.match(app, /localStorage\.setItem\('brightdesk-manager-view', state\.managerView\)/);
