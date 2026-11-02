@@ -59,14 +59,14 @@ test('release workflow has working install and release permissions', () => {
     assert.match(workflow, /WIN_CSC_LINK/);
     assert.match(workflow, /MAC_INSTALLER_CSC_LINK/);
     assert.match(workflow, /APPLE_APP_SPECIFIC_PASSWORD/);
-    assert.match(workflow, /npm run release:verify:linux/);
     for (const command of ['npm run dist:products:linux', 'npm run dist:products:win']) {
       assert.ok(buildHelper.includes(command), `Docker helper includes ${command}`);
     }
     assert.ok(workflow.includes('npm run dist:products:mac'));
-    for (const command of ['npm run release:verify:products:linux', 'npm run release:verify:products:win', 'npm run release:verify:products:mac']) {
-      assert.ok(workflow.includes(command), `workflow includes ${command}`);
+    for (const command of ['npm run release:verify:products:linux', 'npm run release:verify:products:win']) {
+      assert.ok(buildHelper.includes(command), `Docker helper includes ${command}`);
     }
+    assert.ok(workflow.includes('npm run release:verify:products:mac'));
     assert.match(workflow, /Brightdesk-Builds/);
     assert.doesNotMatch(workflow, /actions\/(?:upload|download)-artifact/);
     assert.doesNotMatch(workflow, /contents: write/);
