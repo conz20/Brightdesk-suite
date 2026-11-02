@@ -2,7 +2,7 @@
 <html lang="en-AU">
 <head>
   <meta charset="UTF-8" />
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self'; img-src 'self' data:; connect-src 'none'; object-src 'none'; base-uri 'self';">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self'; img-src 'self' data:; connect-src 'none'; object-src 'none'; base-uri 'none';">
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="color-scheme" content="light" />
   <title>Brightdesk</title>
@@ -24,6 +24,7 @@
     <div class="sidebar-bottom">
       <div class="free-pill" data-i18n="sidebar.freeIndependent">✦ Free and independent</div>
       <button class="text-button" id="updates-button" data-i18n="sidebar.checkUpdates">Check for updates</button>
+      <button class="text-button" id="update-settings-button">Update settings</button>
       <small id="platform">Brightdesk desktop</small>
       <small id="version-label">Version 0.1.0</small>
     </div>
@@ -105,6 +106,7 @@
       </section>
       <div class="manager-bottom"><p id="language-status" role="status"></p><button class="secondary" id="back-to-apps" data-i18n="language.backToApps">Back to products</button></div>
     </section>
+    <section id="update-settings-panel" class="update-settings-panel" hidden></section>
     <div class="update-message" id="update-message" role="status" hidden></div>
     <footer><span id="footer-version">Brightdesk 0.1.0</span> · Independent software · Not affiliated with Microsoft</footer>
   </main>
@@ -122,6 +124,7 @@
   <script src="workspace-service.js"></script>
   <script src="workspace-editor.js"></script>
   <script src="i18n.js"></script>
+  <script src="update-settings.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

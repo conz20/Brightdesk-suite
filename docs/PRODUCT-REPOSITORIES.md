@@ -15,13 +15,13 @@ Brightdesk keeps one complete desktop suite and gives each approved product its 
 | Brightdesk Decks | Brightdesk-Decks | slides | Created and populated |
 | Brightdesk Notes | Brightdesk-Notes | notes | Created and populated |
 | Brightdesk Database | Brightdesk-Database | database | Created and populated |
-| Brightdesk Forms | Brightdesk-Forms | forms | Created — README only |
+| Brightdesk Forms | Brightdesk-Forms | forms | Created and populated |
 | Brightdesk Lists | Brightdesk-Lists | lists | Not created |
 | Brightdesk Planner | Brightdesk-Planner | planner | Not created |
 | Brightdesk To Do | Brightdesk-To-Do | todo | Not created |
 | Brightdesk Workspace | Brightdesk-Workspace | loop | Not created |
 
-Repository status was checked against GitHub on 3 November 2026. Brightdesk-Pages, Brightdesk-Sheets, Brightdesk-Decks, Brightdesk-Notes and Brightdesk-Database exist and contain product-specific source packages. Brightdesk-Forms exists but currently contains only README.md; its source, assets, tests and installer workflow still need to be added. Brightdesk-Lists, Brightdesk-Planner, Brightdesk-To-Do and Brightdesk-Workspace do not exist yet.
+Repository status was checked against GitHub on 3 November 2026. Brightdesk-Pages, Brightdesk-Sheets, Brightdesk-Decks, Brightdesk-Notes, Brightdesk-Database and Brightdesk-Forms exist and contain product-specific source packages, artwork, package manifests and installer workflows. Brightdesk-Lists, Brightdesk-Planner, Brightdesk-To-Do and Brightdesk-Workspace do not exist yet.
 
 ## Prepare the product folders
 
@@ -41,6 +41,10 @@ Each generated product repository runs its complete test suite, validates its de
 A product installer build is started manually after the test job passes. It builds Windows, macOS and Linux desktop installers and verifies the expected files and SHA-256 checksums. Publishing a GitHub Release is a separate manual option and is off by default.
 
 The integrated suite also builds and verifies the ten product installers. The Product Centre in Brightdesk-suite opens the correct installer for the computer's operating system after the suite release has been published.
+
+## Current CI runner limitation
+
+The Brightdesk Pages repository has a successful product quality run. The private Sheets, Decks, Notes, Database and Forms repositories currently fail before job steps because GitHub does not allocate a hosted runner; their failed jobs expose no runner name, steps or downloadable logs. The self-hosted Mac runner registered to Brightdesk-suite is not automatically shared with those separate repositories. The integrated Brightdesk-suite gate therefore remains the authoritative place to execute all ten product tests and installer builds until a shared runner group or suitable per-repository runner is available. Do not treat the private product repository checks as passed.
 
 ## Product scope
 

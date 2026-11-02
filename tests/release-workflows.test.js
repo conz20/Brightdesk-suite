@@ -23,12 +23,14 @@ test('scheduled dependency audit prepares and verifies a lockfile before blockin
   assert.match(workflow, /npm run lock:verify/);
   assert.match(workflow, /npm ci --no-audit --no-fund/);
   assert.match(workflow, /npm audit --audit-level=high/);
+  assert.ok(workflow.includes('runs-on: [self-hosted, macOS, ARM64]'));
 });
 
 test('daily quality workflow checks the integrated suite without publishing a release', () => {
   const workflow = read('.github/workflows/continuous-quality.yml');
   assert.ok(workflow.includes("cron: '15 4 * * *'"));
   assert.ok(workflow.includes("if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository"));
+  assert.equal(workflow.includes('pull_request:'), false);
   assert.ok(workflow.includes('node-version: 24.22.2'));
   assert.match(workflow, /npm run lock:prepare/);
   assert.match(workflow, /npm run lock:verify/);
@@ -45,8 +47,9 @@ test('release workflow builds all three platforms on the self-hosted Mac and pub
   const workflow = read('.github/workflows/build-release.yml');
   assert.ok(workflow.includes('runs-on: [self-hosted, macOS, ARM64]'));
   assert.equal((workflow.match(/runs-on: \[self-hosted, macOS, ARM64\]/g) || []).length, 2);
-  assert.ok(workflow.includes('branches: [main, feature/standalone-downloads-all-ten]'));
-  assert.equal(workflow.includes('pull_request:'), false);
+  assert.ok(workflow.includes('branches: [main]'));
+  assert.ok(workflow.includes('pull_request:'));
+  assert.ok(workflow.includes("if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository"));
   assert.match(workflow, /node-version: 24\.22\.2/);
   for (const command of ['npm run lock:prepare', 'npm run lock:verify', 'npm ci --no-audit --no-fund', 'npm test', 'npm run verify:licenses', 'npm run release:preflight', 'npm audit --audit-level=high']) {
     assert.ok(workflow.includes(command), `workflow includes ${command}`);
@@ -65,14 +68,17 @@ test('release workflow builds all three platforms on the self-hosted Mac and pub
     assert.ok(workflow.includes(`node scripts/collect-platform-build.js ${platform}`), `${platform} files are collected locally`);
   }
   assert.ok(workflow.includes('name: Save verified build output on this Mac'));
+  assert.ok(workflow.includes('node scripts/cleanup-actions-artifacts.js'));
+  assert.ok(workflow.includes('actions: write'));
+  assert.ok(workflow.indexOf('Brightdesk-Product-Repositories-0.1.0') > workflow.indexOf('Build macOS suite and all ten product installers'), 'product repository bundle uploads only after all platform builds');
   assert.ok(workflow.includes('Brightdesk-Builds'));
-  assert.ok(workflow.includes('actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02'));
-  assert.ok(workflow.includes('actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093'));
+  assert.ok(workflow.includes('actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9'));
+  assert.ok(workflow.includes('actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333'));
   assert.match(workflow, /name: Brightdesk-Product-Repositories-0\.1\.0/);
   assert.match(workflow, /include-hidden-files: true/);
   assert.match(workflow, /pattern: Brightdesk-0\.1\.0-\*/);
   assert.match(workflow, /merge-multiple: true/);
-  assert.match(workflow, /retention-days: 30/);
+  assert.match(workflow, /retention-days: 1/);
   assert.match(workflow, /fail_on_unmatched_files: true/);
   assert.match(workflow, /github\.ref == 'refs\/heads\/main'/);
   assert.match(workflow, /publish-release:[\s\S]*?runs-on: \[self-hosted, macOS, ARM64\]/);
@@ -86,7 +92,7 @@ test('release workflow builds all three platforms on the self-hosted Mac and pub
 
 test('code-signing secrets are limited to their relevant platform build steps', () => {
   const workflow = read('.github/workflows/build-release.yml');
-  assert.equal(workflow.includes('pull_request:'), false);
+  assert.ok(workflow.includes("if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository"));
   const windows = workflow.split('- name: Build Windows suite and all ten product installers')[1].split('- name: Build Linux suite and all ten product installers')[0];
   const linux = workflow.split('- name: Build Linux suite and all ten product installers')[1].split('- name: Build macOS suite and all ten product installers')[0];
   const mac = workflow.split('- name: Build macOS suite and all ten product installers')[1].split('- name: Save verified build output on this Mac')[0];
@@ -194,4 +200,35 @@ test('all suite and generated product GitHub Actions are pinned to full commit S
       assert.match(reference, /@[a-f0-9]{40}$/i, source.label + ': ' + reference);
     }
   }
+});
+
+
+test('the consolidated installer workflow is the only pull-request quality gate', () => {
+  const release = read('.github/workflows/build-release.yml');
+  const daily = read('.github/workflows/continuous-quality.yml');
+  assert.match(release, /pull_request:/);
+  assert.equal(daily.includes('pull_request:'), false);
+});
+
+test('suite update preferences are connected from the interface through the secure preload', () => {
+  const html = read('src/index.html');
+  const main = read('src/main.js');
+  const preload = read('src/preload.js');
+  const settings = read('src/update-settings.js');
+  assert.match(html, /id="update-settings-button"/);
+  assert.match(html, /id="update-settings-panel"/);
+  assert.ok(html.indexOf('update-settings.js') < html.indexOf('app.js'));
+  assert.match(preload, /getUpdateSettings/);
+  assert.match(preload, /setUpdateSettings/);
+  assert.match(main, /updates:settings/);
+  assert.match(main, /updates:set-settings/);
+  assert.match(settings, /Pages, Sheets, Decks, Notes, Database, Forms, Lists, Planner, To Do and Workspace/);
+});
+
+test('the Mammoth update is locked consistently', () => {
+  const manifest = JSON.parse(read('package.json'));
+  const lock = JSON.parse(read('package-lock.json'));
+  assert.equal(manifest.dependencies.mammoth, '1.13.0');
+  assert.equal(lock.packages[''].dependencies.mammoth, '1.13.0');
+  assert.equal(lock.packages['node_modules/mammoth'].version, '1.13.0');
 });

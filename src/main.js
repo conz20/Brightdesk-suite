@@ -27,6 +27,26 @@ if (standaloneAppId && !supportedStandaloneApps.has(standaloneAppId)) {
 }
 
 function sendUpdateState(state) { if (mainWindow && !mainWindow.isDestroyed()) mainWindow.webContents.send('updates:state', state); }
+const updateSettingsPath = path.join(app.getPath('userData'), 'update-settings.json');
+const defaultUpdateSettings = { autoCheck: true, autoDownload: true, autoInstall: false };
+
+async function readUpdateSettings() {
+  try {
+    const raw = await fs.readFile(updateSettingsPath, 'utf8');
+    const parsed = JSON.parse(raw);
+    return { ...defaultUpdateSettings, ...parsed };
+  } catch (error) {
+    if (error.code !== 'ENOENT') console.warn('Could not read Brightdesk update settings.', error);
+    return { ...defaultUpdateSettings };
+  }
+}
+
+async function writeUpdateSettings(settings = {}) {
+  const next = { ...defaultUpdateSettings, ...(settings || {}) };
+  await fs.mkdir(app.getPath('userData'), { recursive: true });
+  await fs.writeFile(updateSettingsPath, `${JSON.stringify(next, null, 2)}\n`, { mode: 0o600 });
+  return next;
+}
 function createWindow() {
   mainWindow = new BrowserWindow({
     width: 1440, height: 920, minWidth: 980, minHeight: 680,
@@ -249,8 +269,9 @@ async function checkForUpdates({ quiet = false, force = false } = {}) {
     return { ok: false, message: error.message || 'Could not check for updates.' };
   } finally { updateCheckInProgress = false; }
 }
-function initUpdater() {
+async function initUpdater() {
   if (!app.isPackaged) return;
+  const settings = await readUpdateSettings();
   if (!updatePublishingConfigured) {
     sendUpdateState({ status: 'unavailable', message: 'Automatic updates are not configured for this build yet.' });
     return;
@@ -261,18 +282,22 @@ function initUpdater() {
   }
   try {
     ({ autoUpdater } = require('electron-updater'));
-    autoUpdater.autoDownload = true;
-    autoUpdater.autoInstallOnAppQuit = true;
+    autoUpdater.autoDownload = settings.autoDownload !== false;
+    autoUpdater.autoInstallOnAppQuit = settings.autoInstall === true;
     autoUpdater.allowUnverifiedLinuxPackages = false;
     autoUpdater.on('checking-for-update', () => sendUpdateState({ status: 'checking', message: 'Checking for updates…' }));
-    autoUpdater.on('update-available', info => sendUpdateState({ status: 'available', message: `Brightdesk ${info.version} is available. Downloading the suite and product updates automatically…` }));
+    autoUpdater.on('update-available', info => sendUpdateState({ status: 'available', message: `Brightdesk ${info.version} is available. Your update settings control how it is downloaded and installed.` }));
     autoUpdater.on('update-not-available', () => sendUpdateState({ status: 'current', message: 'Brightdesk is up to date.' }));
     autoUpdater.on('download-progress', p => sendUpdateState({ status: 'downloading', message: `Downloading update: ${Math.round(p.percent)}%` }));
-    autoUpdater.on('update-downloaded', info => sendUpdateState({ status: 'downloaded', message: `Brightdesk ${info.version} and its updated products are ready. Restart to apply the update.` }));
+    autoUpdater.on('update-downloaded', info => sendUpdateState({ status: 'downloaded', message: `Brightdesk ${info.version} is ready to install. Use Install now when you are ready.` }));
     autoUpdater.on('error', err => sendUpdateState({ status: 'error', message: err.message || 'Update check failed.' }));
     /* The suite installer contains all product modules. A suite release updates the shell and every changed product together. */
-    setTimeout(() => checkForUpdates({ quiet: true, force: true }), 12000);
-    setInterval(() => checkForUpdates({ quiet: true, force: true }), 6 * 60 * 60 * 1000);
+    if (settings.autoCheck !== false) {
+      setTimeout(() => checkForUpdates({ quiet: true, force: true }), 12000);
+      setInterval(() => checkForUpdates({ quiet: true, force: true }), 6 * 60 * 60 * 1000);
+    } else {
+      sendUpdateState({ status: 'manual', message: 'Automatic update checks are off. You can still check manually when you want.' });
+    }
   } catch (error) { sendUpdateState({ status: 'unavailable', message: 'Update service is not configured in this build.' }); }
 }
 
@@ -324,6 +349,16 @@ ipcMain.handle('file:pdf', async (event, payload) => {
 ipcMain.handle('updates:check', async event => { if (!senderIsMain(event)) throw new Error('Invalid sender.'); return checkForUpdates({ force: true }); });
 ipcMain.handle('updates:download', async event => { if (!senderIsMain(event)) throw new Error('Invalid sender.'); if (!autoUpdater) return { ok: false }; await autoUpdater.downloadUpdate(); return { ok: true }; });
 ipcMain.handle('updates:install', async event => { if (!senderIsMain(event)) throw new Error('Invalid sender.'); if (!autoUpdater) return { ok: false }; autoUpdater.quitAndInstall(); return { ok: true }; });
+ipcMain.handle('updates:settings', async event => { if (!senderIsMain(event)) throw new Error('Invalid sender.'); return readUpdateSettings(); });
+ipcMain.handle('updates:set-settings', async (event, payload) => {
+  if (!senderIsMain(event)) throw new Error('Invalid sender.');
+  const settings = await writeUpdateSettings(payload);
+  if (autoUpdater) {
+    autoUpdater.autoDownload = settings.autoDownload !== false;
+    autoUpdater.autoInstallOnAppQuit = settings.autoInstall === true;
+  }
+  return settings;
+});
 
 app.whenReady().then(async () => { app.setName(packageConfig.productName || 'Brightdesk'); dictionaryService = new DictionaryService(app.getPath('userData')); Menu.setApplicationMenu(null); termsAccepted = await hasCurrentTermsAcceptance(); if (termsAccepted) { createWindow(); initUpdater(); } else { createAgreementWindow(); } app.on('activate', () => { if (BrowserWindow.getAllWindows().length === 0) { if (termsAccepted) createWindow(); else createAgreementWindow(); } }); });
 app.on('window-all-closed', () => { if (process.platform !== 'darwin') app.quit(); });
