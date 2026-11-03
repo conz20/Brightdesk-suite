@@ -28,11 +28,11 @@ const appSlugs = {
   loop: 'Workspace'
 };
 
-if (!appName) {
+if (!appNames[appId]) {
   throw new Error('Set BRIGHTDESK_APP_ID to one of: pages, sheets, slides, notes, database, forms, lists, planner, todo, loop.');
 }
 
-const appName = appName;
+const appName = appNames[appId];
 const appSlug = appSlugs[appId];
 
 module.exports = {
@@ -58,7 +58,7 @@ module.exports = {
   mac: {
     target: ['dmg', 'pkg', 'zip'],
     category: 'public.app-category.productivity',
-    artifactName: 'Brightdesk-' + appName + '-${version}-${arch}.${ext}'
+    artifactName: 'Brightdesk-' + appSlug + '-${version}-${arch}.${ext}'
   },
   pkg: {
     license: 'TERMS_AND_CONDITIONS.txt',
