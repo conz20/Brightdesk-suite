@@ -7,6 +7,7 @@ const path = require('node:path');
 const { spawnSync } = require('node:child_process');
 
 const root = path.resolve(__dirname, '..');
+const productVersion = require('../package.json').version;
 
 const installerRunnable = (() => {
   if (process.platform !== 'linux') return false;
@@ -35,7 +36,7 @@ test('Linux installer stops when the user declines the agreement', { skip: skipI
     const script = path.join(temp, 'install-linux.sh');
     fs.copyFileSync(path.join(root, 'installer', 'install-linux.sh'), script);
     fs.copyFileSync(path.join(root, 'TERMS_AND_CONDITIONS.txt'), path.join(temp, 'TERMS_AND_CONDITIONS.txt'));
-    fs.writeFileSync(path.join(temp, 'brightdesk-0.1.0-x64.deb'), 'test package');
+    fs.writeFileSync(path.join(temp, `brightdesk-${productVersion}-x64.deb`), 'test package');
 
     const result = spawnSync('bash', [script], {
       input: 'no\n',
@@ -57,7 +58,7 @@ test('Linux installer continues only after an explicit Yes response', { skip: sk
     const script = path.join(temp, 'install-linux.sh');
     fs.copyFileSync(path.join(root, 'installer', 'install-linux.sh'), script);
     fs.copyFileSync(path.join(root, 'TERMS_AND_CONDITIONS.txt'), path.join(temp, 'TERMS_AND_CONDITIONS.txt'));
-    fs.writeFileSync(path.join(temp, 'brightdesk-0.1.0-x64.deb'), 'test package');
+    fs.writeFileSync(path.join(temp, `brightdesk-${productVersion}-x64.deb`), 'test package');
 
     const log = path.join(temp, 'sudo-args.txt');
     fs.writeFileSync(path.join(bin, 'sudo'), `#!/bin/sh\nprintf '%s\\n' "$@" > '${log}'\n`);
