@@ -31,7 +31,7 @@ The existing Brightdesk-Pages maintenance controller runs the Rust checks for th
 
 ## Future app repositories
 
-Brightdesk-Lists, Brightdesk-Planner, Brightdesk-To-Do and Brightdesk-Workspace are not created by this change. When the owner creates them, they should adopt this same pinned toolchain, `rust/` crate structure, lockfile, protocol contract and validation commands before app-specific Rust code is introduced.
+Brightdesk-Lists, Brightdesk-Planner, Brightdesk-To-Do and Brightdesk-Workspace are not created by this change. When the owner creates them, they should adopt this same pinned toolchain, `rust/` crate structure, lockfile, protocol contract and validation commands before app-specific Rust code is introduced. Only after a repository exists and is accessible should its exact name be added to `matrix.project` in `Brightdesk-Pages/.github/workflows/brightdesk-private-maintenance.yml`; the existing controller will then pick up its conditional Rust formatting, Clippy and Cargo test checks. Do not add future repository names to the active matrix before those repositories exist.
 
 ## Change control
 
