@@ -17,7 +17,7 @@ jobs:
     if: >-
       github.event_name == 'workflow_run' &&
       github.event.workflow_run.conclusion == 'failure' &&
-      contains(fromJSON('["Build and verify Brightdesk installers","Brightdesk integrated suite checks","Brightdesk Lists checks","Brightdesk To Do checks","Security and dependency audit","Brightdesk feature quality checks","Brightdesk feature branch quality","Build Brightdesk Sheets desktop installers","Build Brightdesk Decks desktop installers","Build Brightdesk Notes desktop installers","Build Brightdesk Database desktop installers","Build Brightdesk Forms desktop installers","Brightdesk Pages desktop installers"]'), github.event.workflow_run.name)
+      github.event.workflow_run.name != 'Brightdesk AI helper'
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
