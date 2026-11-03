@@ -73,7 +73,9 @@ jobs:
       - name: Read current Suite version
         id: version
         shell: bash
-        run: echo "value=$(node -p "require('./package.json').version")" >> "$GITHUB_OUTPUT"
+        run: |
+          version="$(node -p 'require("./package.json").version')"
+          printf 'value=%s\n' "$version" >> "$GITHUB_OUTPUT"
 
       - name: Start the existing installer workflow without publishing a release
         env:
