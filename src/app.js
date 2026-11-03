@@ -33,7 +33,7 @@ const state = {
   app: launchAppId || 'pages', view: 'workspace', docs: structuredClone(defaults),
   todoView: 'my-day', todoQuery: '',
   selectedCell: { row: 0, col: 0 }, update: null, ribbonTab: 'home',
-  installedApps: [], standaloneApps: [], currentVersion: '0.1.0', setupComplete: false, firstRunSelection: new Set(),
+  installedApps: [], standaloneApps: [], stagedAppUpdates: [], currentVersion: '0.1.0', setupComplete: false, firstRunSelection: new Set(),
   managerView: localStorage.getItem('brightdesk-manager-view') === 'list' ? 'list' : 'grid',
   slideTheme: 'lavender', focusMode: false, editorZoom: 100, sheetZoom: 100,
   languageCatalog: [], installedLanguagePacks: [], spellCheckerLanguages: [], usesNativeMacSpellChecker: false,
@@ -988,12 +988,14 @@ function renderAppUpdates(result) {
   const host = $('app-updates-list');
   host.replaceChildren();
   const appUpdates = new Map((result?.apps || []).map(item => [item.id, item]));
+  const stagedUpdates = new Map(state.stagedAppUpdates.map(item => [item.appId, item]));
   const hasPublishedRelease = result?.ok === true;
 
   catalog.forEach(item => {
     const standalone = state.standaloneApps.find(installed => installed.id === item.id) || null;
     const inSuite = installedApp(item.id);
     const update = appUpdates.get(item.id) || null;
+    const staged = stagedUpdates.get(item.id) || null;
     const row = document.createElement('article');
     row.className = 'app-update-row';
     const icon = document.createElement('img');
@@ -1010,10 +1012,15 @@ function renderAppUpdates(result) {
     status.className = 'app-update-status';
 
     if (standalone) {
-      version.textContent = hasPublishedRelease
-        ? `Installed ${standalone.version} · Latest ${update?.availableVersion || result.releaseVersion || 'unknown'}`
-        : `Installed ${standalone.version}`;
-      if (!hasPublishedRelease) {
+      version.textContent = staged
+        ? `Installed ${standalone.version} · Downloaded ${staged.version}`
+        : (hasPublishedRelease
+          ? `Installed ${standalone.version} · Latest ${update?.availableVersion || result.releaseVersion || 'unknown'}`
+          : `Installed ${standalone.version}`);
+      if (staged) {
+        status.textContent = 'Ready to install';
+        status.classList.add('available');
+      } else if (!hasPublishedRelease) {
         status.textContent = result?.message || 'Release information unavailable';
         status.classList.add('muted');
       } else if (update?.updateAvailable) {
@@ -1039,7 +1046,21 @@ function renderAppUpdates(result) {
     details.append(title, version);
     const actions = document.createElement('div');
     actions.className = 'app-update-actions';
-    if (standalone && update?.updateAvailable) {
+    if (standalone && staged) {
+      const install = document.createElement('button');
+      install.type = 'button';
+      install.className = 'primary small-action';
+      install.textContent = 'Next · Install update';
+      install.addEventListener('click', async () => {
+        try {
+          await window.brightdesk.installStagedStandaloneAppUpdate(item.id);
+          updateMessage(`Opened the ${staged.version} installer for ${item.name}. Follow its steps to finish updating.`, 'success');
+        } catch (error) {
+          updateMessage(`Could not open the update for ${item.name}: ${error.message}`, 'error');
+        }
+      });
+      actions.append(install);
+    } else if (standalone && update?.updateAvailable) {
       const download = document.createElement('button');
       download.type = 'button';
       download.className = 'primary small-action';
@@ -1047,9 +1068,11 @@ function renderAppUpdates(result) {
       download.addEventListener('click', async () => {
         try {
           await window.brightdesk.downloadStandaloneAppUpdate(item.id);
-          updateMessage(`Opened the ${update.availableVersion} installer for ${item.name}. Follow the installer to complete the update.`, 'success');
+          state.stagedAppUpdates = await window.brightdesk.listStagedStandaloneAppUpdates();
+          renderAppUpdates(result);
+          updateMessage(`${item.name} ${update.availableVersion} has been downloaded and verified. Press Next when ready to install.`, 'success');
         } catch (error) {
-          updateMessage(`Could not open the update for ${item.name}: ${error.message}`, 'error');
+          updateMessage(`Could not download the update for ${item.name}: ${error.message}`, 'error');
         }
       });
       actions.append(download);
@@ -1097,6 +1120,7 @@ async function checkForUpdatesManually() {
       window.brightdesk.checkForUpdates(),
       window.brightdesk.checkStandaloneAppUpdates()
     ]);
+    state.stagedAppUpdates = appResult?.stagedApps || await window.brightdesk.listStagedStandaloneAppUpdates();
     renderAppUpdates(appResult);
     const standaloneUpdates = appResult?.ok ? appResult.apps.filter(item => item.updateAvailable) : [];
     $('update-status-dot').hidden = standaloneUpdates.length === 0;
@@ -1155,7 +1179,8 @@ window.brightdesk.onUpdateState?.(updateState => {
     updateMessage(updateState.message, 'notice', [
       { label: 'Next · Install update', run: installDownloadedUpdate }
     ]);
-  } else if (updateState.status === 'apps-available') {
+  } else if (['apps-available', 'apps-downloaded'].includes(updateState.status)) {
+    state.stagedAppUpdates = updateState.stagedApps || [];
     renderAppUpdates({ ok: true, releaseVersion: updateState.releaseVersion, apps: updateState.apps || [] });
     updateMessage(updateState.message, 'notice', [
       { label: 'Review updates', run: () => {
@@ -1183,5 +1208,7 @@ loadLocal();$('platform').textContent=`Desktop app · ${window.brightdesk.platfo
   try { await refreshDictionaries(); } catch(error) { console.error('Spelling dictionaries could not be loaded.',error); }
   try { state.standaloneApps = await window.brightdesk.listStandaloneApps(); }
   catch(error) { console.warn('Individually installed Brightdesk apps could not be listed.', error); }
+  try { state.stagedAppUpdates = await window.brightdesk.listStagedStandaloneAppUpdates(); }
+  catch(error) { console.warn('Staged Brightdesk app updates could not be listed.', error); }
   render();
 })();
