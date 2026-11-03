@@ -16,6 +16,7 @@ on:
   pull_request:
     branches:
       - main
+      - feature/complete-suite-launcher-apps
   workflow_dispatch:
 
 permissions:
