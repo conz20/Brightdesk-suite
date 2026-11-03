@@ -33,9 +33,9 @@ jobs:
       - name: Check Electron main-process syntax
         run: node --check src/main.js
       - name: Run Clippy
-        run: cargo clippy --manifest-path rust/Cargo.toml --workspace --all-targets -- -D warnings
+        run: cargo clippy --manifest-path rust/Cargo.toml --workspace --all-targets --locked -- -D warnings
       - name: Run Rust tests
-        run: cargo test --manifest-path rust/Cargo.toml --workspace
+        run: cargo test --manifest-path rust/Cargo.toml --workspace --locked
       - name: Build the Node-API addon
         run: npm run native:build
       - name: Test the native Node-API module and provider bridge
