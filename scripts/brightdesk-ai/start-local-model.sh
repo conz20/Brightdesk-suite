@@ -3,7 +3,7 @@ set -euo pipefail
 
 CACHE_DIR="${BRIGHTDESK_AI_CACHE_DIR:-$HOME/.cache/brightdesk-ai}"
 WORK_DIR="$CACHE_DIR/downloads"
-LLAMA_VERSION="${LLAMA_VERSION}"
+LLAMA_VERSION="b10343"
 LLAMA_ARCHIVE="llama-${LLAMA_VERSION}-bin-ubuntu-x64.tar.gz"
 LLAMA_SHA256="12d6403e0e1af83e0d4cdf77b54c9eeb776a3bbabd9fb591a12db22dbfd88872"
 LLAMA_URL="https://github.com/ggml-org/llama.cpp/releases/download/${LLAMA_VERSION}/${LLAMA_ARCHIVE}"
