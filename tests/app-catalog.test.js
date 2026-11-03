@@ -129,7 +129,7 @@ test('standalone app packaging has independent product IDs and all three platfor
       assert.equal(config.extraMetadata.brightdeskAppId, id);
       assert.equal(config.extraMetadata.productName, `Brightdesk ${name}`);
       assert.equal(config.extraMetadata.version, catalog.find(item => item.id === id).moduleVersion);
-      assert.equal(config.extraMetadata.desktopName, `org.brightdesk.${id}`);
+      assert.equal(config.extraMetadata.desktopName, `org.brightdesk.${id}.desktop`);
       assert.equal(config.linux.syncDesktopName, true);
       assert.ok(config.win.artifactName.includes(name));
       assert.equal(config.directories.output, `release/apps/${id}`);
