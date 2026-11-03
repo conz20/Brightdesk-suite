@@ -22,9 +22,8 @@ test('Suite has a dedicated Downloads destination separate from the App Centre',
 });
 
 test('Downloads displays only approved products and platform architecture supplied by the desktop shell', () => {
-  assert.match(app, /catalog\.forEach\(item => \{/);
+  assert.match(app, /const available = catalog\.filter\(item => item\.availability === 'available'\)/);
   assert.match(app, /window\.brightdesk\.architecture/);
-  assert.match(app, /APPROVED|approved/i);
   assert.match(preload, /architecture: process\.arch/);
 });
 
