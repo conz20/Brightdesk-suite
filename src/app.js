@@ -464,6 +464,21 @@ function renderGenericWorkspace() {
   editor.oninput = () => { doc.html = editor.innerHTML; persist(); };
 }
 
+async function stageStandaloneAppFromCentre(appId, appName) {
+  updateMessage(`Preparing the ${appName} desktop installer…`, 'info');
+  try {
+    const staged = await window.brightdesk.downloadStandaloneAppUpdate(appId);
+    state.stagedAppUpdates = await window.brightdesk.listStagedStandaloneAppUpdates();
+    renderAppManager();
+    if (!$('app-updates-panel').hidden) renderAppUpdates();
+    updateMessage(`${appName} ${staged.version} has been downloaded and verified. Press Next to install it.`, 'success');
+    return staged;
+  } catch (error) {
+    updateMessage(`Could not download ${appName}: ${error.message}`, 'error');
+    throw error;
+  }
+}
+
 function renderAppManager() {
   const grid = $('app-manager-grid');
   grid.classList.toggle('list-view', state.managerView === 'list');
@@ -483,6 +498,7 @@ function renderAppManager() {
     const selected = state.firstRunSelection.has(item.id);
     const isInstalled = installedApp(item.id);
     const desktopApp = state.standaloneApps.find(installed => installed.id === item.id) || null;
+    const stagedDesktopApp = state.stagedAppUpdates.find(staged => staged.appId === item.id) || null;
     const card = document.createElement('article'); card.className = 'app-card';
     const preview = document.createElement('img'); preview.className = 'app-preview'; preview.src = `assets/apps/${item.id}.svg`; preview.alt = `${item.name} example screen`;
     const header = document.createElement('div'); header.className = 'app-card-header';
@@ -493,7 +509,10 @@ function renderAppManager() {
     heading.append(name, subtitle); header.append(icon, heading);
     const description = document.createElement('p'); description.textContent = item.description;
     const footer = document.createElement('div'); footer.className = 'app-card-footer';
-    const version = document.createElement('span'); version.className = 'module-version'; version.textContent = desktopApp ? `Desktop ${desktopApp.version}` : `Suite ${state.currentVersion}`;
+    const version = document.createElement('span'); version.className = 'module-version';
+    version.textContent = stagedDesktopApp
+      ? `Downloaded ${stagedDesktopApp.version}`
+      : (desktopApp ? `Desktop ${desktopApp.version}` : `Suite ${state.currentVersion}`);
     footer.append(version);
     if (!canInstall) {
       const comingSoon = document.createElement('span'); comingSoon.className = 'app-state'; comingSoon.textContent = 'In development'; footer.append(comingSoon);
@@ -521,12 +540,22 @@ function renderAppManager() {
     const desktopDownload = document.createElement('button');
     desktopDownload.type = 'button';
     desktopDownload.className = 'text-button desktop-app-download';
-    desktopDownload.textContent = desktopApp ? 'Open desktop app' : 'Download desktop app';
+    desktopDownload.textContent = stagedDesktopApp
+      ? 'Next · Install desktop app'
+      : (desktopApp ? 'Open desktop app' : 'Download desktop app');
     desktopDownload.addEventListener('click', async () => {
       try {
-        if (desktopApp) await window.brightdesk.launchStandaloneApp(item.id);
-        else await window.brightdesk.openAppDownloads(item.id);
-      } catch (error) { alert(`Could not ${desktopApp ? 'open' : 'open downloads for'} the desktop app: ${error.message}`); }
+        if (stagedDesktopApp) {
+          await window.brightdesk.installStagedStandaloneAppUpdate(item.id);
+          updateMessage(`Opened the ${stagedDesktopApp.version} installer for ${item.name}. Follow the installer to finish.`, 'success');
+        } else if (desktopApp) {
+          await window.brightdesk.launchStandaloneApp(item.id);
+        } else {
+          await stageStandaloneAppFromCentre(item.id, item.name);
+        }
+      } catch (error) {
+        updateMessage(`Could not process ${item.name}: ${error.message}`, 'error');
+      }
     });
     footer.append(desktopDownload);
     card.append(preview, header, description, footer); grid.append(card);
