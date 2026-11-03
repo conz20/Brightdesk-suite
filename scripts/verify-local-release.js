@@ -23,7 +23,7 @@ const npm = process.platform === 'win32' ? 'npm.cmd' : 'npm';
 
 function run(args) {
   const command = [npm, ...args].join(' ');
-  console.log(`\\n=== ${command} ===`);
+  console.log(`\n=== ${command} ===`);
   const result = spawnSync(npm, args, {
     cwd: root,
     stdio: 'inherit',
@@ -32,7 +32,7 @@ function run(args) {
   });
   if (result.error) throw result.error;
   if (result.status !== 0) {
-    console.error(`\\nStopped: ${command} failed with exit code ${result.status ?? 1}.`);
+    console.error(`\nStopped: ${command} failed with exit code ${result.status ?? 1}.`);
     process.exit(result.status ?? 1);
   }
 }
@@ -51,4 +51,4 @@ run(['run', `dist:${platform}`]);
 run(['run', 'release:prepare', '--', platform]);
 run(['run', `release:verify:${platform}`]);
 
-console.log(`\\nBrightdesk ${platform} build and local release checks completed. Review the release/ folder and checksum file before distributing anything.`);
+console.log(`\nBrightdesk ${platform} build and local release checks completed. Review the release/ folder and checksum file before distributing anything.`);
