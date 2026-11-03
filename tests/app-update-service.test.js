@@ -67,7 +67,7 @@ test('the launcher download action resolves the exact app installer for the curr
       ]
     })
   });
-  const manifest = '0123456789abcdef'.repeat(4) + '  apps/pages/Brightdesk-Pages-0.2.0-universal.pkg\\n';
+  const manifest = '0123456789abcdef'.repeat(4) + '  apps/pages/Brightdesk-Pages-0.2.0-universal.pkg\n';
   const originalFetch = fetchImpl;
   const verifiedFetch = async (url, options) => {
     if (String(url).endsWith('Brightdesk-SHA256SUMS-MAC.txt')) {
