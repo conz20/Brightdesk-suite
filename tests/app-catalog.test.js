@@ -29,8 +29,9 @@ test('first release version is consistently 0.1.0 across package, available apps
   const html = fs.readFileSync(path.join(root, 'src', 'index.html'), 'utf8');
   assert.equal(pkg.version, '0.1.0');
   for (const app of catalog.filter(item => item.availability === 'available')) assert.equal(app.moduleVersion, pkg.version);
-  assert.match(html, /Version 0\.1\.0/);
-  assert.match(html, /Brightdesk 0\.1\.0/);
+  assert.ok(html.includes('id="version-label">Version</small>'));
+  assert.ok(html.includes('id="footer-version">Brightdesk</span>'));
+  assert.doesNotMatch(html, /\d+\.\d+\.\d+/);
 });
 
 test('the customer-facing release version has one authoritative source across the suite', () => {
@@ -41,6 +42,7 @@ test('the customer-facing release version has one authoritative source across th
   const lock = JSON.parse(fs.readFileSync(path.join(root, 'package-lock.json'), 'utf8'));
   const html = fs.readFileSync(path.join(root, 'src', 'index.html'), 'utf8');
   const catalogSource = fs.readFileSync(path.join(root, 'src', 'app-catalog.js'), 'utf8');
+  const app = fs.readFileSync(path.join(root, 'src', 'app.js'), 'utf8');
   const preload = fs.readFileSync(path.join(root, 'src', 'preload.js'), 'utf8');
   const main = fs.readFileSync(path.join(root, 'src', 'main.js'), 'utf8');
   const versioning = fs.readFileSync(path.join(root, 'docs', 'VERSIONING.md'), 'utf8');
@@ -53,8 +55,11 @@ test('the customer-facing release version has one authoritative source across th
   assert.match(catalogSource, /window\.brightdesk\?\.version/);
   assert.match(preload, /ipcRenderer\.sendSync\('app:version-sync'\)/);
   assert.match(main, /ipcMain\.on\('app:version-sync'.*app\.getVersion\(\)/);
-  assert.match(html, /Version 0\.1\.0/);
-  assert.match(html, /Brightdesk 0\.1\.0/);
+  assert.ok(html.includes('id="version-label">Version</small>'));
+  assert.ok(html.includes('id="footer-version">Brightdesk</span>'));
+  assert.doesNotMatch(html, /\d+\.\d+\.\d+/);
+  assert.match(app, /version-label/);
+  assert.match(app, /footer-version/);
   assert.match(versioning, /package\.json.*single source of truth/i);
   assert.match(versioning, /Brightdesk-AI.*no Brightdesk customer release number/i);
   assert.doesNotMatch(workflow, /Brightdesk-0\.1\.0-Installers|default: 'v0\.1\.0'/);
