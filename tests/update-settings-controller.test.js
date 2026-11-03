@@ -39,3 +39,14 @@ test('the Suite update notification review action opens the Updates Centre', () 
   assert.match(app, /reviewAvailableUpdates[\s\S]*?app-updates-panel[\s\S]*?checkForUpdatesManually/);
   assert.doesNotMatch(app, /label: 'Review update', run: openUpdateSettings/);
 });
+
+test('a standalone app opens only its own Updates row and does not call the Suite updater', () => {
+  const app = read('src/app.js');
+  const main = read('src/main.js');
+
+  assert.match(app, /if \(!launchAppId\) host\.append\(suiteRow\)/);
+  assert.match(app, /catalog\.filter\(item => !launchAppId \|\| item\.id === launchAppId\)\.forEach/);
+  assert.match(app, /launchAppId \? Promise\.resolve\(\{ ok: true, status: 'standalone' \}\) : window\.brightdesk\.checkForUpdates\(\)/);
+  assert.match(main, /if \(applicationId\) return refreshStandaloneAppUpdates\(\{ notify: true \}\)/);
+  assert.match(main, /if \(applicationId\) \{[\s\S]*?shared verified app update service/);
+});
