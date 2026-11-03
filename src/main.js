@@ -1,4 +1,4 @@
-const { app, BrowserWindow, Menu, ipcMain, dialog } = require('electron');
+const { app, BrowserWindow, Menu, ipcMain, dialog, shell } = require('electron');
 const packageConfig = require('../package.json');
 const path = require('node:path');
 const crypto = require('node:crypto');
@@ -14,14 +14,15 @@ const updatePublishingConfigured = Array.isArray(packageConfig.build?.publish) &
 let updateCheckInProgress = false;
 let lastUpdateCheckAt = 0;
 let dictionaryService;
-const supportedApplications = new Set(['pages', 'sheets', 'slides', 'notes']);
+const supportedApplications = new Set(['pages', 'sheets', 'slides', 'notes', 'database', 'forms', 'lists', 'planner', 'todo', 'loop']);
+const applicationNames = { pages: 'Pages', sheets: 'Sheets', slides: 'Decks', notes: 'Notes', database: 'Database', forms: 'Forms', lists: 'Lists', planner: 'Planner', todo: 'To Do', loop: 'Workspace' };
 const applicationId = packageConfig.brightdeskAppId || null;
 if (applicationId && !supportedApplications.has(applicationId)) {
   throw new Error(`Unsupported Brightdesk application: ${applicationId}`);
 }
 
 const updateSettingsPath = path.join(app.getPath('userData'), 'update-settings.json');
-const defaultUpdateSettings = { autoCheck: true, autoDownload: true, autoInstall: false };
+const defaultUpdateSettings = { autoCheck: false, autoDownload: false, autoInstall: false };
 
 async function readUpdateSettings() {
   try {
@@ -35,7 +36,7 @@ async function readUpdateSettings() {
 }
 
 async function writeUpdateSettings(settings = {}) {
-  const next = { ...defaultUpdateSettings, ...(settings || {}) };
+  const next = { ...defaultUpdateSettings, ...(settings || {}), autoInstall: false };
   await fs.mkdir(app.getPath('userData'), { recursive: true });
   await fs.writeFile(updateSettingsPath, `${JSON.stringify(next, null, 2)}\n`, { mode: 0o600 });
   return next;
@@ -45,7 +46,7 @@ function sendUpdateState(state) { if (mainWindow && !mainWindow.isDestroyed()) m
 function createWindow() {
   mainWindow = new BrowserWindow({
     width: 1440, height: 920, minWidth: 980, minHeight: 680,
-    title: applicationId ? `Brightdesk ${({ pages: 'Pages', sheets: 'Sheets', slides: 'Decks', notes: 'Notes' })[applicationId]}` : 'Brightdesk', backgroundColor: '#f5f6fa',
+    title: applicationId ? `Brightdesk ${applicationNames[applicationId]}` : 'Brightdesk', backgroundColor: '#f5f6fa',
     webPreferences: { preload: path.join(__dirname, 'preload.js'), contextIsolation: true, nodeIntegration: false, sandbox: true, additionalArguments: applicationId ? [`--brightdesk-app=${applicationId}`] : [] }
   });
   mainWindow.loadFile(path.join(__dirname, 'index.html'));
@@ -268,13 +269,20 @@ async function initUpdater() {
   try {
     ({ autoUpdater } = require('electron-updater'));
     autoUpdater.autoDownload = settings.autoDownload !== false;
-    autoUpdater.autoInstallOnAppQuit = settings.autoInstall === true;
+    // Downloading may be automatic, but installing always requires the user's explicit Next action.
+    autoUpdater.autoInstallOnAppQuit = false;
     autoUpdater.allowUnverifiedLinuxPackages = false;
     autoUpdater.on('checking-for-update', () => sendUpdateState({ status: 'checking', message: 'Checking for updates…' }));
-    autoUpdater.on('update-available', info => sendUpdateState({ status: 'available', message: `Brightdesk ${info.version} is available. Download from the update settings or let the app continue to recommend updates.` }));
-    autoUpdater.on('update-not-available', () => sendUpdateState({ status: 'current', message: 'Brightdesk is up to date.' }));
-    autoUpdater.on('download-progress', p => sendUpdateState({ status: 'downloading', message: `Downloading update: ${Math.round(p.percent)}%` }));
-    autoUpdater.on('update-downloaded', info => sendUpdateState({ status: 'downloaded', message: `Brightdesk ${info.version} is ready to install. Use Install now when you are ready.` }));
+    autoUpdater.on('update-available', info => sendUpdateState({
+      status: 'available', currentVersion: app.getVersion(), availableVersion: info.version,
+      message: `A Brightdesk update is available: ${app.getVersion()} → ${info.version}.`
+    }));
+    autoUpdater.on('update-not-available', () => sendUpdateState({ status: 'current', currentVersion: app.getVersion(), message: `Brightdesk ${app.getVersion()} is up to date.` }));
+    autoUpdater.on('download-progress', p => sendUpdateState({ status: 'downloading', currentVersion: app.getVersion(), message: `Downloading update: ${Math.round(p.percent)}%` }));
+    autoUpdater.on('update-downloaded', info => sendUpdateState({
+      status: 'downloaded', currentVersion: app.getVersion(), availableVersion: info.version,
+      message: `Update ready: ${app.getVersion()} → ${info.version}. Press Next when you are ready to install it.`
+    }));
     autoUpdater.on('error', err => sendUpdateState({ status: 'error', message: err.message || 'Update check failed.' }));
     if (settings.autoCheck !== false) {
       setTimeout(() => checkForUpdates({ quiet: true, force: true }), 12000);
@@ -330,6 +338,13 @@ ipcMain.handle('file:pdf', async (event, payload) => {
   const pdf = await mainWindow.webContents.printToPDF({ printBackground: true, pageSize: 'A4', margins: { top: 0.55, bottom: 0.55, left: 0.6, right: 0.6 } });
   await fs.writeFile(filePath, pdf); return { canceled: false, filePath };
 });
+ipcMain.handle('apps:downloads', async (event, appId) => {
+  if (!senderIsMain(event)) throw new Error('Invalid sender.');
+  if (!supportedApplications.has(appId)) throw new Error('That Brightdesk application is not in the approved app catalogue.');
+  await shell.openExternal('https://github.com/connormolloy12/Brightdesk-suite/releases/latest');
+  return { ok: true, appId, appName: applicationNames[appId] };
+});
+
 ipcMain.handle('updates:check', async event => { if (!senderIsMain(event)) throw new Error('Invalid sender.'); return checkForUpdates({ force: true }); });
 ipcMain.handle('updates:download', async event => { if (!senderIsMain(event)) throw new Error('Invalid sender.'); if (!autoUpdater) return { ok: false }; await autoUpdater.downloadUpdate(); return { ok: true }; });
 ipcMain.handle('updates:install', async event => { if (!senderIsMain(event)) throw new Error('Invalid sender.'); if (!autoUpdater) return { ok: false }; autoUpdater.quitAndInstall(); return { ok: true }; });
@@ -339,7 +354,7 @@ ipcMain.handle('updates:set-settings', async (event, payload) => {
   const settings = await writeUpdateSettings(payload);
   if (autoUpdater) {
     autoUpdater.autoDownload = settings.autoDownload !== false;
-    autoUpdater.autoInstallOnAppQuit = settings.autoInstall === true;
+    autoUpdater.autoInstallOnAppQuit = false;
   }
   return settings;
 });
