@@ -132,6 +132,14 @@ async function stageStandaloneAppUpdate({
       size: received,
       stagedAt: new Date().toISOString()
     };
+    const previous = registry.updates.filter(item => item.appId === appId);
+    for (const old of previous) {
+      if (typeof old.filePath !== 'string') continue;
+      const oldPath = path.resolve(old.filePath);
+      if (oldPath.startsWith(path.resolve(paths.downloads, appId) + path.sep) && oldPath !== destination) {
+        await fs.rm(oldPath, { force: true }).catch(() => {});
+      }
+    }
     registry.updates = registry.updates.filter(item => item.appId !== appId);
     registry.updates.push(record);
     await writeRegistry(paths.registry, registry);
@@ -153,7 +161,12 @@ async function listStagedStandaloneAppUpdates({ appDataPath } = {}) {
       continue;
     }
     try {
-      const stat = await fs.stat(record.filePath);
+      const expectedPath = path.resolve(paths.downloads, record.appId, record.version, record.fileName);
+      if (path.resolve(record.filePath) !== expectedPath) {
+        changed = true;
+        continue;
+      }
+      const stat = await fs.stat(expectedPath);
       if (!stat.isFile() || stat.size !== record.size) {
         changed = true;
         continue;
@@ -178,7 +191,11 @@ async function removeStagedStandaloneAppUpdate({ appDataPath, appId } = {}) {
   registry.updates = registry.updates.filter(item => item.appId !== appId);
   await writeRegistry(paths.registry, registry);
   for (const item of matches) {
-    await fs.rm(item.filePath, { force: true }).catch(() => {});
+    if (typeof item.filePath !== 'string') continue;
+    const expectedPath = path.resolve(paths.downloads, appId, item.version, item.fileName);
+    if (path.resolve(item.filePath) === expectedPath) {
+      await fs.rm(expectedPath, { force: true }).catch(() => {});
+    }
   }
   return { removed: matches.length > 0 };
 }
