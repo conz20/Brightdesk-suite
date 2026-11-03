@@ -57,3 +57,7 @@ Brightdesk uses original product names, code, artwork and interface design. Micr
 ## Updates and customer control
 
 Automatic update checking can be turned on or off. Turning it off stops scheduled and focus-triggered checks. Brightdesk never downloads or installs an update automatically; the customer must choose **Download update** and then **Install update**. The release feed is not configured in the current development build, so update checks will remain unavailable until the approved distribution repository is configured.
+
+## Rust foundation
+
+This repository now includes an additive Rust core foundation in `rust/`, pinned to Rust 1.99.1. The first Rust layer defines a small, versioned host contract and is checked separately from the existing Node.js application tests. Brightdesk remains an Electron desktop application: no existing JavaScript feature, installer, npm dependency, lockfile or customer-facing version has been changed, and no Rust binary is shipped in this stage. The same integration standard will be used for the four future app repositories. See [the Rust integration standard](docs/RUST-INTEGRATION.md) and the [official Rust getting-started guide](https://rust-lang.org/learn/get-started/).

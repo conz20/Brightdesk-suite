@@ -1,0 +1,11 @@
+[package]
+name = "brightdesk-rust-core"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.88"
+license = "MIT"
+publish = false
+description = "Additive Rust foundation for Brightdesk Office Suite."
+
+[lib]
+path = "src/lib.rs"
