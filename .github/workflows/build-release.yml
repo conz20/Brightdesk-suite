@@ -1,6 +1,8 @@
 name: Build and verify Brightdesk installers
 
 on:
+  pull_request:
+    branches: [main, feature/storytold-inspired-engine-launcher]
   push:
     branches: [main]
     paths:
