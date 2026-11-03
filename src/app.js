@@ -33,7 +33,7 @@ const state = {
   app: launchAppId || 'pages', view: 'workspace', docs: structuredClone(defaults),
   todoView: 'my-day', todoQuery: '',
   selectedCell: { row: 0, col: 0 }, update: null, ribbonTab: 'home',
-  installedApps: [], setupComplete: false, firstRunSelection: new Set(),
+  installedApps: [], standaloneApps: [], setupComplete: false, firstRunSelection: new Set(),
   managerView: localStorage.getItem('brightdesk-manager-view') === 'list' ? 'list' : 'grid',
   slideTheme: 'lavender', focusMode: false, editorZoom: 100, sheetZoom: 100,
   languageCatalog: [], installedLanguagePacks: [], spellCheckerLanguages: [], usesNativeMacSpellChecker: false,
@@ -475,6 +475,7 @@ function renderAppManager() {
     const canInstall = item.availability === 'available';
     const selected = state.firstRunSelection.has(item.id);
     const isInstalled = installedApp(item.id);
+    const desktopApp = state.standaloneApps.find(installed => installed.id === item.id) || null;
     const card = document.createElement('article'); card.className = 'app-card';
     const preview = document.createElement('img'); preview.className = 'app-preview'; preview.src = `assets/apps/${item.id}.svg`; preview.alt = `${item.name} example screen`;
     const header = document.createElement('div'); header.className = 'app-card-header';
@@ -485,7 +486,7 @@ function renderAppManager() {
     heading.append(name, subtitle); header.append(icon, heading);
     const description = document.createElement('p'); description.textContent = item.description;
     const footer = document.createElement('div'); footer.className = 'app-card-footer';
-    const version = document.createElement('span'); version.className = 'module-version'; version.textContent = `Version ${item.moduleVersion}`;
+    const version = document.createElement('span'); version.className = 'module-version'; version.textContent = desktopApp ? `Desktop ${desktopApp.version}` : `Suite ${item.moduleVersion}`;
     footer.append(version);
     if (!canInstall) {
       const comingSoon = document.createElement('span'); comingSoon.className = 'app-state'; comingSoon.textContent = 'In development'; footer.append(comingSoon);
@@ -513,10 +514,12 @@ function renderAppManager() {
     const desktopDownload = document.createElement('button');
     desktopDownload.type = 'button';
     desktopDownload.className = 'text-button desktop-app-download';
-    desktopDownload.textContent = 'Download desktop app';
+    desktopDownload.textContent = desktopApp ? 'Open desktop app' : 'Download desktop app';
     desktopDownload.addEventListener('click', async () => {
-      try { await window.brightdesk.openAppDownloads(item.id); }
-      catch (error) { alert(`Could not open desktop downloads: ${error.message}`); }
+      try {
+        if (desktopApp) await window.brightdesk.launchStandaloneApp(item.id);
+        else await window.brightdesk.openAppDownloads(item.id);
+      } catch (error) { alert(`Could not ${desktopApp ? 'open' : 'open downloads for'} the desktop app: ${error.message}`); }
     });
     footer.append(desktopDownload);
     card.append(preview, header, description, footer); grid.append(card);
@@ -1038,5 +1041,7 @@ loadLocal();$('platform').textContent=`Desktop app · ${window.brightdesk.platfo
   } catch (error) { console.warn('The desktop version could not be read.', error); }
   try { await refreshLanguageData(); } catch(error) { console.error('Language packs could not be loaded.',error); }
   try { await refreshDictionaries(); } catch(error) { console.error('Spelling dictionaries could not be loaded.',error); }
+  try { state.standaloneApps = await window.brightdesk.listStandaloneApps(); }
+  catch(error) { console.warn('Individually installed Brightdesk apps could not be listed.', error); }
   render();
 })();
