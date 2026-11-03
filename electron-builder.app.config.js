@@ -10,10 +10,6 @@ if (!appVersion || !/^\\d+\\.\\d+\\.\\d+(?:-[0-9A-Za-z.-]+)?$/.test(appVersion))
   throw new Error(`No valid module version is configured for Brightdesk ${appNames[appId]}.`);
 }
 
-if (!appNames[appId]) {
-  throw new Error('Set BRIGHTDESK_APP_ID to one of: pages, sheets, slides, notes, database, forms, lists, planner, todo, loop.');
-}
-
 module.exports = {
   appId: `org.brightdesk.${appId}`,
   productName: 'Brightdesk ' + appNames[appId],
