@@ -89,8 +89,8 @@ async function getStandaloneAppDownload({ appId, platform, fetchImpl = global.fe
   if (!manifestResponse.ok) throw new Error('Could not download the Brightdesk installer verification manifest.');
   const manifestText = await manifestResponse.text();
   const expectedPath = `apps/${appId}/${asset.name}`;
-  const checksumLine = manifestText.split(/\\r?\\n/).find(line => line.trim().endsWith(`  ${expectedPath}`));
-  const checksumMatch = checksumLine && checksumLine.match(/^([a-f0-9]{64})\\s+/i);
+  const checksumLine = manifestText.split(/\r?\n/).find(line => line.trim().endsWith(`  ${expectedPath}`));
+  const checksumMatch = checksumLine && checksumLine.match(/^([a-f0-9]{64})\s+/i);
   if (!checksumMatch) throw new Error(`The release manifest does not contain a valid checksum for ${asset.name}.`);
 
   return {
