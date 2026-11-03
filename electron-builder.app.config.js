@@ -16,7 +16,8 @@ module.exports = {
   asar: true,
   files: ['src/**/*', 'package.json', 'LICENSE', 'THIRD_PARTY_NOTICES.md', 'TERMS_AND_CONDITIONS.txt'],
   directories: { output: path.join('release', 'apps', appId), buildResources: 'assets/branding' },
-  publish: [],
+  // Each standalone app receives its own channel metadata to prevent cross-app update collisions.
+  publish: [{ provider: 'github', owner: 'connormolloy12', repo: 'Brightdesk-suite', channel: appId }],
   win: {
     icon: path.join('src', 'assets', 'app-icons', `${appId}.svg`),
     target: ['nsis'],
