@@ -473,7 +473,8 @@ function renderAppManager() {
     ? t('manager.manageDesc')
     : t('manager.chooseDesc');
   $('manager-note').textContent = 'Choose apps to show in your suite, or download an app as a separate desktop application.';
-  $('finish-app-setup').textContent = state.setupComplete ? 'Back to launcher' : 'Add selected apps';
+  $('finish-app-setup').textContent = 'Add selected apps';
+  $('finish-app-setup').hidden = state.setupComplete;
   $('skip-app-setup').hidden = state.setupComplete;
   catalog.forEach(item => {
     const canInstall = item.availability === 'available';
