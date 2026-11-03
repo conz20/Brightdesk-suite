@@ -15,11 +15,11 @@
     "check:node": "node scripts/check-node24.js",
     "start": "electron .",
     "test": "node --test",
-    "dist": "npm run verify:licenses && electron-builder --publish never",
-    "dist:win": "npm run verify:licenses && electron-builder --win nsis --x64 --publish never",
-    "dist:mac": "npm run verify:licenses && electron-builder --mac dmg pkg zip --universal --publish never",
-    "dist:linux": "npm run verify:licenses && electron-builder --linux AppImage deb --x64 --publish never",
-    "release": "npm run verify:licenses && electron-builder --publish never",
+    "dist": "npm run build:rust-engine && npm run verify:licenses && electron-builder --publish never",
+    "dist:win": "npm run build:rust-engine && npm run verify:licenses && electron-builder --win nsis --x64 --publish never",
+    "dist:mac": "npm run build:rust-engine && npm run verify:licenses && electron-builder --mac dmg pkg zip --universal --publish never",
+    "dist:linux": "npm run build:rust-engine && npm run verify:licenses && electron-builder --linux AppImage deb --x64 --publish never",
+    "release": "npm run build:rust-engine && npm run verify:licenses && electron-builder --publish never",
     "verify:licenses": "node scripts/verify-licenses.js",
     "postinstall": "npm run verify:licenses",
     "dist:apps:win": "node scripts/build-apps.js win",
@@ -47,7 +47,10 @@
     "lock:prepare": "npm install --package-lock-only --ignore-scripts --no-audit --no-fund",
     "lock:verify": "node scripts/verify-lockfile.js",
     "setup:dev": "node scripts/setup/bootstrap-dev.js",
-    "verify:local-release": "node scripts/verify-local-release.js"
+    "verify:local-release": "node scripts/verify-local-release.js",
+    "build:rust-engine": "node scripts/build-rust-engine.js",
+    "prestart": "npm run build:rust-engine",
+    "pretest": "npm run build:rust-engine"
   },
   "dependencies": {
     "docx": "9.15.1",
@@ -124,6 +127,15 @@
       "welcome": "installer/mac-welcome.txt",
       "conclusion": "installer/mac-conclusion.txt",
       "installLocation": "/Applications"
-    }
+    },
+    "extraResources": [
+      {
+        "from": "native",
+        "to": "native",
+        "filter": [
+          "brightdesk-rust-engine*"
+        ]
+      }
+    ]
   }
 }
