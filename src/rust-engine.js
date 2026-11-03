@@ -9,7 +9,7 @@ function fallbackAnalyzeText(input) {
   if (typeof input !== 'string') throw new TypeError('Text must be a string.');
   const lines = input.length === 0
     ? 0
-    : input.split(/\r\n|\r|\n/).length - (/\r\n|\r|\n$/.test(input) ? 1 : 0);
+    : input.split(/\r\n|\r|\n/).length - (/(?:\r\n|\r|\n)$/.test(input) ? 1 : 0);
   return {
     characters: Array.from(input).length,
     words: input.trim() ? input.trim().split(/\s+/u).length : 0,
