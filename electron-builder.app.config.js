@@ -47,14 +47,14 @@ module.exports = {
     icon: path.join('src', 'assets', 'app-icons', `${appId}.svg`),
     target: ['AppImage', 'deb'],
     category: 'Office',
-    executableName: `brightdesk-${appId}`,\n    syncDesktopName: true,
+    executableName: `brightdesk-${appId}`,
+    syncDesktopName: true,
     desktop: {
       entry: {
         Name: 'Brightdesk ' + appNames[appId],
         Comment: appCatalog.find(item => item.id === appId).description,
         Categories: 'Office;Productivity;',
         StartupWMClass: `org.brightdesk.${appId}`,
-        Exec: `brightdesk-${appId} %U`,
         'X-Brightdesk-AppId': appId,
         'X-Brightdesk-Version': appVersion
       }
