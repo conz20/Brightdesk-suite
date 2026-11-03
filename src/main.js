@@ -6,6 +6,7 @@ const fs = require('node:fs/promises');
 const { openOfficeFile, exportOfficeFile, cleanFileName, ensureExtension } = require('./file-service');
 const { BUILTIN_LANGUAGES, validateLanguagePack, getBuiltinLanguage } = require('./language-service');
 const { DictionaryService } = require('./dictionary-service');
+const { DEFAULT_UPDATE_SETTINGS, normalizeUpdateSettings, getUpdaterPreferences } = require('./update-policy');
 let mainWindow;
 let agreementWindow;
 let termsAccepted = false;
@@ -21,21 +22,21 @@ if (applicationId && !supportedApplications.has(applicationId)) {
 }
 
 const updateSettingsPath = path.join(app.getPath('userData'), 'update-settings.json');
-const defaultUpdateSettings = { autoCheck: true, autoDownload: true, autoInstall: false };
+const defaultUpdateSettings = DEFAULT_UPDATE_SETTINGS;
 
 async function readUpdateSettings() {
   try {
     const raw = await fs.readFile(updateSettingsPath, 'utf8');
     const parsed = JSON.parse(raw);
-    return { ...defaultUpdateSettings, ...parsed };
+    return normalizeUpdateSettings(parsed);
   } catch (error) {
     if (error.code !== 'ENOENT') console.warn('Could not read Brightdesk update settings.', error);
-    return { ...defaultUpdateSettings };
+    return normalizeUpdateSettings();
   }
 }
 
 async function writeUpdateSettings(settings = {}) {
-  const next = { ...defaultUpdateSettings, ...(settings || {}) };
+  const next = normalizeUpdateSettings(settings);
   await fs.mkdir(app.getPath('userData'), { recursive: true });
   await fs.writeFile(updateSettingsPath, `${JSON.stringify(next, null, 2)}\n`, { mode: 0o600 });
   return next;
@@ -267,8 +268,7 @@ async function initUpdater() {
   }
   try {
     ({ autoUpdater } = require('electron-updater'));
-    autoUpdater.autoDownload = settings.autoDownload !== false;
-    autoUpdater.autoInstallOnAppQuit = settings.autoInstall === true;
+    Object.assign(autoUpdater, getUpdaterPreferences());
     autoUpdater.allowUnverifiedLinuxPackages = false;
     autoUpdater.on('checking-for-update', () => sendUpdateState({ status: 'checking', message: 'Checking for updates…' }));
     autoUpdater.on('update-available', info => sendUpdateState({ status: 'available', message: `Brightdesk ${info.version} is available. Download from the update settings or let the app continue to recommend updates.` }));
@@ -338,8 +338,7 @@ ipcMain.handle('updates:set-settings', async (event, payload) => {
   if (!senderIsMain(event)) throw new Error('Invalid sender.');
   const settings = await writeUpdateSettings(payload);
   if (autoUpdater) {
-    autoUpdater.autoDownload = settings.autoDownload !== false;
-    autoUpdater.autoInstallOnAppQuit = settings.autoInstall === true;
+    Object.assign(autoUpdater, getUpdaterPreferences());
   }
   return settings;
 });
