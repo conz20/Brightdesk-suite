@@ -1,0 +1,11 @@
+[package]
+name = "brightdesk-engine"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+description = "Local Rust processing engine for Brightdesk desktop applications"
+
+[dependencies]
+serde.workspace = true
+serde_json.workspace = true
