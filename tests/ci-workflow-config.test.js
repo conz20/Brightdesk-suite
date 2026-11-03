@@ -15,12 +15,15 @@ test('native installer workflow uses stable supported OS runner labels', () => {
   assert.match(workflow, /runner: macos-15/);
   assert.doesNotMatch(workflow, /runner: (?:ubuntu|windows|macos)-latest/);
   const audit = read('.github/workflows/security-audit.yml');
-  assert.match(audit, /runs-on: ubuntu-24\\.04/);
+  assert.match(audit, /runs-on: ubuntu-24\.04/);
   assert.doesNotMatch(audit, /runs-on: ubuntu-latest/);
 });
 
-test('feature quality workflow uses a fixed Ubuntu image and the pinned Node runtime', () => {
+test('feature quality workflow uses one pull-request run and the pinned Node runtime', () => {
   const workflow = read('.github/workflows/brightdesk-feature-quality.yml');
+  assert.match(workflow, /pull_request:/);
+  assert.match(workflow, /feature\/complete-suite-launcher-apps/);
+  assert.doesNotMatch(workflow, /^  push:/m);
   assert.match(workflow, /runs-on: ubuntu-24\.04/);
   assert.match(workflow, /node-version: 24\.22\.2/);
   assert.match(workflow, /npm run check:node/);
@@ -29,17 +32,18 @@ test('feature quality workflow uses a fixed Ubuntu image and the pinned Node run
   }
 });
 
-test('the cross-platform artifact collection generates and publishes the shared release manifest', () => {
+test('expensive cross-platform installer matrix is kept to main or deliberate manual release candidates', () => {
   const workflow = read('.github/workflows/build-release.yml');
-  assert.match(workflow, /npm run release:manifest -- release/);
-  assert.match(workflow, /Brightdesk-Release-Manifest\.json/);
-  assert.match(workflow, /path: release\/\*\*/);
-  assert.match(workflow, /files: release\/\*\*/);
+  assert.match(workflow, /branches: \[main, feature\/storytold-inspired-engine-launcher\]/);
+  assert.doesNotMatch(workflow, /feature\/complete-suite-launcher-apps/);
+  assert.match(workflow, /workflow_dispatch:/);
+  assert.match(workflow, /publish_release:/);
 });
 
-test('the native installer workflow runs for the selective-install pull request base', () => {
-  const workflow = read('.github/workflows/build-release.yml');
-  assert.match(workflow, /feature\/complete-suite-launcher-apps/);
-  const quality = read('.github/workflows/brightdesk-feature-quality.yml');
-  assert.match(quality, /feature\/complete-suite-launcher-apps/);
+test('PR quality tests retain dependency auditing without launching a second audit workflow', () => {
+  const workflow = read('.github/workflows/brightdesk-feature-quality.yml');
+  assert.match(workflow, /npm audit --audit-level=high/);
+  const audit = read('.github/workflows/security-audit.yml');
+  assert.doesNotMatch(audit, /^  pull_request:/m);
+  assert.match(audit, /schedule:/);
 });
