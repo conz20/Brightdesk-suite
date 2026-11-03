@@ -26,5 +26,7 @@ contextBridge.exposeInMainWorld('brightdesk', {
   listDictionaries: () => ipcRenderer.invoke('dictionaries:list'),
   listDictionaryCatalogue: () => ipcRenderer.invoke('dictionaries:catalog'),
   installCatalogueDictionary: (id) => ipcRenderer.invoke('dictionaries:install-catalog', id),
-  checkSpelling: (payload) => ipcRenderer.invoke('dictionaries:check', payload)
+  checkSpelling: (payload) => ipcRenderer.invoke('dictionaries:check', payload),
+  analyzeTextWithRust: (text) => ipcRenderer.invoke('rust:analyze-text', text),
+  getRustEngineStatus: () => ipcRenderer.invoke('rust:status')
 });
