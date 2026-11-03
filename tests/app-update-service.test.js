@@ -53,20 +53,35 @@ test('the launcher download action resolves the exact app installer for the curr
         },
         {
           name: 'Brightdesk-Pages-0.2.0-universal.pkg',
-          browser_download_url: 'https://github.com/connormolloy12/Brightdesk-suite/releases/download/v0.2.0/Brightdesk-Pages-0.2.0-universal.pkg'
+          browser_download_url: 'https://github.com/connormolloy12/Brightdesk-suite/releases/download/v0.2.0/Brightdesk-Pages-0.2.0-universal.pkg',
+          size: 2048
         },
         {
           name: 'Brightdesk-Sheets-0.2.0-universal.pkg',
           browser_download_url: 'https://github.com/connormolloy12/Brightdesk-suite/releases/download/v0.2.0/Brightdesk-Sheets-0.2.0-universal.pkg'
+        },
+        {
+          name: 'Brightdesk-SHA256SUMS-MAC.txt',
+          browser_download_url: 'https://github.com/connormolloy12/Brightdesk-suite/releases/download/v0.2.0/Brightdesk-SHA256SUMS-MAC.txt'
         }
       ]
     })
   });
-  const result = await getStandaloneAppDownload({ appId: 'pages', platform: 'darwin', fetchImpl });
+  const manifest = '0123456789abcdef'.repeat(4) + '  apps/pages/Brightdesk-Pages-0.2.0-universal.pkg\\n';
+  const originalFetch = fetchImpl;
+  const verifiedFetch = async (url, options) => {
+    if (String(url).endsWith('Brightdesk-SHA256SUMS-MAC.txt')) {
+      return { ok: true, text: async () => manifest };
+    }
+    return originalFetch(url, options);
+  };
+  const result = await getStandaloneAppDownload({ appId: 'pages', platform: 'darwin', fetchImpl: verifiedFetch });
   assert.equal(result.appId, 'pages');
   assert.equal(result.version, '0.2.0');
   assert.ok(result.fileName.endsWith('.pkg'));
   assert.ok(result.downloadUrl.includes('Brightdesk-Pages-'));
+  assert.equal(result.expectedSize, 2048);
+  assert.equal(result.sha256, '0123456789abcdef'.repeat(4));
 });
 
 test('update check does not offer an update when the platform package is missing', async () => {
