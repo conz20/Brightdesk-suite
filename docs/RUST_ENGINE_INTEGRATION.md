@@ -38,3 +38,4 @@ The fallback preserves the same host-facing source-analysis and vector-operation
 - Windows and Linux build the native addon for the runner architecture. macOS builds both `aarch64-apple-darwin` and `x86_64-apple-darwin` libraries and combines them into a universal module for the universal desktop installer.
 
 The Rust toolchain is pinned to 1.99.1. Cross-platform CI targets Linux, Windows, and macOS. GitHub has not assigned runners to the current jobs yet, so compilation and test results remain unverified until those workflows actually execute.
+When `BRIGHTDESK_REQUIRE_NATIVE_ENGINE=1` is set, a missing or incompatible native addon is fatal instead of selecting the fallback. The Rust CI workflow and installed-product smoke tests set this flag. Ordinary development and customer startup remain fallback-tolerant when the native library cannot load.
