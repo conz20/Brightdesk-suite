@@ -223,7 +223,6 @@ mod tests {
         assert_eq!(stats.token_count, 3);
     }
 
-
     #[test]
     fn ranking_respects_result_limit_and_candidate_bounds() {
         let ranked = rank_embeddings(
