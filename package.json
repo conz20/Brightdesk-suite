@@ -22,9 +22,9 @@
     "release": "npm run verify:licenses && electron-builder --publish always",
     "verify:licenses": "node scripts/verify-licenses.js",
     "postinstall": "npm run verify:licenses",
-    "dist:apps:win": "node scripts/build-apps.js win",
-    "dist:apps:mac": "node scripts/build-apps.js mac",
-    "dist:apps:linux": "node scripts/build-apps.js linux",
+    "dist:apps:win": "npm run verify:licenses && node scripts/build-apps.js win",
+    "dist:apps:mac": "npm run verify:licenses && node scripts/build-apps.js mac",
+    "dist:apps:linux": "npm run verify:licenses && node scripts/build-apps.js linux",
     "dist:pages:win": "node scripts/build-app.js pages win",
     "dist:pages:mac": "node scripts/build-app.js pages mac",
     "dist:pages:linux": "node scripts/build-app.js pages linux",
@@ -46,7 +46,14 @@
     "release:prepare": "node scripts/prepare-release-assets.js",
     "lock:prepare": "npm install --package-lock-only --ignore-scripts --no-audit --no-fund",
     "lock:verify": "node scripts/verify-lockfile.js",
-    "setup:dev": "node scripts/setup/bootstrap-dev.js"
+    "setup:dev": "node scripts/setup/bootstrap-dev.js",
+    "dist:app": "npm run verify:licenses && node scripts/build-app.js",
+    "release:apps:win": "npm run verify:licenses && node scripts/build-apps.js win always",
+    "release:apps:mac": "npm run verify:licenses && node scripts/build-apps.js mac always",
+    "release:apps:linux": "npm run verify:licenses && node scripts/build-apps.js linux always",
+    "release:all:win": "npm run verify:licenses && electron-builder --win nsis --x64 --publish always && node scripts/build-apps.js win always",
+    "release:all:mac": "npm run verify:licenses && electron-builder --mac dmg pkg zip --universal --publish always && node scripts/build-apps.js mac always",
+    "release:all:linux": "npm run verify:licenses && electron-builder --linux AppImage deb --x64 --publish always && node scripts/build-apps.js linux always"
   },
   "dependencies": {
     "docx": "9.15.1",
@@ -82,7 +89,13 @@
       "output": "release",
       "buildResources": "assets/branding"
     },
-    "publish": [],
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "connormolloy12",
+        "repo": "Brightdesk-suite"
+      }
+    ],
     "win": {
       "target": [
         "nsis"

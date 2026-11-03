@@ -70,3 +70,43 @@ Before declaring a platform ready, require:
 ## Explicit release restriction
 
 Build and upload CI artifacts for inspection, but do not publish a public GitHub Release unless the owner explicitly selects the publish option.
+
+
+## Suite launcher and standalone app architecture (2026-11-03)
+
+The Brightdesk Suite launcher is a separate product from the ten standalone desktop apps. Installing the launcher must not silently select or install every app.
+
+The fixed product catalogue is:
+- Pages
+- Sheets
+- Decks
+- Notes
+- Database
+- Forms
+- Lists
+- Planner
+- To Do
+- Workspace
+
+The App Centre must start with no apps selected. Users can add individual apps to the in-suite navigation, skip selection and return later, or open the standalone-app download page from each product card. The launcher must distinguish clearly between **Add to suite** (opens the app inside the launcher) and **Download desktop app** (installs the separate OS application).
+
+Every app has an original Brightdesk SVG icon under `src/assets/app-icons/`. All ten apps must be supported by the standalone build scripts and receive distinct application IDs, product names, installer artifacts and update channels. Separate build output directories are used so application artifacts cannot overwrite one another.
+
+Standalone builds use these commands:
+- Local Windows builds: `npm run dist:apps:win`
+- Local macOS builds: `npm run dist:apps:mac`
+- Local Linux builds: `npm run dist:apps:linux`
+- Build one app: `npm run dist:app -- <app-id> <win|mac|linux>`
+- Release/publish the standalone app set for the current target OS: `npm run release:apps:<win|mac|linux>`
+
+Each standalone app uses its own GitHub update channel named after its app ID (for example, `pages`, `database`, or `workspace`/the actual ID `loop`). The Suite launcher uses the default `latest` channel. This avoids ten applications overwriting one shared update manifest.
+
+Update preferences default to manual checking and manual downloading. Automatic checking and automatic downloading are opt-in. Automatic installation is prohibited: even when downloading automatically, Brightdesk must announce the available version and require the user to press **Next** before installation. Show the installed version and available version together. Notifications must be reviewable and dismissible.
+
+## Commercial and product guarantees
+
+Brightdesk is permanently ad-free, subscription-free and free of activation fees. Do not add adverts, sponsored placements, paid tiers, activation keys, serial numbers, paid licences, subscription prompts, paywalls or locked premium features. Include third-party notices and legally required open-source licence attributions without charging the user.
+
+## Remaining release gates
+
+The launcher UI, app-selection logic, SVG assets and standalone build coverage are source-level work only until local builds and platform-specific install tests pass. GitHub update feeds require actual published release assets and metadata. macOS auto-updating additionally requires valid code signing; macOS distribution still needs signing/notarisation verification. Do not claim Windows, macOS or Linux public release readiness before clean install, launch, update, uninstall and data-preservation tests have passed.

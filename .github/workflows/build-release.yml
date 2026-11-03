@@ -137,9 +137,9 @@ jobs:
           if [ -z "${CSC_LINK:-}" ]; then unset CSC_LINK CSC_KEY_PASSWORD; fi
           if [ -z "${CSC_INSTALLER_LINK:-}" ]; then unset CSC_INSTALLER_LINK CSC_INSTALLER_KEY_PASSWORD; fi
           if [ "${{ matrix.platform }}" = "macOS" ] && [ -z "${CSC_LINK:-}" ]; then export CSC_IDENTITY_AUTO_DISCOVERY=false; fi
-          if [ "${{ matrix.script }}" = "linux" ]; then npm run dist:linux; fi
-          if [ "${{ matrix.script }}" = "win" ]; then npm run dist:win; fi
-          if [ "${{ matrix.script }}" = "mac" ]; then npm run dist:mac; fi
+          if [ "${{ matrix.script }}" = "linux" ]; then npm run dist:linux; npm run dist:apps:linux; fi
+          if [ "${{ matrix.script }}" = "win" ]; then npm run dist:win; npm run dist:apps:win; fi
+          if [ "${{ matrix.script }}" = "mac" ]; then npm run dist:mac; npm run dist:apps:mac; fi
           npm run release:prepare -- ${{ matrix.script }}
 
       - name: Verify Linux installer artifacts
@@ -160,7 +160,7 @@ jobs:
           BRIGHTDESK_PLATFORM: ${{ matrix.platform }}
         run: |
           mkdir -p "release/$BRIGHTDESK_PLATFORM"
-          node -e "const fs=require('node:fs');const p=require('node:path');const root='release';const dest=p.join(root,process.env.BRIGHTDESK_PLATFORM);for(const name of fs.readdirSync(root)){if(name===process.env.BRIGHTDESK_PLATFORM)continue;const source=p.join(root,name);if(fs.statSync(source).isFile())fs.renameSync(source,p.join(dest,name));}"
+          node -e "const fs=require('node:fs');const p=require('node:path');const root='release';const dest=p.join(root,process.env.BRIGHTDESK_PLATFORM);for(const name of fs.readdirSync(root)){if(name===process.env.BRIGHTDESK_PLATFORM)continue;const source=p.join(root,name);if(name==='apps'){fs.renameSync(source,p.join(dest,'Apps'));continue;}if(fs.statSync(source).isFile())fs.renameSync(source,p.join(dest,name));}"
 
       - name: Upload verified platform build
         uses: actions/upload-artifact@v4

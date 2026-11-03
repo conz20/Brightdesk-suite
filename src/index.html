@@ -11,21 +11,28 @@
 <body>
   <aside class="sidebar">
     <div class="brand"><img class="brand-logo" src="assets/brand/brightdesk-suite-mark.svg" alt="" aria-hidden="true" width="38" height="38"><div><b>brightdesk</b><small data-i18n="sidebar.workspace">YOUR WORKSPACE</small></div></div>
+    <button class="nav home-nav active" id="home-nav" type="button">
+      <span class="app-icon manager-icon">⌂</span>
+      <span><b>Home</b><small>Your Brightdesk launcher</small></span>
+    </button>
     <div class="section-label" data-i18n="sidebar.yourApps">YOUR APPS</div>
-    <button class="nav active" data-app="pages"><span class="app-icon pages">P</span><span><b>Brightdesk Pages</b><small data-i18n="sidebar.documents">Documents</small></span></button>
-    <button class="nav" data-app="sheets"><span class="app-icon sheets">S</span><span><b>Brightdesk Sheets</b><small data-i18n="sidebar.spreadsheets">Spreadsheets</small></span></button>
-    <button class="nav" data-app="slides"><span class="app-icon slides">D</span><span><b>Brightdesk Decks</b><small data-i18n="sidebar.presentations">Presentations</small></span></button>
-    <button class="nav" data-app="notes"><span class="app-icon notes">N</span><span><b>Brightdesk Notes</b><small data-i18n="sidebar.quickNotes">Quick notes</small></span></button>
+    <button class="nav active" data-app="pages"><img class="app-nav-icon" src="assets/app-icons/pages.svg" alt="" aria-hidden="true"><span><b>Brightdesk Pages</b><small data-i18n="sidebar.documents">Documents</small></span></button>
+    <button class="nav" data-app="sheets"><img class="app-nav-icon" src="assets/app-icons/sheets.svg" alt="" aria-hidden="true"><span><b>Brightdesk Sheets</b><small data-i18n="sidebar.spreadsheets">Spreadsheets</small></span></button>
+    <button class="nav" data-app="slides"><img class="app-nav-icon" src="assets/app-icons/slides.svg" alt="" aria-hidden="true"><span><b>Brightdesk Decks</b><small data-i18n="sidebar.presentations">Presentations</small></span></button>
+    <button class="nav" data-app="notes"><img class="app-nav-icon" src="assets/app-icons/notes.svg" alt="" aria-hidden="true"><span><b>Brightdesk Notes</b><small data-i18n="sidebar.quickNotes">Quick notes</small></span></button>
     <div id="dynamic-app-nav"></div>
     <div class="sidebar-divider"></div>
     <button class="nav manager-nav" id="manage-apps"><span class="app-icon manager-icon">＋</span><span><b data-i18n="sidebar.getApps">Get apps</b><small data-i18n="sidebar.installManage">Install and manage apps</small></span></button>
     <button class="nav manager-nav" id="manage-languages"><span class="app-icon manager-icon">文</span><span><b data-i18n="sidebar.languages">Languages</b><small data-i18n="sidebar.languagePacks">Language packs and dictionaries</small></span></button>
     <div class="sidebar-bottom">
-      <div class="free-pill" data-i18n="sidebar.freeIndependent">✦ Free and independent</div>
-      <button class="text-button" id="updates-button" data-i18n="sidebar.checkUpdates">Check for updates</button>
-      <button class="text-button" id="update-settings-button">Update settings</button>
-      <small id="platform">Desktop app</small>
-      <small id="version-label">Version 0.1.0</small>
+      <div class="free-pill">✦ Ad-free · Subscription-free · Free forever</div>
+      <button class="sidebar-utility active" id="updates-button" type="button">
+        <span class="utility-symbol">↻</span><span><b>Updates</b><small>Review available updates</small></span><span class="utility-dot" id="update-status-dot" hidden></span>
+      </button>
+      <button class="sidebar-utility" id="update-settings-button" type="button">
+        <span class="utility-symbol">⚙</span><span><b>Settings</b><small>Update and app preferences</small></span>
+      </button>
+      <div class="sidebar-footer-meta"><small id="platform">Desktop app</small><small id="version-label">Version 0.1.0</small></div>
     </div>
   </aside>
   <main class="main">
@@ -75,9 +82,10 @@
         <span class="manager-view-label" data-i18n="manager.view">View</span>
         <button type="button" class="manager-view-button" id="manager-grid-view" aria-pressed="true" data-i18n="manager.gridView">Grid</button>
         <button type="button" class="manager-view-button" id="manager-list-view" aria-pressed="false" data-i18n="manager.listView">List</button>
+        <button type="button" class="secondary small-action" id="refresh-installed-apps">Refresh installed apps</button>
       </div>
       <div class="manager-grid" id="app-manager-grid"></div>
-      <div class="manager-bottom"><p id="manager-note">Choose one or more apps. Your documents stay on this device, even if you remove an app from your workspace.</p><button class="primary" id="finish-app-setup" data-i18n="manager.done">Done</button></div>
+      <div class="manager-bottom"><p id="manager-note">Choose which apps appear in your Brightdesk launcher. You can also download each app as a separate desktop application.</p><div class="manager-bottom-actions"><button class="secondary" id="skip-app-setup" type="button">Skip for now</button><button class="primary" id="finish-app-setup" data-i18n="manager.done">Add selected apps</button></div></div>
     </section>
     <section class="language-manager" id="language-manager" hidden>
       <div class="manager-hero"><div><div class="eyebrow" data-i18n="language.eyebrow">BRIGHTDESK LANGUAGE CENTRE</div><h2 data-i18n="language.title">Language settings</h2><p data-i18n="language.description">Choose how Brightdesk displays and checks language.</p></div></div>
@@ -110,21 +118,33 @@
       </section>
       <div class="manager-bottom"><p id="language-status" role="status"></p><button class="secondary" id="back-to-apps" data-i18n="language.backToApps">Back to apps</button></div>
     </section>
-    <section id="update-settings-panel" class="update-settings-panel" hidden>
+    <section id="app-updates-panel" class="app-updates-panel" aria-labelledby="app-updates-title" hidden>
       <div class="update-settings-header">
-        <h3>Update settings</h3>
-        <button class="secondary small-action" id="close-update-settings" type="button">Close</button>
+        <div><div class="eyebrow">BRIGHTDESK UPDATE CENTRE</div><h3 id="app-updates-title">Updates for your apps</h3></div>
+        <button class="secondary small-action" id="close-app-updates" type="button">Close</button>
       </div>
-      <label class="toggle-row"><input type="checkbox" id="update-auto-check" /> Check for updates automatically</label>
-      <label class="toggle-row"><input type="checkbox" id="update-auto-download" /> Download updates automatically</label>
-      <label class="toggle-row"><input type="checkbox" id="update-auto-install" /> Install after download</label>
-      <div class="update-settings-actions">
-        <button class="primary small-action" id="update-manual-check" type="button">Check now</button>
-        <button class="secondary small-action" id="update-manual-download" type="button">Download now</button>
-        <button class="secondary small-action" id="update-manual-install" type="button">Install now</button>
+      <p class="settings-intro">See which installed desktop apps have updates. Apps included inside the suite update with Brightdesk itself.</p>
+      <div id="app-updates-list" class="app-updates-list" aria-live="polite">
+        <p class="app-updates-empty">Choose Updates to check your installed apps.</p>
       </div>
     </section>
-    <div class="update-message" id="update-message" role="status" hidden></div>
+    <section id="update-settings-panel" class="update-settings-panel" aria-labelledby="update-settings-title" hidden>
+      <div class="update-settings-header">
+        <div><div class="eyebrow">BRIGHTDESK PREFERENCES</div><h3 id="update-settings-title">Update settings</h3></div>
+        <button class="secondary small-action" id="close-update-settings" type="button">Close</button>
+      </div>
+      <p class="settings-intro">Choose how Brightdesk checks for and downloads updates. An update is never installed until you approve it.</p>
+      <label class="toggle-row"><span><b>Check for updates automatically</b><small>Check the Suite and your installed standalone apps in the background.</small></span><input type="checkbox" id="update-auto-check" /></label>
+      <label class="toggle-row"><span><b>Download updates automatically</b><small>Download Suite and standalone app updates in the background. Press Next before any installer runs.</small></span><input type="checkbox" id="update-auto-download" /></label>
+      <p class="settings-note">Automatic installation is always off. You stay in control of when an update is applied.</p>
+      <div class="update-settings-actions">
+        <button class="secondary small-action" id="update-manual-check" type="button">Check for updates</button>
+        <button class="secondary small-action" id="update-manual-download" type="button" disabled>Download update</button>
+        <button class="primary small-action" id="update-manual-install" type="button" disabled>Next · Install update</button>
+        <button class="secondary small-action" id="save-update-settings" type="button">Save settings</button>
+      </div>
+    </section>
+    <div class="update-message" id="update-message" role="status" aria-live="polite" hidden></div>
     <footer><span id="footer-version">Brightdesk 0.1.0</span> · Independent software · Not affiliated with Microsoft</footer>
   </main>
   <script src="formula.js"></script>

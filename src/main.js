@@ -1,11 +1,19 @@
-const { app, BrowserWindow, Menu, ipcMain, dialog } = require('electron');
+const { app, BrowserWindow, Menu, ipcMain, dialog, shell } = require('electron');
 const packageConfig = require('../package.json');
 const path = require('node:path');
+const { spawn } = require('node:child_process');
 const crypto = require('node:crypto');
 const fs = require('node:fs/promises');
 const { openOfficeFile, exportOfficeFile, cleanFileName, ensureExtension } = require('./file-service');
 const { BUILTIN_LANGUAGES, validateLanguagePack, getBuiltinLanguage } = require('./language-service');
 const { DictionaryService } = require('./dictionary-service');
+const { registerStandaloneApp, listInstalledStandaloneApps } = require('./standalone-app-registry');
+const { checkStandaloneAppUpdates, getStandaloneAppDownload, compareVersions } = require('./app-update-service');
+const {
+  stageStandaloneAppUpdate,
+  listStagedStandaloneAppUpdates,
+  removeStagedStandaloneAppUpdate
+} = require('./standalone-update-manager');
 let mainWindow;
 let agreementWindow;
 let termsAccepted = false;
@@ -13,15 +21,20 @@ let autoUpdater;
 const updatePublishingConfigured = Array.isArray(packageConfig.build?.publish) && packageConfig.build.publish.some(item => item?.provider === 'github' && item?.owner && item.owner !== 'YOUR_GITHUB_ACCOUNT');
 let updateCheckInProgress = false;
 let lastUpdateCheckAt = 0;
+let updateCheckTimer = null;
+let updateCheckTimeout = null;
+let standaloneUpdateTimer = null;
+let standaloneUpdateTimeout = null;
 let dictionaryService;
-const supportedApplications = new Set(['pages', 'sheets', 'slides', 'notes']);
+const supportedApplications = new Set(['pages', 'sheets', 'slides', 'notes', 'database', 'forms', 'lists', 'planner', 'todo', 'loop']);
+const applicationNames = { pages: 'Pages', sheets: 'Sheets', slides: 'Decks', notes: 'Notes', database: 'Database', forms: 'Forms', lists: 'Lists', planner: 'Planner', todo: 'To Do', loop: 'Workspace' };
 const applicationId = packageConfig.brightdeskAppId || null;
 if (applicationId && !supportedApplications.has(applicationId)) {
   throw new Error(`Unsupported Brightdesk application: ${applicationId}`);
 }
 
 const updateSettingsPath = path.join(app.getPath('userData'), 'update-settings.json');
-const defaultUpdateSettings = { autoCheck: true, autoDownload: true, autoInstall: false };
+const defaultUpdateSettings = { autoCheck: false, autoDownload: false, autoInstall: false };
 
 async function readUpdateSettings() {
   try {
@@ -35,7 +48,7 @@ async function readUpdateSettings() {
 }
 
 async function writeUpdateSettings(settings = {}) {
-  const next = { ...defaultUpdateSettings, ...(settings || {}) };
+  const next = { ...defaultUpdateSettings, ...(settings || {}), autoInstall: false };
   await fs.mkdir(app.getPath('userData'), { recursive: true });
   await fs.writeFile(updateSettingsPath, `${JSON.stringify(next, null, 2)}\n`, { mode: 0o600 });
   return next;
@@ -45,13 +58,17 @@ function sendUpdateState(state) { if (mainWindow && !mainWindow.isDestroyed()) m
 function createWindow() {
   mainWindow = new BrowserWindow({
     width: 1440, height: 920, minWidth: 980, minHeight: 680,
-    title: applicationId ? `Brightdesk ${({ pages: 'Pages', sheets: 'Sheets', slides: 'Decks', notes: 'Notes' })[applicationId]}` : 'Brightdesk', backgroundColor: '#f5f6fa',
+    title: applicationId ? `Brightdesk ${applicationNames[applicationId]}` : 'Brightdesk', backgroundColor: '#f5f6fa',
     webPreferences: { preload: path.join(__dirname, 'preload.js'), contextIsolation: true, nodeIntegration: false, sandbox: true, additionalArguments: applicationId ? [`--brightdesk-app=${applicationId}`] : [] }
   });
   mainWindow.loadFile(path.join(__dirname, 'index.html'));
   mainWindow.webContents.setWindowOpenHandler(() => ({ action: 'deny' }));
   mainWindow.webContents.on('will-navigate', event => event.preventDefault());
-  mainWindow.on('focus', () => { if (autoUpdater) checkForUpdates({ quiet: true }); });
+  mainWindow.on('focus', async () => {
+    if (!autoUpdater) return;
+    const settings = await readUpdateSettings();
+    if (settings.autoCheck === true) checkForUpdates({ quiet: true, force: true });
+  });
 }
 function senderIsMain(event) { return mainWindow && event.sender === mainWindow.webContents; }
 
@@ -254,9 +271,87 @@ async function checkForUpdates({ quiet = false, force = false } = {}) {
   } finally { updateCheckInProgress = false; }
 }
 
+async function stageStandaloneApp(appId) {
+  const download = await getStandaloneAppDownload({ appId, platform: process.platform });
+  return stageStandaloneAppUpdate({
+    appDataPath: app.getPath('appData'),
+    ...download,
+    platform: process.platform
+  });
+}
+
+async function refreshStandaloneAppUpdates({ notify = true } = {}) {
+  const installedApps = await listInstalledStandaloneApps({ appDataPath: app.getPath('appData') });
+  const result = await checkStandaloneAppUpdates({ installedApps, platform: process.platform });
+  if (!result.ok) return { ...result, stagedApps: await listStagedStandaloneAppUpdates({ appDataPath: app.getPath('appData') }) };
+
+  const settings = await readUpdateSettings();
+  let stagedApps = await listStagedStandaloneAppUpdates({ appDataPath: app.getPath('appData') });
+  const available = result.apps.filter(item => item.updateAvailable);
+
+  if (settings.autoDownload === true) {
+    for (const update of available) {
+      const alreadyStaged = stagedApps.some(item => item.appId === update.id && item.version === update.availableVersion);
+      if (alreadyStaged) continue;
+      try {
+        await stageStandaloneApp(update.id);
+      } catch (error) {
+        console.warn(`Could not automatically download Brightdesk ${update.name} update.`, error);
+      }
+    }
+    stagedApps = await listStagedStandaloneAppUpdates({ appDataPath: app.getPath('appData') });
+  }
+
+  const allAvailableUpdatesStaged = available.length > 0 &&
+    available.every(update => stagedApps.some(item => item.appId === update.id && item.version === update.availableVersion));
+  const response = { ...result, stagedApps };
+  if (notify && available.length && !applicationId && mainWindow && !mainWindow.isDestroyed()) {
+    sendUpdateState({
+      status: allAvailableUpdatesStaged ? 'apps-downloaded' : 'apps-available',
+      releaseVersion: result.releaseVersion,
+      apps: result.apps,
+      stagedApps,
+      message: allAvailableUpdatesStaged
+        ? `${available.length} standalone app update${available.length === 1 ? '' : 's'} downloaded. Press Next when ready to install.`
+        : `${available.length} standalone app update${available.length === 1 ? '' : 's'} available.`
+    });
+  }
+  return response;
+}
+
+async function checkInstalledStandaloneUpdates() {
+  if (applicationId || !mainWindow || mainWindow.isDestroyed()) return;
+  try {
+    await refreshStandaloneAppUpdates();
+  } catch (error) {
+    console.warn('Automatic standalone app update check failed.', error);
+  }
+}
+
+function configureStandaloneUpdateSchedule(settings) {
+  if (standaloneUpdateTimeout) clearTimeout(standaloneUpdateTimeout);
+  if (standaloneUpdateTimer) clearInterval(standaloneUpdateTimer);
+  standaloneUpdateTimeout = null;
+  standaloneUpdateTimer = null;
+  if (applicationId || settings?.autoCheck !== true) return;
+  standaloneUpdateTimeout = setTimeout(() => checkInstalledStandaloneUpdates(), 15000);
+  standaloneUpdateTimer = setInterval(() => checkInstalledStandaloneUpdates(), 6 * 60 * 60 * 1000);
+}
+
+function configureUpdateSchedule(settings) {
+  if (updateCheckTimeout) clearTimeout(updateCheckTimeout);
+  if (updateCheckTimer) clearInterval(updateCheckTimer);
+  updateCheckTimeout = null;
+  updateCheckTimer = null;
+  if (settings?.autoCheck !== true || !autoUpdater) return;
+  updateCheckTimeout = setTimeout(() => checkForUpdates({ quiet: true, force: true }), 12000);
+  updateCheckTimer = setInterval(() => checkForUpdates({ quiet: true, force: true }), 6 * 60 * 60 * 1000);
+}
+
 async function initUpdater() {
   if (!app.isPackaged) return;
   const settings = await readUpdateSettings();
+  configureStandaloneUpdateSchedule(settings);
   if (!updatePublishingConfigured) {
     sendUpdateState({ status: 'unavailable', message: 'Automatic updates are not configured for this build yet.' });
     return;
@@ -268,18 +363,23 @@ async function initUpdater() {
   try {
     ({ autoUpdater } = require('electron-updater'));
     autoUpdater.autoDownload = settings.autoDownload !== false;
-    autoUpdater.autoInstallOnAppQuit = settings.autoInstall === true;
+    // Downloading may be automatic, but installing always requires the user's explicit Next action.
+    autoUpdater.autoInstallOnAppQuit = false;
     autoUpdater.allowUnverifiedLinuxPackages = false;
     autoUpdater.on('checking-for-update', () => sendUpdateState({ status: 'checking', message: 'Checking for updates…' }));
-    autoUpdater.on('update-available', info => sendUpdateState({ status: 'available', message: `Brightdesk ${info.version} is available. Download from the update settings or let the app continue to recommend updates.` }));
-    autoUpdater.on('update-not-available', () => sendUpdateState({ status: 'current', message: 'Brightdesk is up to date.' }));
-    autoUpdater.on('download-progress', p => sendUpdateState({ status: 'downloading', message: `Downloading update: ${Math.round(p.percent)}%` }));
-    autoUpdater.on('update-downloaded', info => sendUpdateState({ status: 'downloaded', message: `Brightdesk ${info.version} is ready to install. Use Install now when you are ready.` }));
+    autoUpdater.on('update-available', info => sendUpdateState({
+      status: 'available', currentVersion: app.getVersion(), availableVersion: info.version,
+      message: `A Brightdesk update is available: ${app.getVersion()} → ${info.version}.`
+    }));
+    autoUpdater.on('update-not-available', () => sendUpdateState({ status: 'current', currentVersion: app.getVersion(), message: `Brightdesk ${app.getVersion()} is up to date.` }));
+    autoUpdater.on('download-progress', p => sendUpdateState({ status: 'downloading', currentVersion: app.getVersion(), message: `Downloading update: ${Math.round(p.percent)}%` }));
+    autoUpdater.on('update-downloaded', info => sendUpdateState({
+      status: 'downloaded', currentVersion: app.getVersion(), availableVersion: info.version,
+      message: `Update ready: ${app.getVersion()} → ${info.version}. Press Next when you are ready to install it.`
+    }));
     autoUpdater.on('error', err => sendUpdateState({ status: 'error', message: err.message || 'Update check failed.' }));
-    if (settings.autoCheck !== false) {
-      setTimeout(() => checkForUpdates({ quiet: true, force: true }), 12000);
-      setInterval(() => checkForUpdates({ quiet: true, force: true }), 6 * 60 * 60 * 1000);
-    } else {
+    configureUpdateSchedule(settings);
+    if (settings.autoCheck !== true) {
       sendUpdateState({ status: 'manual', message: 'Automatic update checks are off. You can still check manually when you want.' });
     }
   } catch (error) { sendUpdateState({ status: 'unavailable', message: 'Update service is not configured in this build.' }); }
@@ -330,6 +430,90 @@ ipcMain.handle('file:pdf', async (event, payload) => {
   const pdf = await mainWindow.webContents.printToPDF({ printBackground: true, pageSize: 'A4', margins: { top: 0.55, bottom: 0.55, left: 0.6, right: 0.6 } });
   await fs.writeFile(filePath, pdf); return { canceled: false, filePath };
 });
+ipcMain.handle('apps:list-installed', async event => {
+  if (!senderIsMain(event)) throw new Error('Invalid sender.');
+  return listInstalledStandaloneApps({ appDataPath: app.getPath('appData') });
+});
+ipcMain.handle('apps:check-updates', async event => {
+  if (!senderIsMain(event)) throw new Error('Invalid sender.');
+  return refreshStandaloneAppUpdates({ notify: false });
+});
+ipcMain.handle('apps:list-staged-updates', async event => {
+  if (!senderIsMain(event)) throw new Error('Invalid sender.');
+  return listStagedStandaloneAppUpdates({ appDataPath: app.getPath('appData') });
+});
+ipcMain.handle('apps:download-update', async (event, appId) => {
+  if (!senderIsMain(event)) throw new Error('Invalid sender.');
+  if (!supportedApplications.has(appId)) throw new Error('That Brightdesk application is not in the approved app catalogue.');
+  return stageStandaloneApp(appId);
+});
+ipcMain.handle('apps:install-staged-update', async (event, appId) => {
+  if (!senderIsMain(event)) throw new Error('Invalid sender.');
+  if (!supportedApplications.has(appId)) throw new Error('That Brightdesk application is not in the approved app catalogue.');
+  const installedApps = await listInstalledStandaloneApps({ appDataPath: app.getPath('appData') });
+  const installed = installedApps.find(item => item.id === appId);
+  const stagedApps = await listStagedStandaloneAppUpdates({ appDataPath: app.getPath('appData') });
+  const staged = stagedApps.find(item => item.appId === appId);
+  if (!staged) throw new Error('There is no verified installer ready for this app.');
+  if (installed && compareVersions(staged.version, installed.version) <= 0) {
+    await removeStagedStandaloneAppUpdate({ appDataPath: app.getPath('appData'), appId });
+    throw new Error('This app is already at the staged version or newer. The old installer was removed.');
+  }
+  const fileRoot = path.resolve(app.getPath('appData'), 'Brightdesk', 'updates', appId);
+  const filePath = path.resolve(staged.filePath);
+  if (!filePath.startsWith(fileRoot + path.sep)) throw new Error('The staged installer path is invalid.');
+  const stat = await fs.stat(filePath);
+  if (!stat.isFile() || stat.size !== staged.size) throw new Error('The staged installer file is missing or has changed.');
+  const hash = crypto.createHash('sha256');
+  const fileStream = require('node:fs').createReadStream(filePath);
+  for await (const chunk of fileStream) hash.update(chunk);
+  if (hash.digest('hex') !== staged.sha256) throw new Error('The staged installer failed its SHA-256 check.');
+  const openError = await shell.openPath(filePath);
+  if (openError) throw new Error(`Could not open the installer: ${openError}`);
+  return { ok: true, appId, version: staged.version };
+});
+
+function launchStandaloneExecutable(record) {
+  return new Promise((resolve, reject) => {
+    let command = record.executablePath;
+    let args = [];
+    if (record.platform === 'darwin') {
+      command = 'open';
+      args = ['-a', record.executablePath];
+    }
+    const child = spawn(command, args, {
+      detached: true,
+      stdio: 'ignore',
+      cwd: path.dirname(record.executablePath)
+    });
+    child.once('error', reject);
+    child.once('spawn', () => {
+      child.unref();
+      resolve();
+    });
+  });
+}
+
+ipcMain.handle('apps:launch-standalone', async (event, appId) => {
+  if (!senderIsMain(event)) throw new Error('Invalid sender.');
+  if (!supportedApplications.has(appId)) throw new Error('That Brightdesk application is not in the approved app catalogue.');
+  const installed = await listInstalledStandaloneApps({ appDataPath: app.getPath('appData') });
+  const record = installed.find(item => item.id === appId);
+  if (!record) {
+    throw new Error('This standalone app is not registered on this computer yet. Open it once from its desktop icon, then return to Brightdesk.');
+  }
+  await launchStandaloneExecutable(record);
+  return { ok: true, appId };
+});
+
+ipcMain.handle('apps:downloads', async (event, appId) => {
+  if (!senderIsMain(event)) throw new Error('Invalid sender.');
+  if (!supportedApplications.has(appId)) throw new Error('That Brightdesk application is not in the approved app catalogue.');
+  const download = await getStandaloneAppDownload({ appId, platform: process.platform });
+  await shell.openExternal(download.downloadUrl);
+  return { ok: true, appId, appName: applicationNames[appId], version: download.version, fileName: download.fileName };
+});
+
 ipcMain.handle('updates:check', async event => { if (!senderIsMain(event)) throw new Error('Invalid sender.'); return checkForUpdates({ force: true }); });
 ipcMain.handle('updates:download', async event => { if (!senderIsMain(event)) throw new Error('Invalid sender.'); if (!autoUpdater) return { ok: false }; await autoUpdater.downloadUpdate(); return { ok: true }; });
 ipcMain.handle('updates:install', async event => { if (!senderIsMain(event)) throw new Error('Invalid sender.'); if (!autoUpdater) return { ok: false }; autoUpdater.quitAndInstall(); return { ok: true }; });
@@ -337,13 +521,49 @@ ipcMain.handle('updates:settings', async event => { if (!senderIsMain(event)) th
 ipcMain.handle('updates:set-settings', async (event, payload) => {
   if (!senderIsMain(event)) throw new Error('Invalid sender.');
   const settings = await writeUpdateSettings(payload);
+  configureStandaloneUpdateSchedule(settings);
   if (autoUpdater) {
     autoUpdater.autoDownload = settings.autoDownload !== false;
-    autoUpdater.autoInstallOnAppQuit = settings.autoInstall === true;
+    autoUpdater.autoInstallOnAppQuit = false;
+    configureUpdateSchedule(settings);
   }
   return settings;
 });
 
-app.whenReady().then(async () => { app.setName(packageConfig.productName || 'Brightdesk'); dictionaryService = new DictionaryService(app.getPath('userData')); Menu.setApplicationMenu(null); termsAccepted = await hasCurrentTermsAcceptance(); if (termsAccepted) { createWindow(); initUpdater(); } else { createAgreementWindow(); } app.on('activate', () => { if (BrowserWindow.getAllWindows().length === 0) { if (termsAccepted) createWindow(); else createAgreementWindow(); } }); });
+app.whenReady().then(async () => {
+  app.setName(packageConfig.productName || 'Brightdesk');
+  dictionaryService = new DictionaryService(app.getPath('userData'));
+  if (applicationId && app.isPackaged) {
+    try {
+      await registerStandaloneApp({
+        appDataPath: app.getPath('appData'),
+        appId: applicationId,
+        version: app.getVersion(),
+        executablePath: process.platform === 'darwin' && app.getPath('exe').includes('/Contents/MacOS/')
+          ? app.getPath('exe').split('/Contents/MacOS/')[0]
+          : (process.platform === 'linux' && process.env.APPIMAGE ? process.env.APPIMAGE : app.getPath('exe')),
+        platform: process.platform
+      });
+      const stagedUpdates = await listStagedStandaloneAppUpdates({ appDataPath: app.getPath('appData') });
+      for (const staged of stagedUpdates) {
+        if (staged.appId === applicationId && compareVersions(app.getVersion(), staged.version) >= 0) {
+          await removeStagedStandaloneAppUpdate({ appDataPath: app.getPath('appData'), appId: applicationId });
+        }
+      }
+    } catch (error) {
+      console.warn('The standalone Brightdesk app could not register with the suite launcher.', error);
+    }
+  }
+  Menu.setApplicationMenu(null);
+  termsAccepted = await hasCurrentTermsAcceptance();
+  if (termsAccepted) { createWindow(); initUpdater(); }
+  else createAgreementWindow();
+  app.on('activate', () => {
+    if (BrowserWindow.getAllWindows().length === 0) {
+      if (termsAccepted) createWindow();
+      else createAgreementWindow();
+    }
+  });
+});
 app.on('window-all-closed', () => { if (process.platform !== 'darwin') app.quit(); });
 

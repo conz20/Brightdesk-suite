@@ -57,3 +57,15 @@ Brightdesk is an independent desktop product with original names, code, artwork,
 - No verified current release artifact set has been produced from the latest main commit.
 - Confirm current Node.js 24.22.2 runner, real package lock, dependency install, licence audit and all target installer smoke tests before release.
 - Signing/notarisation must be reported accurately; never claim signed status without actual credentials and verification.
+
+
+## Full suite launcher direction — 2026-11-03
+- The Suite launcher is its own installed desktop application. The ten individual Brightdesk apps must also be separately buildable/installable on Windows, macOS and Linux.
+- The launcher must allow a person to add selected apps to the in-suite navigation, open those apps inside Brightdesk, and separately download/install each app as its own desktop application. The launcher itself must never silently mark all ten apps as installed.
+- The App Centre begins with zero selected apps. Users can select apps, skip setup and return later. UI wording must distinguish “Add to suite” from “Download desktop app”.
+- Every app has an original individual SVG icon in `src/assets/app-icons/`. Never use plain letters as the final app icon treatment.
+- Separate build support is required for exactly Pages, Sheets, Decks, Notes, Database, Forms, Lists, Planner, To Do and Workspace. Standalone app channels must be unique per app to prevent updater metadata collisions. Suite launcher uses the stable `latest` channel.
+- Update checking and downloading are opt-in. A user must always approve installation by pressing **Next**; never install automatically on quit. Present current and target versions. Update notifications need a Review action and a dismiss X.
+- Brightdesk is strictly ad-free, subscription-free and free to use: no ads, sponsorships, subscriptions, paid tiers, paid licence fees, activation keys, serial numbers or locked features. Keep third-party open-source attribution/notices where legally required; those notices do not create a user fee.
+- Current implementation branch: `feature/complete-suite-launcher-apps`, based on PR #19's `feature/storytold-inspired-engine-launcher`. Changes on this branch are not yet merged or tested on the user's Mac. Do not confuse repository commits with the user's installed build.
+- The launcher selection correction, SVG family, refreshed App Centre styling, standalone package support and update controls need local full-suite tests and native Windows/macOS/Linux build/install tests before another user-facing installer is produced.

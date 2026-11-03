@@ -33,7 +33,9 @@ const state = {
   app: launchAppId || 'pages', view: 'workspace', docs: structuredClone(defaults),
   todoView: 'my-day', todoQuery: '',
   selectedCell: { row: 0, col: 0 }, update: null, ribbonTab: 'home',
-  installedApps: [], setupComplete: false, firstRunSelection: new Set(installableCatalog.map(item => item.id)),
+  installedApps: [], standaloneApps: [], stagedAppUpdates: [], currentVersion: '0.1.0',
+  suiteUpdate: { status: 'unknown' }, lastAppUpdateResult: null,
+  setupComplete: false, firstRunSelection: new Set(),
   managerView: localStorage.getItem('brightdesk-manager-view') === 'list' ? 'list' : 'grid',
   slideTheme: 'lavender', focusMode: false, editorZoom: 100, sheetZoom: 100,
   languageCatalog: [], installedLanguagePacks: [], spellCheckerLanguages: [], usesNativeMacSpellChecker: false,
@@ -55,27 +57,31 @@ function loadLocal() {
     const stored = JSON.parse(localStorage.getItem('brightdesk-docs-v3') || localStorage.getItem('brightdesk-docs-v2') || 'null');
     if (stored && typeof stored === 'object') state.docs = { ...clone(defaults), ...stored };
     const appSetup = JSON.parse(localStorage.getItem('brightdesk-app-setup-v1') || 'null');
-    if (appSetup && Array.isArray(appSetup.installedApps)) {
+    const legacyAutoSelectedAllApps = appSetup && appSetup.schemaVersion !== 2 &&
+      appSetup.setupComplete === true && Array.isArray(appSetup.installedApps) &&
+      appSetup.installedApps.length === installableCatalog.length &&
+      installableCatalog.every(item => appSetup.installedApps.includes(item.id));
+    if (appSetup && Array.isArray(appSetup.installedApps) && !legacyAutoSelectedAllApps) {
       state.installedApps = launchAppId ? [launchAppId] : appSetup.installedApps.filter(id => installableCatalog.some(item => item.id === id));
-      state.setupComplete = launchAppId ? true : appSetup.setupComplete === true && state.installedApps.length > 0;
+      state.setupComplete = launchAppId ? true : appSetup.setupComplete === true;
     } else {
-      // Fresh installs start with every app that is already bundled in Brightdesk.
-      // Users should not have to complete a second app-selection wizard after setup.
-      state.installedApps = launchAppId ? [launchAppId] : installableCatalog.map(item => item.id);
-      state.setupComplete = state.installedApps.length > 0;
-      if (!launchAppId) saveAppSetup();
+      // Fresh installs and legacy builds that silently selected all ten apps
+      // return to app selection. Existing documents remain untouched.
+      state.installedApps = launchAppId ? [launchAppId] : [];
+      state.setupComplete = Boolean(launchAppId);
+      if (!launchAppId) state.view = 'manager';
     }
     if (launchAppId) { state.app = launchAppId; state.view = 'workspace'; }
-    else if (!state.setupComplete) state.view = 'manager';
+    else if (!state.setupComplete || state.installedApps.length === 0) state.view = 'manager';
     else if (!installedApp(state.app)) state.app = state.installedApps[0] || 'pages';
     state.displayLanguage = localStorage.getItem('brightdesk-display-language') || 'en-AU';
     state.proofingLanguage = localStorage.getItem('brightdesk-proofing-language') || state.displayLanguage;
   } catch (error) { console.warn('Local project or app settings could not be read.', error); state.view = 'manager'; }
 }
 function saveAppSetup() {
-  localStorage.setItem('brightdesk-app-setup-v1', JSON.stringify({ installedApps: state.installedApps, setupComplete: state.setupComplete }));
+  localStorage.setItem('brightdesk-app-setup-v1', JSON.stringify({ schemaVersion: 2, installedApps: state.installedApps, setupComplete: state.setupComplete }));
 }
-function installedApp(id) { return state.installedApps.includes(id) || ['todo','lists','forms','planner','database','loop'].includes(id); }
+function installedApp(id) { return state.installedApps.includes(id); }
 function appLabel(id) { return catalog.find(item => item.id === id)?.name || id; }
 
 function safeHtml(html) {
@@ -458,6 +464,21 @@ function renderGenericWorkspace() {
   editor.oninput = () => { doc.html = editor.innerHTML; persist(); };
 }
 
+async function stageStandaloneAppFromCentre(appId, appName) {
+  updateMessage(`Preparing the ${appName} desktop installer…`, 'info');
+  try {
+    const staged = await window.brightdesk.downloadStandaloneAppUpdate(appId);
+    state.stagedAppUpdates = await window.brightdesk.listStagedStandaloneAppUpdates();
+    renderAppManager();
+    if (!$('app-updates-panel').hidden) renderAppUpdates();
+    updateMessage(`${appName} ${staged.version} has been downloaded and verified. Press Next to install it.`, 'success');
+    return staged;
+  } catch (error) {
+    updateMessage(`Could not download ${appName}: ${error.message}`, 'error');
+    throw error;
+  }
+}
+
 function renderAppManager() {
   const grid = $('app-manager-grid');
   grid.classList.toggle('list-view', state.managerView === 'list');
@@ -468,56 +489,112 @@ function renderAppManager() {
   $('manager-description').textContent = state.setupComplete
     ? t('manager.manageDesc')
     : t('manager.chooseDesc');
-  $('manager-note').textContent = t('manager.note');
-  $('finish-app-setup').textContent = state.setupComplete ? t('manager.done') : t('manager.installSelected');
+  $('manager-note').textContent = 'Choose apps to show in your suite, or download an app as a separate desktop application.';
+  $('finish-app-setup').textContent = 'Add selected apps';
+  $('finish-app-setup').hidden = state.setupComplete;
+  $('skip-app-setup').hidden = state.setupComplete;
   catalog.forEach(item => {
     const canInstall = item.availability === 'available';
     const selected = state.firstRunSelection.has(item.id);
     const isInstalled = installedApp(item.id);
+    const desktopApp = state.standaloneApps.find(installed => installed.id === item.id) || null;
+    const stagedDesktopApp = state.stagedAppUpdates.find(staged => staged.appId === item.id) || null;
     const card = document.createElement('article'); card.className = 'app-card';
     const preview = document.createElement('img'); preview.className = 'app-preview'; preview.src = `assets/apps/${item.id}.svg`; preview.alt = `${item.name} example screen`;
     const header = document.createElement('div'); header.className = 'app-card-header';
-    const icon = document.createElement('span'); icon.className = `app-icon ${item.className}`; icon.textContent = item.icon;
+    const icon = document.createElement('img'); icon.className = 'app-icon-image'; icon.src = item.icon; icon.alt = ''; icon.setAttribute('aria-hidden', 'true');
     const heading = document.createElement('div'); heading.className = 'app-card-heading';
     const name = document.createElement('b'); name.textContent = item.name;
     const subtitle = document.createElement('small'); subtitle.textContent = item.subtitle;
     heading.append(name, subtitle); header.append(icon, heading);
     const description = document.createElement('p'); description.textContent = item.description;
     const footer = document.createElement('div'); footer.className = 'app-card-footer';
-    const version = document.createElement('span'); version.className = 'module-version'; version.textContent = `Module ${item.moduleVersion}`;
+    const version = document.createElement('span'); version.className = 'module-version';
+    version.textContent = stagedDesktopApp
+      ? `Downloaded ${stagedDesktopApp.version}`
+      : (desktopApp ? `Desktop ${desktopApp.version}` : `Suite ${state.currentVersion}`);
     footer.append(version);
     if (!canInstall) {
       const comingSoon = document.createElement('span'); comingSoon.className = 'app-state'; comingSoon.textContent = 'In development'; footer.append(comingSoon);
     } else if (!state.setupComplete) {
       const label = document.createElement('label'); label.className = 'app-select-label';
-      const check = document.createElement('input'); check.type = 'checkbox'; check.checked = selected; check.addEventListener('change', () => {
+      const check = document.createElement('input'); check.type = 'checkbox'; check.checked = selected;
+      check.addEventListener('change', () => {
         if (check.checked) state.firstRunSelection.add(item.id); else state.firstRunSelection.delete(item.id);
         renderAppManager();
       });
-      label.append(check, document.createTextNode(` ${t('manager.includeApp')}`)); footer.append(label);
+      label.append(check, document.createTextNode(' Include in suite')); footer.append(label);
     } else {
-      const action = document.createElement('button'); action.className = isInstalled ? 'secondary small-action' : 'primary small-action';
-      action.textContent = isInstalled ? t('manager.remove') : t('manager.install');
-      action.addEventListener('click', () => toggleAppInstall(item.id)); footer.append(action);
-      const stateTag = document.createElement('span'); stateTag.className = isInstalled ? 'app-state installed' : 'app-state'; stateTag.textContent = isInstalled ? t('manager.inWorkspace') : t('manager.notInstalled');
+      if (isInstalled) {
+        const open = document.createElement('button'); open.type = 'button'; open.className = 'primary small-action'; open.textContent = 'Open in suite';
+        open.addEventListener('click', () => setApp(item.id)); footer.append(open);
+        const remove = document.createElement('button'); remove.type = 'button'; remove.className = 'text-button'; remove.textContent = 'Remove';
+        remove.addEventListener('click', () => toggleAppInstall(item.id)); footer.append(remove);
+      } else {
+        const add = document.createElement('button'); add.type = 'button'; add.className = 'primary small-action'; add.textContent = 'Add to suite';
+        add.addEventListener('click', () => toggleAppInstall(item.id)); footer.append(add);
+      }
+      const stateTag = document.createElement('span'); stateTag.className = isInstalled ? 'app-state installed' : 'app-state'; stateTag.textContent = isInstalled ? 'In your suite' : 'Not in your suite';
       footer.append(stateTag);
     }
+    const desktopDownload = document.createElement('button');
+    desktopDownload.type = 'button';
+    desktopDownload.className = 'text-button desktop-app-download';
+    desktopDownload.textContent = stagedDesktopApp
+      ? 'Next · Install desktop app'
+      : (desktopApp ? 'Open desktop app' : 'Download desktop app');
+    desktopDownload.addEventListener('click', async () => {
+      try {
+        if (stagedDesktopApp) {
+          await window.brightdesk.installStagedStandaloneAppUpdate(item.id);
+          updateMessage(`Opened the ${stagedDesktopApp.version} installer for ${item.name}. Follow the installer to finish.`, 'success');
+        } else if (desktopApp) {
+          await window.brightdesk.launchStandaloneApp(item.id);
+        } else {
+          await stageStandaloneAppFromCentre(item.id, item.name);
+        }
+      } catch (error) {
+        updateMessage(`Could not process ${item.name}: ${error.message}`, 'error');
+      }
+    });
+    footer.append(desktopDownload);
     card.append(preview, header, description, footer); grid.append(card);
   });
 }
+async function refreshInstalledAppList() {
+  try {
+    state.standaloneApps = await window.brightdesk.listStandaloneApps();
+    state.stagedAppUpdates = await window.brightdesk.listStagedStandaloneAppUpdates();
+    renderAppManager();
+    updateMessage(`Found ${state.standaloneApps.length} separately installed Brightdesk app${state.standaloneApps.length === 1 ? '' : 's'}.`, 'success');
+  } catch (error) {
+    updateMessage(`Could not refresh installed apps: ${error.message}`, 'error');
+  }
+}
+
 function toggleAppInstall(id) {
   if (!installableCatalog.some(item => item.id === id) || launchAppId) return;
   if (installedApp(id)) {
-    if (state.installedApps.length === 1) { alert('Keep at least one app installed in your Brightdesk workspace.'); return; }
     state.installedApps = state.installedApps.filter(appId => appId !== id);
-    if (state.app === id) { state.app = state.installedApps[0]; state.ribbonTab = 'home'; }
-  } else { state.installedApps.push(id); }
+    if (state.app === id) {
+      state.app = state.installedApps[0] || 'pages';
+      state.ribbonTab = 'home';
+      if (state.installedApps.length === 0) state.view = 'manager';
+    }
+  } else {
+    const hadNoApps = state.installedApps.length === 0;
+    state.installedApps.push(id);
+    if (hadNoApps || !installedApp(state.app)) state.app = id;
+  }
   saveAppSetup(); render();
 }
 function completeAppSetup() {
   const selected = [...state.firstRunSelection].filter(id => installableCatalog.some(item => item.id === id));
-  if (!selected.length) { alert('Choose at least one app to install.'); return; }
-  state.installedApps = selected; state.setupComplete = true; state.app = selected[0]; state.view = 'workspace';
+  state.installedApps = selected; state.setupComplete = true;
+  state.app = selected[0] || 'pages';
+  // Return to the suite Home/App Centre after selection. Users choose
+  // "Open in suite" on the app card when they are ready to enter an app.
+  state.view = 'manager';
   saveAppSetup(); render();
 }
 
@@ -534,7 +611,7 @@ function syncAppNavigation() {
   host.innerHTML = '';
   catalog.filter(item => !['pages','sheets','slides','notes'].includes(item.id) && installedApp(item.id)).forEach(item => {
     const button=document.createElement('button'); button.className='nav'; button.dataset.app=item.id;
-    const icon=document.createElement('span'); icon.className=`app-icon ${item.className}`; icon.textContent=item.icon;
+    const icon=document.createElement('img'); icon.className='app-nav-icon'; icon.src=item.icon; icon.alt=''; icon.setAttribute('aria-hidden','true');
     const label=document.createElement('span'); const name=document.createElement('b'); name.textContent=item.name; const sub=document.createElement('small'); sub.textContent=item.subtitle;
     label.append(name,sub); button.append(icon,label);
     button.addEventListener('click',()=>setApp(item.id)); host.append(button);
@@ -802,8 +879,10 @@ function render() {
   document.querySelectorAll('.nav[data-app]').forEach(btn => {
     const visible = launchAppId ? btn.dataset.app === launchAppId : installedApp(btn.dataset.app); btn.hidden = !visible; btn.classList.toggle('active', !manager && !languages && btn.dataset.app === state.app);
   });
-  $('manage-apps').hidden = Boolean(launchAppId);
-  $('manage-apps').classList.toggle('active', manager);
+  $('home-nav').hidden = Boolean(launchAppId);
+  $('manage-apps').hidden = true;
+  $('home-nav').classList.toggle('active', manager);
+  $('manage-apps').classList.toggle('active', false);
   $('manage-languages').classList.toggle('active', languages);
 }
 function collectDocxBlocks() {
@@ -853,6 +932,7 @@ async function saveProject(){try{const result=await window.brightdesk.saveProjec
 function setApp(app){if((launchAppId && app !== launchAppId) || !(configs[app] || genericConfigs[app]) || !installedApp(app))return;state.app=app;state.view='workspace';state.ribbonTab='home';render();persist();}
 
 document.querySelectorAll('.nav[data-app]').forEach(btn=>btn.addEventListener('click',()=>setApp(btn.dataset.app)));
+$('home-nav').addEventListener('click',()=>{state.view='manager';render();});
 $('manage-apps').addEventListener('click',()=>{if (launchAppId) return; state.view='manager';render();});
 $('manage-languages').addEventListener('click',openLanguageManager);
 $('display-language').addEventListener('change',event=>changeDisplayLanguage(event.target.value));
@@ -863,7 +943,16 @@ $('check-current-document').addEventListener('click',checkCurrentDocumentSpellin
 $('back-to-apps').addEventListener('click',()=>{state.view=state.setupComplete?'workspace':'manager';render();});
 $('manager-grid-view').addEventListener('click', () => { state.managerView = 'grid'; localStorage.setItem('brightdesk-manager-view', state.managerView); renderAppManager(); });
 $('manager-list-view').addEventListener('click', () => { state.managerView = 'list'; localStorage.setItem('brightdesk-manager-view', state.managerView); renderAppManager(); });
-$('finish-app-setup').addEventListener('click',()=>{if(state.setupComplete){state.view='workspace';render();}else completeAppSetup();});
+$('refresh-installed-apps').addEventListener('click', refreshInstalledAppList);
+$('finish-app-setup').addEventListener('click',()=>{if(state.setupComplete){state.view=state.installedApps.length ? 'workspace' : 'manager';render();}else completeAppSetup();});
+$('skip-app-setup').addEventListener('click',()=>{
+  state.installedApps = [];
+  state.setupComplete = true;
+  state.app = 'pages';
+  state.view = 'manager';
+  saveAppSetup();
+  render();
+});
 $('doc-title').addEventListener('change',()=>{activeDoc().title=$('doc-title').value;persist();});
 editor.addEventListener('input',()=>{activeDoc().html=editor.innerHTML;persist();});
 $('notes-editor').addEventListener('input',()=>{activeDoc().text=$('notes-editor').value;persist();});
@@ -881,15 +970,390 @@ $('lists-rename').addEventListener('click',renameCurrentList);
 $('lists-delete').addEventListener('click',deleteCurrentList);
 $('lists-column-type').addEventListener('change',()=>{$('lists-column-options-wrap').hidden=$('lists-column-type').value!=='choice';});
 $('export-button').addEventListener('click',exportCurrent);$('open-button').addEventListener('click',openFile);$('save-project').addEventListener('click',saveProject);
-$('updates-button').addEventListener('click',async()=>{const msg=$('update-message');msg.hidden=false;msg.textContent=t('common.updateChecking');try{const r=await window.brightdesk.checkForUpdates();if(!r?.ok)msg.textContent=r?.message||'Update checks are not configured yet.';}catch(e){msg.textContent=`Update check failed: ${e.message}`;}});
-window.brightdesk.onUpdateState?.(updateState=>{const msg=$('update-message');msg.hidden=false;msg.textContent=updateState.message;if(updateState.status==='available'){msg.textContent=updateState.message;}if(updateState.status==='downloaded'){const button=document.createElement('button');button.className='text-button';button.textContent=t('common.restartInstall');button.onclick=()=>window.brightdesk.installUpdate();msg.append(' ',button);}});
+const updatePanel = $('update-settings-panel');
+let updateReadyToInstall = false;
+let suiteUpdateAvailable = false;
+$('update-manual-install').disabled = true;
+$('update-manual-download').disabled = true;
+function updateMessage(message, status = 'info', actions = []) {
+  const host = $('update-message');
+  host.replaceChildren();
+  host.hidden = false;
+  host.dataset.status = status;
+  const copy = document.createElement('span');
+  copy.className = 'update-message-copy';
+  copy.textContent = message;
+  host.append(copy);
+  const controls = document.createElement('div');
+  controls.className = 'update-message-actions';
+  actions.forEach(({ label, run, quiet = false }) => {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = quiet ? 'text-button' : 'secondary small-action';
+    button.textContent = label;
+    button.addEventListener('click', run);
+    controls.append(button);
+  });
+  const close = document.createElement('button');
+  close.type = 'button';
+  close.className = 'update-message-close';
+  close.textContent = '×';
+  close.setAttribute('aria-label', 'Dismiss update notification');
+  close.addEventListener('click', () => { host.hidden = true; host.replaceChildren(); });
+  controls.append(close);
+  host.append(controls);
+}
+async function openUpdateSettings() {
+  $('app-updates-panel').hidden = true;
+  updatePanel.hidden = false;
+  try {
+    const settings = await window.brightdesk.getUpdateSettings();
+    $('update-auto-check').checked = settings.autoCheck === true;
+    $('update-auto-download').checked = settings.autoDownload === true;
+  } catch (error) {
+    updateMessage(`Could not load update settings: ${error.message}`, 'error');
+  }
+}
+async function saveUpdateSettings() {
+  const settings = {
+    autoCheck: $('update-auto-check').checked,
+    autoDownload: $('update-auto-download').checked,
+    autoInstall: false
+  };
+  try {
+    const saved = await window.brightdesk.setUpdateSettings(settings);
+    $('update-auto-check').checked = saved.autoCheck === true;
+    $('update-auto-download').checked = saved.autoDownload === true;
+    updateMessage('Your update preferences have been saved.', 'success');
+  } catch (error) {
+    updateMessage(`Could not save update settings: ${error.message}`, 'error');
+  }
+}
+function renderAppUpdates(result) {
+  if (result) state.lastAppUpdateResult = result;
+  const currentResult = result || state.lastAppUpdateResult || { ok: false, apps: [] };
+  const host = $('app-updates-list');
+  host.replaceChildren();
+  const appUpdates = new Map((currentResult?.apps || []).map(item => [item.id, item]));
+  const stagedUpdates = new Map(state.stagedAppUpdates.map(item => [item.appId, item]));
+  const hasPublishedRelease = currentResult?.ok === true;
+
+  const suiteRow = document.createElement('article');
+  suiteRow.className = 'app-update-row suite-update-row';
+  const suiteIcon = document.createElement('img');
+  suiteIcon.className = 'app-update-icon';
+  suiteIcon.src = 'assets/brand/brightdesk-suite-mark.svg';
+  suiteIcon.alt = '';
+  suiteIcon.setAttribute('aria-hidden', 'true');
+  const suiteDetails = document.createElement('div');
+  suiteDetails.className = 'app-update-details';
+  const suiteTitle = document.createElement('b');
+  suiteTitle.textContent = 'Brightdesk Office Suite';
+  const suiteVersion = document.createElement('small');
+  const suiteStatus = document.createElement('span');
+  suiteStatus.className = 'app-update-status';
+  const suiteActions = document.createElement('div');
+  suiteActions.className = 'app-update-actions';
+  const suiteState = state.suiteUpdate || { status: 'unknown' };
+
+  if (suiteState.status === 'available' || suiteState.status === 'downloaded') {
+    suiteVersion.textContent = suiteState.status === 'downloaded'
+      ? `Installed ${suiteState.currentVersion || state.currentVersion} · Downloaded ${suiteState.availableVersion || 'new version'}`
+      : `Installed ${suiteState.currentVersion || state.currentVersion} · Available ${suiteState.availableVersion || 'new version'}`;
+    suiteStatus.textContent = suiteState.status === 'downloaded' ? 'Ready to install' : 'Update available';
+    suiteStatus.classList.add('available');
+    const suiteAction = document.createElement('button');
+    suiteAction.type = 'button';
+    suiteAction.className = 'primary small-action';
+    suiteAction.textContent = suiteState.status === 'downloaded' ? 'Next · Install update' : 'Download update';
+    suiteAction.addEventListener('click', suiteState.status === 'downloaded' ? installDownloadedUpdate : downloadUpdateManually);
+    suiteActions.append(suiteAction);
+  } else if (suiteState.status === 'current') {
+    suiteVersion.textContent = `Installed ${suiteState.currentVersion || state.currentVersion}`;
+    suiteStatus.textContent = 'Up to date';
+    suiteStatus.classList.add('current');
+  } else if (suiteState.status === 'checking' || suiteState.status === 'downloading') {
+    suiteVersion.textContent = `Installed ${state.currentVersion}`;
+    suiteStatus.textContent = suiteState.status === 'checking' ? 'Checking…' : 'Downloading…';
+    suiteStatus.classList.add('muted');
+  } else {
+    suiteVersion.textContent = `Installed ${state.currentVersion}`;
+    suiteStatus.textContent = suiteState.message || 'Check for updates';
+    suiteStatus.classList.add('muted');
+  }
+  suiteDetails.append(suiteTitle, suiteVersion);
+  suiteActions.prepend(suiteStatus);
+  suiteRow.append(suiteIcon, suiteDetails, suiteActions);
+  host.append(suiteRow);
+
+  catalog.forEach(item => {
+    const standalone = state.standaloneApps.find(installed => installed.id === item.id) || null;
+    const inSuite = installedApp(item.id);
+    const update = appUpdates.get(item.id) || null;
+    const staged = stagedUpdates.get(item.id) || null;
+    const row = document.createElement('article');
+    row.className = 'app-update-row';
+    const icon = document.createElement('img');
+    icon.className = 'app-update-icon';
+    icon.src = item.icon;
+    icon.alt = '';
+    icon.setAttribute('aria-hidden', 'true');
+    const details = document.createElement('div');
+    details.className = 'app-update-details';
+    const title = document.createElement('b');
+    title.textContent = item.name;
+    const version = document.createElement('small');
+    const status = document.createElement('span');
+    status.className = 'app-update-status';
+
+    if (standalone) {
+      version.textContent = staged
+        ? `Installed ${standalone.version} · Downloaded ${staged.version}`
+        : (hasPublishedRelease
+          ? `Installed ${standalone.version} · Latest ${update?.availableVersion || currentResult.releaseVersion || 'unknown'}`
+          : `Installed ${standalone.version}`);
+      if (staged) {
+        status.textContent = 'Ready to install';
+        status.classList.add('available');
+      } else if (!hasPublishedRelease) {
+        status.textContent = currentResult?.message || 'Release information unavailable';
+        status.classList.add('muted');
+      } else if (update?.updateAvailable) {
+        status.textContent = 'Update available';
+        status.classList.add('available');
+      } else if (update?.installerAvailable) {
+        status.textContent = 'Up to date';
+        status.classList.add('current');
+      } else {
+        status.textContent = 'No installer published for this platform';
+        status.classList.add('muted');
+      }
+    } else if (staged) {
+      version.textContent = `Not installed · Downloaded ${staged.version}`;
+      status.textContent = 'Ready to install';
+      status.classList.add('available');
+    } else if (inSuite) {
+      version.textContent = `Included in Brightdesk ${state.currentVersion} · No desktop install`;
+      status.textContent = 'Updates with the suite';
+      status.classList.add('current');
+    } else {
+      version.textContent = 'Not installed on this computer';
+      status.textContent = 'Available to install';
+      status.classList.add('muted');
+    }
+
+    details.append(title, version);
+    const actions = document.createElement('div');
+    actions.className = 'app-update-actions';
+    if (staged && !standalone) {
+      const install = document.createElement('button');
+      install.type = 'button';
+      install.className = 'primary small-action';
+      install.textContent = 'Next · Install desktop app';
+      install.addEventListener('click', async () => {
+        try {
+          await window.brightdesk.installStagedStandaloneAppUpdate(item.id);
+          updateMessage(`Opened the ${staged.version} installer for ${item.name}. Follow its steps to install it.`, 'success');
+        } catch (error) {
+          updateMessage(`Could not open the installer for ${item.name}: ${error.message}`, 'error');
+        }
+      });
+      actions.append(install);
+    } else if (standalone && staged) {
+      const install = document.createElement('button');
+      install.type = 'button';
+      install.className = 'primary small-action';
+      install.textContent = 'Next · Install update';
+      install.addEventListener('click', async () => {
+        try {
+          await window.brightdesk.installStagedStandaloneAppUpdate(item.id);
+          updateMessage(`Opened the ${staged.version} installer for ${item.name}. Follow its steps to finish updating.`, 'success');
+        } catch (error) {
+          updateMessage(`Could not open the update for ${item.name}: ${error.message}`, 'error');
+        }
+      });
+      actions.append(install);
+    } else if (standalone && update?.updateAvailable) {
+      const download = document.createElement('button');
+      download.type = 'button';
+      download.className = 'primary small-action';
+      download.textContent = 'Download update';
+      download.addEventListener('click', async () => {
+        try {
+          await stageStandaloneAppFromCentre(item.id, item.name);
+          state.stagedAppUpdates = await window.brightdesk.listStagedStandaloneAppUpdates();
+          renderAppUpdates(currentResult);
+        } catch (error) {
+          updateMessage(`Could not download the update for ${item.name}: ${error.message}`, 'error');
+        }
+      });
+      actions.append(download);
+    } else if (standalone) {
+      const open = document.createElement('button');
+      open.type = 'button';
+      open.className = 'text-button';
+      open.textContent = 'Open desktop app';
+      open.addEventListener('click', async () => {
+        try { await window.brightdesk.launchStandaloneApp(item.id); }
+        catch (error) { updateMessage(error.message, 'error'); }
+      });
+      actions.append(open);
+    } else {
+      const download = document.createElement('button');
+      download.type = 'button';
+      download.className = 'text-button';
+      download.textContent = 'Download desktop app';
+      download.addEventListener('click', async () => {
+        try {
+          await stageStandaloneAppFromCentre(item.id, item.name);
+          state.stagedAppUpdates = await window.brightdesk.listStagedStandaloneAppUpdates();
+          renderAppUpdates(currentResult);
+        } catch (error) {
+          updateMessage(`Could not download ${item.name}: ${error.message}`, 'error');
+        }
+      });
+      actions.append(download);
+    }
+    actions.prepend(status);
+    row.append(icon, details, actions);
+    host.append(row);
+  });
+
+  if (catalog.length === 0) {
+    const empty = document.createElement('p');
+    empty.className = 'app-updates-empty';
+    empty.textContent = 'No apps are listed.';
+    host.append(empty);
+  }
+}
+async function checkForUpdatesManually() {
+  $('update-settings-panel').hidden = true;
+  $('app-updates-panel').hidden = false;
+  $('app-updates-list').replaceChildren();
+  updateMessage('Checking Brightdesk and your installed standalone apps…', 'info');
+  try {
+    state.standaloneApps = await window.brightdesk.listStandaloneApps();
+    const [suiteResult, appResult] = await Promise.all([
+      window.brightdesk.checkForUpdates(),
+      window.brightdesk.checkStandaloneAppUpdates()
+    ]);
+    state.stagedAppUpdates = appResult?.stagedApps || await window.brightdesk.listStagedStandaloneAppUpdates();
+    if (!suiteResult?.ok) {
+      state.suiteUpdate = {
+        status: 'unavailable',
+        currentVersion: state.currentVersion,
+        message: suiteResult?.message || 'The Suite update service is unavailable.'
+      };
+    }
+    renderAppUpdates(appResult);
+    const standaloneUpdates = appResult?.ok ? appResult.apps.filter(item => item.updateAvailable) : [];
+    $('update-status-dot').hidden = standaloneUpdates.length === 0;
+    if (standaloneUpdates.length) {
+      const stagedCount = state.stagedAppUpdates.filter(staged =>
+        standaloneUpdates.some(update => update.id === staged.appId && update.availableVersion === staged.version)
+      ).length;
+      const message = stagedCount === standaloneUpdates.length
+        ? `${stagedCount} standalone app update${stagedCount === 1 ? '' : 's'} downloaded and verified. Press Next beside an app when you are ready to install.`
+        : `${standaloneUpdates.length} standalone app update${standaloneUpdates.length === 1 ? '' : 's'} available. Review the version details below.`;
+      updateMessage(message, 'notice');
+    } else if (!suiteResult?.ok) {
+      updateMessage(suiteResult?.message || 'The Brightdesk suite update check could not be completed.', 'error');
+    } else if (suiteResult.status === 'current') {
+      updateMessage(`Brightdesk ${state.currentVersion} is up to date. No standalone app updates were found.`, 'success');
+    }
+  } catch (error) {
+    renderAppUpdates({ ok: false, message: error.message, apps: [] });
+    updateMessage(`Update check failed: ${error.message}`, 'error');
+  }
+}
+async function downloadUpdateManually() {
+  if (!suiteUpdateAvailable) {
+    updateMessage('There is no Brightdesk Suite update available to download.', 'info');
+    return;
+  }
+  $('update-manual-download').disabled = true;
+  try {
+    const result = await window.brightdesk.downloadUpdate();
+    if (!result?.ok) {
+      $('update-manual-download').disabled = false;
+      updateMessage(result?.message || 'The update could not be downloaded.', 'error');
+    }
+  } catch (error) {
+    $('update-manual-download').disabled = false;
+    updateMessage(`Could not download the update: ${error.message}`, 'error');
+  }
+}
+async function installDownloadedUpdate() {
+  if (!updateReadyToInstall) {
+    updateMessage('There is no downloaded update ready to install yet.', 'info');
+    return;
+  }
+  try {
+    const result = await window.brightdesk.installUpdate();
+    if (!result?.ok) updateMessage(result?.message || 'No downloaded update is ready to install.', 'error');
+  } catch (error) {
+    updateMessage(`Could not install the update: ${error.message}`, 'error');
+  }
+}
+$('updates-button').addEventListener('click', checkForUpdatesManually);
+$('update-settings-button').addEventListener('click', openUpdateSettings);
+$('close-update-settings').addEventListener('click', () => { updatePanel.hidden = true; });
+$('close-app-updates').addEventListener('click', () => { $('app-updates-panel').hidden = true; });
+$('save-update-settings').addEventListener('click', saveUpdateSettings);
+$('update-manual-check').addEventListener('click', checkForUpdatesManually);
+$('update-manual-download').addEventListener('click', downloadUpdateManually);
+$('update-manual-install').addEventListener('click', installDownloadedUpdate);
+window.brightdesk.onUpdateState?.(updateState => {
+  const dot = $('update-status-dot');
+  const hasUpdate = ['available', 'downloaded', 'apps-available', 'apps-downloaded'].includes(updateState.status);
+  if (['available', 'downloaded', 'current', 'checking', 'downloading', 'unavailable', 'external', 'error'].includes(updateState.status)) {
+    state.suiteUpdate = updateState;
+    if (!$('app-updates-panel').hidden) renderAppUpdates();
+  }
+  updateReadyToInstall = updateState.status === 'downloaded';
+  suiteUpdateAvailable = updateState.status === 'available';
+  $('update-manual-install').disabled = !updateReadyToInstall;
+  $('update-manual-download').disabled = !suiteUpdateAvailable;
+  dot.hidden = !hasUpdate;
+  if (updateState.status === 'available') {
+    updateMessage(updateState.message, 'notice', [
+      { label: 'Review update', run: openUpdateSettings },
+      { label: 'Download update', run: downloadUpdateManually }
+    ]);
+  } else if (updateState.status === 'downloaded') {
+    updateMessage(updateState.message, 'notice', [
+      { label: 'Next · Install update', run: installDownloadedUpdate }
+    ]);
+  } else if (['apps-available', 'apps-downloaded'].includes(updateState.status)) {
+    state.stagedAppUpdates = updateState.stagedApps || [];
+    renderAppUpdates({ ok: true, releaseVersion: updateState.releaseVersion, apps: updateState.apps || [] });
+    updateMessage(updateState.message, 'notice', [
+      { label: 'Review updates', run: () => {
+        updatePanel.hidden = true;
+        $('app-updates-panel').hidden = false;
+      }}
+    ]);
+  } else if (updateState.status === 'error' || updateState.status === 'unavailable' || updateState.status === 'external') {
+    updateMessage(updateState.message, 'error');
+  } else if (updateState.status === 'current') {
+    updateMessage(updateState.message, 'success');
+  } else if (updateState.status === 'checking' || updateState.status === 'downloading') {
+    updateMessage(updateState.message, 'info');
+  } else if (updateState.status === 'manual') {
+    dot.hidden = true;
+  }
+});
 loadLocal();$('platform').textContent=`Desktop app · ${window.brightdesk.platform}`;
 (async()=>{
   try {
     const version = await window.brightdesk.getVersion();
-    if (version) { $('version-label').textContent = `Version ${version}`; $('footer-version').textContent = `Brightdesk ${version}`; }
+    if (version) { state.currentVersion = version; $('version-label').textContent = `Version ${version}`; $('footer-version').textContent = `Brightdesk ${version}`; }
   } catch (error) { console.warn('The desktop version could not be read.', error); }
   try { await refreshLanguageData(); } catch(error) { console.error('Language packs could not be loaded.',error); }
   try { await refreshDictionaries(); } catch(error) { console.error('Spelling dictionaries could not be loaded.',error); }
+  try { state.standaloneApps = await window.brightdesk.listStandaloneApps(); }
+  catch(error) { console.warn('Individually installed Brightdesk apps could not be listed.', error); }
+  try { state.stagedAppUpdates = await window.brightdesk.listStagedStandaloneAppUpdates(); }
+  catch(error) { console.warn('Staged Brightdesk app updates could not be listed.', error); }
   render();
 })();
