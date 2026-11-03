@@ -3,10 +3,10 @@
 const path = require('node:path');
 
 const appId = process.env.BRIGHTDESK_APP_ID;
-const appNames = { pages: 'Pages', sheets: 'Sheets', slides: 'Decks', notes: 'Notes' };
+const appNames = { pages: 'Pages', sheets: 'Sheets', slides: 'Decks', notes: 'Notes', database: 'Database', forms: 'Forms', lists: 'Lists', planner: 'Planner', todo: 'To Do', loop: 'Workspace' };
 
 if (!appNames[appId]) {
-  throw new Error('Set BRIGHTDESK_APP_ID to one of: pages, sheets, slides, notes.');
+  throw new Error('Set BRIGHTDESK_APP_ID to one of: pages, sheets, slides, notes, database, forms, lists, planner, todo, loop.');
 }
 
 module.exports = {
@@ -18,7 +18,7 @@ module.exports = {
   directories: { output: path.join('release', 'apps', appId), buildResources: 'assets/branding' },
   publish: [],
   win: {
-    icon: 'brightdesk-suite-mark.svg',
+    icon: path.join('src', 'assets', 'app-icons', `${appId}.svg`),
     target: ['nsis'],
     artifactName: 'Brightdesk-' + appNames[appId] + '-${version}-${arch}.${ext}'
   },
@@ -30,7 +30,7 @@ module.exports = {
     license: 'TERMS_AND_CONDITIONS.txt'
   },
   mac: {
-    icon: 'brightdesk-suite-mark.svg',
+    icon: path.join('src', 'assets', 'app-icons', `${appId}.svg`),
     target: ['dmg', 'pkg', 'zip'],
     category: 'public.app-category.productivity',
     artifactName: 'Brightdesk-' + appNames[appId] + '-${version}-${arch}.${ext}'
@@ -42,6 +42,7 @@ module.exports = {
     installLocation: '/Applications'
   },
   linux: {
+    icon: path.join('src', 'assets', 'app-icons', `${appId}.svg`),
     target: ['AppImage', 'deb'],
     category: 'Office',
     artifactName: 'brightdesk-' + appNames[appId].toLowerCase() + '-${version}-${arch}.${ext}'
