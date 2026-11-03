@@ -23,7 +23,7 @@ async function fetchLatestReleaseData(fetchImpl) {
     headers: { Accept: 'application/vnd.github+json', 'User-Agent': 'Brightdesk-Office-Suite' }
   });
   if (!response.ok) {
-    if (response.status === 404) throw new Error('No Brightdesk release has been published yet.');
+    if (response.status === 404) throw new Error('No public Brightdesk release feed is available. The release repository must be public or use a public downloads host so users never need to sign in.');
     throw new Error(`GitHub returned HTTP ${response.status} while looking for the Brightdesk release.`);
   }
 
