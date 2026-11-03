@@ -219,7 +219,12 @@ async function discoverWindowsApps(options) {
 
 async function resolveLinuxExecutable(command, id, runCommand) {
   const expectedCommand = 'brightdesk-' + id;
-  if (!command || path.basename(command) !== expectedCommand) return '';
+  if (!command) return '';
+  const commandName = path.basename(command);
+  const isAppImage = path.isAbsolute(command) &&
+    commandName.toLowerCase().startsWith(expectedCommand + '-') &&
+    commandName.toLowerCase().endsWith('.appimage');
+  if (commandName !== expectedCommand && !isAppImage) return '';
   if (path.isAbsolute(command)) return await pathExists(command) ? command : '';
   try {
     const resolved = String(await runCommand('which', [expectedCommand])).trim().split(/\r?\n/)[0];
@@ -263,7 +268,11 @@ async function discoverLinuxApps(options) {
         continue;
       }
       for (const [id, name] of Object.entries(APP_NAMES)) {
-        if (found.has(id) || String(values.Name || '').trim() !== 'Brightdesk ' + name) continue;
+        const desktopAppId = String(values['X-Brightdesk-AppId'] || '').trim();
+        const matchesIdentity = desktopAppId
+          ? desktopAppId === id
+          : String(values.Name || '').trim() === 'Brightdesk ' + name;
+        if (found.has(id) || !matchesIdentity) continue;
         const command = parseDesktopCommand(values.Exec);
         const executablePath = await resolveLinuxExecutable(command, id, options.runCommand);
         if (!executablePath) continue;
