@@ -3,7 +3,7 @@
 const $=id=>document.getElementById(id);let plans=[],selected=null,query='',progress='',priority='';
 try{const data=JSON.parse(localStorage.getItem('brightdesk-planner-v1')||'[]');if(Array.isArray(data))plans=data;}catch{}
 const current=()=>plans.find(p=>p.id===selected)||null;
-const save=()=>{localStorage.setItem('brightdesk-planner-v1',JSON.stringify(plans));$('planner-status').textContent='Saved on this device';};
+const save=()=>{try{localStorage.setItem('brightdesk-planner-v1',JSON.stringify(plans));$('planner-status').textContent='Saved on this device';return true;}catch(error){$('planner-status').textContent='Could not save Planner data locally: '+error.message;return false;}};
 const replace=next=>{const i=plans.findIndex(p=>p.id===next.id);if(i>=0)plans[i]=next;save();render();};
 function render(){
  if(!selected||!plans.some(p=>p.id===selected))selected=plans[0]?.id||null;
