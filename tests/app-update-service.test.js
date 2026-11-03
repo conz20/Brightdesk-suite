@@ -1,0 +1,62 @@
+'use strict';
+
+const test = require('node:test');
+const assert = require('node:assert/strict');
+const { compareVersions, checkStandaloneAppUpdates } = require('../src/app-update-service');
+
+test('app version comparison handles stable versions and prereleases', () => {
+  assert.equal(compareVersions('0.2.0', '0.1.9'), 1);
+  assert.equal(compareVersions('0.1.0', '0.1.0'), 0);
+  assert.equal(compareVersions('0.1.0', '0.2.0'), -1);
+  assert.equal(compareVersions('0.2.0', '0.2.0-beta.1'), 1);
+  assert.equal(compareVersions('invalid', '0.1.0'), null);
+});
+
+test('update check reports a standalone app update only when its platform installer exists', async () => {
+  const fetchImpl = async () => ({
+    ok: true,
+    json: async () => ({
+      tag_name: 'v0.2.0',
+      html_url: 'https://github.com/connormolloy12/Brightdesk-suite/releases/tag/v0.2.0',
+      assets: [{
+        name: 'Brightdesk-Pages-0.2.0-x64.exe',
+        browser_download_url: 'https://github.com/connormolloy12/Brightdesk-suite/releases/download/v0.2.0/Brightdesk-Pages-0.2.0-x64.exe'
+      }]
+    })
+  });
+  const result = await checkStandaloneAppUpdates({
+    installedApps: [{ id: 'pages', version: '0.1.0' }],
+    platform: 'win32',
+    fetchImpl
+  });
+  assert.equal(result.ok, true);
+  assert.equal(result.apps[0].updateAvailable, true);
+  assert.equal(result.apps[0].currentVersion, '0.1.0');
+  assert.equal(result.apps[0].availableVersion, '0.2.0');
+  assert.ok(result.apps[0].downloadUrl.endsWith('.exe'));
+});
+
+test('update check does not offer an update when the platform package is missing', async () => {
+  const fetchImpl = async () => ({
+    ok: true,
+    json: async () => ({ tag_name: 'v0.2.0', assets: [] })
+  });
+  const result = await checkStandaloneAppUpdates({
+    installedApps: [{ id: 'database', version: '0.1.0' }],
+    platform: 'darwin',
+    fetchImpl
+  });
+  assert.equal(result.ok, true);
+  assert.equal(result.apps[0].updateAvailable, false);
+  assert.equal(result.apps[0].downloadUrl, '');
+});
+
+test('no published release is reported clearly', async () => {
+  const result = await checkStandaloneAppUpdates({
+    installedApps: [],
+    platform: 'linux',
+    fetchImpl: async () => ({ ok: false, status: 404 })
+  });
+  assert.equal(result.ok, false);
+  assert.match(result.message, /No Brightdesk release/);
+});
