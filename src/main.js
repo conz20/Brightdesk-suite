@@ -13,6 +13,8 @@ let autoUpdater;
 const updatePublishingConfigured = Array.isArray(packageConfig.build?.publish) && packageConfig.build.publish.some(item => item?.provider === 'github' && item?.owner && item.owner !== 'YOUR_GITHUB_ACCOUNT');
 let updateCheckInProgress = false;
 let lastUpdateCheckAt = 0;
+let updateCheckTimer = null;
+let updateCheckTimeout = null;
 let dictionaryService;
 const supportedApplications = new Set(['pages', 'sheets', 'slides', 'notes', 'database', 'forms', 'lists', 'planner', 'todo', 'loop']);
 const applicationNames = { pages: 'Pages', sheets: 'Sheets', slides: 'Decks', notes: 'Notes', database: 'Database', forms: 'Forms', lists: 'Lists', planner: 'Planner', todo: 'To Do', loop: 'Workspace' };
@@ -52,7 +54,11 @@ function createWindow() {
   mainWindow.loadFile(path.join(__dirname, 'index.html'));
   mainWindow.webContents.setWindowOpenHandler(() => ({ action: 'deny' }));
   mainWindow.webContents.on('will-navigate', event => event.preventDefault());
-  mainWindow.on('focus', () => { if (autoUpdater) checkForUpdates({ quiet: true }); });
+  mainWindow.on('focus', async () => {
+    if (!autoUpdater) return;
+    const settings = await readUpdateSettings();
+    if (settings.autoCheck === true) checkForUpdates({ quiet: true, force: true });
+  });
 }
 function senderIsMain(event) { return mainWindow && event.sender === mainWindow.webContents; }
 
@@ -255,6 +261,16 @@ async function checkForUpdates({ quiet = false, force = false } = {}) {
   } finally { updateCheckInProgress = false; }
 }
 
+function configureUpdateSchedule(settings) {
+  if (updateCheckTimeout) clearTimeout(updateCheckTimeout);
+  if (updateCheckTimer) clearInterval(updateCheckTimer);
+  updateCheckTimeout = null;
+  updateCheckTimer = null;
+  if (settings?.autoCheck !== true || !autoUpdater) return;
+  updateCheckTimeout = setTimeout(() => checkForUpdates({ quiet: true, force: true }), 12000);
+  updateCheckTimer = setInterval(() => checkForUpdates({ quiet: true, force: true }), 6 * 60 * 60 * 1000);
+}
+
 async function initUpdater() {
   if (!app.isPackaged) return;
   const settings = await readUpdateSettings();
@@ -284,10 +300,8 @@ async function initUpdater() {
       message: `Update ready: ${app.getVersion()} → ${info.version}. Press Next when you are ready to install it.`
     }));
     autoUpdater.on('error', err => sendUpdateState({ status: 'error', message: err.message || 'Update check failed.' }));
-    if (settings.autoCheck !== false) {
-      setTimeout(() => checkForUpdates({ quiet: true, force: true }), 12000);
-      setInterval(() => checkForUpdates({ quiet: true, force: true }), 6 * 60 * 60 * 1000);
-    } else {
+    configureUpdateSchedule(settings);
+    if (settings.autoCheck !== true) {
       sendUpdateState({ status: 'manual', message: 'Automatic update checks are off. You can still check manually when you want.' });
     }
   } catch (error) { sendUpdateState({ status: 'unavailable', message: 'Update service is not configured in this build.' }); }
@@ -355,6 +369,7 @@ ipcMain.handle('updates:set-settings', async (event, payload) => {
   if (autoUpdater) {
     autoUpdater.autoDownload = settings.autoDownload !== false;
     autoUpdater.autoInstallOnAppQuit = false;
+    configureUpdateSchedule(settings);
   }
   return settings;
 });
