@@ -289,6 +289,12 @@ Official public product and support material reviewed on 2026-11-03:
 - Microsoft 365 installation on PC and Mac: https://support.microsoft.com/en-us/office/lifecycle/officeinstall/download-install-or-reinstall-microsoft-365-or-office-2024-on-a-pc-or-mac
 - Microsoft support discussion of native Linux desktop availability: https://learn.microsoft.com/en-au/answers/questions/5891967/microsoft-office-on-linux
 
+## Distribution and remaining applied work
+
+The branch now has separate Home, Apps and Downloads views, search/installed-state filters, OS selection in Downloads, shared update preferences, manifest-backed individual installer resolution and OS-level installed-app discovery. The native combined installer component-selection/Modify flow remains unfinished.
+
+The connected source repository is private. Its current unauthenticated GitHub release lookup cannot provide no-login downloads to customers. A public release repository or public distribution host must be configured before publishing. Keep the source repository private unless the owner explicitly approves a visibility change.
+
 ## Evidence limits
 
 The public pages and official documentation support the described user-facing workflows and published platform support. The source review supports the listed Brightdesk code observations. No third-party binaries, private services, private APIs or running third-party applications were inspected. The 12ui design CLI was not available to generate approved Brightdesk design candidates during this pass, so no visual mockup or pixel-fidelity implementation is claimed.
