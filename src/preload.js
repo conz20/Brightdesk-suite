@@ -12,6 +12,8 @@ contextBridge.exposeInMainWorld('brightdesk', {
   openAppDownloads: (appId) => ipcRenderer.invoke('apps:downloads', appId),
   listStandaloneApps: () => ipcRenderer.invoke('apps:list-installed'),
   launchStandaloneApp: (appId) => ipcRenderer.invoke('apps:launch-standalone', appId),
+  checkStandaloneAppUpdates: () => ipcRenderer.invoke('apps:check-updates'),
+  downloadStandaloneAppUpdate: (appId) => ipcRenderer.invoke('apps:download-update', appId),
   openFile: () => ipcRenderer.invoke('file:open'),
   exportFile: (payload) => ipcRenderer.invoke('file:export', payload),
   saveProject: (project) => ipcRenderer.invoke('project:save', project),
