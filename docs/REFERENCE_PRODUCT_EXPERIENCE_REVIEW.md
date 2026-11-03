@@ -254,6 +254,26 @@ A platform is not ready until a clean native runner has verified:
 - retry/repair after failed installation;
 - actual Windows/macOS/Linux signing or package trust checks, stated honestly.
 
+## Implementation applied to the Brightdesk source branch
+
+The reference lessons have now been applied in source code, not just recorded in this review:
+
+- The Suite launcher has separate Home, Apps and Downloads destinations. Home shows in-Suite apps separately from standalone desktop installs.
+- Apps has catalogue search and filters for All, In suite, Desktop installed and Not installed, plus first-run Select All / Clear All.
+- Downloads has a Windows/macOS/Linux platform selector. Current-computer installers are staged and checksum-verified before explicit Next. Other-platform downloads are resolved from the same trusted release manifest and opened through the operating system browser, with version, filename and SHA-256 shown.
+- The Suite and ten standalone apps consume one versioned release-manifest model. Suite version and app module versions are separate; package metadata includes OS, architecture, package type, size and SHA-256.
+- Update preferences live in one shared Brightdesk app-data file, migrate legacy per-app settings and always force auto-install off.
+- Standalone apps register with the launcher at startup, while the Suite also discovers existing installations from macOS app bundles, Windows install folders/uninstall registry entries, Linux desktop entries, DEB package records and AppImage desktop entries.
+- A Home refresh action updates the installed-app registry without leaving Home. Reinstalled apps update their registry path and version.
+
+These changes are source-level implementation only until Node.js 24.22.2 tests and native platform builds have actually run successfully.
+
+## Newly confirmed release distribution blocker
+
+The connected source repository is private. The desktop update/download resolver uses unauthenticated GitHub release metadata and asset URLs so end users do not need to sign in. A private source repository cannot serve as that no-login release origin. Before a public release, the owner must configure a separate public Brightdesk releases repository or public download host and point the shared manifest/package metadata there. Keep source private if desired; publish only approved release metadata, packages and required notices.
+
+The native multi-app setup/Modify wizard is still unfinished. The Downloads centre now supports selecting the target OS and downloading individual installers, but the end-to-end native installer must still be able to install only selected apps and later modify that selection.
+
 ## Sources
 
 Official public product and support material reviewed on 2026-11-03:
