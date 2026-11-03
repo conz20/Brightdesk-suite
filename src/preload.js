@@ -10,7 +10,7 @@ contextBridge.exposeInMainWorld('brightdesk', {
   architecture: process.arch,
   version: process.env.npm_package_version || '0.1.0',
   getVersion: () => ipcRenderer.invoke('app:version'),
-  openAppDownloads: (appId) => ipcRenderer.invoke('apps:downloads', appId),
+  openAppDownloads: (appId, platform, architecture) => ipcRenderer.invoke('apps:downloads', { appId, platform, architecture }),
   listStandaloneApps: () => ipcRenderer.invoke('apps:list-installed'),
   launchStandaloneApp: (appId) => ipcRenderer.invoke('apps:launch-standalone', appId),
   checkStandaloneAppUpdates: () => ipcRenderer.invoke('apps:check-updates'),
