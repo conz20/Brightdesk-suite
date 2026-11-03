@@ -19,7 +19,11 @@ Version 0.1.0 is the integrated ten-app desktop suite. The complete first-releas
 | Brightdesk To Do | Manage daily tasks and reminders locally. | Available |
 | Brightdesk Workspace | Bring project notes, tasks and resources together locally. | Available |
 
-All ten apps are implemented in the integrated 0.1.0 codebase and are designed to work as part of the Brightdesk desktop suite. The first integrated release remains local-first; these modules do not claim cloud collaboration or Microsoft service integration.
+All ten apps have integrated local-first workflows in the 0.1.0 source line and are designed to work as part of the Brightdesk desktop suite. This does not claim full commercial feature parity, cloud collaboration, remote sync or Microsoft service integration.
+
+The Suite launcher is its own desktop application. The ten approved products are also built as separate desktop apps so users can install only what they need and launch each product directly from Windows, macOS or Linux. The launcher can discover and open separately installed Brightdesk apps. The App Centre distinguishes adding an app to the in-suite navigation from downloading its standalone desktop installer.
+
+Brightdesk is an original product. Adobe and Microsoft 365 are broad quality and workflow references only; Brightdesk does not copy their proprietary source code, artwork, logos or distinctive interface designs. Brightdesk is ad-free, subscription-free and free to use, with no activation codes, licence fees, paid tiers or paid updates. Required third-party licence notices remain included.
 
 ## Supported installer targets
 
