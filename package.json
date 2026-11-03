@@ -16,27 +16,27 @@
     "start": "electron .",
     "test": "node --test",
     "dist": "npm run verify:licenses && electron-builder --publish never",
-    "dist:win": "npm run verify:licenses && electron-builder --win nsis --x64 --publish never",
-    "dist:mac": "npm run verify:licenses && electron-builder --mac dmg pkg zip --universal --publish never",
-    "dist:linux": "npm run verify:licenses && electron-builder --linux AppImage deb --x64 --publish never",
-    "release": "npm run verify:licenses && electron-builder --publish never",
+    "dist:win": "npm run native:build && npm run verify:licenses && electron-builder --win nsis --x64 --publish never",
+    "dist:mac": "npm run native:build && npm run verify:licenses && electron-builder --mac dmg pkg zip --universal --publish never",
+    "dist:linux": "npm run native:build && npm run verify:licenses && electron-builder --linux AppImage deb --x64 --publish never",
+    "release": "npm run native:build && npm run verify:licenses && electron-builder --publish never",
     "verify:licenses": "node scripts/verify-licenses.js",
     "postinstall": "npm run verify:licenses",
-    "dist:apps:win": "node scripts/build-apps.js win",
-    "dist:apps:mac": "node scripts/build-apps.js mac",
-    "dist:apps:linux": "node scripts/build-apps.js linux",
-    "dist:pages:win": "node scripts/build-app.js pages win",
-    "dist:pages:mac": "node scripts/build-app.js pages mac",
-    "dist:pages:linux": "node scripts/build-app.js pages linux",
-    "dist:sheets:win": "node scripts/build-app.js sheets win",
-    "dist:sheets:mac": "node scripts/build-app.js sheets mac",
-    "dist:sheets:linux": "node scripts/build-app.js sheets linux",
-    "dist:decks:win": "node scripts/build-app.js slides win",
-    "dist:decks:mac": "node scripts/build-app.js slides mac",
-    "dist:decks:linux": "node scripts/build-app.js slides linux",
-    "dist:notes:win": "node scripts/build-app.js notes win",
-    "dist:notes:mac": "node scripts/build-app.js notes mac",
-    "dist:notes:linux": "node scripts/build-app.js notes linux",
+    "dist:apps:win": "npm run native:build && node scripts/build-apps.js win",
+    "dist:apps:mac": "npm run native:build && node scripts/build-apps.js mac",
+    "dist:apps:linux": "npm run native:build && node scripts/build-apps.js linux",
+    "dist:pages:win": "npm run native:build && node scripts/build-app.js pages win",
+    "dist:pages:mac": "npm run native:build && node scripts/build-app.js pages mac",
+    "dist:pages:linux": "npm run native:build && node scripts/build-app.js pages linux",
+    "dist:sheets:win": "npm run native:build && node scripts/build-app.js sheets win",
+    "dist:sheets:mac": "npm run native:build && node scripts/build-app.js sheets mac",
+    "dist:sheets:linux": "npm run native:build && node scripts/build-app.js sheets linux",
+    "dist:decks:win": "npm run native:build && node scripts/build-app.js slides win",
+    "dist:decks:mac": "npm run native:build && node scripts/build-app.js slides mac",
+    "dist:decks:linux": "npm run native:build && node scripts/build-app.js slides linux",
+    "dist:notes:win": "npm run native:build && node scripts/build-app.js notes win",
+    "dist:notes:mac": "npm run native:build && node scripts/build-app.js notes mac",
+    "dist:notes:linux": "npm run native:build && node scripts/build-app.js notes linux",
     "rea:inspect": "node scripts/brightdesk-rea.js inspect",
     "fix:app-js": "node scripts/fix-app-js.js",
     "release:preflight": "node scripts/release-preflight.js",
@@ -51,7 +51,10 @@
     "rust:fmt": "cargo fmt --manifest-path rust/Cargo.toml --all -- --check",
     "rust:test": "cargo test --manifest-path rust/Cargo.toml --workspace",
     "rust:build": "cargo build --manifest-path rust/Cargo.toml --workspace --release",
-    "rust:check": "npm run rust:fmt && cargo clippy --manifest-path rust/Cargo.toml --workspace --all-targets -- -D warnings && npm run rust:test && npm run rust:build"
+    "rust:check": "npm run rust:fmt && cargo clippy --manifest-path rust/Cargo.toml --workspace --all-targets -- -D warnings && npm run rust:test && npm run native:build",
+    "native:build": "node scripts/build-native.js",
+    "prestart": "npm run native:build",
+    "pretest": "npm run native:build"
   },
   "dependencies": {
     "docx": "9.15.1",
@@ -81,7 +84,8 @@
       "package.json",
       "LICENSE",
       "THIRD_PARTY_NOTICES.md",
-      "TERMS_AND_CONDITIONS.txt"
+      "TERMS_AND_CONDITIONS.txt",
+      "native/brightdesk_engine.node"
     ],
     "directories": {
       "output": "release"
@@ -128,6 +132,9 @@
       "welcome": "installer/mac-welcome.txt",
       "conclusion": "installer/mac-conclusion.txt",
       "installLocation": "/Applications"
-    }
+    },
+    "asarUnpack": [
+      "native/brightdesk_engine.node"
+    ]
   }
 }

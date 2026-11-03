@@ -14,6 +14,9 @@ if (!apps.has(appId) || !targets[platform]) {
   process.exit(2);
 }
 const npmExec = process.platform === 'win32' ? 'npx.cmd' : 'npx';
+const nativeBuild = spawnSync(process.execPath, [path.resolve(__dirname, 'build-native.js')], { cwd: path.resolve(__dirname, '..'), stdio: 'inherit' });
+if (nativeBuild.error) throw nativeBuild.error;
+if (nativeBuild.status !== 0) process.exit(nativeBuild.status ?? 1);
 const result = spawnSync(npmExec, ['electron-builder', ...targets[platform], '--publish', 'never', '--config', path.resolve(__dirname, '..', 'electron-builder.app.config.js')], {
   cwd: path.resolve(__dirname, '..'), stdio: 'inherit', shell: process.platform === 'win32',
   env: { ...process.env, BRIGHTDESK_APP_ID: appId }

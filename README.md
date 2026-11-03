@@ -60,4 +60,4 @@ Automatic update checking can be turned on or off. Turning it off stops schedule
 
 ## Rust native engine
 
-The suite includes a Rust workspace for local source processing and lexical feature extraction, with a Node.js JSON Lines bridge and JavaScript fallback. Build and test it with `npm run rust:check`. The Rust executable is compiled from source on the target platform and is not committed. Current lexical vectors are not semantic embeddings; external model providers are not enabled. See [Rust engine integration](docs/RUST_ENGINE_INTEGRATION.md).
+The Electron main process loads a local Rust Node-API module for bounded source processing and provider-neutral embedding operations. Rust is used for normalization, cosine similarity, and ranking of vectors returned by an explicitly configured model provider; it does not create semantic embeddings or call external models. No external model provider, paid API, credential, or remote source upload is enabled. See [Rust Node-API integration](docs/RUST_ENGINE_INTEGRATION.md).

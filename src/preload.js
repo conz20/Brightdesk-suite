@@ -9,6 +9,7 @@ contextBridge.exposeInMainWorld('brightdesk', {
   platform: process.platform,
   version: ipcRenderer.sendSync('app:version-sync'),
   getVersion: () => ipcRenderer.invoke('app:version'),
+  getNativeEngineInfo: () => ipcRenderer.invoke('native:engine-info'),
   openFile: () => ipcRenderer.invoke('file:open'),
   exportFile: (payload) => ipcRenderer.invoke('file:export', payload),
   saveProject: (project) => ipcRenderer.invoke('project:save', project),

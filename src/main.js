@@ -1,5 +1,6 @@
 const { app, BrowserWindow, Menu, ipcMain, dialog } = require('electron');
 const packageConfig = require('../package.json');
+const nativeEngine = require('./rust-engine');
 const { assertPackagedVersion, assertMainWindowReady } = require('./startup-smoke');
 const path = require('node:path');
 const crypto = require('node:crypto');
@@ -59,6 +60,10 @@ function createWindow({ show = true } = {}) {
   return mainWindow.loadFile(path.join(__dirname, 'index.html'));
 }
 function senderIsMain(event) { return mainWindow && event.sender === mainWindow.webContents; }
+ipcMain.handle('native:engine-info', event => {
+  if (!senderIsMain(event)) throw new Error('Unauthorized native engine request.');
+  return nativeEngine.engineInfo();
+});
 
 function termsFilePath() { return path.join(app.getAppPath(), 'TERMS_AND_CONDITIONS.txt'); }
 async function readTerms() { return fs.readFile(termsFilePath(), 'utf8'); }

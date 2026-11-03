@@ -1,79 +1,217 @@
-use serde::{Deserialize, Serialize};
-use std::collections::BTreeMap;
+use napi::{Error, Result};
+use napi_derive::napi;
 
-pub const ENGINE_VERSION: &str = env!("CARGO_PKG_VERSION");
-pub const EMBEDDING_DIMENSIONS: usize = 384;
+const MAX_SOURCE_BYTES: usize = 8 * 1024 * 1024;
+const MAX_EMBEDDING_DIMENSIONS: usize = 16_384;
+const MAX_VECTOR_CANDIDATES: usize = 10_000;
+const MAX_TOTAL_VECTOR_VALUES: usize = 1_000_000;
 
-#[derive(Debug, Deserialize)]
-#[serde(tag = "op", rename_all = "snake_case")]
-pub enum Request {
-    Health,
-    Chunk { content: String, #[serde(default)] language: Option<String>, #[serde(default = "default_chunk_bytes")] max_bytes: usize },
-    Embed { text: String },
-    Analyze { content: String, #[serde(default)] language: Option<String> },
+fn invalid(message: &str) -> Error {
+    Error::from_reason(message.to_owned())
 }
-fn default_chunk_bytes() -> usize { 2400 }
 
-#[derive(Debug, Serialize)]
-pub struct Response {
-    pub ok: bool,
-    pub engine: &'static str,
-    pub version: &'static str,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub result: Option<serde_json::Value>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub error: Option<String>,
+fn vector_norm(values: &[f64]) -> Result<f64> {
+    if values.is_empty() || values.len() > MAX_EMBEDDING_DIMENSIONS {
+        return Err(invalid("Embedding dimensions must be between 1 and 16384."));
+    }
+    if values.iter().any(|value| !value.is_finite()) {
+        return Err(invalid("Embedding values must all be finite numbers."));
+    }
+    let squared_norm = values.iter().map(|value| value * value).sum::<f64>();
+    let norm = squared_norm.sqrt();
+    if !norm.is_finite() || norm <= f64::EPSILON {
+        return Err(invalid("Embedding vector must have a finite, non-zero magnitude."));
+    }
+    Ok(norm)
 }
-impl Response {
-    fn success(value: serde_json::Value) -> Self { Self { ok: true, engine: "brightdesk-engine", version: ENGINE_VERSION, result: Some(value), error: None } }
-    fn failure(message: impl Into<String>) -> Self { Self { ok: false, engine: "brightdesk-engine", version: ENGINE_VERSION, result: None, error: Some(message.into()) } }
+
+#[napi(object)]
+pub struct EngineInfo {
+    pub engine: String,
+    pub version: String,
+    pub node_api_version: u32,
+    pub capabilities: Vec<String>,
 }
-pub fn handle(request: Request) -> Response {
-    match request {
-        Request::Health => Response::success(serde_json::json!({"status":"ready","capabilities":["source_chunking","lexical_features","source_analysis","provider_neutral_protocol"]})),
-        Request::Chunk { content, language, max_bytes } => {
-            if !(128..=16000).contains(&max_bytes) { return Response::failure("max_bytes must be between 128 and 16000"); }
-            let chunks = chunk_source(&content, max_bytes);
-            Response::success(serde_json::json!({"language":language.unwrap_or_else(||"unknown".into()),"count":chunks.len(),"chunks":chunks}))
-        }
-        Request::Embed { text } => Response::success(serde_json::json!({"kind":"local_lexical_feature_vector","semantic":false,"dimensions":EMBEDDING_DIMENSIONS,"vector":lexical_embedding(&text)})),
-        Request::Analyze { content, language } => {
-            let tokens = tokenize(&content);
-            let mut frequencies = BTreeMap::new();
-            for token in &tokens { *frequencies.entry(token.clone()).or_insert(0usize) += 1; }
-            let mut top: Vec<_> = frequencies.into_iter().collect();
-            top.sort_by(|a,b| b.1.cmp(&a.1).then_with(|| a.0.cmp(&b.0)));
-            top.truncate(20);
-            Response::success(serde_json::json!({"language":language.unwrap_or_else(||"unknown".into()),"bytes":content.len(),"lines":content.lines().count(),"token_count":tokens.len(),"top_tokens":top.into_iter().map(|(token,count)|serde_json::json!({"token":token,"count":count})).collect::<Vec<_>>()}))
-        }
+
+#[napi(object)]
+pub struct SourceStats {
+    pub bytes: u32,
+    pub lines: u32,
+    pub token_count: u32,
+}
+
+#[napi(object)]
+pub struct RankedEmbedding {
+    pub index: u32,
+    pub score: f64,
+}
+
+#[napi(js_name = "engineInfo")]
+pub fn engine_info() -> EngineInfo {
+    EngineInfo {
+        engine: "Brightdesk Rust Native Engine".to_owned(),
+        version: env!("CARGO_PKG_VERSION").to_owned(),
+        node_api_version: 8,
+        capabilities: vec![
+            "source-chunking".to_owned(),
+            "source-analysis".to_owned(),
+            "embedding-normalization".to_owned(),
+            "cosine-similarity".to_owned(),
+            "vector-ranking".to_owned(),
+            "provider-neutral".to_owned(),
+        ],
     }
 }
-pub fn chunk_source(source: &str, max_bytes: usize) -> Vec<String> {
-    if source.is_empty() { return Vec::new(); }
-    let mut chunks=Vec::new(); let mut current=String::new();
-    for line in source.lines() {
-        let piece=format!("{line}\n");
-        if !current.is_empty() && current.len()+piece.len()>max_bytes { chunks.push(current.trim_end_matches('\n').to_string()); current.clear(); }
-        if piece.len()>max_bytes {
-            if !current.is_empty() { chunks.push(current.trim_end_matches('\n').to_string()); current.clear(); }
-            let mut start=0;
-            while start<line.len() { let mut end=(start+max_bytes).min(line.len()); while !line.is_char_boundary(end) { end-=1; } chunks.push(line[start..end].to_string()); start=end; }
-        } else { current.push_str(&piece); }
+
+#[napi(js_name = "normalizeEmbedding")]
+pub fn normalize_embedding(values: Vec<f64>) -> Result<Vec<f64>> {
+    let norm = vector_norm(&values)?;
+    Ok(values.into_iter().map(|value| value / norm).collect())
+}
+
+#[napi(js_name = "cosineSimilarity")]
+pub fn cosine_similarity(left: Vec<f64>, right: Vec<f64>) -> Result<f64> {
+    let left_norm = vector_norm(&left)?;
+    let right_norm = vector_norm(&right)?;
+    if left.len() != right.len() {
+        return Err(invalid("Embedding vectors must have matching dimensions."));
     }
-    if !current.is_empty() { chunks.push(current.trim_end_matches('\n').to_string()); }
-    chunks
+    let dot = left.iter().zip(right.iter()).map(|(a, b)| a * b).sum::<f64>();
+    Ok((dot / (left_norm * right_norm)).clamp(-1.0, 1.0))
 }
-fn tokenize(text:&str)->Vec<String>{text.split(|c:char|!(c.is_alphanumeric()||c=='_'||c=='$')).filter(|s|s.chars().count()>=2).map(str::to_lowercase).collect()}
-/// Deterministic lexical features only; this is not a semantic embedding model.
-pub fn lexical_embedding(text:&str)->Vec<f32>{
-    let mut vector=vec![0.0_f32;EMBEDDING_DIMENSIONS];
-    for token in tokenize(text){let mut hash=2_166_136_261_u32;for byte in token.bytes(){hash^=u32::from(byte);hash=hash.wrapping_mul(16_777_619);}vector[(hash as usize)%EMBEDDING_DIMENSIONS]+=if hash>>31==0{1.0}else{-1.0};}
-    let norm=vector.iter().map(|v|v*v).sum::<f32>().sqrt();if norm>0.0{for value in &mut vector{*value/=norm;}}vector
+
+#[napi(js_name = "rankEmbeddings")]
+pub fn rank_embeddings(
+    query: Vec<f64>,
+    candidates: Vec<Vec<f64>>,
+    limit: Option<u32>,
+) -> Result<Vec<RankedEmbedding>> {
+    let _ = vector_norm(&query)?;
+    if candidates.len() > MAX_VECTOR_CANDIDATES {
+        return Err(invalid("Too many embedding candidates in one ranking request."));
+    }
+    let total_values = candidates.iter().map(Vec::len).sum::<usize>() + query.len();
+    if total_values > MAX_TOTAL_VECTOR_VALUES {
+        return Err(invalid("Embedding ranking request exceeds the vector-value limit."));
+    }
+    let mut ranked = Vec::with_capacity(candidates.len());
+    for (index, candidate) in candidates.iter().enumerate() {
+        let score = cosine_similarity(query.clone(), candidate.clone())?;
+        ranked.push(RankedEmbedding {
+            index: index as u32,
+            score,
+        });
+    }
+    ranked.sort_by(|left, right| {
+        right
+            .score
+            .total_cmp(&left.score)
+            .then_with(|| left.index.cmp(&right.index))
+    });
+    let take = limit.unwrap_or(ranked.len() as u32).min(ranked.len() as u32) as usize;
+    ranked.truncate(take);
+    Ok(ranked)
 }
-#[cfg(test)] mod tests { use super::*;
-#[test] fn health_is_ready(){let r=handle(Request::Health);assert!(r.ok);assert_eq!(r.result.unwrap()["status"],"ready");}
-#[test] fn chunks_respect_utf8_byte_boundaries(){let source="🦀".repeat(100);let chunks=chunk_source(&source,128);assert!(chunks.iter().all(|c|c.len()<=128));assert_eq!(chunks.concat(),source);}
-#[test] fn vectors_are_deterministic_and_normalized(){let a=lexical_embedding("Brightdesk Rust engine");assert_eq!(a,lexical_embedding("Brightdesk Rust engine"));let n=a.iter().map(|v|v*v).sum::<f32>().sqrt();assert!((n-1.0).abs()<0.0001);}
-#[test] fn empty_vector_is_zero(){assert!(lexical_embedding("").iter().all(|v|*v==0.0));}
-#[test] fn invalid_chunk_limit_is_rejected(){let r=handle(Request::Chunk{content:"x".into(),language:None,max_bytes:1});assert!(!r.ok);}
+
+#[napi(js_name = "chunkSource")]
+pub fn chunk_source(source: String, max_bytes: Option<u32>) -> Result<Vec<String>> {
+    if source.len() > MAX_SOURCE_BYTES {
+        return Err(invalid("Source text exceeds the 8 MiB processing limit."));
+    }
+    let limit = max_bytes.unwrap_or(2400) as usize;
+    if !(128..=16_000).contains(&limit) {
+        return Err(invalid("Chunk size must be between 128 and 16000 bytes."));
+    }
+    let mut chunks = Vec::new();
+    let mut start = 0;
+    while start < source.len() {
+        let target = (start + limit).min(source.len());
+        let mut end = target;
+        while end > start && !source.is_char_boundary(end) {
+            end -= 1;
+        }
+        if end < source.len() {
+            if let Some(newline) = source[start..end].rfind('\n') {
+                let preferred = start + newline + 1;
+                if preferred > start + limit / 2 {
+                    end = preferred;
+                }
+            }
+        }
+        if end == start {
+            end = source[start..]
+                .char_indices()
+                .nth(1)
+                .map(|(offset, _)| start + offset)
+                .unwrap_or(source.len());
+        }
+        chunks.push(source[start..end].to_owned());
+        start = end;
+    }
+    Ok(chunks)
+}
+
+#[napi(js_name = "analyzeSource")]
+pub fn analyze_source(source: String) -> Result<SourceStats> {
+    if source.len() > MAX_SOURCE_BYTES {
+        return Err(invalid("Source text exceeds the 8 MiB processing limit."));
+    }
+    Ok(SourceStats {
+        bytes: source.len() as u32,
+        lines: source.lines().count() as u32,
+        token_count: source.split_whitespace().count() as u32,
+    })
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn normalizes_vectors_without_changing_direction() {
+        let normalized = normalize_embedding(vec![3.0, 4.0]).unwrap();
+        assert!((normalized[0] - 0.6).abs() < 1e-10);
+        assert!((normalized[1] - 0.8).abs() < 1e-10);
+    }
+
+    #[test]
+    fn rejects_empty_zero_non_finite_and_oversized_vectors() {
+        assert!(normalize_embedding(vec![]).is_err());
+        assert!(normalize_embedding(vec![0.0, 0.0]).is_err());
+        assert!(normalize_embedding(vec![f64::NAN]).is_err());
+        assert!(normalize_embedding(vec![1.0; MAX_EMBEDDING_DIMENSIONS + 1]).is_err());
+    }
+
+    #[test]
+    fn computes_cosine_similarity() {
+        assert!((cosine_similarity(vec![1.0, 0.0], vec![2.0, 0.0]).unwrap() - 1.0).abs() < 1e-10);
+        assert!((cosine_similarity(vec![1.0, 0.0], vec![-1.0, 0.0]).unwrap() + 1.0).abs() < 1e-10);
+        assert!(cosine_similarity(vec![1.0], vec![1.0, 0.0]).is_err());
+    }
+
+    #[test]
+    fn ranking_is_descending_and_stable_for_ties() {
+        let ranked = rank_embeddings(
+            vec![1.0, 0.0],
+            vec![vec![0.0, 1.0], vec![1.0, 0.0], vec![2.0, 0.0]],
+            None,
+        ).unwrap();
+        assert_eq!(ranked.iter().map(|item| item.index).collect::<Vec<_>>(), vec![1, 2, 0]);
+    }
+
+    #[test]
+    fn chunks_preserve_unicode_and_respect_byte_limit() {
+        let source = "🦀".repeat(100);
+        let chunks = chunk_source(source.clone(), Some(128)).unwrap();
+        assert!(chunks.iter().all(|chunk| chunk.len() <= 128));
+        assert_eq!(chunks.concat(), source);
+    }
+
+    #[test]
+    fn source_analysis_reports_bounded_statistics() {
+        let stats = analyze_source("one two\nthree".to_owned()).unwrap();
+        assert_eq!(stats.bytes, 13);
+        assert_eq!(stats.lines, 2);
+        assert_eq!(stats.token_count, 3);
+    }
 }
