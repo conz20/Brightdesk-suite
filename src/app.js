@@ -1094,9 +1094,9 @@ function renderAppUpdates(result) {
   suiteDetails.append(suiteTitle, suiteVersion);
   suiteActions.prepend(suiteStatus);
   suiteRow.append(suiteIcon, suiteDetails, suiteActions);
-  host.append(suiteRow);
+  if (!launchAppId) host.append(suiteRow);
 
-  catalog.forEach(item => {
+  catalog.filter(item => !launchAppId || item.id === launchAppId).forEach(item => {
     const standalone = state.standaloneApps.find(installed => installed.id === item.id) || null;
     const inSuite = installedApp(item.id);
     const update = appUpdates.get(item.id) || null;
@@ -1198,6 +1198,11 @@ function renderAppUpdates(result) {
         }
       });
       actions.append(download);
+    } else if (launchAppId && item.id === launchAppId) {
+      const currentApp = document.createElement('span');
+      currentApp.className = 'app-update-status current';
+      currentApp.textContent = 'This app';
+      actions.append(currentApp);
     } else if (standalone) {
       const open = document.createElement('button');
       open.type = 'button';
@@ -1244,11 +1249,13 @@ async function checkForUpdatesManually() {
   try {
     state.standaloneApps = await window.brightdesk.listStandaloneApps();
     const [suiteResult, appResult] = await Promise.all([
-      window.brightdesk.checkForUpdates(),
+      launchAppId
+        ? Promise.resolve({ ok: true, status: 'standalone' })
+        : window.brightdesk.checkForUpdates(),
       window.brightdesk.checkStandaloneAppUpdates()
     ]);
     state.stagedAppUpdates = appResult?.stagedApps || await window.brightdesk.listStagedStandaloneAppUpdates();
-    if (!suiteResult?.ok) {
+    if (!launchAppId && !suiteResult?.ok) {
       state.suiteUpdate = {
         status: 'unavailable',
         currentVersion: state.currentVersion,
@@ -1258,6 +1265,21 @@ async function checkForUpdatesManually() {
     renderAppUpdates(appResult);
     const standaloneUpdates = appResult?.ok ? appResult.apps.filter(item => item.updateAvailable) : [];
     $('update-status-dot').hidden = standaloneUpdates.length === 0;
+    if (launchAppId) {
+      const currentAppUpdate = appResult?.ok ? appResult.apps.find(item => item.id === launchAppId) : null;
+      if (!appResult?.ok) {
+        updateMessage(appResult?.message || `Could not check updates for ${appLabel(launchAppId)}.`, 'error');
+      } else if (!currentAppUpdate) {
+        updateMessage(`No release information is available for ${appLabel(launchAppId)} on this platform.`, 'info');
+      } else if (!currentAppUpdate.installerAvailable) {
+        updateMessage(`No ${window.brightdesk.platform} installer is published for ${appLabel(launchAppId)} ${currentAppUpdate.availableVersion}.`, 'info');
+      } else if (currentAppUpdate.updateAvailable) {
+        updateMessage(`${currentAppUpdate.name}: ${currentAppUpdate.currentVersion} → ${currentAppUpdate.availableVersion}. Review the version details below.`, 'notice');
+      } else {
+        updateMessage(`${currentAppUpdate.name} ${currentAppUpdate.currentVersion} is up to date.`, 'success');
+      }
+      return;
+    }
     if (standaloneUpdates.length) {
       const stagedCount = state.stagedAppUpdates.filter(staged =>
         standaloneUpdates.some(update => update.id === staged.appId && update.availableVersion === staged.version)
