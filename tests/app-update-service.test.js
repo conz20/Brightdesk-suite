@@ -137,7 +137,7 @@ test('no published release is reported clearly', async () => {
     fetchImpl: async () => ({ ok: false, status: 404 })
   });
   assert.equal(result.ok, false);
-  assert.match(result.message, /No Brightdesk release/);
+  assert.match(result.message, /No public Brightdesk release feed/);
 });
 
 test('unapproved app IDs cannot be used to locate an installer', async () => {
