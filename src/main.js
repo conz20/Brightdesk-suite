@@ -116,6 +116,7 @@ ipcMain.handle('terms:decline', event => {
   app.quit();
   return { ok: true };
 });
+ipcMain.on('app:version-sync', event => { event.returnValue = app.getVersion(); });
 ipcMain.handle('app:version', event => { if (!senderIsMain(event)) throw new Error('Invalid sender.'); return app.getVersion(); });
 
 function languagePackDirectory() {
