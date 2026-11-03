@@ -5,6 +5,13 @@ const fs = require('node:fs');
 const path = require('node:path');
 const crypto = require('node:crypto');
 
+const APPROVED_APP_IDS = ['pages', 'sheets', 'slides', 'notes', 'database', 'forms', 'lists', 'planner', 'todo', 'loop'];
+const STANDALONE_EXPECTED = {
+  win: /\\.exe$/i,
+  mac: /\\.(?:dmg|pkg|zip)$/i,
+  linux: /\\.(?:AppImage|deb)$/i
+};
+
 const EXPECTED = {
   win: [/\.exe$/i, /Brightdesk-Windows-TERMS_AND_CONDITIONS\.txt$/i, /Brightdesk-Windows-LICENSE\.txt$/i, /Brightdesk-Windows-THIRD_PARTY_NOTICES\.md$/i],
   mac: [/\.dmg$/i, /\.pkg$/i, /\.zip$/i, /Brightdesk-macOS-TERMS_AND_CONDITIONS\.txt$/i, /Brightdesk-macOS-LICENSE\.txt$/i, /Brightdesk-macOS-THIRD_PARTY_NOTICES\.md$/i],
@@ -17,6 +24,29 @@ function collectFiles(directory) {
     const full = path.join(directory, entry.name);
     return entry.isDirectory() ? collectFiles(full) : [full];
   });
+}
+
+function verifyStandaloneArtifacts({ directory, platform }) {
+  const pattern = STANDALONE_EXPECTED[platform];
+  if (!pattern) throw new Error(`Unsupported platform: ${platform}`);
+  const appRoot = path.join(directory, 'apps');
+  const verified = [];
+  const missing = [];
+
+  for (const appId of APPROVED_APP_IDS) {
+    const appDirectory = path.join(appRoot, appId);
+    const files = collectFiles(appDirectory).filter(file => pattern.test(file));
+    if (files.length === 0) {
+      missing.push(appId);
+      continue;
+    }
+    verified.push(...files);
+  }
+
+  if (missing.length) {
+    throw new Error(`Missing standalone ${platform} installer(s) for: ${missing.join(', ')}.`);
+  }
+  return verified;
 }
 
 function sha256File(file) {
@@ -42,7 +72,8 @@ function verifyArtifacts({ directory, platform }) {
   if (missing.length) {
     throw new Error(`Missing expected ${platform} release artifact(s): ${missing.map(String).join(', ')}. Found ${files.map(file => path.basename(file)).join(', ') || 'none'}.`);
   }
-  const rows = files.sort().map(file => {
+  const standaloneFiles = verifyStandaloneArtifacts({ directory, platform });
+  const rows = [...new Set([...files, ...standaloneFiles])].sort().map(file => {
     const bytes = fs.statSync(file).size;
     if (bytes <= 0) throw new Error(`Installer artifact is empty: ${file}`);
     return {
@@ -70,4 +101,4 @@ if (require.main === module) {
   }
 }
 
-module.exports = { EXPECTED, sha256File, verifyArtifacts };
+module.exports = { APPROVED_APP_IDS, EXPECTED, STANDALONE_EXPECTED, sha256File, verifyArtifacts, verifyStandaloneArtifacts };
