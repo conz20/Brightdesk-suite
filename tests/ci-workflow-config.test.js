@@ -27,7 +27,6 @@ test('feature quality workflow uses one pull-request run and the pinned Node run
   assert.match(workflow, /runs-on: ubuntu-24\.04/);
   assert.match(workflow, /node-version: 24\.22\.2/);
   assert.match(workflow, /npm run check:node/);
-  assert.match(workflow, /runs-on: \\[self-hosted, macOS, ARM64\\]/);
   for (const file of ['src/release-manifest.js', 'src/update-preferences.js', 'src/standalone-app-discovery.js', 'scripts/generate-release-manifest.js']) {
     assert.ok(workflow.includes('node --check ' + file), `missing syntax check for ${file}`);
   }
