@@ -952,6 +952,7 @@ function updateMessage(message, status = 'info', actions = []) {
   host.append(controls);
 }
 async function openUpdateSettings() {
+  $('app-updates-panel').hidden = true;
   updatePanel.hidden = false;
   try {
     const settings = await window.brightdesk.getUpdateSettings();
@@ -976,12 +977,123 @@ async function saveUpdateSettings() {
     updateMessage(`Could not save update settings: ${error.message}`, 'error');
   }
 }
+function renderAppUpdates(result) {
+  const host = $('app-updates-list');
+  host.replaceChildren();
+  const appUpdates = new Map((result?.apps || []).map(item => [item.id, item]));
+  const hasPublishedRelease = result?.ok === true;
+
+  catalog.forEach(item => {
+    const standalone = state.standaloneApps.find(installed => installed.id === item.id) || null;
+    const inSuite = installedApp(item.id);
+    const update = appUpdates.get(item.id) || null;
+    const row = document.createElement('article');
+    row.className = 'app-update-row';
+    const icon = document.createElement('img');
+    icon.className = 'app-update-icon';
+    icon.src = item.icon;
+    icon.alt = '';
+    icon.setAttribute('aria-hidden', 'true');
+    const details = document.createElement('div');
+    details.className = 'app-update-details';
+    const title = document.createElement('b');
+    title.textContent = item.name;
+    const version = document.createElement('small');
+    const status = document.createElement('span');
+    status.className = 'app-update-status';
+
+    if (standalone) {
+      version.textContent = hasPublishedRelease
+        ? `Installed ${standalone.version} · Latest ${update?.availableVersion || result.releaseVersion || 'unknown'}`
+        : `Installed ${standalone.version}`;
+      if (!hasPublishedRelease) {
+        status.textContent = result?.message || 'Release information unavailable';
+        status.classList.add('muted');
+      } else if (update?.updateAvailable) {
+        status.textContent = 'Update available';
+        status.classList.add('available');
+      } else if (update?.installerAvailable) {
+        status.textContent = 'Up to date';
+        status.classList.add('current');
+      } else {
+        status.textContent = 'No installer published for this platform';
+        status.classList.add('muted');
+      }
+    } else if (inSuite) {
+      version.textContent = `Included in Brightdesk ${state.currentVersion}`;
+      status.textContent = 'Updates with the suite';
+      status.classList.add('current');
+    } else {
+      version.textContent = 'Not installed on this computer';
+      status.textContent = 'Available to install';
+      status.classList.add('muted');
+    }
+
+    details.append(title, version);
+    const actions = document.createElement('div');
+    actions.className = 'app-update-actions';
+    if (standalone && update?.updateAvailable) {
+      const download = document.createElement('button');
+      download.type = 'button';
+      download.className = 'primary small-action';
+      download.textContent = 'Download update';
+      download.addEventListener('click', async () => {
+        try {
+          await window.brightdesk.downloadStandaloneAppUpdate(item.id);
+          updateMessage(`Opened the ${update.availableVersion} installer for ${item.name}. Follow the installer to complete the update.`, 'success');
+        } catch (error) {
+          updateMessage(`Could not open the update for ${item.name}: ${error.message}`, 'error');
+        }
+      });
+      actions.append(download);
+    } else if (standalone) {
+      const open = document.createElement('button');
+      open.type = 'button';
+      open.className = 'text-button';
+      open.textContent = 'Open desktop app';
+      open.addEventListener('click', async () => {
+        try { await window.brightdesk.launchStandaloneApp(item.id); }
+        catch (error) { updateMessage(error.message, 'error'); }
+      });
+      actions.append(open);
+    } else if (!inSuite) {
+      const download = document.createElement('button');
+      download.type = 'button';
+      download.className = 'text-button';
+      download.textContent = 'Get app';
+      download.addEventListener('click', async () => {
+        try { await window.brightdesk.openAppDownloads(item.id); }
+        catch (error) { updateMessage(error.message, 'error'); }
+      });
+      actions.append(download);
+    }
+    actions.prepend(status);
+    row.append(icon, details, actions);
+    host.append(row);
+  });
+
+  if (catalog.length === 0) {
+    const empty = document.createElement('p');
+    empty.className = 'app-updates-empty';
+    empty.textContent = 'No apps are listed.';
+    host.append(empty);
+  }
+}
 async function checkForUpdatesManually() {
-  updateMessage('Checking Brightdesk for updates…', 'info');
+  $('update-settings-panel').hidden = true;
+  $('app-updates-panel').hidden = false;
+  $('app-updates-list').replaceChildren();
+  updateMessage('Checking Brightdesk and your installed standalone apps…', 'info');
   try {
-    const result = await window.brightdesk.checkForUpdates();
-    if (!result?.ok) updateMessage(result?.message || 'The update check could not be completed.', 'error');
+    state.standaloneApps = await window.brightdesk.listStandaloneApps();
+    const [suiteResult, appResult] = await Promise.all([
+      window.brightdesk.checkForUpdates(),
+      window.brightdesk.checkStandaloneAppUpdates()
+    ]);
+    renderAppUpdates(appResult);
+    if (!suiteResult?.ok) updateMessage(suiteResult?.message || 'The Brightdesk suite update check could not be completed.', 'error');
   } catch (error) {
+    renderAppUpdates({ ok: false, message: error.message, apps: [] });
     updateMessage(`Update check failed: ${error.message}`, 'error');
   }
 }
@@ -1008,6 +1120,7 @@ async function installDownloadedUpdate() {
 $('updates-button').addEventListener('click', checkForUpdatesManually);
 $('update-settings-button').addEventListener('click', openUpdateSettings);
 $('close-update-settings').addEventListener('click', () => { updatePanel.hidden = true; });
+$('close-app-updates').addEventListener('click', () => { $('app-updates-panel').hidden = true; });
 $('save-update-settings').addEventListener('click', saveUpdateSettings);
 $('update-manual-check').addEventListener('click', checkForUpdatesManually);
 $('update-manual-download').addEventListener('click', downloadUpdateManually);
