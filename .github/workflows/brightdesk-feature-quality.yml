@@ -59,9 +59,13 @@ jobs:
           node --check src/preload.js
           node --check src/app.js
           node --check src/app-catalog.js
-          node --check src/standalone-app-registry.js
+          node --check src/release-manifest.js
           node --check src/app-update-service.js
+          node --check src/update-preferences.js
+          node --check src/standalone-app-discovery.js
+          node --check src/standalone-app-registry.js
           node --check src/standalone-update-manager.js
+          node --check scripts/generate-release-manifest.js
 
       - name: Run the complete test suite
         run: npm test
