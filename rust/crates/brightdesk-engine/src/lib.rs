@@ -69,15 +69,23 @@ pub fn normalize_embedding(values: Vec<f64>) -> Result<Vec<f64>> {
     Ok(values.into_iter().map(|value| value / norm).collect())
 }
 
-#[napi(js_name = "cosineSimilarity")]
-pub fn cosine_similarity(left: Vec<f64>, right: Vec<f64>) -> Result<f64> {
-    let left_norm = vector_norm(&left)?;
-    let right_norm = vector_norm(&right)?;
+fn cosine_similarity_with_norm(left: &[f64], left_norm: f64, right: &[f64]) -> Result<f64> {
+    let right_norm = vector_norm(right)?;
     if left.len() != right.len() {
         return Err(invalid("Embedding vectors must have matching dimensions."));
     }
     let dot = left.iter().zip(right.iter()).map(|(a, b)| a * b).sum::<f64>();
     Ok((dot / (left_norm * right_norm)).clamp(-1.0, 1.0))
+}
+
+fn cosine_similarity_values(left: &[f64], right: &[f64]) -> Result<f64> {
+    let left_norm = vector_norm(left)?;
+    cosine_similarity_with_norm(left, left_norm, right)
+}
+
+#[napi(js_name = "cosineSimilarity")]
+pub fn cosine_similarity(left: Vec<f64>, right: Vec<f64>) -> Result<f64> {
+    cosine_similarity_values(&left, &right)
 }
 
 #[napi(js_name = "rankEmbeddings")]
@@ -86,7 +94,7 @@ pub fn rank_embeddings(
     candidates: Vec<Vec<f64>>,
     limit: Option<u32>,
 ) -> Result<Vec<RankedEmbedding>> {
-    let _ = vector_norm(&query)?;
+    let query_norm = vector_norm(&query)?;
     if candidates.len() > MAX_VECTOR_CANDIDATES {
         return Err(invalid("Too many embedding candidates in one ranking request."));
     }
@@ -96,7 +104,7 @@ pub fn rank_embeddings(
     }
     let mut ranked = Vec::with_capacity(candidates.len());
     for (index, candidate) in candidates.iter().enumerate() {
-        let score = cosine_similarity(query.clone(), candidate.clone())?;
+        let score = cosine_similarity_with_norm(&query, query_norm, candidate)?;
         ranked.push(RankedEmbedding {
             index: index as u32,
             score,
@@ -213,5 +221,20 @@ mod tests {
         assert_eq!(stats.bytes, 13);
         assert_eq!(stats.lines, 2);
         assert_eq!(stats.token_count, 3);
+    }
+
+
+    #[test]
+    fn ranking_respects_result_limit_and_candidate_bounds() {
+        let ranked = rank_embeddings(
+            vec![1.0, 0.0],
+            vec![vec![0.0, 1.0], vec![1.0, 0.0], vec![2.0, 0.0]],
+            Some(1),
+        ).unwrap();
+        assert_eq!(ranked.len(), 1);
+        assert_eq!(ranked[0].index, 1);
+
+        let too_many = vec![vec![1.0]; MAX_VECTOR_CANDIDATES + 1];
+        assert!(rank_embeddings(vec![1.0], too_many, None).is_err());
     }
 }
