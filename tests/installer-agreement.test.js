@@ -112,7 +112,7 @@ test('Linux installer accepts the prefixed terms filename used by release prepar
     fs.writeFileSync(path.join(temp, `brightdesk-${productVersion}-x64.deb`), 'test package');
 
     const result = spawnSync('bash', [path.join(temp, 'install-linux.sh')], {
-      input: 'no\\n',
+      input: 'no\n',
       encoding: 'utf8',
       env: process.env
     });
