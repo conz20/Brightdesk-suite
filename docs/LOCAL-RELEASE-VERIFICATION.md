@@ -17,7 +17,7 @@ From the Brightdesk repository folder, run:
 npm run verify:local-release
 ```
 
-The script checks the Node.js version and dependency lock, installs the locked dependencies, verifies licence notices, runs the full test suite and release preflight, runs the high-severity npm audit, builds for the current operating system, prepares the legal/checksum assets and verifies the installer files.
+The script checks the Node.js version and dependency lock, installs the locked dependencies, verifies licence notices, runs the full test suite, refreshes the static source inventory with `npm run rea:inspect`, runs release preflight and the high-severity npm audit, builds for the current operating system, prepares the legal/checksum assets and verifies the installer files.
 
 The script builds only for the operating system where it is run:
 - macOS: universal DMG, PKG and ZIP
