@@ -45,10 +45,7 @@ jobs:
           node-version: 24.22.2
           cache: npm
 
-      - name: Prepare exact dependency lock
-        run: npm run lock:prepare
-
-      - name: Verify dependency lock
+      - name: Verify the committed dependency lock
         run: npm run lock:verify
 
       - name: Install locked dependencies
@@ -101,7 +98,7 @@ jobs:
           node-version: 24.22.2
           cache: npm
 
-      - name: Restore the exact dependency lock
+      - name: Restore the verified committed dependency lock
         uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
         with:
           name: brightdesk-dependency-lock

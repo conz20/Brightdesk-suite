@@ -15,14 +15,25 @@ test('Dependabot checks npm dependencies and GitHub Actions weekly', () => {
   assert.equal((workflow.match(/interval: weekly/g) || []).length, 2);
 });
 
-test('scheduled dependency audit prepares and verifies a lockfile before blocking high severity vulnerabilities', () => {
-  const workflow = read('.github/workflows/security-audit.yml');
+test('one consolidated PR quality workflow verifies the committed lock and runs scheduled security checks', () => {
+  const workflow = read('.github/workflows/quality.yml');
+  assert.match(workflow, /pull_request:\s*\n\s*branches: \[main\]/);
   assert.match(workflow, /cron:/);
   assert.match(workflow, /node-version: 24\.22\.2/);
-  assert.match(workflow, /npm run lock:prepare/);
-  assert.match(workflow, /npm run lock:verify/);
-  assert.match(workflow, /npm ci --no-audit --no-fund/);
-  assert.match(workflow, /npm audit --audit-level=high/);
+  for (const command of [
+    'npm run check:node',
+    'npm run lock:verify',
+    'npm ci --no-audit --no-fund',
+    'npm run verify:licenses',
+    'npm test',
+    'npm run release:preflight',
+    'npm audit --audit-level=high'
+  ]) assert.ok(workflow.includes(command), `quality gate includes ${command}`);
+  assert.ok(workflow.indexOf('npm run lock:verify') < workflow.indexOf('npm ci --no-audit --no-fund'));
+  assert.doesNotMatch(workflow, /npm run lock:prepare/);
+  for (const obsolete of ['integration-ci.yml', 'lists-ci.yml', 'security-audit.yml']) {
+    assert.equal(fs.existsSync(path.join(root, '.github', 'workflows', obsolete)), false, `${obsolete} must not duplicate the consolidated gate`);
+  }
 });
 
 test('release workflow builds and verifies all three desktop platforms', () => {
@@ -34,8 +45,9 @@ test('release workflow builds and verifies all three desktop platforms', () => {
     assert.ok(workflow.includes(command), `workflow includes ${command}`);
   }
   assert.match(workflow, /node-version: 24\.22\.2/);
-  assert.match(workflow, /npm run lock:prepare/);
   assert.match(workflow, /npm run lock:verify/);
+  assert.ok(workflow.indexOf('npm run lock:verify') < workflow.indexOf('npm ci --no-audit --no-fund'));
+  assert.doesNotMatch(workflow, /npm run lock:prepare/);
   assert.match(workflow, /brightdesk-dependency-lock/);
   assert.match(workflow, /npm run release:preflight/);
   assert.match(workflow, /npm test/);
@@ -90,7 +102,7 @@ test('Node.js runtime is pinned consistently to the current 24 LTS patch', () =>
   assert.equal(read('.node-version').trim(), '24.22.2');
   assert.match(read('.devcontainer/Dockerfile'), /^FROM node:24\.22\.2-bookworm/m);
   assert.match(read('.github/workflows/build-release.yml'), /node-version: 24\.22\.2/);
-  assert.match(read('.github/workflows/security-audit.yml'), /node-version: 24\.22\.2/);
+  assert.match(read('.github/workflows/quality.yml'), /node-version: 24\.22\.2/);
 });
 
 test('individual app installer builds explicitly disable implicit publishing', () => {
