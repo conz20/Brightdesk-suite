@@ -40,3 +40,53 @@ test('standalone app registry removes entries when the application executable is
     await fs.rm(basePath, { recursive: true, force: true });
   }
 });
+
+test('launcher registry discovers a Linux desktop package before its first launch', async () => {
+  const basePath = await fs.mkdtemp(path.join(os.tmpdir(), 'brightdesk-registry-discovery-'));
+  try {
+    const executablePath = path.join(basePath, 'brightdesk-pages');
+    const desktopPath = path.join(basePath, 'brightdesk-pages.desktop');
+    await fs.writeFile(executablePath, 'test executable');
+    await fs.writeFile(desktopPath, `[Desktop Entry]
+Type=Application
+Name=Brightdesk Pages
+Exec=${executablePath} %U
+X-Brightdesk-Version=0.1.0
+`);
+
+    const installed = await listInstalledStandaloneApps({
+      appDataPath: basePath,
+      platform: 'linux',
+      homeDirectory: basePath,
+      searchDirectories: { linuxDesktopDirectories: [basePath] }
+    });
+    assert.equal(installed.length, 1);
+    assert.equal(installed[0].id, 'pages');
+    assert.equal(installed[0].version, '0.1.0');
+    assert.equal(installed[0].source, 'system-discovery');
+
+    const persisted = JSON.parse(await fs.readFile(path.join(basePath, 'Brightdesk', 'installed-apps.json'), 'utf8'));
+    assert.equal(persisted.apps.pages.executablePath, executablePath);
+  } finally {
+    await fs.rm(basePath, { recursive: true, force: true });
+  }
+});
+
+test('unknown discovered app versions are retained without inventing an update version', async () => {
+  const basePath = await fs.mkdtemp(path.join(os.tmpdir(), 'brightdesk-registry-unknown-version-'));
+  try {
+    const executablePath = path.join(basePath, 'Brightdesk Pages.exe');
+    await fs.writeFile(executablePath, 'test executable');
+    const record = await registerStandaloneApp({
+      appDataPath: basePath, appId: 'pages', version: 'unknown',
+      executablePath, platform: 'win32'
+    });
+    assert.equal(record.version, 'unknown');
+    const installed = await listInstalledStandaloneApps({
+      appDataPath: basePath, platform: 'freebsd'
+    }).catch(error => { throw error; });
+    assert.equal(installed.length, 0);
+  } finally {
+    await fs.rm(basePath, { recursive: true, force: true });
+  }
+});
