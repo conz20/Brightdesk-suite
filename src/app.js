@@ -671,12 +671,20 @@ function renderDownloads() {
 }
 async function refreshInstalledAppList() {
   try {
-    state.standaloneApps = await window.brightdesk.listStandaloneApps();
-    state.stagedAppUpdates = await window.brightdesk.listStagedStandaloneAppUpdates();
-    renderAppManager();
+    const [standaloneApps, stagedUpdates] = await Promise.all([
+      window.brightdesk.listStandaloneApps(),
+      window.brightdesk.listStagedStandaloneAppUpdates()
+    ]);
+    state.standaloneApps = standaloneApps;
+    state.stagedAppUpdates = stagedUpdates;
+    if (state.view === 'home') renderHome();
+    else if (state.view === 'downloads') renderDownloads();
+    else if (state.view === 'manager') renderAppManager();
     updateMessage(`Found ${state.standaloneApps.length} separately installed Brightdesk app${state.standaloneApps.length === 1 ? '' : 's'}.`, 'success');
+    return standaloneApps;
   } catch (error) {
     updateMessage(`Could not refresh installed apps: ${error.message}`, 'error');
+    throw error;
   }
 }
 
@@ -1137,6 +1145,7 @@ $('home-view-all-apps').addEventListener('click', () => { state.view = 'manager'
 $('home-open-downloads').addEventListener('click', () => { state.view = 'downloads'; render(); });
 $('home-manage-downloads').addEventListener('click', () => { state.view = 'downloads'; render(); });
 $('home-check-updates').addEventListener('click', checkForUpdatesManually);
+$('home-refresh-apps').addEventListener('click', refreshInstalledAppList);
 $('downloads-nav').addEventListener('click', async () => {
   if (launchAppId) return;
   state.view = 'downloads';
