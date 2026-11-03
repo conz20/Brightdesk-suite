@@ -36,6 +36,47 @@ function assetMatchesApp(assetName, appId, version, platform) {
   return false;
 }
 
+function platformAssetExtension(platform) {
+  if (platform === 'win32') return ['.exe'];
+  if (platform === 'darwin') return ['.pkg', '.dmg', '.zip'];
+  if (platform === 'linux') return ['.deb', '.AppImage'];
+  return [];
+}
+
+function findStandaloneAppInstaller(assets, appId, version, platform) {
+  const allowed = platformAssetExtension(platform);
+  if (!allowed.length) return null;
+  for (const extension of allowed) {
+    const found = (Array.isArray(assets) ? assets : []).find(asset =>
+      assetMatchesApp(asset.name, appId, version, platform) &&
+      String(asset.name).toLowerCase().endsWith(extension.toLowerCase()) &&
+      typeof asset.browser_download_url === 'string' &&
+      asset.browser_download_url.startsWith(TRUSTED_DOWNLOAD_PREFIX)
+    );
+    if (found) return found;
+  }
+  return null;
+}
+
+async function getStandaloneAppDownload({ appId, platform, fetchImpl = global.fetch } = {}) {
+  if (!Object.hasOwn(APP_NAMES, appId)) throw new Error('That app is not in the approved Brightdesk catalogue.');
+  if (!['win32', 'darwin', 'linux'].includes(platform)) throw new TypeError('Unsupported platform.');
+  if (typeof fetchImpl !== 'function') throw new Error('This runtime cannot check for app downloads.');
+  const response = await fetchImpl(API_URL, {
+    headers: { Accept: 'application/vnd.github+json', 'User-Agent': 'Brightdesk-Office-Suite' }
+  });
+  if (!response.ok) {
+    if (response.status === 404) throw new Error('No Brightdesk release has been published yet.');
+    throw new Error(`GitHub returned HTTP ${response.status} while looking for the app installer.`);
+  }
+  const release = await response.json();
+  const version = String(release.tag_name || '').replace(/^v/i, '');
+  if (compareVersions(version, version) === null) throw new Error('The latest Brightdesk release does not contain a valid version tag.');
+  const asset = findStandaloneAppInstaller(release.assets, appId, version, platform);
+  if (!asset) throw new Error(`No Brightdesk ${APP_NAMES[appId]} installer for ${platform} is published in release ${version}.`);
+  return { appId, version, fileName: asset.name, downloadUrl: asset.browser_download_url, releaseUrl: release.html_url || '' };
+}
+
 async function checkStandaloneAppUpdates({ installedApps, platform, fetchImpl = global.fetch } = {}) {
   if (!Array.isArray(installedApps)) throw new TypeError('Installed app records are required.');
   if (!['win32', 'darwin', 'linux'].includes(platform)) throw new TypeError('Unsupported platform.');
@@ -61,7 +102,7 @@ async function checkStandaloneAppUpdates({ installedApps, platform, fetchImpl = 
     const apps = installedApps.map(installed => {
       const appId = installed.id;
       if (!Object.hasOwn(APP_NAMES, appId)) return null;
-      const asset = assets.find(item => assetMatchesApp(item.name, appId, availableVersion, platform));
+      const asset = findStandaloneAppInstaller(assets, appId, availableVersion, platform);
       const comparison = compareVersions(availableVersion, installed.version);
       const updateAvailable = comparison !== null && comparison > 0 && Boolean(asset);
       const downloadUrl = asset?.browser_download_url || '';
@@ -84,4 +125,4 @@ async function checkStandaloneAppUpdates({ installedApps, platform, fetchImpl = 
   }
 }
 
-module.exports = { APP_NAMES, API_URL, compareVersions, assetMatchesApp, checkStandaloneAppUpdates };
+module.exports = { APP_NAMES, API_URL, compareVersions, assetMatchesApp, findStandaloneAppInstaller, getStandaloneAppDownload, checkStandaloneAppUpdates };
