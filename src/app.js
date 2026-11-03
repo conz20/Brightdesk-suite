@@ -38,6 +38,7 @@ const state = {
   setupComplete: false, firstRunSelection: new Set(),
   managerView: localStorage.getItem('brightdesk-manager-view') === 'list' ? 'list' : 'grid',
   managerFilter: 'all', managerSearch: '',
+  downloadsPlatform: null,
   slideTheme: 'lavender', focusMode: false, editorZoom: 100, sheetZoom: 100,
   languageCatalog: [], installedLanguagePacks: [], spellCheckerLanguages: [], usesNativeMacSpellChecker: false,
   displayLanguage: 'en-AU', proofingLanguage: 'en-AU',
@@ -589,29 +590,43 @@ function renderAppManager() {
   }
 }
 function renderDownloads() {
-  const platform = window.brightdesk.platform;
-  const architecture = window.brightdesk.architecture;
+  const currentPlatform = window.brightdesk.platform;
+  const currentArchitecture = window.brightdesk.architecture;
   const platformNames = { win32: 'Windows', darwin: 'macOS', linux: 'Linux' };
-  const architectureNames = {
-    x64: platform === 'darwin' ? 'Universal Intel / Apple silicon package' : '64-bit Intel / AMD',
-    arm64: platform === 'darwin' ? 'Universal Intel / Apple silicon package' : 'ARM64',
-    arm: '32-bit ARM'
+  const targetArchitectures = { win32: 'x64', darwin: 'universal', linux: 'x64' };
+  const packageNames = {
+    win32: 'Windows installer (.exe)',
+    darwin: 'Universal Mac installer (.pkg)',
+    linux: 'Linux package (.deb)'
   };
-  const packageNames = { win32: 'Windows installer (.exe)', darwin: 'Universal Mac installer (.pkg)', linux: 'Debian / Ubuntu package (.deb)' };
-  const supportedArchitecture = platform === 'darwin'
-    ? ['x64', 'arm64'].includes(architecture)
-    : architecture === 'x64';
-  const platformSupported = Boolean(platformNames[platform]) && supportedArchitecture;
-  $('downloads-platform-name').textContent = platformNames[platform] || 'Unsupported platform';
-  $('downloads-platform-details').textContent = platformSupported
-    ? `${architectureNames[architecture] || architecture || 'Unknown architecture'} · ${packageNames[platform]}`
-    : `${architectureNames[architecture] || architecture || 'Unknown architecture'} · No Brightdesk installer is currently built for this combination.`;
+
+  if (!state.downloadsPlatform) state.downloadsPlatform = currentPlatform;
+  const selector = $('downloads-platform-select');
+  if (selector.value !== state.downloadsPlatform) selector.value = state.downloadsPlatform;
+  const targetPlatform = state.downloadsPlatform;
+  const targetArchitecture = targetArchitectures[targetPlatform];
+  const targetIsCurrent = targetPlatform === currentPlatform;
+  const currentArchitectureSupported = currentPlatform === 'darwin'
+    ? ['x64', 'arm64'].includes(currentArchitecture)
+    : currentArchitecture === 'x64';
+  const targetSupported = Boolean(platformNames[targetPlatform] && targetArchitecture);
+  const installOnThisComputer = targetIsCurrent && currentArchitectureSupported;
+
+  $('downloads-platform-name').textContent = platformNames[targetPlatform] || 'Unsupported platform';
+  $('downloads-platform-details').textContent = targetSupported
+    ? `${targetPlatform === 'darwin' ? 'Universal Intel / Apple silicon' : targetArchitecture === 'x64' ? '64-bit Intel / AMD' : 'ARM64'} · ${packageNames[targetPlatform]} · ${targetIsCurrent ? 'This computer' : 'Download for another computer'}`
+    : 'No Brightdesk installer is currently published for this platform and architecture.';
+
   const host = $('downloads-app-grid');
   host.replaceChildren();
   const available = catalog.filter(item => item.availability === 'available');
   for (const item of available) {
-    const installed = state.standaloneApps.find(app => app.id === item.id) || null;
-    const staged = state.stagedAppUpdates.find(app => app.appId === item.id) || null;
+    const installed = installOnThisComputer
+      ? state.standaloneApps.find(app => app.id === item.id) || null
+      : null;
+    const staged = installOnThisComputer
+      ? state.stagedAppUpdates.find(app => app.appId === item.id) || null
+      : null;
     const card = document.createElement('article');
     card.className = 'downloads-app-card';
     const heading = document.createElement('div');
@@ -631,18 +646,28 @@ function renderDownloads() {
     description.textContent = item.description;
     const status = document.createElement('span');
     status.className = 'downloads-app-status';
-    status.textContent = !platformSupported
-      ? 'Not available for this operating system / architecture'
-      : staged
-        ? `Downloaded ${staged.version} · Ready to install`
-        : installed
-          ? `Installed separately · Version ${installed.version}`
-          : 'Not installed on this computer';
+    status.textContent = !targetSupported
+      ? 'Not available for this platform'
+      : !installOnThisComputer
+        ? `Available for ${platformNames[targetPlatform]} · ${targetArchitecture}`
+        : staged
+          ? `Downloaded ${staged.version} · Ready to install`
+          : installed
+            ? `Installed separately · Version ${installed.version}`
+            : 'Not installed on this computer';
     const action = document.createElement('button');
     action.type = 'button';
     action.className = staged ? 'primary small-action' : 'secondary small-action';
-    action.disabled = !platformSupported;
-    action.textContent = !platformSupported ? 'Not available' : staged ? 'Next · Install' : installed ? 'Open desktop app' : 'Download desktop app';
+    action.disabled = !targetSupported || (targetIsCurrent && !currentArchitectureSupported);
+    action.textContent = !targetSupported || (targetIsCurrent && !currentArchitectureSupported)
+      ? 'Not available'
+      : !installOnThisComputer
+        ? `Download for ${platformNames[targetPlatform]}`
+        : staged
+          ? 'Next · Install'
+          : installed
+            ? 'Open desktop app'
+            : 'Download desktop app';
     action.addEventListener('click', async () => {
       try {
         if (staged) {
@@ -651,11 +676,14 @@ function renderDownloads() {
         } else if (installed) {
           await window.brightdesk.launchStandaloneApp(item.id);
           $('downloads-status').textContent = `Opened ${item.name}.`;
-        } else {
+        } else if (installOnThisComputer) {
           await stageStandaloneAppFromCentre(item.id, item.name);
           state.stagedAppUpdates = await window.brightdesk.listStagedStandaloneAppUpdates();
           renderDownloads();
           $('downloads-status').textContent = `${item.name} is downloaded and verified. Press Next to install it.`;
+        } else {
+          const download = await window.brightdesk.openAppDownloads(item.id, targetPlatform, targetArchitecture);
+          $('downloads-status').textContent = `Opened the trusted ${platformNames[targetPlatform]} download for ${item.name} ${download.version}: ${download.fileName}. The SHA-256 is ${download.sha256}.`;
         }
       } catch (error) {
         $('downloads-status').textContent = `Could not process ${item.name}: ${error.message}`;
@@ -669,6 +697,7 @@ function renderDownloads() {
     host.append(card);
   }
 }
+
 async function refreshInstalledAppList() {
   try {
     const [standaloneApps, stagedUpdates] = await Promise.all([
@@ -1146,6 +1175,11 @@ $('home-open-downloads').addEventListener('click', () => { state.view = 'downloa
 $('home-manage-downloads').addEventListener('click', () => { state.view = 'downloads'; render(); });
 $('home-check-updates').addEventListener('click', checkForUpdatesManually);
 $('home-refresh-apps').addEventListener('click', refreshInstalledAppList);
+$('downloads-platform-select').addEventListener('change', event => {
+  state.downloadsPlatform = event.target.value;
+  renderDownloads();
+  $('downloads-status').textContent = `Showing ${event.target.options[event.target.selectedIndex].text} installers.`;
+});
 $('downloads-nav').addEventListener('click', async () => {
   if (launchAppId) return;
   state.view = 'downloads';
