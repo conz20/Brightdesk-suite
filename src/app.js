@@ -1154,7 +1154,7 @@ $('proofing-language').addEventListener('change',event=>changeProofingLanguage(e
 $('dictionary-search').addEventListener('input',renderAvailableDictionaryCatalogue);
 $('proofing-dictionary').addEventListener('change',event=>{state.selectedDictionary=event.target.value;localStorage.setItem('brightdesk-selected-dictionary',state.selectedDictionary);renderToolbar();});
 $('check-current-document').addEventListener('click',checkCurrentDocumentSpelling);
-$('back-to-apps').addEventListener('click',()=>{state.view=state.setupComplete?'workspace':'manager';render();});
+$('back-to-apps').addEventListener('click',()=>{state.view='manager';render();});
 $('manager-grid-view').addEventListener('click', () => { state.managerView = 'grid'; localStorage.setItem('brightdesk-manager-view', state.managerView); renderAppManager(); });
 $('manager-list-view').addEventListener('click', () => { state.managerView = 'list'; localStorage.setItem('brightdesk-manager-view', state.managerView); renderAppManager(); });
 $('manager-filter').addEventListener('change', event => { state.managerFilter = event.target.value; renderAppManager(); });
