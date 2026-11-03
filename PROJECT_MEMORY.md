@@ -27,8 +27,8 @@ Outlook, OneDrive and Teams are excluded. Do not add them or any other product.
 - The integrated codebase contains dedicated service/workspace modules and tests for Database, Forms, Lists, Planner, To Do and Workspace, in addition to Pages, Sheets, Decks and Notes.
 - The suite is local-first. Do not claim cloud collaboration, remote sync or Microsoft service integration.
 - “Available” means the app has a usable integrated local-first workflow; it does not mean full feature parity with commercial office products.
-- The main Electron process and standalone build configuration still restrict separate single-app installers to Pages, Sheets, Decks and Notes. The integrated suite contains all ten apps.
-- The App Centre already shows all ten app cards and SVG preview artwork. Its app-card header marks are still text glyphs; the suite master mark and per-app icon treatment need to be integrated into the UI and platform installer resources.
+- The default `main` branch still restricts separate single-app installers to Pages, Sheets, Decks and Notes. The active working branch below extends independent packaging to all ten approved apps.
+- The active launcher branch uses original per-app SVG icons in its App Centre and navigation, with the Brightdesk master mark. Continue checking the visual system, accessibility, and native installer icon output on each platform.
 
 ## Source lineage and archive handling
 - The recovered v0.5.1 Linux Installer CI Hardening archive is an earlier four-core-app development snapshot. It is useful historical material for Node 24 setup, legal gates and installer scripts, but it must not replace the current integrated GitHub `main` branch.
@@ -67,5 +67,17 @@ Brightdesk is an independent desktop product with original names, code, artwork,
 - Separate build support is required for exactly Pages, Sheets, Decks, Notes, Database, Forms, Lists, Planner, To Do and Workspace. Standalone app channels must be unique per app to prevent updater metadata collisions. Suite launcher uses the stable `latest` channel.
 - Update checking and downloading are opt-in. A user must always approve installation by pressing **Next**; never install automatically on quit. Present current and target versions. Update notifications need a Review action and a dismiss X.
 - Brightdesk is strictly ad-free, subscription-free and free to use: no ads, sponsorships, subscriptions, paid tiers, paid licence fees, activation keys, serial numbers or locked features. Keep third-party open-source attribution/notices where legally required; those notices do not create a user fee.
-- Current implementation branch: `feature/complete-suite-launcher-apps`, based on PR #19's `feature/storytold-inspired-engine-launcher`. Changes on this branch are not yet merged or tested on the user's Mac. Do not confuse repository commits with the user's installed build.
+- Current implementation branch: `feature/brightdesk-original-suite-experience`, based on `feature/complete-suite-launcher-apps` and the clean-room foundation in PR #19 (`feature/storytold-inspired-engine-launcher`). Changes on this branch are not yet merged or tested on the user's Mac. Do not confuse repository commits with the user's installed build.
 - The launcher selection correction, SVG family, refreshed App Centre styling, standalone package support and update controls need local full-suite tests and native Windows/macOS/Linux build/install tests before another user-facing installer is produced.
+
+
+## Confirmed product design direction — 2026-11-03
+
+- The target is the professional visual quality and creative polish associated with Adobe, combined with the familiar productivity workflows associated with Microsoft 365. This is inspiration only: Brightdesk must have its own visual identity, navigation, layouts, interactions, typography, icon family and assets.
+- The Suite launcher is a separately installed app. Each selected standalone app is installed as an independent operating-system app; users can launch it directly or open it from the Suite launcher.
+- The App Centre must show all ten approved products with original SVG artwork, clear descriptions and honest states. First-run selection begins empty. Do not interpret a previous release's automatically selected app list as user consent.
+- Distinguish adding an app to the in-suite navigation from downloading its separate desktop app.
+- The true native installer experience still needs an explicit platform-by-platform review. The Suite installer currently builds as its own app and individual app installers are built separately; do not claim a combined installer selection wizard exists until implemented and verified on Windows, macOS and Linux.
+- The update settings controller has one owner in `src/app.js` and static markup in `src/index.html`. The obsolete `update-settings.js` script is no longer loaded because it duplicated controls and exposed a prohibited install-on-quit setting. The approved path is manual or opt-in check/download, then explicit **Next** to start the verified installer. Automatic installation remains disabled.
+- Brightdesk must remain ad-free, subscription-free and free to use. There are no Brightdesk licence fees, activation keys, serial numbers, paywalls, paid tiers or paid updates. Keep third-party licence notices where required.
+- Current working branch head before the next review: `ffca0845b79919a137904d73a9ff324a5cc323b5`. The update-settings controller cleanup and ten-app packaging test corrections are committed here. No test/build success is claimed without a Node.js 24.22.2 run and actual CI/platform outputs.
