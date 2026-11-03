@@ -90,7 +90,9 @@ The fixed product catalogue is:
 
 The App Centre must start with no apps selected. Users can add individual apps to the in-suite navigation, skip selection and return later, or open the standalone-app download page from each product card. The launcher must distinguish clearly between **Add to suite** (opens the app inside the launcher) and **Download desktop app** (installs the separate OS application).
 
-The launcher discovers installed standalone apps from macOS app bundles, Windows install folders and uninstall registry entries, and Linux desktop/package metadata. Standalone app startup also self-registers. Home provides a refresh action and can reconcile an app that has moved or been upgraded.
+The launcher discovers installed standalone apps from macOS app bundles, Windows install folders and uninstall registry entries, and Linux desktop/package metadata, including portable AppImage desktop entries. Standalone app startup also self-registers. Home provides a refresh action and can reconcile an app that has moved or been upgraded.
+
+For the combined native multi-app installer, installer-time registration remains the target: after a selected app's installation completes, the installer should write its app ID, version and install location into the shared registry. OS discovery and startup registration are additional recovery paths, not a replacement for the final installer registration step.
 
 The implemented launcher experience now has separate **Home**, **Apps**, **Downloads**, **Updates** and **Settings** destinations. Home distinguishes the apps in the Suite from independently installed desktop apps. Apps has search and filters for In suite, Desktop installed and Not installed. Downloads lets a person choose Windows, macOS or Linux and selects the package/architecture currently supported for that platform. For this computer, installers are staged and checksum-verified before **Next**; for another computer, the launcher opens the trusted manifest-resolved package URL and shows its version, filename and SHA-256.
 
@@ -109,7 +111,7 @@ The end-to-end setup experience must provide a dedicated standalone-app selectio
 
 **Current gap:** separate build scripts and per-app installer targets exist, and the Downloads centre now provides individual cross-platform package selection. A complete native multi-app setup/Modify wizard is still not implemented or verified. The App Centre's in-suite Select All / Clear All controls are not a substitute. Treat the wizard as a release blocker until it can install only selected standalone applications, then add/remove apps later, and pass native Windows, macOS and Linux smoke tests.
 
-Every app has an original Brightdesk SVG icon under `src/assets/app-icons/`. All ten apps must be supported by the standalone build scripts and receive distinct application IDs, product names, installer artifacts and update channels. Separate build output directories are used so application artifacts cannot overwrite one another.
+Every app has an original Brightdesk SVG icon under `src/assets/app-icons/`. All ten apps are supported by the standalone build scripts and have distinct application IDs, product names, installer artifacts and output directories. They share one versioned release-manifest model rather than relying on ten unrelated latest-release lookups. The manifest keeps Suite and app versions separate and lists each app's package by operating system, architecture, filename, size and SHA-256.
 
 Standalone builds use these commands:
 - Local Windows builds: `npm run dist:apps:win`
@@ -118,7 +120,7 @@ Standalone builds use these commands:
 - Build one app: `npm run dist:app -- <app-id> <win|mac|linux>`
 - Release/publish the standalone app set for the current target OS: `npm run release:apps:<win|mac|linux>`
 
-The Suite and all ten standalone apps now consume one shared release manifest. It keeps the Suite version and each app module version separate, and records OS, architecture, package type, filename, size and SHA-256. The Suite checks all installed standalone apps; each standalone app checks only its own release version. Automatic installation is always disabled.
+The Suite and all ten standalone apps consume one shared release manifest. It keeps the Suite version and each app module version separate, and records OS, architecture, package type, filename, size and SHA-256. The Suite checks all installed standalone apps; each standalone app checks only its own release version. Automatic installation is always disabled. The Downloads centre can resolve packages for Windows, macOS or Linux; it only stages and opens an installer on the current computer, while a different-platform selection opens the trusted package URL for transfer to that computer.
 
 Update preferences default to manual checking and manual downloading. Automatic checking and automatic downloading are opt-in. Automatic installation is prohibited: even when downloading automatically, Brightdesk must announce the available version and require the user to press **Next** before installation. Show the installed version and available version together. Notifications must be reviewable and dismissible.
 
