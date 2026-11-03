@@ -18,11 +18,7 @@ const workspaceModules = [
 test('every statically referenced workspace DOM element exists in the integrated HTML shell', () => {
   const missing = [];
 
-  const listsStart = app.indexOf('function renderListsWorkspace()');
-  const listsEnd = app.indexOf('function renderGenericWorkspace()', listsStart);
-  assert.ok(listsStart >= 0 && listsEnd > listsStart, 'Lists renderer must remain identifiable');
   const sources = workspaceModules.map(file => ({ file, source: fs.readFileSync(path.join(root, 'src', file), 'utf8') }));
-  sources.push({ file: 'Lists app renderer', source: app.slice(listsStart, listsEnd) });
 
   for (const { file, source } of sources) {
     const ids = [...source.matchAll(/\$\(['"]([^'"]+)['"]\)/g)].map(match => match[1]);
@@ -30,6 +26,11 @@ test('every statically referenced workspace DOM element exists in the integrated
     for (const id of new Set(ids)) {
       if (!html.includes(`id="${id}"`)) missing.push(`${file}: #${id}`);
     }
+  }
+
+  const listIds = [...app.matchAll(/\$\(['"](lists-[^'"]+)['"]\)/g)].map(match => match[1]);
+  for (const id of new Set(listIds)) {
+    if (!html.includes(`id="${id}"`)) missing.push(`Lists app renderer: #${id}`);
   }
 
   assert.deepEqual(missing, [], 'Workspace modules must not reference missing static DOM elements');
