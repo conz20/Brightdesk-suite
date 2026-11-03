@@ -4,7 +4,7 @@ const $=id=>document.getElementById(id);
 let forms=[],selected=null,tab='questions';
 try{const saved=JSON.parse(localStorage.getItem('brightdesk-forms-v1')||'[]');if(Array.isArray(saved))forms=saved;}catch{}
 const current=()=>forms.find(f=>f.id===selected)||null;
-const save=()=>{localStorage.setItem('brightdesk-forms-v1',JSON.stringify(forms));$('forms-status').textContent='Saved on this device';};
+const save=()=>{try{localStorage.setItem('brightdesk-forms-v1',JSON.stringify(forms));$('forms-status').textContent='Saved on this device';return true;}catch(error){$('forms-status').textContent='Could not save forms locally: '+error.message;return false;}};
 const replace=next=>{const i=forms.findIndex(f=>f.id===next.id);if(i>=0)forms[i]=next;save();render();};
 function setTab(value){tab=value;document.querySelectorAll('[data-forms-tab]').forEach(b=>b.classList.toggle('active',b.dataset.formsTab===tab));$('forms-questions-panel').hidden=tab!=='questions';$('forms-preview-panel').hidden=tab!=='preview';$('forms-responses-panel').hidden=tab!=='responses';if(tab==='preview')preview();if(tab==='responses')responses();}
 function render(){
