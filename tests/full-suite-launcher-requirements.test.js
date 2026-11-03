@@ -16,6 +16,13 @@ test('a fresh suite install starts with no apps selected or marked installed', (
   assert.ok(!app.includes('state.installedApps = launchAppId ? [launchAppId] : installableCatalog.map'));
 });
 
+test('legacy installs that automatically selected all ten apps are reset for user choice', () => {
+  const app = read('src/app.js');
+  assert.ok(app.includes('legacyAutoSelectedAllApps'));
+  assert.ok(app.includes('appSetup.schemaVersion !== 2'));
+  assert.ok(app.includes('schemaVersion: 2, installedApps: state.installedApps'));
+});
+
 test('only explicitly selected apps are treated as installed in the suite', () => {
   const app = read('src/app.js');
   assert.ok(app.includes('function installedApp(id) { return state.installedApps.includes(id); }'));
