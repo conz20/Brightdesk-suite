@@ -884,8 +884,100 @@ $('lists-rename').addEventListener('click',renameCurrentList);
 $('lists-delete').addEventListener('click',deleteCurrentList);
 $('lists-column-type').addEventListener('change',()=>{$('lists-column-options-wrap').hidden=$('lists-column-type').value!=='choice';});
 $('export-button').addEventListener('click',exportCurrent);$('open-button').addEventListener('click',openFile);$('save-project').addEventListener('click',saveProject);
-$('updates-button').addEventListener('click',async()=>{const msg=$('update-message');msg.hidden=false;msg.textContent=t('common.updateChecking');try{const r=await window.brightdesk.checkForUpdates();if(!r?.ok)msg.textContent=r?.message||'Update checks are not configured yet.';}catch(e){msg.textContent=`Update check failed: ${e.message}`;}});
-window.brightdesk.onUpdateState?.(updateState=>{const msg=$('update-message');msg.hidden=false;msg.textContent=updateState.message;if(updateState.status==='available'){msg.textContent=updateState.message;}if(updateState.status==='downloaded'){const button=document.createElement('button');button.className='text-button';button.textContent=t('common.restartInstall');button.onclick=()=>window.brightdesk.installUpdate();msg.append(' ',button);}});
+let latestUpdateState = null;
+function renderUpdateNotice(updateState, dismissed = false) {
+  latestUpdateState = updateState;
+  const notice = $('update-message');
+  notice.replaceChildren();
+  if (!updateState || dismissed) { notice.hidden = true; return; }
+  notice.hidden = false;
+  notice.classList.toggle('update-notice-available', ['available', 'downloaded'].includes(updateState.status));
+  const copy = document.createElement('span');
+  copy.className = 'update-notice-copy';
+  copy.textContent = updateState.message || 'Brightdesk update information is available.';
+  notice.append(copy);
+  if (updateState.currentVersion || updateState.availableVersion) {
+    const versions = document.createElement('small');
+    versions.className = 'update-version-line';
+    versions.textContent = `Installed: ${updateState.currentVersion || 'Unknown'} · Available: ${updateState.availableVersion || 'Checking'}`;
+    notice.append(versions);
+  }
+  if (['available', 'downloaded'].includes(updateState.status)) {
+    const review = document.createElement('button');
+    review.type = 'button'; review.className = 'text-button';
+    review.textContent = updateState.status === 'downloaded' ? 'Next — install update' : 'Review update';
+    review.addEventListener('click', () => {
+      $('update-settings-panel').hidden = false;
+      if (updateState.status === 'downloaded') confirmAndInstallUpdate();
+    });
+    notice.append(review);
+  }
+  const close = document.createElement('button');
+  close.type = 'button'; close.className = 'update-notice-close';
+  close.textContent = '×'; close.setAttribute('aria-label', 'Dismiss update notification');
+  close.addEventListener('click', () => { notice.hidden = true; });
+  notice.append(close);
+}
+async function checkForUpdatesFromUi() {
+  renderUpdateNotice({ status: 'checking', message: 'Checking for Brightdesk updates…' });
+  try {
+    const result = await window.brightdesk.checkForUpdates();
+    if (!result?.ok) renderUpdateNotice({ status: 'unavailable', message: result?.message || 'Update checking is not available in this build yet.' });
+  } catch (error) {
+    renderUpdateNotice({ status: 'error', message: `Update check failed: ${error.message}` });
+  }
+}
+async function loadUpdateSettings() {
+  try {
+    const settings = await window.brightdesk.getUpdateSettings();
+    $('update-auto-check').checked = settings.autoCheck !== false;
+    $('update-auto-download').checked = settings.autoDownload !== false;
+  } catch (error) {
+    renderUpdateNotice({ status: 'error', message: `Could not load update settings: ${error.message}` });
+  }
+}
+async function saveUpdateSettings() {
+  try {
+    await window.brightdesk.setUpdateSettings({
+      autoCheck: $('update-auto-check').checked,
+      autoDownload: $('update-auto-download').checked,
+      autoInstall: false
+    });
+  } catch (error) {
+    renderUpdateNotice({ status: 'error', message: `Could not save update settings: ${error.message}` });
+  }
+}
+async function confirmAndInstallUpdate() {
+  if (!latestUpdateState || latestUpdateState.status !== 'downloaded') return;
+  const nextVersion = latestUpdateState.availableVersion || 'the downloaded version';
+  if (!window.confirm(`Brightdesk is ready to update from ${latestUpdateState.currentVersion || 'the installed version'} to ${nextVersion}. Save your work and continue to install?`)) return;
+  try {
+    await window.brightdesk.installUpdate();
+  } catch (error) {
+    renderUpdateNotice({ status: 'error', message: `Could not install the update: ${error.message}` });
+  }
+}
+$('updates-button').addEventListener('click', async () => {
+  $('update-settings-panel').hidden = false;
+  await loadUpdateSettings();
+  await checkForUpdatesFromUi();
+});
+$('update-settings-button').addEventListener('click', async () => {
+  $('update-settings-panel').hidden = !$('update-settings-panel').hidden;
+  if (!$('update-settings-panel').hidden) await loadUpdateSettings();
+});
+$('close-update-settings').addEventListener('click', () => { $('update-settings-panel').hidden = true; });
+$('update-auto-check').addEventListener('change', saveUpdateSettings);
+$('update-auto-download').addEventListener('change', saveUpdateSettings);
+$('update-manual-check').addEventListener('click', checkForUpdatesFromUi);
+$('update-manual-download').addEventListener('click', async () => {
+  try {
+    const result = await window.brightdesk.downloadUpdate();
+    if (!result?.ok) renderUpdateNotice({ status: 'unavailable', message: 'There is no downloaded update service available for this installation.' });
+  } catch (error) { renderUpdateNotice({ status: 'error', message: `Could not download update: ${error.message}` }); }
+});
+$('update-manual-install').addEventListener('click', confirmAndInstallUpdate);
+window.brightdesk.onUpdateState?.(updateState => renderUpdateNotice(updateState));
 loadLocal();$('platform').textContent=`Desktop app · ${window.brightdesk.platform}`;
 (async()=>{
   try {
