@@ -493,6 +493,8 @@ function renderAppManager() {
   $('finish-app-setup').textContent = 'Add selected apps';
   $('finish-app-setup').hidden = state.setupComplete;
   $('skip-app-setup').hidden = state.setupComplete;
+  $('select-all-apps').hidden = state.setupComplete;
+  $('clear-all-apps').hidden = state.setupComplete;
   catalog.forEach(item => {
     const canInstall = item.availability === 'available';
     const selected = state.firstRunSelection.has(item.id);
@@ -943,6 +945,14 @@ $('check-current-document').addEventListener('click',checkCurrentDocumentSpellin
 $('back-to-apps').addEventListener('click',()=>{state.view=state.setupComplete?'workspace':'manager';render();});
 $('manager-grid-view').addEventListener('click', () => { state.managerView = 'grid'; localStorage.setItem('brightdesk-manager-view', state.managerView); renderAppManager(); });
 $('manager-list-view').addEventListener('click', () => { state.managerView = 'list'; localStorage.setItem('brightdesk-manager-view', state.managerView); renderAppManager(); });
+$('select-all-apps').addEventListener('click', () => {
+  state.firstRunSelection = new Set(installableCatalog.map(item => item.id));
+  renderAppManager();
+});
+$('clear-all-apps').addEventListener('click', () => {
+  state.firstRunSelection.clear();
+  renderAppManager();
+});
 $('refresh-installed-apps').addEventListener('click', refreshInstalledAppList);
 $('finish-app-setup').addEventListener('click',()=>{if(state.setupComplete){state.view=state.installedApps.length ? 'workspace' : 'manager';render();}else completeAppSetup();});
 $('skip-app-setup').addEventListener('click',()=>{
