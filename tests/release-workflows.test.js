@@ -112,5 +112,6 @@ test('local release verification runs tests and builds only for the current nati
   }
   assert.match(script, /process\.versions\.node/);
   assert.match(script, /process\.platform/);
+  assert.match(script, /CSC_IDENTITY_AUTO_DISCOVERY/);
   assert.doesNotMatch(script, /publish always|gh release create/i);
 });
