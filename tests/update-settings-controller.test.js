@@ -30,3 +30,12 @@ test('automatic update installation is never offered or enabled', () => {
   assert.match(main, /autoInstall: false/);
   assert.match(main, /autoUpdater\.autoInstallOnAppQuit = false/);
 });
+
+test('the Suite update notification review action opens the Updates Centre', () => {
+  const app = read('src/app.js');
+
+  assert.match(app, /async function reviewAvailableUpdates\(\)/);
+  assert.match(app, /label: 'Review update', run: reviewAvailableUpdates/);
+  assert.match(app, /reviewAvailableUpdates[\s\S]*?app-updates-panel[\s\S]*?checkForUpdatesManually/);
+  assert.doesNotMatch(app, /label: 'Review update', run: openUpdateSettings/);
+});
