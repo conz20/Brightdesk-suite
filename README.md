@@ -25,6 +25,10 @@ The Suite launcher is its own desktop application. The ten approved products are
 
 Brightdesk is an original product. Adobe and Microsoft 365 are broad quality and workflow references only; Brightdesk does not copy their proprietary source code, artwork, logos or distinctive interface designs. Brightdesk is ad-free, subscription-free and free to use, with no activation codes, licence fees, paid tiers or paid updates. Required third-party licence notices remain included.
 
+## Product experience and download architecture
+
+The Adobe and Microsoft references are used only to evaluate public app-discovery, download, install, installed-app management and update workflows. Brightdesk keeps its own visual identity, product scope, code and free local-first model. See [the clean-room product experience review](docs/REFERENCE_PRODUCT_EXPERIENCE_REVIEW.md) for the public-source findings, cross-platform architecture and release requirements.
+
 ## Supported installer targets
 
 The release workflow is designed to build macOS universal DMG and PKG installers, Windows x64 EXE installers, and Linux x64 AppImage and DEB packages. A build is only considered ready after the platform artifacts, legal documents and SHA-256 checksums have been verified.
