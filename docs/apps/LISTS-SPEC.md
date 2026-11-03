@@ -26,5 +26,5 @@ Brightdesk Lists is an original, local-first structured record manager. It is de
 5. Search, filter and sort records.
 6. Persist changes after app restart.
 7. Keep the existing four core apps' data unchanged.
-8. Automated tests pass before the catalogue marks Lists available.
+8. Automated tests pass before Lists is declared release-ready.
 9. Verify the running Electron app before merging or publishing.
