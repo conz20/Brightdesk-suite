@@ -28,23 +28,27 @@ function containsAll(values, expected) {
 }
 
 function findAppIdentity(root, packageJson) {
-  const catalogPath = path.join(root, 'src', 'app-catalog.js');
-  if (exists(catalogPath)) {
-    try {
-      const catalog = require(catalogPath);
-      if (Array.isArray(catalog)) {
-        return { type: 'suite', apps: catalog.map(item => ({ id: item.id, version: item.moduleVersion })) };
+  const inferredAppId = packageJson.brightdeskAppId ||
+    String(packageJson.name || '').replace(/^brightdesk-/, '').toLowerCase();
+
+  if (inferredAppId !== 'suite' && APPROVED_APP_IDS.includes(inferredAppId)) {
+    return { type: 'standalone', apps: [{ id: inferredAppId, version: packageJson.version }] };
+  }
+
+  if (packageJson.name === 'brightdesk-suite') {
+    const catalogPath = path.join(root, 'src', 'app-catalog.js');
+    if (exists(catalogPath)) {
+      try {
+        const catalog = require(catalogPath);
+        if (Array.isArray(catalog)) {
+          return { type: 'suite', apps: catalog.map(item => ({ id: item.id, version: item.moduleVersion })) };
+        }
+      } catch (error) {
+        return { type: 'suite', error: error.message, apps: [] };
       }
-    } catch (error) {
-      return { type: 'suite', error: error.message, apps: [] };
     }
   }
 
-  const appId = packageJson.brightdeskAppId ||
-    String(packageJson.name || '').replace(/^brightdesk-/, '').toLowerCase();
-  if (APPROVED_APP_IDS.includes(appId)) {
-    return { type: 'standalone', apps: [{ id: appId, version: packageJson.version }] };
-  }
   return { type: 'unknown', apps: [] };
 }
 
