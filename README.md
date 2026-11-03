@@ -19,7 +19,7 @@ Version 0.1.0 contains the complete ten-app Brightdesk catalogue and integrated 
 | Brightdesk To Do | Manage daily tasks and reminders. | Integrated |
 | Brightdesk Workspace | Bring project notes, tasks and resources together locally. | Integrated |
 
-All ten approved app modules are present in the integrated suite, with dedicated service/workspace code and automated integration coverage. “Integrated” describes the current codebase; it does not mean every workflow, accessibility scenario, data migration, installer or operating-system build has passed final acceptance testing.
+All ten approved app modules are present in the integrated suite, with dedicated feature code and automated integration coverage. “Integrated” describes the current codebase; it does not mean every workflow, accessibility scenario, data migration, installer or operating-system build has passed final acceptance testing.
 
 The first release remains local-first; the suite does not claim cloud collaboration or Microsoft service integration.
 
