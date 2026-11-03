@@ -15,11 +15,7 @@ function readJson(filePath) {
 }
 
 function exists(filePath) {
-  try {
-    return fs.existsSync(filePath);
-  } catch {
-    return false;
-  }
+  return fs.existsSync(filePath);
 }
 
 function asArray(value) {
@@ -86,7 +82,7 @@ function auditRepository({ rootDir = path.resolve(__dirname, '../..') } = {}) {
   add(
     'Pinned Node.js version',
     packageJson.engines?.node === REQUIRED_NODE,
-    `Found ${packageJson.engines?.node || 'no pinned version'}; Brightdesk requires exactly ${REQUIRED_NODE}.`
+    'Found ' + (packageJson.engines?.node || 'no pinned version') + '; Brightdesk requires exactly ' + REQUIRED_NODE + '.'
   );
   add(
     'Automated test command',
@@ -97,9 +93,9 @@ function auditRepository({ rootDir = path.resolve(__dirname, '../..') } = {}) {
     'App identity',
     identity.type !== 'unknown' && !identity.error,
     identity.type === 'suite'
-      ? `The Suite catalogue contains ${identity.apps.length} app entries.`
+      ? 'The Suite catalogue contains ' + identity.apps.length + ' app entries.'
       : identity.type === 'standalone'
-        ? `Standalone app identity: ${identity.apps[0].id}.`
+        ? 'Standalone app identity: ' + identity.apps[0].id + '.'
         : identity.error || 'Could not identify this as the Suite or one approved standalone app.'
   );
 
@@ -111,20 +107,20 @@ function auditRepository({ rootDir = path.resolve(__dirname, '../..') } = {}) {
     add(
       'Exact ten-app Brightdesk scope',
       exact,
-      `Expected exactly: ${APPROVED_APP_IDS.join(', ')}. Found: ${ids.join(', ') || 'none'}.`
+      'Expected exactly: ' + APPROVED_APP_IDS.join(', ') + '. Found: ' + (ids.join(', ') || 'none') + '.'
     );
     for (const app of identity.apps) {
       add(
-        `Version for ${app.id}`,
-        typeof app.version === 'string' && /^\\d+\\.\\d+\\.\\d+(?:-[0-9A-Za-z.-]+)?$/.test(app.version),
-        `Configured app version: ${app.version || 'missing'}.`
+        'Version for ' + app.id,
+        typeof app.version === 'string' && /^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?$/.test(app.version),
+        'Configured app version: ' + (app.version || 'missing') + '.'
       );
     }
   } else if (identity.type === 'standalone') {
     add(
       'Standalone app version',
-      typeof packageVersion === 'string' && /^\\d+\\.\\d+\\.\\d+(?:-[0-9A-Za-z.-]+)?$/.test(packageVersion),
-      `Configured version: ${packageVersion}.`
+      typeof packageVersion === 'string' && /^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?$/.test(packageVersion),
+      'Configured version: ' + packageVersion + '.'
     );
   }
 
@@ -138,10 +134,10 @@ function auditRepository({ rootDir = path.resolve(__dirname, '../..') } = {}) {
       add(
         'Package and lock versions match',
         lockedVersion === packageVersion,
-        `package.json is ${packageVersion}; package-lock.json is ${lockedVersion || 'missing'}.`
+        'package.json is ' + packageVersion + '; package-lock.json is ' + (lockedVersion || 'missing') + '.'
       );
     } catch (error) {
-      add('Dependency lock file', false, `package-lock.json could not be read: ${error.message}`);
+      add('Dependency lock file', false, 'package-lock.json could not be read: ' + error.message);
     }
   }
 
@@ -149,20 +145,20 @@ function auditRepository({ rootDir = path.resolve(__dirname, '../..') } = {}) {
   const macTargets = packageTargets.mac;
   const linuxTargets = packageTargets.linux;
   const hasWin = winTargets.some(value => String(value).toLowerCase() === 'nsis') ||
-    /--win\\s+nsis/i.test(builderScript) || /win:\\s*\\[[^\\]]*nsis/i.test(buildScript);
+    /--win\s+nsis/i.test(builderScript) || /win:\s*\[[^\]]*nsis/i.test(buildScript);
   const hasMac = containsAll(macTargets, ['dmg', 'pkg', 'zip']) ||
-    /--mac\\s+dmg\\s+pkg\\s+zip/i.test(builderScript) ||
-    /mac:\\s*\\[[^\\]]*dmg[^\\]]*pkg[^\\]]*zip/i.test(buildScript);
+    /--mac\s+dmg\s+pkg\s+zip/i.test(builderScript) ||
+    /mac:\s*\[[^\]]*dmg[^\]]*pkg[^\]]*zip/i.test(buildScript);
   const hasLinux = containsAll(linuxTargets, ['appimage', 'deb']) ||
-    /--linux\\s+appimage\\s+deb/i.test(builderScript) ||
-    /linux:\\s*\\[[^\\]]*appimage[^\\]]*deb/i.test(buildScript);
+    /--linux\s+appimage\s+deb/i.test(builderScript) ||
+    /linux:\s*\[[^\]]*appimage[^\]]*deb/i.test(buildScript);
 
   add('Windows installer format', hasWin, 'Expected an NSIS .exe installer with its built-in Windows uninstaller.');
   add('macOS installer formats', hasMac, 'Expected DMG, PKG and ZIP packages. macOS does not normally use a separate uninstaller.');
   add('Linux installer formats', hasLinux, 'Expected AppImage and DEB packages. DEB removal is handled by the package manager.');
   add(
     'Windows x64 build target',
-    /--x64/.test(builderScript) || /win:\\s*\\[[^\\]]*x64/i.test(buildScript) || packageJson.brightdeskBuildTargets?.win?.includes('x64'),
+    /--x64/.test(builderScript) || /win:\s*\[[^\]]*x64/i.test(buildScript) || packageJson.brightdeskBuildTargets?.win?.includes('x64'),
     'Current checked-in build configuration must explicitly request Windows x64.'
   );
   add(
@@ -172,23 +168,15 @@ function auditRepository({ rootDir = path.resolve(__dirname, '../..') } = {}) {
   );
   add(
     'Linux x64 build target',
-    /--x64/.test(builderScript) || /linux:\\s*\\[[^\\]]*x64/i.test(buildScript) || packageJson.brightdeskBuildTargets?.linux?.includes('x64'),
+    /--x64/.test(builderScript) || /linux:\s*\[[^\]]*x64/i.test(buildScript) || packageJson.brightdeskBuildTargets?.linux?.includes('x64'),
     'Current checked-in build configuration must explicitly request Linux x64.'
   );
 
-  if (build.nsis) {
-    add(
-      'Windows uninstaller configuration',
-      hasWin && build.nsis.oneClick === false,
-      'NSIS supplies the Windows uninstall entry; installation is interactive rather than one-click.'
-    );
-  } else {
-    add(
-      'Windows uninstaller configuration',
-      hasWin,
-      'Windows NSIS packages include an uninstaller; verify it with an install/uninstall test.'
-    );
-  }
+  add(
+    'Windows uninstaller configuration',
+    hasWin && (!build.nsis || build.nsis.oneClick === false),
+    'NSIS supplies the Windows uninstall entry. A real install/uninstall test is still required.'
+  );
 
   const workflowDir = path.join(root, '.github', 'workflows');
   const workflowFiles = exists(workflowDir)
@@ -198,9 +186,10 @@ function auditRepository({ rootDir = path.resolve(__dirname, '../..') } = {}) {
     'Existing GitHub Actions workflows',
     workflowFiles.length > 0,
     workflowFiles.length
-      ? `Found ${workflowFiles.length} workflow file(s). Existing workflows are left unchanged.`
-      : 'No existing GitHub Actions workflow files were found.'
-  , 'WARN');
+      ? 'Found ' + workflowFiles.length + ' workflow file(s). Existing workflows are left unchanged.'
+      : 'No existing GitHub Actions workflow files were found.',
+    'WARN'
+  );
 
   const manifestPath = path.join(root, 'release', 'Brightdesk-Release-Manifest.json');
   if (exists(manifestPath)) {
@@ -213,7 +202,7 @@ function auditRepository({ rootDir = path.resolve(__dirname, '../..') } = {}) {
       }
       add('Local release manifest', true, 'The generated release manifest is present and passed available structural validation.', 'INFO');
     } catch (error) {
-      add('Local release manifest', false, `Release manifest validation failed: ${error.message}`);
+      add('Local release manifest', false, 'Release manifest validation failed: ' + error.message);
     }
   } else {
     add(
@@ -241,15 +230,15 @@ function auditRepository({ rootDir = path.resolve(__dirname, '../..') } = {}) {
 function renderMarkdown(result) {
   const title = result.projectType === 'suite' ? 'Brightdesk Suite' : 'Brightdesk repository';
   const lines = [
-    `# ${title} maintenance check`,
+    '# ' + title + ' maintenance check',
     '',
-    `**Version:** ${result.projectVersion}`,
-    `**Result:** ${result.ready ? 'No blocking configuration problems found' : `${result.blockers.length} blocking problem(s) found`}`,
+    '**Version:** ' + result.projectVersion,
+    '**Result:** ' + (result.ready ? 'No blocking configuration problems found' : result.blockers.length + ' blocking problem(s) found'),
     '',
     '| Check | Result | Details |',
     '|---|---|---|',
     ...result.checks.map(check =>
-      `| ${check.name} | ${check.passed ? 'PASS' : check.level} | ${check.detail.replace(/\\|/g, '\\\\|')} |`
+      '| ' + check.name + ' | ' + (check.passed ? 'PASS' : check.level) + ' | ' + check.detail.replace(/\|/g, '\\|') + ' |'
     ),
     '',
     '## Uninstall behaviour',
@@ -270,7 +259,7 @@ function writeReport(result, rootDir = result.root) {
   const markdownPath = path.join(reportDirectory, 'latest.md');
   const jsonPath = path.join(reportDirectory, 'latest.json');
   fs.writeFileSync(markdownPath, renderMarkdown(result));
-  fs.writeFileSync(jsonPath, `${JSON.stringify(result, null, 2)}\\n`);
+  fs.writeFileSync(jsonPath, JSON.stringify(result, null, 2) + '\n');
   return { markdownPath, jsonPath };
 }
 
@@ -278,15 +267,15 @@ if (require.main === module) {
   try {
     const result = auditRepository();
     const report = writeReport(result);
-    console.log(`Brightdesk maintenance check: ${result.ready ? 'NO BLOCKING CONFIGURATION PROBLEMS' : 'BLOCKED'}`);
+    console.log('Brightdesk maintenance check: ' + (result.ready ? 'NO BLOCKING CONFIGURATION PROBLEMS' : 'BLOCKED'));
     for (const check of result.checks) {
       const status = check.passed ? 'PASS' : check.level;
-      console.log(`${status}  ${check.name}: ${check.detail}`);
+      console.log(status + '  ' + check.name + ': ' + check.detail);
     }
-    console.log(`Report: ${report.markdownPath}`);
+    console.log('Report: ' + report.markdownPath);
     if (!result.ready) process.exitCode = 1;
   } catch (error) {
-    console.error(`Brightdesk maintenance audit could not finish: ${error.message}`);
+    console.error('Brightdesk maintenance audit could not finish: ' + error.message);
     process.exitCode = 1;
   }
 }
