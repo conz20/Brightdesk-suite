@@ -38,7 +38,8 @@ jobs:
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
             git add package-lock.json
             if ! git diff --cached --quiet; then
-              git commit -m "Generate package-lock.json for v0.1.0"
+              VERSION="$(node -p "require('./package.json').version")"
+              git commit -m "Generate package-lock.json for Brightdesk v${VERSION}"
               git push
             else
               echo "package-lock.json is already up to date."
