@@ -37,3 +37,11 @@ test('first-run selection remains the first-run destination, then a completed se
   assert.match(app, /state\.view = 'home'/);
   assert.match(app, /function completeAppSetup\(\)[\s\S]*?state\.view = 'home'/);
 });
+
+test('Home can refresh desktop app discovery without leaving the dashboard', () => {
+  assert.match(html, /id="home-refresh-apps"/);
+  assert.match(app, /\$\('home-refresh-apps'\)\.addEventListener\('click', refreshInstalledAppList\)/);
+  assert.match(app, /if \(state\.view === 'home'\) renderHome\(\)/);
+  assert.match(app, /else if \(state\.view === 'downloads'\) renderDownloads\(\)/);
+  assert.match(app, /else if \(state\.view === 'manager'\) renderAppManager\(\)/);
+});
