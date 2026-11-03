@@ -45,4 +45,4 @@ Brightdesk To Do is an original, local-first personal task manager. It should fe
 7. Task changes survive app restarts using local storage.
 8. Existing four apps continue to work and their saved data is not altered.
 9. The app is keyboard accessible and provides labels/status feedback.
-10. Automated tests pass before To Do is marked available.
+10. Automated tests pass before To Do is declared release-ready.
