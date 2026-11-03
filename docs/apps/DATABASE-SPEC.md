@@ -8,7 +8,7 @@ Brightdesk Database is a local-first structured data manager. The first release 
 - Add and remove fields with text, number, date, email, web address, checkbox and choice-list types.
 - Mark fields as required and validate values.
 - Add, edit and delete records.
-- Search and sort records.
+- Search and sort records in ascending or descending order.
 - Export a table to CSV, escaping CSV syntax and neutralising formula-like text values for spreadsheet safety.
 - Save databases locally on the current device.
 
