@@ -176,3 +176,27 @@ test('a package with an untrusted release origin is not offered', async () => {
   assert.equal(result.ok, true);
   assert.equal(result.apps[0].updateAvailable, false);
 });
+
+test('an ARM64 Linux machine is not offered an x64-only desktop installer', async () => {
+  const result = await checkStandaloneAppUpdates({
+    installedApps: [{ id: 'pages', version: '1.0.0' }],
+    platform: 'linux',
+    architecture: 'arm64',
+    fetchImpl: releaseFetch()
+  });
+  assert.equal(result.ok, true);
+  assert.equal(result.apps[0].installerAvailable, false);
+  assert.equal(result.apps[0].updateAvailable, false);
+});
+
+test('standalone downloads reject unsupported CPU architectures instead of silently selecting x64', async () => {
+  await assert.rejects(
+    () => getStandaloneAppDownload({
+      appId: 'pages',
+      platform: 'linux',
+      architecture: 'arm64',
+      fetchImpl: releaseFetch()
+    }),
+    /linux\/arm64/
+  );
+});
