@@ -6,6 +6,10 @@ Brightdesk is an independent native desktop productivity suite. It is not affili
 
 Version 0.1.0 contains the complete ten-app Brightdesk catalogue and integrated app modules. All ten apps remain visible in the suite.
 
+## Official product version
+
+**The first official customer-facing Brightdesk release is 0.1.0.** The root `package.json` is the single source of truth. The desktop app, all ten app modules, installer filenames, release notes and download metadata must use that same version. Internal development numbers are never customer release numbers. Future customer updates must update the package manifest and lockfile together. See [the versioning policy](docs/VERSIONING.md).
+
 | App | What it does | Implementation status |
 | --- | --- | --- |
 | Brightdesk Pages | Write and format documents. | Integrated |
