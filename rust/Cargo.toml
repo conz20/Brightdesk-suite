@@ -9,3 +9,7 @@ description = "Additive Rust foundation for Brightdesk Office Suite."
 
 [lib]
 path = "src/lib.rs"
+
+[[bin]]
+name = "brightdesk-rust-engine"
+path = "src/main.rs"
