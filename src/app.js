@@ -46,8 +46,8 @@ function clone(value) { return JSON.parse(JSON.stringify(value)); }
 function activeDoc() { return state.docs[state.app]; }
 function setStatus(message) { $('save-status').textContent = message; }
 function persist() {
-  try { localStorage.setItem('brightdesk-docs-v3', JSON.stringify(state.docs)); setStatus('Saved on this device'); }
-  catch (error) { setStatus('Could not save locally'); console.error(error); }
+  try { localStorage.setItem('brightdesk-docs-v3', JSON.stringify(state.docs)); setStatus('Saved on this device'); return true; }
+  catch (error) { setStatus('Could not save locally'); console.error(error); return false; }
 }
 function loadLocal() {
   try {
@@ -307,7 +307,7 @@ function deleteSlide(){const d=activeDoc();if(d.slides.length===1){alert('A pres
 function presentSlides(){const d=activeDoc();let i=d.current;const overlay=document.createElement('div');overlay.className='presentation-overlay';const slide=document.createElement('div');slide.className='presentation-slide';const title=document.createElement('h1'),body=document.createElement('p'),footer=document.createElement('div');footer.className='presentation-footer';footer.textContent='Click or press an arrow key to move · Esc to exit';slide.append(title,body,footer);overlay.append(slide);document.body.append(overlay);
   const draw=()=>{title.textContent=d.slides[i].title;body.textContent=d.slides[i].body;};const key=(e)=>{if(e.key==='Escape'){overlay.remove();document.removeEventListener('keydown',key);}else if(e.key==='ArrowRight'){i=Math.min(d.slides.length-1,i+1);draw();}else if(e.key==='ArrowLeft'){i=Math.max(0,i-1);draw();}};overlay.addEventListener('click',()=>{i=Math.min(d.slides.length-1,i+1);draw();});document.addEventListener('keydown',key);draw();}
 function todoTasks() { return Array.isArray(activeDoc().tasks) ? activeDoc().tasks : (activeDoc().tasks = []); }
-function saveTodoTasks() { persist(); $('todo-status').textContent = 'Saved on this device'; }
+function saveTodoTasks() { const saved = persist(); const status = $('todo-status'); if (status) status.textContent = saved ? 'Saved on this device' : 'Could not save locally'; return saved; }
 function replaceTodoTask(id, patch) {
   const tasks = todoTasks();
   const index = tasks.findIndex(task => task.id === id);
@@ -377,7 +377,7 @@ let listQuery = '';
 let listStatusFilter = '';
 function allLists() { const doc = activeDoc(); if (!Array.isArray(doc.lists)) doc.lists = []; return doc.lists; }
 function currentList() { return allLists().find(list => list.id === selectedListId) || null; }
-function saveLists() { persist(); const status = $('lists-status'); if (status) status.textContent = 'Saved on this device'; }
+function saveLists() { const saved = persist(); const status = $('lists-status'); if (status) status.textContent = saved ? 'Saved on this device' : 'Could not save locally'; return saved; }
 function renderListsWorkspace() {
   const lists = allLists();
   if (!selectedListId || !lists.some(list => list.id === selectedListId)) selectedListId = lists[0]?.id || null;
