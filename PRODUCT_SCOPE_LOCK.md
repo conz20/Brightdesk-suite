@@ -15,23 +15,13 @@ The approved Brightdesk product scope contains exactly these ten apps:
 
 ## First-release lineup
 
-The first-release product lineup is all ten apps listed above. The catalogue and app manager must show every app, its original Brightdesk artwork, name, short explanation and honest availability status. Do not hide planned apps just because they are not implemented yet.
+The first-release product lineup is all ten apps listed above. The catalogue and app manager must show every app, its original Brightdesk artwork, name, short explanation and honest availability status.
 
-## Version 0.1.0 implementation status
+## Integrated implementation status
 
-Implemented and available:
-- Brightdesk Pages
-- Brightdesk Sheets
-- Brightdesk Decks
-- Brightdesk Notes
+All ten approved app modules are now integrated into the main suite. The codebase contains dedicated service/workspace modules and automated coverage for the integrated app shell and workspace DOM contracts.
 
-Planned, not yet implemented:
-- Brightdesk Database
-- Brightdesk Forms
-- Brightdesk Lists
-- Brightdesk Planner
-- Brightdesk To Do
-- Brightdesk Workspace
+Integration status must not be presented as final acceptance. Real user workflows, accessibility, local data persistence and recovery, upgrades, uninstall, legal packaging and each platform installer still require verification before release.
 
 ## Explicit exclusions
 
