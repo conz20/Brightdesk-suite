@@ -90,6 +90,8 @@ The fixed product catalogue is:
 
 The App Centre must start with no apps selected. Users can add individual apps to the in-suite navigation, skip selection and return later, or open the standalone-app download page from each product card. The launcher must distinguish clearly between **Add to suite** (opens the app inside the launcher) and **Download desktop app** (installs the separate OS application).
 
+The launcher discovers installed standalone apps from macOS app bundles, Windows install folders and uninstall registry entries, and Linux desktop/package metadata. Standalone app startup also self-registers. Home provides a refresh action and can reconcile an app that has moved or been upgraded.
+
 The implemented launcher experience now has separate **Home**, **Apps**, **Downloads**, **Updates** and **Settings** destinations. Home distinguishes the apps in the Suite from independently installed desktop apps. Apps has search and filters for In suite, Desktop installed and Not installed. Downloads lets a person choose Windows, macOS or Linux and selects the package/architecture currently supported for that platform. For this computer, installers are staged and checksum-verified before **Next**; for another computer, the launcher opens the trusted manifest-resolved package URL and shows its version, filename and SHA-256.
 
 ### Standalone app selection during setup
@@ -116,7 +118,7 @@ Standalone builds use these commands:
 - Build one app: `npm run dist:app -- <app-id> <win|mac|linux>`
 - Release/publish the standalone app set for the current target OS: `npm run release:apps:<win|mac|linux>`
 
-Each standalone app uses its own GitHub update channel named after its app ID (for example, `pages`, `database`, or `workspace`/the actual ID `loop`). The Suite launcher uses the default `latest` channel. This avoids ten applications overwriting one shared update manifest.
+The Suite and all ten standalone apps now consume one shared release manifest. It keeps the Suite version and each app module version separate, and records OS, architecture, package type, filename, size and SHA-256. The Suite checks all installed standalone apps; each standalone app checks only its own release version. Automatic installation is always disabled.
 
 Update preferences default to manual checking and manual downloading. Automatic checking and automatic downloading are opt-in. Automatic installation is prohibited: even when downloading automatically, Brightdesk must announce the available version and require the user to press **Next** before installation. Show the installed version and available version together. Notifications must be reviewable and dismissible.
 
@@ -130,4 +132,12 @@ The connected source repository is private. The customer-facing updater and Down
 
 ## Remaining release gates
 
-The launcher UI, app-selection logic, SVG assets and standalone build coverage are source-level work only until local builds and platform-specific install tests pass. GitHub update feeds require actual published release assets and metadata. macOS auto-updating additionally requires valid code signing; macOS distribution still needs signing/notarisation verification. Do not claim Windows, macOS or Linux public release readiness before clean install, launch, update, uninstall and data-preservation tests have passed.
+The launcher UI, app-selection logic, SVG assets, OS-level app discovery, shared update preferences, shared release manifest and standalone build coverage are source-level work only until local tests and platform-specific installation tests pass.
+
+The connected source repository is private, but the customer-facing download/update service uses unauthenticated GitHub release metadata so users do not need to sign in. Configure a separate public Brightdesk releases repository or public download host before launch. Keep the source repository private unless the owner explicitly approves a visibility change.
+
+The full native multi-app installer component-selection and Modify installation wizard remains unfinished. App Centre Select All / Clear All controls only the in-Suite selection; Downloads can select the target OS and resolve individual packages, but it is not the combined native installer.
+
+GitHub Actions runner allocation is also blocked: jobs are created with runner ID 0 and no steps. See repository issue #23. Do not call tests or builds successful until an actual Node.js 24.22.2 run and native Windows/macOS/Linux runner results exist.
+
+macOS distribution still needs signing/notarisation verification. Do not claim Windows, macOS or Linux public release readiness before clean install, launch, update, uninstall and data-preservation tests have passed.
