@@ -92,37 +92,32 @@ test('unknown discovered app versions are retained without inventing an update v
   }
 });
 
-test('registry refreshes the installed version when the same OS app path is upgraded', async () => {
+test('registry refreshes the installed version when OS metadata reports a newer version', async () => {
   const basePath = await fs.mkdtemp(path.join(os.tmpdir(), 'brightdesk-registry-upgrade-'));
   try {
-    const executablePath = path.join(basePath, 'Brightdesk Pages.exe');
+    const bundlePath = path.join(basePath, 'Brightdesk Pages.app');
+    const contents = path.join(bundlePath, 'Contents');
+    const executablePath = path.join(contents, 'MacOS', 'Brightdesk Pages');
+    await fs.mkdir(path.dirname(executablePath), { recursive: true });
     await fs.writeFile(executablePath, 'test executable');
+    await fs.writeFile(path.join(contents, 'Info.plist'), `<?xml version="1.0"?>
+<plist><dict>
+<key>CFBundleExecutable</key><string>Brightdesk Pages</string>
+<key>CFBundleShortVersionString</key><string>0.2.0</string>
+</dict></plist>`);
     await registerStandaloneApp({
       appDataPath: basePath, appId: 'pages', version: '0.1.0',
-      executablePath, platform: 'win32'
-    });
-    const installed = await listInstalledStandaloneApps({
-      appDataPath: basePath,
-      platform: 'win32',
-      homeDirectory: basePath,
-      environment: { LOCALAPPDATA: basePath, ProgramFiles: '', 'ProgramFiles(x86)': '' },
-      searchDirectories: { windowsInstallRoots: [basePath] },
-      runCommand: async () => { throw new Error('Registry is not needed when the install path is found.'); }
-    });
-    assert.equal(installed[0].version, '0.1.0');
-    await registerStandaloneApp({
-      appDataPath: basePath, appId: 'pages', version: '0.2.0',
-      executablePath, platform: 'win32'
+      executablePath: bundlePath, platform: 'darwin'
     });
     const refreshed = await listInstalledStandaloneApps({
       appDataPath: basePath,
-      platform: 'win32',
+      platform: 'darwin',
       homeDirectory: basePath,
-      environment: { LOCALAPPDATA: basePath, ProgramFiles: '', 'ProgramFiles(x86)': '' },
-      searchDirectories: { windowsInstallRoots: [basePath] },
-      runCommand: async () => { throw new Error('Registry is not needed when the install path is found.'); }
+      searchDirectories: { macApplications: [basePath] }
     });
     assert.equal(refreshed[0].version, '0.2.0');
+    assert.equal(refreshed[0].executablePath, bundlePath);
+    assert.equal(refreshed[0].source, 'system-discovery');
   } finally {
     await fs.rm(basePath, { recursive: true, force: true });
   }
