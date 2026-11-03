@@ -7,6 +7,7 @@ const supportedApps = new Set(['pages', 'sheets', 'slides', 'notes', 'database',
 contextBridge.exposeInMainWorld('brightdesk', {
   launchAppId: supportedApps.has(launchAppId) ? launchAppId : null,
   platform: process.platform,
+  architecture: process.arch,
   version: process.env.npm_package_version || '0.1.0',
   getVersion: () => ipcRenderer.invoke('app:version'),
   openAppDownloads: (appId) => ipcRenderer.invoke('apps:downloads', appId),
