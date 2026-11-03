@@ -90,6 +90,8 @@ The fixed product catalogue is:
 
 The App Centre must start with no apps selected. Users can add individual apps to the in-suite navigation, skip selection and return later, or open the standalone-app download page from each product card. The launcher must distinguish clearly between **Add to suite** (opens the app inside the launcher) and **Download desktop app** (installs the separate OS application).
 
+The implemented launcher experience now has separate **Home**, **Apps**, **Downloads**, **Updates** and **Settings** destinations. Home distinguishes the apps in the Suite from independently installed desktop apps. Apps has search and filters for In suite, Desktop installed and Not installed. Downloads lets a person choose Windows, macOS or Linux and selects the package/architecture currently supported for that platform. For this computer, installers are staged and checksum-verified before **Next**; for another computer, the launcher opens the trusted manifest-resolved package URL and shows its version, filename and SHA-256.
+
 ### Standalone app selection during setup
 
 The end-to-end setup experience must provide a dedicated standalone-app selection step, separate from the in-suite navigation choice:
@@ -103,7 +105,7 @@ The end-to-end setup experience must provide a dedicated standalone-app selectio
 - Verify the installed app registry and version after each completed installation.
 - Do not claim this flow is implemented merely because the App Centre can add apps to the launcher's navigation or download one app at a time.
 
-**Current gap:** the feature branch has separate build scripts and per-app installer targets, plus the App Centre's in-suite selection and individual desktop download actions. A complete cross-platform multi-app setup/modify wizard is not yet implemented or verified. Treat it as a release blocker until the full flow is implemented and smoke-tested on native Windows, macOS and Linux runners.
+**Current gap:** separate build scripts and per-app installer targets exist, and the Downloads centre now provides individual cross-platform package selection. A complete native multi-app setup/Modify wizard is still not implemented or verified. The App Centre's in-suite Select All / Clear All controls are not a substitute. Treat the wizard as a release blocker until it can install only selected standalone applications, then add/remove apps later, and pass native Windows, macOS and Linux smoke tests.
 
 Every app has an original Brightdesk SVG icon under `src/assets/app-icons/`. All ten apps must be supported by the standalone build scripts and receive distinct application IDs, product names, installer artifacts and update channels. Separate build output directories are used so application artifacts cannot overwrite one another.
 
@@ -121,6 +123,10 @@ Update preferences default to manual checking and manual downloading. Automatic 
 ## Commercial and product guarantees
 
 Brightdesk is permanently ad-free, subscription-free and free of activation fees. Do not add adverts, sponsored placements, paid tiers, activation keys, serial numbers, paid licences, subscription prompts, paywalls or locked premium features. Include third-party notices and legally required open-source licence attributions without charging the user.
+
+## Public release hosting
+
+The connected source repository is private. The customer-facing updater and Downloads service currently requests GitHub release metadata without user credentials. It cannot use a private repository's release assets as a no-login customer download source. Before publishing installers, configure a separate public Brightdesk releases repository or an equivalent public download host. The signed/verified manifest and platform packages must be available there without requiring a GitHub account.
 
 ## Remaining release gates
 
