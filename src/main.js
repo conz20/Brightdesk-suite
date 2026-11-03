@@ -8,7 +8,12 @@ const { openOfficeFile, exportOfficeFile, cleanFileName, ensureExtension } = req
 const { BUILTIN_LANGUAGES, validateLanguagePack, getBuiltinLanguage } = require('./language-service');
 const { DictionaryService } = require('./dictionary-service');
 const { registerStandaloneApp, listInstalledStandaloneApps } = require('./standalone-app-registry');
-const { checkStandaloneAppUpdates, getStandaloneAppDownload } = require('./app-update-service');
+const { checkStandaloneAppUpdates, getStandaloneAppDownload, compareVersions } = require('./app-update-service');
+const {
+  stageStandaloneAppUpdate,
+  listStagedStandaloneAppUpdates,
+  removeStagedStandaloneAppUpdate
+} = require('./standalone-update-manager');
 let mainWindow;
 let agreementWindow;
 let termsAccepted = false;
@@ -266,22 +271,58 @@ async function checkForUpdates({ quiet = false, force = false } = {}) {
   } finally { updateCheckInProgress = false; }
 }
 
+async function stageStandaloneApp(appId) {
+  const download = await getStandaloneAppDownload({ appId, platform: process.platform });
+  return stageStandaloneAppUpdate({
+    appDataPath: app.getPath('appData'),
+    ...download,
+    platform: process.platform
+  });
+}
+
+async function refreshStandaloneAppUpdates({ notify = true } = {}) {
+  const installedApps = await listInstalledStandaloneApps({ appDataPath: app.getPath('appData') });
+  const result = await checkStandaloneAppUpdates({ installedApps, platform: process.platform });
+  if (!result.ok) return { ...result, stagedApps: await listStagedStandaloneAppUpdates({ appDataPath: app.getPath('appData') }) };
+
+  const settings = await readUpdateSettings();
+  let stagedApps = await listStagedStandaloneAppUpdates({ appDataPath: app.getPath('appData') });
+  const available = result.apps.filter(item => item.updateAvailable);
+
+  if (settings.autoDownload === true) {
+    for (const update of available) {
+      const alreadyStaged = stagedApps.some(item => item.appId === update.id && item.version === update.availableVersion);
+      if (alreadyStaged) continue;
+      try {
+        await stageStandaloneApp(update.id);
+      } catch (error) {
+        console.warn(`Could not automatically download Brightdesk ${update.name} update.`, error);
+      }
+    }
+    stagedApps = await listStagedStandaloneAppUpdates({ appDataPath: app.getPath('appData') });
+  }
+
+  const allAvailableUpdatesStaged = available.length > 0 &&
+    available.every(update => stagedApps.some(item => item.appId === update.id && item.version === update.availableVersion));
+  const response = { ...result, stagedApps };
+  if (notify && available.length && !applicationId && mainWindow && !mainWindow.isDestroyed()) {
+    sendUpdateState({
+      status: allAvailableUpdatesStaged ? 'apps-downloaded' : 'apps-available',
+      releaseVersion: result.releaseVersion,
+      apps: result.apps,
+      stagedApps,
+      message: allAvailableUpdatesStaged
+        ? `${available.length} standalone app update${available.length === 1 ? '' : 's'} downloaded. Press Next when ready to install.`
+        : `${available.length} standalone app update${available.length === 1 ? '' : 's'} available.`
+    });
+  }
+  return response;
+}
+
 async function checkInstalledStandaloneUpdates() {
   if (applicationId || !mainWindow || mainWindow.isDestroyed()) return;
   try {
-    const installedApps = await listInstalledStandaloneApps({ appDataPath: app.getPath('appData') });
-    if (!installedApps.length) return;
-    const result = await checkStandaloneAppUpdates({ installedApps, platform: process.platform });
-    if (!result.ok) return;
-    const available = result.apps.filter(item => item.updateAvailable);
-    if (available.length) {
-      sendUpdateState({
-        status: 'apps-available',
-        releaseVersion: result.releaseVersion,
-        apps: result.apps,
-        message: `${available.length} standalone Brightdesk app update${available.length === 1 ? '' : 's'} available.`
-      });
-    }
+    await refreshStandaloneAppUpdates();
   } catch (error) {
     console.warn('Automatic standalone app update check failed.', error);
   }
