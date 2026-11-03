@@ -25,7 +25,7 @@ The first release remains local-first; the suite does not claim cloud collaborat
 
 ## Quality verification
 
-The automated test suite includes service tests, app-shell integration tests and DOM-contract checks for the integrated workspaces. These checks help protect module-to-shell connections and core logic. They do not replace real app interaction, data-persistence, accessibility, cross-platform build, installation, upgrade or uninstall testing.
+The automated test suite includes service tests, app-shell integration tests and DOM-contract checks for the integrated workspaces. Database CSV export also prefixes formula-like text values so spreadsheet programs are less likely to interpret user-entered text as formulas. These checks help protect module-to-shell connections and core logic; they do not replace real app interaction, data-persistence, accessibility, cross-platform build, installation, upgrade or uninstall testing.
 
 The GitHub Actions build workflow is configured to test the project and build platform installers. Recent hosted workflow runs have failed before any runner steps were recorded, so no installer build is currently verified as passing. Do not describe an installer as ready until its platform build, legal files, SHA-256 checksums and release tests have passed.
 
