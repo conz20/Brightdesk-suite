@@ -25,4 +25,4 @@ Brightdesk Forms is an original local-first form and survey builder. It lets a u
 6. Preserve forms and responses after app restart.
 7. Keep existing app data unchanged.
 8. Automated tests pass before Forms is declared release-ready.
-9. Verify the running Electron app before merge or release.
+9. Verify the running Electron app before final release.
