@@ -4,15 +4,19 @@ const path = require('node:path');
 
 const appId = process.env.BRIGHTDESK_APP_ID;
 const appNames = { pages: 'Pages', sheets: 'Sheets', slides: 'Decks', notes: 'Notes', database: 'Database', forms: 'Forms', lists: 'Lists', planner: 'Planner', todo: 'To Do', loop: 'Workspace' };
-
-if (!appNames[appId]) {
+const appCatalog = require('./src/app-catalog');
+if (!Object.hasOwn(appNames, appId)) {
   throw new Error('Set BRIGHTDESK_APP_ID to one of: pages, sheets, slides, notes, database, forms, lists, planner, todo, loop.');
+}
+const appVersion = appCatalog.find(item => item.id === appId)?.moduleVersion;
+if (!appVersion || !/^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?$/.test(appVersion)) {
+  throw new Error(`No valid module version is configured for Brightdesk ${appNames[appId]}.`);
 }
 
 module.exports = {
   appId: `org.brightdesk.${appId}`,
   productName: 'Brightdesk ' + appNames[appId],
-  extraMetadata: { brightdeskAppId: appId, productName: 'Brightdesk ' + appNames[appId] },
+  extraMetadata: { brightdeskAppId: appId, productName: 'Brightdesk ' + appNames[appId], version: appVersion, desktopName: `org.brightdesk.${appId}.desktop` },
   asar: true,
   files: ['src/**/*', 'package.json', 'LICENSE', 'THIRD_PARTY_NOTICES.md', 'TERMS_AND_CONDITIONS.txt'],
   directories: { output: path.join('release', 'apps', appId), buildResources: 'assets/branding' },
@@ -46,6 +50,21 @@ module.exports = {
     icon: path.join('src', 'assets', 'app-icons', `${appId}.svg`),
     target: ['AppImage', 'deb'],
     category: 'Office',
+    executableName: `brightdesk-${appId}`,
+    syncDesktopName: true,
+    desktop: {
+      entry: {
+        Name: 'Brightdesk ' + appNames[appId],
+        Comment: appCatalog.find(item => item.id === appId).description,
+        Categories: 'Office;Productivity;',
+        StartupWMClass: `org.brightdesk.${appId}`,
+        'X-Brightdesk-AppId': appId,
+        'X-Brightdesk-Version': appVersion
+      }
+    },
     artifactName: 'brightdesk-' + appId + '-${version}-${arch}.${ext}'
+  },
+  deb: {
+    packageName: `brightdesk-${appId}`
   }
 };

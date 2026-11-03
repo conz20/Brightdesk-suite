@@ -40,13 +40,27 @@ test('Brightdesk keeps its own identity and does not claim Microsoft affiliation
   assert.match(readme, /not affiliated with Microsoft/i);
 });
 
-test('automatic updates stay clearly disabled until a real GitHub owner is configured', () => {
+test('suite and standalone updates use trusted Brightdesk release configuration and require confirmation', () => {
   const fs = require('node:fs');
   const path = require('node:path');
-  const pkg = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'package.json'), 'utf8'));
-  assert.deepEqual(pkg.build.publish, []);
-  const main = fs.readFileSync(path.join(__dirname, '..', 'src', 'main.js'), 'utf8');
-  assert.match(main, /Automatic updates will be available after the Brightdesk GitHub release repository is configured/);
+  const root = path.join(__dirname, '..');
+  const pkg = JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8'));
+  assert.ok(pkg.build.publish.some(item => item.provider === 'github' && item.owner === 'connormolloy12' && item.repo === 'Brightdesk-suite'));
+  const main = fs.readFileSync(path.join(root, 'src', 'main.js'), 'utf8');
+  assert.match(main, /autoInstall: false/);
+  assert.match(main, /autoUpdater\.autoInstallOnAppQuit = false/);
+  const standaloneConfigPath = path.join(root, 'electron-builder.app.config.js');
+  const previousAppId = process.env.BRIGHTDESK_APP_ID;
+  try {
+    process.env.BRIGHTDESK_APP_ID = 'pages';
+    delete require.cache[require.resolve(standaloneConfigPath)];
+    const config = require(standaloneConfigPath);
+    assert.ok(config.publish.some(item => item.provider === 'github' && item.channel === 'pages'));
+  } finally {
+    if (previousAppId === undefined) delete process.env.BRIGHTDESK_APP_ID;
+    else process.env.BRIGHTDESK_APP_ID = previousAppId;
+    delete require.cache[require.resolve(standaloneConfigPath)];
+  }
 });
 
 test('the main app rail keeps the four core apps as the permanent base rail', () => {
@@ -91,9 +105,10 @@ test('standalone app packaging has independent product IDs and all three platfor
   const path = require('node:path');
   const root = path.join(__dirname, '..');
   const pkg = JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8'));
-  for (const app of ['pages', 'sheets', 'decks', 'notes']) {
-    for (const platform of ['win', 'mac', 'linux']) assert.ok(pkg.scripts[`dist:${app}:${platform}`]);
+  for (const platform of ['win', 'mac', 'linux']) {
+    assert.ok(pkg.scripts[`dist:apps:${platform}`], `missing all-apps ${platform} build command`);
   }
+  assert.equal(pkg.scripts['release:manifest'], 'node scripts/generate-release-manifest.js');
   const builder = fs.readFileSync(path.join(root, 'electron-builder.app.config.js'), 'utf8');
   assert.match(builder, /org\.brightdesk\.\$\{appId\}/);
   assert.match(builder, /brightdeskAppId: appId/);
@@ -102,18 +117,30 @@ test('standalone app packaging has independent product IDs and all three platfor
   const previousAppId = process.env.BRIGHTDESK_APP_ID;
   const products = [];
   try {
-    for (const [id, name] of [['pages','Pages'],['sheets','Sheets'],['slides','Decks'],['notes','Notes']]) {
+    for (const [id, name] of [
+      ['pages','Pages'],['sheets','Sheets'],['slides','Decks'],['notes','Notes'],
+      ['database','Database'],['forms','Forms'],['lists','Lists'],['planner','Planner'],
+      ['todo','To Do'],['loop','Workspace']
+    ]) {
       process.env.BRIGHTDESK_APP_ID = id;
       delete require.cache[require.resolve(configPath)];
       const config = require(configPath);
       assert.equal(config.appId, `org.brightdesk.${id}`);
       assert.equal(config.extraMetadata.brightdeskAppId, id);
       assert.equal(config.extraMetadata.productName, `Brightdesk ${name}`);
+      assert.equal(config.extraMetadata.version, catalog.find(item => item.id === id).moduleVersion);
+      assert.equal(config.extraMetadata.desktopName, `org.brightdesk.${id}.desktop`);
+      assert.equal(config.linux.syncDesktopName, true);
       assert.ok(config.win.artifactName.includes(name));
       assert.equal(config.directories.output, `release/apps/${id}`);
       assert.ok(config.mac.target.includes('pkg'), `${name} mac build must include pkg for installer licence`);
       assert.ok(config.mac.target.includes('dmg'), `${name} mac build must include dmg`);
       assert.ok(config.mac.target.includes('zip'), `${name} mac build must include zip`);
+      assert.equal(config.linux.executableName, `brightdesk-${id}`);
+      assert.equal(config.deb.packageName, `brightdesk-${id}`);
+      assert.equal(config.linux.desktop.entry.Name, `Brightdesk ${name}`);
+      assert.equal(config.linux.desktop.entry['X-Brightdesk-AppId'], id);
+      assert.equal(config.linux.desktop.entry['X-Brightdesk-Version'], catalog.find(item => item.id === id).moduleVersion);
       products.push(config.productName);
     }
   } finally {
@@ -121,7 +148,7 @@ test('standalone app packaging has independent product IDs and all three platfor
     else process.env.BRIGHTDESK_APP_ID = previousAppId;
     delete require.cache[require.resolve(configPath)];
   }
-  assert.equal(new Set(products).size, 4);
+  assert.equal(new Set(products).size, 10);
   const main = fs.readFileSync(path.join(root, 'src', 'main.js'), 'utf8');
   assert.match(main, /--brightdesk-app=/);
   const preload = fs.readFileSync(path.join(root, 'src', 'preload.js'), 'utf8');
@@ -138,7 +165,7 @@ test('the standalone build scripts reject unknown app and platform identifiers',
   const build = fs.readFileSync(path.join(root, 'scripts', 'build-app.js'), 'utf8');
   assert.match(build, /Usage: node scripts\/build-app\.js/);
   assert.match(build, /'pkg'/);
-  assert.match(build, /new Set\(\['pages', 'sheets', 'slides', 'notes'\]\)/);
+  assert.match(build, /new Set\(\['pages', 'sheets', 'slides', 'notes', 'database', 'forms', 'lists', 'planner', 'todo', 'loop'\]\)/);
   const config = fs.readFileSync(path.join(root, 'electron-builder.app.config.js'), 'utf8');
   assert.match(config, /Set BRIGHTDESK_APP_ID/);
 });
@@ -163,6 +190,6 @@ test('README presents all ten apps as the integrated first-release lineup', () =
   const readme = fs.readFileSync(require('node:path').join(__dirname, '..', 'README.md'), 'utf8');
   for (const app of catalog) assert.ok(readme.includes(app.name), `README missing ${app.name}`);
   assert.match(readme, /ten-app desktop suite/i);
-  assert.match(readme, /all ten.*implemented/i);
+  assert.match(readme, /all ten apps have integrated local-first workflows/i);
   assert.doesNotMatch(readme, /other six.*not yet working apps/i);
 });

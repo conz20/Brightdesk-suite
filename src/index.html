@@ -22,7 +22,8 @@
     <button class="nav" data-app="notes"><img class="app-nav-icon" src="assets/app-icons/notes.svg" alt="" aria-hidden="true"><span><b>Brightdesk Notes</b><small data-i18n="sidebar.quickNotes">Quick notes</small></span></button>
     <div id="dynamic-app-nav"></div>
     <div class="sidebar-divider"></div>
-    <button class="nav manager-nav" id="manage-apps"><span class="app-icon manager-icon">＋</span><span><b data-i18n="sidebar.getApps">Get apps</b><small data-i18n="sidebar.installManage">Install and manage apps</small></span></button>
+    <button class="nav manager-nav" id="manage-apps"><span class="app-icon manager-icon">＋</span><span><b>Apps</b><small>Browse and manage your apps</small></span></button>
+    <button class="nav manager-nav" id="downloads-nav" type="button"><span class="app-icon manager-icon">↓</span><span><b>Downloads</b><small>Standalone desktop apps</small></span></button>
     <button class="nav manager-nav" id="manage-languages"><span class="app-icon manager-icon">文</span><span><b data-i18n="sidebar.languages">Languages</b><small data-i18n="sidebar.languagePacks">Language packs and dictionaries</small></span></button>
     <div class="sidebar-bottom">
       <div class="free-pill">✦ Ad-free · Subscription-free · Free forever</div>
@@ -76,16 +77,81 @@
       <section id="database-wrap" class="database-app" aria-label="Brightdesk Database" hidden><aside class="database-sidebar"><div class="database-sidebar-title">TABLES</div><div id="database-tab-list"></div></aside><div id="database-detail"></div></section>
       <section id="workspace-app-wrap" class="workspace-app" aria-label="Brightdesk Workspace" hidden><aside class="workspace-sidebar"><div class="workspace-brand-row"><b>YOUR WORKSPACES</b><button type="button" id="workspace-create" class="primary small-action">New workspace</button></div><div id="workspace-list"></div></aside><div id="workspace-detail"></div></section>
     </section>
+    <section class="home-panel" id="home-panel" aria-labelledby="home-panel-title" hidden>
+      <div class="home-hero">
+        <div>
+          <div class="eyebrow">YOUR BRIGHTDESK WORKSPACE</div>
+          <h2 id="home-panel-title">Welcome to Brightdesk</h2>
+          <p>Open your apps, manage your desktop installations and keep your work moving.</p>
+        </div>
+        <img src="assets/brand/brightdesk-suite-mark.svg" alt="Brightdesk" width="64" height="64">
+      </div>
+      <div class="home-action-row">
+        <button type="button" class="primary" id="home-open-apps">Browse apps</button>
+        <button type="button" class="secondary" id="home-open-downloads">Download desktop apps</button>
+        <button type="button" class="secondary" id="home-check-updates">Check for updates</button>
+        <button type="button" class="secondary" id="home-refresh-apps">Refresh installed apps</button>
+      </div>
+      <div class="home-stat-grid">
+        <article class="home-stat-card"><span>IN YOUR SUITE</span><b id="home-suite-app-count">0</b><small>Apps available inside Brightdesk</small></article>
+        <article class="home-stat-card"><span>DESKTOP INSTALLED</span><b id="home-desktop-app-count">0</b><small>Independent desktop applications</small></article>
+        <article class="home-stat-card"><span>BRIGHTDESK VERSION</span><b id="home-suite-version">0.1.0</b><small>Suite launcher version</small></article>
+      </div>
+      <section class="home-app-section" aria-labelledby="home-suite-apps-title">
+        <div class="home-section-heading"><div><h3 id="home-suite-apps-title">Apps in your Suite</h3><p>Open the apps you've added to your Brightdesk workspace.</p></div><button type="button" class="text-button" id="home-view-all-apps">View all apps</button></div>
+        <div id="home-app-grid" class="home-app-grid"></div>
+      </section>
+      <section class="home-app-section" aria-labelledby="home-desktop-apps-title">
+        <div class="home-section-heading"><div><h3 id="home-desktop-apps-title">Standalone desktop apps</h3><p>These apps can also be opened directly from your operating system.</p></div><button type="button" class="text-button" id="home-manage-downloads">Manage downloads</button></div>
+        <div id="home-desktop-app-list" class="home-desktop-app-list"></div>
+      </section>
+    </section>
     <section class="app-manager" id="app-manager" hidden>
       <div class="manager-hero"><div><div class="eyebrow" data-i18n="manager.eyebrow">BRIGHTDESK APP CENTRE</div><h2 id="manager-title">Choose the apps you need</h2><p id="manager-description">Set up your Brightdesk workspace.</p></div><img class="manager-hero-logo" src="assets/brand/brightdesk-suite-mark.svg" alt="Brightdesk" width="64" height="64"></div>
       <div class="manager-view-controls" role="group" aria-label="Application display">
         <span class="manager-view-label" data-i18n="manager.view">View</span>
         <button type="button" class="manager-view-button" id="manager-grid-view" aria-pressed="true" data-i18n="manager.gridView">Grid</button>
         <button type="button" class="manager-view-button" id="manager-list-view" aria-pressed="false" data-i18n="manager.listView">List</button>
+        <button type="button" class="secondary small-action" id="select-all-apps">Select All</button>
+        <button type="button" class="secondary small-action" id="clear-all-apps">Clear All</button>
         <button type="button" class="secondary small-action" id="refresh-installed-apps">Refresh installed apps</button>
+        <label class="manager-filter-label" for="manager-filter">Show</label>
+        <select id="manager-filter" class="manager-filter" aria-label="Filter Brightdesk apps">
+          <option value="all">All apps</option>
+          <option value="in-suite">In suite</option>
+          <option value="desktop-installed">Desktop installed</option>
+          <option value="not-installed">Not installed</option>
+        </select>
+        <label class="manager-search-label" for="manager-search">Search</label>
+        <input type="search" id="manager-search" class="manager-search" placeholder="Find an app…" autocomplete="off" aria-label="Search Brightdesk apps">
       </div>
+      <p id="manager-results-count" class="manager-results-count" role="status">Showing all 10 approved apps.</p>
       <div class="manager-grid" id="app-manager-grid"></div>
       <div class="manager-bottom"><p id="manager-note">Choose which apps appear in your Brightdesk launcher. You can also download each app as a separate desktop application.</p><div class="manager-bottom-actions"><button class="secondary" id="skip-app-setup" type="button">Skip for now</button><button class="primary" id="finish-app-setup" data-i18n="manager.done">Add selected apps</button></div></div>
+    </section>
+    <section class="downloads-panel" id="downloads-panel" aria-labelledby="downloads-title" hidden>
+      <div class="manager-hero downloads-hero">
+        <div>
+          <div class="eyebrow">BRIGHTDESK DOWNLOADS</div>
+          <h2 id="downloads-title">Choose the desktop apps you need</h2>
+          <p>Download individual Brightdesk applications for this computer. Each app installs separately and can be opened from your desktop or the Suite.</p>
+        </div>
+        <img class="manager-hero-logo" src="assets/brand/brightdesk-suite-mark.svg" alt="Brightdesk" width="64" height="64">
+      </div>
+      <article class="downloads-platform-card" aria-live="polite">
+        <div><span class="eyebrow">DOWNLOAD FOR</span><b id="downloads-platform-name">Checking your platform…</b><small id="downloads-platform-details">Choosing a compatible Brightdesk package.</small></div>
+        <div class="downloads-platform-actions">
+          <label class="downloads-platform-select-label" for="downloads-platform-select">Choose platform</label>
+          <select id="downloads-platform-select" class="downloads-platform-select" aria-label="Choose download platform">
+            <option value="win32">Windows</option>
+            <option value="darwin">macOS</option>
+            <option value="linux">Linux</option>
+          </select>
+          <button type="button" class="secondary small-action" id="refresh-downloads">Refresh installed apps</button>
+        </div>
+      </article>
+      <div class="downloads-grid" id="downloads-app-grid"></div>
+      <p id="downloads-status" class="downloads-status" role="status">Choose an app to download its verified desktop installer.</p>
     </section>
     <section class="language-manager" id="language-manager" hidden>
       <div class="manager-hero"><div><div class="eyebrow" data-i18n="language.eyebrow">BRIGHTDESK LANGUAGE CENTRE</div><h2 data-i18n="language.title">Language settings</h2><p data-i18n="language.description">Choose how Brightdesk displays and checks language.</p></div></div>
@@ -161,7 +227,6 @@
   <script src="workspace-service.js"></script>
   <script src="workspace-editor.js"></script>
   <script src="i18n.js"></script>
-  <script src="update-settings.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

@@ -8,12 +8,6 @@ on:
       - 'package-lock.json'
       - '.github/workflows/security-audit.yml'
       - 'scripts/verify-lockfile.js'
-  pull_request:
-    paths:
-      - 'package.json'
-      - 'package-lock.json'
-      - '.github/workflows/security-audit.yml'
-      - 'scripts/verify-lockfile.js'
   schedule:
     - cron: '23 5 * * 1'
   workflow_dispatch:
@@ -23,7 +17,7 @@ permissions:
 
 jobs:
   audit:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: Check out Brightdesk
         uses: actions/checkout@v4

@@ -7,6 +7,7 @@ const fs = require('node:fs/promises');
 const { openOfficeFile, exportOfficeFile, cleanFileName, ensureExtension } = require('./file-service');
 const { BUILTIN_LANGUAGES, validateLanguagePack, getBuiltinLanguage } = require('./language-service');
 const { DictionaryService } = require('./dictionary-service');
+const { readSharedUpdateSettings, writeSharedUpdateSettings } = require('./update-preferences');
 const { registerStandaloneApp, listInstalledStandaloneApps } = require('./standalone-app-registry');
 const { checkStandaloneAppUpdates, getStandaloneAppDownload, compareVersions } = require('./app-update-service');
 const {
@@ -33,25 +34,20 @@ if (applicationId && !supportedApplications.has(applicationId)) {
   throw new Error(`Unsupported Brightdesk application: ${applicationId}`);
 }
 
-const updateSettingsPath = path.join(app.getPath('userData'), 'update-settings.json');
-const defaultUpdateSettings = { autoCheck: false, autoDownload: false, autoInstall: false };
+const legacyUpdateSettingsPath = path.join(app.getPath('userData'), 'update-settings.json');
 
 async function readUpdateSettings() {
-  try {
-    const raw = await fs.readFile(updateSettingsPath, 'utf8');
-    const parsed = JSON.parse(raw);
-    return { ...defaultUpdateSettings, ...parsed };
-  } catch (error) {
-    if (error.code !== 'ENOENT') console.warn('Could not read Brightdesk update settings.', error);
-    return { ...defaultUpdateSettings };
-  }
+  return readSharedUpdateSettings({
+    appDataPath: app.getPath('appData'),
+    legacyUserDataPath: path.dirname(legacyUpdateSettingsPath)
+  });
 }
 
 async function writeUpdateSettings(settings = {}) {
-  const next = { ...defaultUpdateSettings, ...(settings || {}), autoInstall: false };
-  await fs.mkdir(app.getPath('userData'), { recursive: true });
-  await fs.writeFile(updateSettingsPath, `${JSON.stringify(next, null, 2)}\n`, { mode: 0o600 });
-  return next;
+  return writeSharedUpdateSettings({
+    appDataPath: app.getPath('appData'),
+    settings
+  });
 }
 
 function sendUpdateState(state) { if (mainWindow && !mainWindow.isDestroyed()) mainWindow.webContents.send('updates:state', state); }
@@ -272,7 +268,7 @@ async function checkForUpdates({ quiet = false, force = false } = {}) {
 }
 
 async function stageStandaloneApp(appId) {
-  const download = await getStandaloneAppDownload({ appId, platform: process.platform });
+  const download = await getStandaloneAppDownload({ appId, platform: process.platform, architecture: process.arch });
   return stageStandaloneAppUpdate({
     appDataPath: app.getPath('appData'),
     ...download,
@@ -281,8 +277,11 @@ async function stageStandaloneApp(appId) {
 }
 
 async function refreshStandaloneAppUpdates({ notify = true } = {}) {
-  const installedApps = await listInstalledStandaloneApps({ appDataPath: app.getPath('appData') });
-  const result = await checkStandaloneAppUpdates({ installedApps, platform: process.platform });
+  const allInstalledApps = await listInstalledStandaloneApps({ appDataPath: app.getPath('appData') });
+  const installedApps = applicationId
+    ? allInstalledApps.filter(item => item.id === applicationId)
+    : allInstalledApps;
+  const result = await checkStandaloneAppUpdates({ installedApps, platform: process.platform, architecture: process.arch });
   if (!result.ok) return { ...result, stagedApps: await listStagedStandaloneAppUpdates({ appDataPath: app.getPath('appData') }) };
 
   const settings = await readUpdateSettings();
@@ -305,7 +304,7 @@ async function refreshStandaloneAppUpdates({ notify = true } = {}) {
   const allAvailableUpdatesStaged = available.length > 0 &&
     available.every(update => stagedApps.some(item => item.appId === update.id && item.version === update.availableVersion));
   const response = { ...result, stagedApps };
-  if (notify && available.length && !applicationId && mainWindow && !mainWindow.isDestroyed()) {
+  if (notify && available.length && mainWindow && !mainWindow.isDestroyed()) {
     sendUpdateState({
       status: allAvailableUpdatesStaged ? 'apps-downloaded' : 'apps-available',
       releaseVersion: result.releaseVersion,
@@ -320,7 +319,7 @@ async function refreshStandaloneAppUpdates({ notify = true } = {}) {
 }
 
 async function checkInstalledStandaloneUpdates() {
-  if (applicationId || !mainWindow || mainWindow.isDestroyed()) return;
+  if (!mainWindow || mainWindow.isDestroyed()) return;
   try {
     await refreshStandaloneAppUpdates();
   } catch (error) {
@@ -333,7 +332,7 @@ function configureStandaloneUpdateSchedule(settings) {
   if (standaloneUpdateTimer) clearInterval(standaloneUpdateTimer);
   standaloneUpdateTimeout = null;
   standaloneUpdateTimer = null;
-  if (applicationId || settings?.autoCheck !== true) return;
+  if (settings?.autoCheck !== true) return;
   standaloneUpdateTimeout = setTimeout(() => checkInstalledStandaloneUpdates(), 15000);
   standaloneUpdateTimer = setInterval(() => checkInstalledStandaloneUpdates(), 6 * 60 * 60 * 1000);
 }
@@ -352,6 +351,14 @@ async function initUpdater() {
   if (!app.isPackaged) return;
   const settings = await readUpdateSettings();
   configureStandaloneUpdateSchedule(settings);
+  if (applicationId) {
+    sendUpdateState({
+      status: 'manual',
+      currentVersion: app.getVersion(),
+      message: `Brightdesk ${applicationNames[applicationId]} uses the shared verified app update service.`
+    });
+    return;
+  }
   if (!updatePublishingConfigured) {
     sendUpdateState({ status: 'unavailable', message: 'Automatic updates are not configured for this build yet.' });
     return;
@@ -506,15 +513,40 @@ ipcMain.handle('apps:launch-standalone', async (event, appId) => {
   return { ok: true, appId };
 });
 
-ipcMain.handle('apps:downloads', async (event, appId) => {
+ipcMain.handle('apps:downloads', async (event, payload) => {
   if (!senderIsMain(event)) throw new Error('Invalid sender.');
+  const request = typeof payload === 'string' ? { appId: payload } : payload;
+  const appId = request?.appId;
+  const platform = request?.platform || process.platform;
+  const architecture = request?.architecture || (platform === 'darwin' ? 'universal' : 'x64');
   if (!supportedApplications.has(appId)) throw new Error('That Brightdesk application is not in the approved app catalogue.');
-  const download = await getStandaloneAppDownload({ appId, platform: process.platform });
-  await shell.openExternal(download.downloadUrl);
-  return { ok: true, appId, appName: applicationNames[appId], version: download.version, fileName: download.fileName };
+  const supportedArchitectures = { win32: ['x64'], darwin: ['universal'], linux: ['x64'] };
+  if (!supportedArchitectures[platform]?.includes(architecture)) {
+    throw new Error(`Brightdesk does not currently publish a ${platform}/${architecture} installer.`);
+  }
+  const download = await getStandaloneAppDownload({ appId, platform, architecture });
+  const result = await shell.openExternal(download.downloadUrl);
+  if (result) throw new Error(`Could not open the trusted Brightdesk download: ${result}`);
+  return {
+    ok: true,
+    appId,
+    appName: applicationNames[appId],
+    platform,
+    architecture,
+    version: download.version,
+    fileName: download.fileName,
+    packageType: download.packageType,
+    expectedSize: download.expectedSize,
+    sha256: download.sha256,
+    releaseUrl: download.releaseUrl
+  };
 });
 
-ipcMain.handle('updates:check', async event => { if (!senderIsMain(event)) throw new Error('Invalid sender.'); return checkForUpdates({ force: true }); });
+ipcMain.handle('updates:check', async event => {
+  if (!senderIsMain(event)) throw new Error('Invalid sender.');
+  if (applicationId) return refreshStandaloneAppUpdates({ notify: true });
+  return checkForUpdates({ force: true });
+});
 ipcMain.handle('updates:download', async event => { if (!senderIsMain(event)) throw new Error('Invalid sender.'); if (!autoUpdater) return { ok: false }; await autoUpdater.downloadUpdate(); return { ok: true }; });
 ipcMain.handle('updates:install', async event => { if (!senderIsMain(event)) throw new Error('Invalid sender.'); if (!autoUpdater) return { ok: false }; autoUpdater.quitAndInstall(); return { ok: true }; });
 ipcMain.handle('updates:settings', async event => { if (!senderIsMain(event)) throw new Error('Invalid sender.'); return readUpdateSettings(); });

@@ -40,3 +40,121 @@ test('standalone app registry removes entries when the application executable is
     await fs.rm(basePath, { recursive: true, force: true });
   }
 });
+
+test('launcher registry discovers a Linux desktop package before its first launch', async () => {
+  const basePath = await fs.mkdtemp(path.join(os.tmpdir(), 'brightdesk-registry-discovery-'));
+  try {
+    const executablePath = path.join(basePath, 'brightdesk-pages');
+    const desktopPath = path.join(basePath, 'brightdesk-pages.desktop');
+    await fs.writeFile(executablePath, 'test executable');
+    await fs.writeFile(desktopPath, `[Desktop Entry]
+Type=Application
+Name=Brightdesk Pages
+Exec=${executablePath} %U
+X-Brightdesk-Version=0.1.0
+`);
+
+    const installed = await listInstalledStandaloneApps({
+      appDataPath: basePath,
+      platform: 'linux',
+      homeDirectory: basePath,
+      searchDirectories: { linuxDesktopDirectories: [basePath] }
+    });
+    assert.equal(installed.length, 1);
+    assert.equal(installed[0].id, 'pages');
+    assert.equal(installed[0].version, '0.1.0');
+    assert.equal(installed[0].source, 'system-discovery');
+
+    const persisted = JSON.parse(await fs.readFile(path.join(basePath, 'Brightdesk', 'installed-apps.json'), 'utf8'));
+    assert.equal(persisted.apps.pages.executablePath, executablePath);
+  } finally {
+    await fs.rm(basePath, { recursive: true, force: true });
+  }
+});
+
+test('unknown discovered app versions are retained without inventing an update version', async () => {
+  const basePath = await fs.mkdtemp(path.join(os.tmpdir(), 'brightdesk-registry-unknown-version-'));
+  try {
+    const executablePath = path.join(basePath, 'Brightdesk Pages.exe');
+    await fs.writeFile(executablePath, 'test executable');
+    const record = await registerStandaloneApp({
+      appDataPath: basePath, appId: 'pages', version: 'unknown',
+      executablePath, platform: 'win32'
+    });
+    assert.equal(record.version, 'unknown');
+    const installed = await listInstalledStandaloneApps({
+      appDataPath: basePath, platform: 'freebsd'
+    }).catch(error => { throw error; });
+    assert.equal(installed.length, 1);
+    assert.equal(installed[0].version, 'unknown');
+  } finally {
+    await fs.rm(basePath, { recursive: true, force: true });
+  }
+});
+
+test('registry refreshes the installed version when OS metadata reports a newer version', async () => {
+  const basePath = await fs.mkdtemp(path.join(os.tmpdir(), 'brightdesk-registry-upgrade-'));
+  try {
+    const bundlePath = path.join(basePath, 'Brightdesk Pages.app');
+    const contents = path.join(bundlePath, 'Contents');
+    const executablePath = path.join(contents, 'MacOS', 'Brightdesk Pages');
+    await fs.mkdir(path.dirname(executablePath), { recursive: true });
+    await fs.writeFile(executablePath, 'test executable');
+    await fs.writeFile(path.join(contents, 'Info.plist'), `<?xml version="1.0"?>
+<plist><dict>
+<key>CFBundleExecutable</key><string>Brightdesk Pages</string>
+<key>CFBundleShortVersionString</key><string>0.2.0</string>
+</dict></plist>`);
+    await registerStandaloneApp({
+      appDataPath: basePath, appId: 'pages', version: '0.1.0',
+      executablePath: bundlePath, platform: 'darwin'
+    });
+    const refreshed = await listInstalledStandaloneApps({
+      appDataPath: basePath,
+      platform: 'darwin',
+      homeDirectory: basePath,
+      searchDirectories: { macApplications: [basePath] }
+    });
+    assert.equal(refreshed[0].version, '0.2.0');
+    assert.equal(refreshed[0].executablePath, bundlePath);
+    assert.equal(refreshed[0].source, 'system-discovery');
+  } finally {
+    await fs.rm(basePath, { recursive: true, force: true });
+  }
+});
+
+test('registry replaces a stale installation path when the app is reinstalled elsewhere', async () => {
+  const basePath = await fs.mkdtemp(path.join(os.tmpdir(), 'brightdesk-registry-relocate-'));
+  try {
+    const oldBundle = path.join(basePath, 'Old location', 'Brightdesk Pages.app');
+    const oldExecutable = path.join(oldBundle, 'Contents', 'MacOS', 'Brightdesk Pages');
+    await fs.mkdir(path.dirname(oldExecutable), { recursive: true });
+    await fs.writeFile(oldExecutable, 'old app');
+    await registerStandaloneApp({
+      appDataPath: basePath, appId: 'pages', version: '0.1.0',
+      executablePath: oldBundle, platform: 'darwin'
+    });
+
+    const newBundle = path.join(basePath, 'Applications', 'Brightdesk Pages.app');
+    const newExecutable = path.join(newBundle, 'Contents', 'MacOS', 'Brightdesk Pages');
+    await fs.mkdir(path.dirname(newExecutable), { recursive: true });
+    await fs.writeFile(newExecutable, 'new app');
+    await fs.writeFile(path.join(newBundle, 'Contents', 'Info.plist'), `<?xml version="1.0"?>
+<plist><dict>
+<key>CFBundleExecutable</key><string>Brightdesk Pages</string>
+<key>CFBundleShortVersionString</key><string>0.2.0</string>
+</dict></plist>`);
+
+    const installed = await listInstalledStandaloneApps({
+      appDataPath: basePath,
+      platform: 'darwin',
+      homeDirectory: basePath,
+      searchDirectories: { macApplications: [path.dirname(newBundle)] }
+    });
+    assert.equal(installed.length, 1);
+    assert.equal(installed[0].executablePath, newBundle);
+    assert.equal(installed[0].version, '0.2.0');
+  } finally {
+    await fs.rm(basePath, { recursive: true, force: true });
+  }
+});
