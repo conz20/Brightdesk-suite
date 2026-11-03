@@ -2,7 +2,11 @@
 
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { compareVersions, checkStandaloneAppUpdates } = require('../src/app-update-service');
+const {
+  compareVersions,
+  checkStandaloneAppUpdates,
+  getStandaloneAppDownload
+} = require('../src/app-update-service');
 
 test('app version comparison handles stable versions and prereleases', () => {
   assert.equal(compareVersions('0.2.0', '0.1.9'), 1);
@@ -36,6 +40,35 @@ test('update check reports a standalone app update only when its platform instal
   assert.ok(result.apps[0].downloadUrl.endsWith('.exe'));
 });
 
+test('the launcher download action resolves the exact app installer for the current OS', async () => {
+  const fetchImpl = async () => ({
+    ok: true,
+    json: async () => ({
+      tag_name: 'v0.2.0',
+      html_url: 'https://github.com/connormolloy12/Brightdesk-suite/releases/tag/v0.2.0',
+      assets: [
+        {
+          name: 'Brightdesk-Pages-0.2.0-universal.dmg',
+          browser_download_url: 'https://github.com/connormolloy12/Brightdesk-suite/releases/download/v0.2.0/Brightdesk-Pages-0.2.0-universal.dmg'
+        },
+        {
+          name: 'Brightdesk-Pages-0.2.0-universal.pkg',
+          browser_download_url: 'https://github.com/connormolloy12/Brightdesk-suite/releases/download/v0.2.0/Brightdesk-Pages-0.2.0-universal.pkg'
+        },
+        {
+          name: 'Brightdesk-Sheets-0.2.0-universal.pkg',
+          browser_download_url: 'https://github.com/connormolloy12/Brightdesk-suite/releases/download/v0.2.0/Brightdesk-Sheets-0.2.0-universal.pkg'
+        }
+      ]
+    })
+  });
+  const result = await getStandaloneAppDownload({ appId: 'pages', platform: 'darwin', fetchImpl });
+  assert.equal(result.appId, 'pages');
+  assert.equal(result.version, '0.2.0');
+  assert.ok(result.fileName.endsWith('.pkg'));
+  assert.ok(result.downloadUrl.includes('Brightdesk-Pages-'));
+});
+
 test('update check does not offer an update when the platform package is missing', async () => {
   const fetchImpl = async () => ({
     ok: true,
@@ -59,4 +92,15 @@ test('no published release is reported clearly', async () => {
   });
   assert.equal(result.ok, false);
   assert.match(result.message, /No Brightdesk release/);
+});
+
+test('unapproved app IDs cannot be used to locate an installer', async () => {
+  await assert.rejects(
+    () => getStandaloneAppDownload({
+      appId: 'outlook',
+      platform: 'darwin',
+      fetchImpl: async () => ({ ok: true, json: async () => ({}) })
+    }),
+    /not in the approved Brightdesk catalogue/
+  );
 });
