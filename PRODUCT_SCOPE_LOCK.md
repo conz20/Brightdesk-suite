@@ -15,17 +15,18 @@ The approved Brightdesk product scope contains exactly these ten apps:
 
 ## First-release lineup
 
-The first-release product lineup is all ten apps listed above. The catalogue and app manager must show every app, its original Brightdesk artwork, name, short explanation and honest availability status. Do not hide planned apps just because they are not implemented yet.
+The first-release lineup is all ten apps listed above. The suite launcher and App Centre must show every app with its original Brightdesk SVG artwork, name, short explanation and honest install/update status.
 
-## Version 0.1.0 implementation status
+The Suite launcher is its own desktop application. Each approved app must also be independently buildable and installable on Windows, macOS and Linux. Users choose which apps to add to the Suite experience and which individual desktop apps to download. Never silently select or install every app.
 
-Implemented and available:
+## Version 0.1.0 source implementation status
+
+All ten apps have integrated local-first workflows and dedicated app modules in the current integrated source line:
+
 - Brightdesk Pages
 - Brightdesk Sheets
 - Brightdesk Decks
 - Brightdesk Notes
-
-Planned, not yet implemented:
 - Brightdesk Database
 - Brightdesk Forms
 - Brightdesk Lists
@@ -33,9 +34,13 @@ Planned, not yet implemented:
 - Brightdesk To Do
 - Brightdesk Workspace
 
+“Available” means an app has an implemented integrated local-first workflow and corresponding source tests. It does not mean full feature parity with commercial office products, nor does it prove that every standalone installer has passed native installation, upgrade and uninstall testing.
+
+The suite is local-first. Do not claim cloud collaboration, remote sync or Microsoft service integration unless these capabilities are separately implemented and verified.
+
 ## Explicit exclusions
 
-Outlook, OneDrive and Teams are not part of Brightdesk and must not be added.
+Outlook, OneDrive and Teams are not part of Brightdesk and must not be added. No other app may be added without explicit owner instruction.
 
 ## Change control
 
@@ -43,4 +48,4 @@ This scope can change only when the user explicitly instructs. Do not infer appr
 
 ## Identity
 
-Brightdesk is independent and is not affiliated with Microsoft. Use original code, product names, interface design and assets. Microsoft product names may be used only as internal comparisons to explain familiar workflows.
+Brightdesk is independent and is not affiliated with Microsoft or Adobe. Use original code, product names, interface design, icons and assets. Adobe and Microsoft 365 are quality/workflow references only; do not copy proprietary source code, logos, artwork, distinctive layouts or product identities.
