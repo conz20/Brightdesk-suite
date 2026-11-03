@@ -536,6 +536,7 @@ function toggleAppInstall(id) {
     if (state.app === id) {
       state.app = state.installedApps[0] || 'pages';
       state.ribbonTab = 'home';
+      if (state.installedApps.length === 0) state.view = 'manager';
     }
   } else {
     const hadNoApps = state.installedApps.length === 0;
