@@ -49,4 +49,6 @@ test('a standalone app opens only its own Updates row and does not call the Suit
   assert.match(app, /launchAppId \? Promise\.resolve\(\{ ok: true, status: 'standalone' \}\) : window\.brightdesk\.checkForUpdates\(\)/);
   assert.match(main, /if \(applicationId\) return refreshStandaloneAppUpdates\(\{ notify: true \}\)/);
   assert.match(main, /if \(applicationId\) \{[\s\S]*?shared verified app update service/);
+  assert.match(main, /const allInstalledApps = await listInstalledStandaloneApps/);
+  assert.match(main, /allInstalledApps\.filter\(item => item\.id === applicationId\)/);
 });
