@@ -139,8 +139,16 @@
         <img class="manager-hero-logo" src="assets/brand/brightdesk-suite-mark.svg" alt="Brightdesk" width="64" height="64">
       </div>
       <article class="downloads-platform-card" aria-live="polite">
-        <div><span class="eyebrow">RECOMMENDED FOR THIS DEVICE</span><b id="downloads-platform-name">Checking your platform…</b><small id="downloads-platform-details">Choosing a compatible Brightdesk package.</small></div>
-        <button type="button" class="secondary small-action" id="refresh-downloads">Refresh installed apps</button>
+        <div><span class="eyebrow">DOWNLOAD FOR</span><b id="downloads-platform-name">Checking your platform…</b><small id="downloads-platform-details">Choosing a compatible Brightdesk package.</small></div>
+        <div class="downloads-platform-actions">
+          <label class="downloads-platform-select-label" for="downloads-platform-select">Choose platform</label>
+          <select id="downloads-platform-select" class="downloads-platform-select" aria-label="Choose download platform">
+            <option value="win32">Windows</option>
+            <option value="darwin">macOS</option>
+            <option value="linux">Linux</option>
+          </select>
+          <button type="button" class="secondary small-action" id="refresh-downloads">Refresh installed apps</button>
+        </div>
       </article>
       <div class="downloads-grid" id="downloads-app-grid"></div>
       <p id="downloads-status" class="downloads-status" role="status">Choose an app to download its verified desktop installer.</p>
