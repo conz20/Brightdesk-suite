@@ -25,4 +25,4 @@ Brightdesk Database is a local-first structured data manager. The first release 
 5. Export correct escaped CSV.
 6. Keep other Brightdesk app data unchanged.
 7. Automated tests pass before Database is declared release-ready.
-8. Verify the running Electron app before merge or release.
+8. Verify the running Electron app before final release.
