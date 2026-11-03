@@ -7,6 +7,7 @@ const { openOfficeFile, exportOfficeFile, cleanFileName, ensureExtension } = req
 const { BUILTIN_LANGUAGES, validateLanguagePack, getBuiltinLanguage } = require('./language-service');
 const { DictionaryService } = require('./dictionary-service');
 const { registerStandaloneApp, listInstalledStandaloneApps } = require('./standalone-app-registry');
+const { checkStandaloneAppUpdates } = require('./app-update-service');
 let mainWindow;
 let agreementWindow;
 let termsAccepted = false;
@@ -357,6 +358,22 @@ ipcMain.handle('apps:list-installed', async event => {
   if (!senderIsMain(event)) throw new Error('Invalid sender.');
   return listInstalledStandaloneApps({ appDataPath: app.getPath('appData') });
 });
+ipcMain.handle('apps:check-updates', async event => {
+  if (!senderIsMain(event)) throw new Error('Invalid sender.');
+  const installedApps = await listInstalledStandaloneApps({ appDataPath: app.getPath('appData') });
+  return checkStandaloneAppUpdates({ installedApps, platform: process.platform });
+});
+ipcMain.handle('apps:download-update', async (event, appId) => {
+  if (!senderIsMain(event)) throw new Error('Invalid sender.');
+  if (!supportedApplications.has(appId)) throw new Error('That Brightdesk application is not in the approved app catalogue.');
+  const installedApps = await listInstalledStandaloneApps({ appDataPath: app.getPath('appData') });
+  const result = await checkStandaloneAppUpdates({ installedApps, platform: process.platform });
+  const update = result.apps?.find(item => item.id === appId && item.updateAvailable && item.downloadUrl);
+  if (!update) throw new Error(result.message || 'There is no standalone app update available for this app and platform.');
+  await shell.openExternal(update.downloadUrl);
+  return { ok: true, version: update.availableVersion };
+});
+
 ipcMain.handle('apps:launch-standalone', async (event, appId) => {
   if (!senderIsMain(event)) throw new Error('Invalid sender.');
   if (!supportedApplications.has(appId)) throw new Error('That Brightdesk application is not in the approved app catalogue.');
