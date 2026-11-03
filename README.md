@@ -46,4 +46,4 @@ The GitHub Actions workflows pin third-party actions to immutable commit SHAs an
 Brightdesk uses original product names, code, artwork and interface design. Microsoft product names are used only as internal workflow comparisons.
 ## Updates and customer control
 
-Automatic update checking can be turned on or off. Turning it off stops scheduled and focus-triggered checks. Brightdesk never downloads or installs an update automatically; the customer must choose **Download update** and then **Install update**.
+Automatic update checking can be turned on or off. Turning it off stops scheduled and focus-triggered checks. Brightdesk never downloads or installs an update automatically; the customer must choose **Download update** and then **Install update**. The release feed is not configured in the current development build, so update checks will remain unavailable until the approved distribution repository is configured.
