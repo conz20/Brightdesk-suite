@@ -7,7 +7,7 @@ const supportedApps = new Set(['pages', 'sheets', 'slides', 'notes']);
 contextBridge.exposeInMainWorld('brightdesk', {
   launchAppId: supportedApps.has(launchAppId) ? launchAppId : null,
   platform: process.platform,
-  version: process.env.npm_package_version || '0.1.0',
+  version: ipcRenderer.sendSync('app:version-sync'),
   getVersion: () => ipcRenderer.invoke('app:version'),
   openFile: () => ipcRenderer.invoke('file:open'),
   exportFile: (payload) => ipcRenderer.invoke('file:export', payload),
