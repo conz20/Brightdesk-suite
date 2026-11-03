@@ -305,7 +305,7 @@ async function refreshStandaloneAppUpdates({ notify = true } = {}) {
   const allAvailableUpdatesStaged = available.length > 0 &&
     available.every(update => stagedApps.some(item => item.appId === update.id && item.version === update.availableVersion));
   const response = { ...result, stagedApps };
-  if (notify && available.length && !applicationId && mainWindow && !mainWindow.isDestroyed()) {
+  if (notify && available.length && mainWindow && !mainWindow.isDestroyed()) {
     sendUpdateState({
       status: allAvailableUpdatesStaged ? 'apps-downloaded' : 'apps-available',
       releaseVersion: result.releaseVersion,
@@ -320,7 +320,7 @@ async function refreshStandaloneAppUpdates({ notify = true } = {}) {
 }
 
 async function checkInstalledStandaloneUpdates() {
-  if (applicationId || !mainWindow || mainWindow.isDestroyed()) return;
+  if (!mainWindow || mainWindow.isDestroyed()) return;
   try {
     await refreshStandaloneAppUpdates();
   } catch (error) {
@@ -333,7 +333,7 @@ function configureStandaloneUpdateSchedule(settings) {
   if (standaloneUpdateTimer) clearInterval(standaloneUpdateTimer);
   standaloneUpdateTimeout = null;
   standaloneUpdateTimer = null;
-  if (applicationId || settings?.autoCheck !== true) return;
+  if (settings?.autoCheck !== true) return;
   standaloneUpdateTimeout = setTimeout(() => checkInstalledStandaloneUpdates(), 15000);
   standaloneUpdateTimer = setInterval(() => checkInstalledStandaloneUpdates(), 6 * 60 * 60 * 1000);
 }
@@ -352,6 +352,14 @@ async function initUpdater() {
   if (!app.isPackaged) return;
   const settings = await readUpdateSettings();
   configureStandaloneUpdateSchedule(settings);
+  if (applicationId) {
+    sendUpdateState({
+      status: 'manual',
+      currentVersion: app.getVersion(),
+      message: `Brightdesk ${applicationNames[applicationId]} uses the shared verified app update service.`
+    });
+    return;
+  }
   if (!updatePublishingConfigured) {
     sendUpdateState({ status: 'unavailable', message: 'Automatic updates are not configured for this build yet.' });
     return;
@@ -514,7 +522,11 @@ ipcMain.handle('apps:downloads', async (event, appId) => {
   return { ok: true, appId, appName: applicationNames[appId], version: download.version, fileName: download.fileName };
 });
 
-ipcMain.handle('updates:check', async event => { if (!senderIsMain(event)) throw new Error('Invalid sender.'); return checkForUpdates({ force: true }); });
+ipcMain.handle('updates:check', async event => {
+  if (!senderIsMain(event)) throw new Error('Invalid sender.');
+  if (applicationId) return refreshStandaloneAppUpdates({ notify: true });
+  return checkForUpdates({ force: true });
+});
 ipcMain.handle('updates:download', async event => { if (!senderIsMain(event)) throw new Error('Invalid sender.'); if (!autoUpdater) return { ok: false }; await autoUpdater.downloadUpdate(); return { ok: true }; });
 ipcMain.handle('updates:install', async event => { if (!senderIsMain(event)) throw new Error('Invalid sender.'); if (!autoUpdater) return { ok: false }; autoUpdater.quitAndInstall(); return { ok: true }; });
 ipcMain.handle('updates:settings', async event => { if (!senderIsMain(event)) throw new Error('Invalid sender.'); return readUpdateSettings(); });
