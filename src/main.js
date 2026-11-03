@@ -547,6 +547,12 @@ app.whenReady().then(async () => {
         executablePath: app.getPath('exe'),
         platform: process.platform
       });
+      const stagedUpdates = await listStagedStandaloneAppUpdates({ appDataPath: app.getPath('appData') });
+      for (const staged of stagedUpdates) {
+        if (staged.appId === applicationId && compareVersions(app.getVersion(), staged.version) >= 0) {
+          await removeStagedStandaloneAppUpdate({ appDataPath: app.getPath('appData'), appId: applicationId });
+        }
+      }
     } catch (error) {
       console.warn('The standalone Brightdesk app could not register with the suite launcher.', error);
     }
