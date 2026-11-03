@@ -24,5 +24,5 @@ Brightdesk Workspace is a local-first project hub that brings pages, notes, chec
 5. Search workspace pages and block content.
 6. Preserve workspaces after app restart.
 7. Keep other Brightdesk app data unchanged.
-8. Automated tests pass before Workspace is marked available.
+8. Automated tests pass before Workspace is declared release-ready.
 9. Verify the running Electron app before merge or release.
