@@ -129,3 +129,12 @@ Brightdesk is an independent desktop product with original names, code, artwork,
 - Linux discovery now recognises standalone DEB/package desktop entries and portable AppImage desktop entries. The launcher refresh reconciles moved and upgraded installs and has a Home refresh action.
 - The source repository is private. The customer-facing resolver uses unauthenticated public GitHub release metadata; a separate public release repository or download host is required before end users can download or update without sign-in. Do not expose the private source repository as a public distribution endpoint or make it public without owner approval.
 - PR #22 remains a draft stacked on PR #21, with the latest source on `feature/brightdesk-original-suite-experience`. The branch has not been merged to main. Node.js 24.22.2 test execution and native platform build/install verification remain outstanding.
+
+
+## CI usage optimisation and latest runner confirmation — 2026-11-03
+
+- Removed the feature-quality workflow's duplicate push trigger; it now runs once per PR update (plus deliberate manual dispatch). Pull-request quality performs dependency audit itself.
+- Removed the stacked feature branch from the automatic native installer matrix. The expensive Windows/macOS/Linux matrix remains on main and is available by workflow_dispatch for an explicit release-candidate run. This reduces duplicate/private Actions compute usage while preserving the native build gate.
+- The separate security audit now runs on main, its weekly schedule and manual dispatch; PR quality continues to run `npm audit --audit-level=high`.
+- The latest quality run at commit `044ebe5228f82156968cd769ca0139337e466b27` still returned `runner_id: 0`, no runner name and zero steps. Stable image pins and trigger de-duplication do not solve account/repository runner allocation. Issue #23 has the latest status comment.
+- Issue #24 tracks the required public no-login release host. The source repository remains private; no visibility change or public release has been made.
