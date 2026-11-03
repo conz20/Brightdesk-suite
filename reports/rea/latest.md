@@ -1,3 +1,5 @@
+> **Historical snapshot — not current release evidence.** This report was generated on 2026-11-01 from an older local export. It predates the current main-branch integration and the recent Database and update-safety changes. Run `npm run rea:inspect` on the current checkout to regenerate it before using it for release decisions.
+
 # Brightdesk REA Bench report
 
 - **Target:** `/mnt/data/brightdesk-master-export`
