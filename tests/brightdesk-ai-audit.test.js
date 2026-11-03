@@ -82,3 +82,18 @@ test('maintenance audit report explains the different uninstall methods', () => 
   assert.match(report, /Finder/);
   assert.match(report, /package manager/);
 });
+
+test('maintenance audit does not let the Linux x64 flag hide a missing Windows x64 flag', () => {
+  const root = makeFixture();
+  try {
+    const packagePath = path.join(root, 'package.json');
+    const config = JSON.parse(fs.readFileSync(packagePath, 'utf8'));
+    config.scripts['dist:win'] = 'electron-builder --win nsis';
+    fs.writeFileSync(packagePath, JSON.stringify(config, null, 2));
+    const result = auditRepository({ rootDir: root });
+    assert.ok(result.blockers.some(item => item.name === 'Windows x64 build target'));
+    assert.ok(!result.blockers.some(item => item.name === 'Linux x64 build target'));
+  } finally {
+    fs.rmSync(root, { recursive: true, force: true });
+  }
+});
