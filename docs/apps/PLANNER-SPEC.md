@@ -25,4 +25,4 @@ Brightdesk Planner is a local-first project board for organising work into plans
 5. Preserve plans after app restart.
 6. Keep other Brightdesk app data unchanged.
 7. Automated tests pass before Planner is declared release-ready.
-8. Verify the running Electron app before merge or release.
+8. Verify the running Electron app before final release.
