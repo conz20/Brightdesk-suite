@@ -549,7 +549,9 @@ function completeAppSetup() {
   const selected = [...state.firstRunSelection].filter(id => installableCatalog.some(item => item.id === id));
   state.installedApps = selected; state.setupComplete = true;
   state.app = selected[0] || 'pages';
-  state.view = selected.length ? 'workspace' : 'manager';
+  // Return to the suite Home/App Centre after selection. Users choose
+  // "Open in suite" on the app card when they are ready to enter an app.
+  state.view = 'manager';
   saveAppSetup(); render();
 }
 
@@ -835,7 +837,8 @@ function render() {
     const visible = launchAppId ? btn.dataset.app === launchAppId : installedApp(btn.dataset.app); btn.hidden = !visible; btn.classList.toggle('active', !manager && !languages && btn.dataset.app === state.app);
   });
   $('manage-apps').hidden = Boolean(launchAppId);
-  $('manage-apps').classList.toggle('active', manager);
+  $('home-nav').classList.toggle('active', manager);
+  $('manage-apps').classList.toggle('active', false);
   $('manage-languages').classList.toggle('active', languages);
 }
 function collectDocxBlocks() {
@@ -885,6 +888,7 @@ async function saveProject(){try{const result=await window.brightdesk.saveProjec
 function setApp(app){if((launchAppId && app !== launchAppId) || !(configs[app] || genericConfigs[app]) || !installedApp(app))return;state.app=app;state.view='workspace';state.ribbonTab='home';render();persist();}
 
 document.querySelectorAll('.nav[data-app]').forEach(btn=>btn.addEventListener('click',()=>setApp(btn.dataset.app)));
+$('home-nav').addEventListener('click',()=>{state.view='manager';render();});
 $('manage-apps').addEventListener('click',()=>{if (launchAppId) return; state.view='manager';render();});
 $('manage-languages').addEventListener('click',openLanguageManager);
 $('display-language').addEventListener('change',event=>changeDisplayLanguage(event.target.value));
