@@ -13,6 +13,9 @@ if (!apps.has(appId) || !targets[platform]) {
   console.error('Usage: node scripts/build-app.js <pages|sheets|slides|notes> <win|mac|linux>');
   process.exit(2);
 }
+const rustBuild = spawnSync(process.execPath, [path.resolve(__dirname, 'build-rust-engine.js')], { cwd: path.resolve(__dirname, '..'), stdio: 'inherit', env: process.env });
+if (rustBuild.error) throw rustBuild.error;
+if (rustBuild.status !== 0) process.exit(rustBuild.status ?? 1);
 const npmExec = process.platform === 'win32' ? 'npx.cmd' : 'npx';
 const result = spawnSync(npmExec, ['electron-builder', ...targets[platform], '--publish', 'never', '--config', path.resolve(__dirname, '..', 'electron-builder.app.config.js')], {
   cwd: path.resolve(__dirname, '..'), stdio: 'inherit', shell: process.platform === 'win32',
