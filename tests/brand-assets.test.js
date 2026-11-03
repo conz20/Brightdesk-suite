@@ -18,12 +18,17 @@ test('suite installers use the original SVG master icon on all platforms', () =>
   }
   const previousAppId = process.env.BRIGHTDESK_APP_ID;
   try {
-    for (const appId of ['pages','sheets','slides','notes']) {
+    for (const appId of ['pages','sheets','slides','notes','database','forms','lists','planner','todo','loop']) {
       process.env.BRIGHTDESK_APP_ID = appId;
       delete require.cache[require.resolve('../electron-builder.app.config.js')];
       const config = require('../electron-builder.app.config.js');
       assert.equal(config.directories.buildResources, 'assets/branding');
-      for (const platform of ['win','mac','linux']) assert.equal(config[platform].icon, 'brightdesk-suite-mark.svg');
+      for (const platform of ['win','mac','linux']) {
+        assert.equal(config[platform].icon, path.join('src', 'assets', 'app-icons', `${appId}.svg`));
+      }
+      const appIcon = path.join(root, 'src', 'assets', 'app-icons', `${appId}.svg`);
+      assert.ok(fs.existsSync(appIcon), `missing standalone installer icon for ${appId}`);
+      assert.match(fs.readFileSync(appIcon, 'utf8'), /<svg[\\s>]/i);
     }
   } finally {
     if (previousAppId === undefined) delete process.env.BRIGHTDESK_APP_ID;
