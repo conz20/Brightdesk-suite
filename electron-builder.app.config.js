@@ -15,6 +15,7 @@ module.exports = {
   extraMetadata: { brightdeskAppId: appId, productName: 'Brightdesk ' + appNames[appId] },
   asar: true,
   files: ['src/**/*', 'package.json', 'LICENSE', 'THIRD_PARTY_NOTICES.md', 'TERMS_AND_CONDITIONS.txt'],
+  extraResources: [{ from: 'native', to: 'native', filter: ['brightdesk-rust-engine*'] }],
   directories: { output: path.join('release', 'apps', appId) },
   publish: [],
   win: {

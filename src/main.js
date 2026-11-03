@@ -7,6 +7,8 @@ const fs = require('node:fs/promises');
 const { openOfficeFile, exportOfficeFile, cleanFileName, ensureExtension } = require('./file-service');
 const { BUILTIN_LANGUAGES, validateLanguagePack, getBuiltinLanguage } = require('./language-service');
 const { DictionaryService } = require('./dictionary-service');
+const { createRustEngine } = require('./rust-engine');
+const rustEngine = createRustEngine();
 const { DEFAULT_UPDATE_SETTINGS, normalizeUpdateSettings, getUpdaterPreferences } = require('./update-policy');
 let mainWindow;
 let agreementWindow;
@@ -59,6 +61,15 @@ function createWindow({ show = true } = {}) {
   return mainWindow.loadFile(path.join(__dirname, 'index.html'));
 }
 function senderIsMain(event) { return mainWindow && event.sender === mainWindow.webContents; }
+ipcMain.handle('rust:analyze-text', async (event, text) => {
+  if (!senderIsMain(event)) throw new Error('Invalid sender.');
+  return rustEngine.analyzeText(text);
+});
+ipcMain.handle('rust:status', event => {
+  if (!senderIsMain(event)) throw new Error('Invalid sender.');
+  return rustEngine.status();
+});
+app.on('before-quit', () => rustEngine.close());
 
 function termsFilePath() { return path.join(app.getAppPath(), 'TERMS_AND_CONDITIONS.txt'); }
 async function readTerms() { return fs.readFile(termsFilePath(), 'utf8'); }

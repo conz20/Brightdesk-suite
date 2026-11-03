@@ -57,3 +57,7 @@ Brightdesk uses original product names, code, artwork and interface design. Micr
 ## Updates and customer control
 
 Automatic update checking can be turned on or off. Turning it off stops scheduled and focus-triggered checks. Brightdesk never downloads or installs an update automatically; the customer must choose **Download update** and then **Install update**. The release feed is not configured in the current development build, so update checks will remain unavailable until the approved distribution repository is configured.
+
+## Rust foundation
+
+This repository includes a Rust core library and a native Rust sidecar, pinned to Rust 1.99.1. The Electron main process starts the sidecar and exposes its Unicode-aware character, word and line metrics through the isolated preload API and sender-validated IPC. The sidecar is built for the target OS during development and installer packaging, and is bundled as an extra resource. If the native process is unavailable, the JavaScript bridge provides a compatible fallback. Existing JavaScript features remain in place; HTML, Shell, PowerShell and Dockerfile workflows are also retained. Rust adds native capabilities rather than replacing those languages. The customer-facing version, npm dependencies and npm lockfile are unchanged. See [the Rust integration standard](docs/RUST-INTEGRATION.md) and the [official Rust getting-started guide](https://rust-lang.org/learn/get-started/).
