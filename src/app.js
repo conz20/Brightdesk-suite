@@ -33,7 +33,7 @@ const state = {
   app: launchAppId || 'pages', view: 'workspace', docs: structuredClone(defaults),
   todoView: 'my-day', todoQuery: '',
   selectedCell: { row: 0, col: 0 }, update: null, ribbonTab: 'home',
-  installedApps: [], standaloneApps: [], setupComplete: false, firstRunSelection: new Set(),
+  installedApps: [], standaloneApps: [], currentVersion: '0.1.0', setupComplete: false, firstRunSelection: new Set(),
   managerView: localStorage.getItem('brightdesk-manager-view') === 'list' ? 'list' : 'grid',
   slideTheme: 'lavender', focusMode: false, editorZoom: 100, sheetZoom: 100,
   languageCatalog: [], installedLanguagePacks: [], spellCheckerLanguages: [], usesNativeMacSpellChecker: false,
@@ -490,7 +490,7 @@ function renderAppManager() {
     heading.append(name, subtitle); header.append(icon, heading);
     const description = document.createElement('p'); description.textContent = item.description;
     const footer = document.createElement('div'); footer.className = 'app-card-footer';
-    const version = document.createElement('span'); version.className = 'module-version'; version.textContent = desktopApp ? `Desktop ${desktopApp.version}` : `Suite ${item.moduleVersion}`;
+    const version = document.createElement('span'); version.className = 'module-version'; version.textContent = desktopApp ? `Desktop ${desktopApp.version}` : `Suite ${state.currentVersion}`;
     footer.append(version);
     if (!canInstall) {
       const comingSoon = document.createElement('span'); comingSoon.className = 'app-state'; comingSoon.textContent = 'In development'; footer.append(comingSoon);
@@ -1041,7 +1041,7 @@ loadLocal();$('platform').textContent=`Desktop app · ${window.brightdesk.platfo
 (async()=>{
   try {
     const version = await window.brightdesk.getVersion();
-    if (version) { $('version-label').textContent = `Version ${version}`; $('footer-version').textContent = `Brightdesk ${version}`; }
+    if (version) { state.currentVersion = version; $('version-label').textContent = `Version ${version}`; $('footer-version').textContent = `Brightdesk ${version}`; }
   } catch (error) { console.warn('The desktop version could not be read.', error); }
   try { await refreshLanguageData(); } catch(error) { console.error('Language packs could not be loaded.',error); }
   try { await refreshDictionaries(); } catch(error) { console.error('Spelling dictionaries could not be loaded.',error); }
