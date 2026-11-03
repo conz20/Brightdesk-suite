@@ -50,7 +50,10 @@
     "dist:app": "npm run verify:licenses && node scripts/build-app.js",
     "release:apps:win": "npm run verify:licenses && node scripts/build-apps.js win always",
     "release:apps:mac": "npm run verify:licenses && node scripts/build-apps.js mac always",
-    "release:apps:linux": "npm run verify:licenses && node scripts/build-apps.js linux always"
+    "release:apps:linux": "npm run verify:licenses && node scripts/build-apps.js linux always",
+    "release:all:win": "npm run verify:licenses && electron-builder --win nsis --x64 --publish always && node scripts/build-apps.js win always",
+    "release:all:mac": "npm run verify:licenses && electron-builder --mac dmg pkg zip --universal --publish always && node scripts/build-apps.js mac always",
+    "release:all:linux": "npm run verify:licenses && electron-builder --linux AppImage deb --x64 --publish always && node scripts/build-apps.js linux always"
   },
   "dependencies": {
     "docx": "9.15.1",
