@@ -1,7 +1,7 @@
 {
   "name": "brightdesk-suite",
   "version": "0.1.0",
-  "description": "Brightdesk — an independent desktop productivity suite for documents, spreadsheets, presentations and notes, with protected multilingual spelling resources",
+  "description": "Brightdesk — an independent local-first desktop productivity suite with ten integrated apps and protected multilingual spelling resources.",
   "main": "src/main.js",
   "author": {
     "name": "Brightdesk Community",
