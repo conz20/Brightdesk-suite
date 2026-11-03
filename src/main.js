@@ -18,6 +18,8 @@ let updateCheckInProgress = false;
 let lastUpdateCheckAt = 0;
 let updateCheckTimer = null;
 let updateCheckTimeout = null;
+let standaloneUpdateTimer = null;
+let standaloneUpdateTimeout = null;
 let dictionaryService;
 const supportedApplications = new Set(['pages', 'sheets', 'slides', 'notes', 'database', 'forms', 'lists', 'planner', 'todo', 'loop']);
 const applicationNames = { pages: 'Pages', sheets: 'Sheets', slides: 'Decks', notes: 'Notes', database: 'Database', forms: 'Forms', lists: 'Lists', planner: 'Planner', todo: 'To Do', loop: 'Workspace' };
@@ -264,6 +266,36 @@ async function checkForUpdates({ quiet = false, force = false } = {}) {
   } finally { updateCheckInProgress = false; }
 }
 
+async function checkInstalledStandaloneUpdates() {
+  if (applicationId || !mainWindow || mainWindow.isDestroyed()) return;
+  try {
+    const installedApps = await listInstalledStandaloneApps({ appDataPath: app.getPath('appData') });
+    if (!installedApps.length) return;
+    const result = await checkStandaloneAppUpdates({ installedApps, platform: process.platform });
+    if (!result.ok) return;
+    const available = result.apps.filter(item => item.updateAvailable);
+    if (available.length) {
+      sendUpdateState({
+        status: 'apps-available',
+        apps: available,
+        message: `${available.length} standalone Brightdesk app update${available.length === 1 ? '' : 's'} available.`
+      });
+    }
+  } catch (error) {
+    console.warn('Automatic standalone app update check failed.', error);
+  }
+}
+
+function configureStandaloneUpdateSchedule(settings) {
+  if (standaloneUpdateTimeout) clearTimeout(standaloneUpdateTimeout);
+  if (standaloneUpdateTimer) clearInterval(standaloneUpdateTimer);
+  standaloneUpdateTimeout = null;
+  standaloneUpdateTimer = null;
+  if (applicationId || settings?.autoCheck !== true) return;
+  standaloneUpdateTimeout = setTimeout(() => checkInstalledStandaloneUpdates(), 15000);
+  standaloneUpdateTimer = setInterval(() => checkInstalledStandaloneUpdates(), 6 * 60 * 60 * 1000);
+}
+
 function configureUpdateSchedule(settings) {
   if (updateCheckTimeout) clearTimeout(updateCheckTimeout);
   if (updateCheckTimer) clearInterval(updateCheckTimer);
@@ -277,6 +309,7 @@ function configureUpdateSchedule(settings) {
 async function initUpdater() {
   if (!app.isPackaged) return;
   const settings = await readUpdateSettings();
+  configureStandaloneUpdateSchedule(settings);
   if (!updatePublishingConfigured) {
     sendUpdateState({ status: 'unavailable', message: 'Automatic updates are not configured for this build yet.' });
     return;
@@ -428,6 +461,7 @@ ipcMain.handle('updates:settings', async event => { if (!senderIsMain(event)) th
 ipcMain.handle('updates:set-settings', async (event, payload) => {
   if (!senderIsMain(event)) throw new Error('Invalid sender.');
   const settings = await writeUpdateSettings(payload);
+  configureStandaloneUpdateSchedule(settings);
   if (autoUpdater) {
     autoUpdater.autoDownload = settings.autoDownload !== false;
     autoUpdater.autoInstallOnAppQuit = false;
