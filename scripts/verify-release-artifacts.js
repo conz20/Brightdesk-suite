@@ -67,7 +67,13 @@ function sha256File(file) {
 
 function verifyArtifacts({ directory, platform }) {
   if (!EXPECTED[platform]) throw new Error(`Unsupported platform: ${platform}`);
-  const files = collectFiles(directory).filter(file => EXPECTED[platform].some(pattern => pattern.test(file)));
+  // Suite installers and legal files live at the release root. App installers
+  // live under release/apps/<id>, so do not let an app EXE/DMG/DEB satisfy the
+  // separate requirement for the Suite launcher installer itself.
+  const rootFiles = fs.readdirSync(directory, { withFileTypes: true })
+    .filter(entry => entry.isFile())
+    .map(entry => path.join(directory, entry.name));
+  const files = rootFiles.filter(file => EXPECTED[platform].some(pattern => pattern.test(file)));
   const missing = EXPECTED[platform].filter(pattern => !files.some(file => pattern.test(file)));
   if (missing.length) {
     throw new Error(`Missing expected ${platform} release artifact(s): ${missing.map(String).join(', ')}. Found ${files.map(file => path.basename(file)).join(', ') || 'none'}.`);
