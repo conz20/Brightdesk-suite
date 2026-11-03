@@ -61,7 +61,7 @@ test('Linux installer continues only after an explicit Yes response', { skip: sk
     fs.writeFileSync(path.join(temp, `brightdesk-${productVersion}-x64.deb`), 'test package');
 
     const log = path.join(temp, 'sudo-args.txt');
-    fs.writeFileSync(path.join(bin, 'sudo'), `#!/bin/sh\nprintf '%s\\n' "$@" > '${log}'\n`);
+    fs.writeFileSync(path.join(bin, 'sudo'), `#!/bin/sh\nprintf '%s\n' "$@" > '${log}'\n`);
     fs.chmodSync(path.join(bin, 'sudo'), 0o755);
 
     const result = spawnSync('bash', [script], {
@@ -75,5 +75,30 @@ test('Linux installer continues only after an explicit Yes response', { skip: sk
     assert.match(args, /install/);
     assert.match(args, /brightdesk-0\.1\.0-x64\.deb/);
     assert.match(result.stdout, /installation completed/i);
+  } finally { fs.rmSync(temp, { recursive: true, force: true }); }
+});
+
+
+test('Linux installer reports a bounded package-install failure code', { skip: skipInstaller }, () => {
+  const temp = fs.mkdtempSync(path.join(os.tmpdir(), 'brightdesk-installer-fail-'));
+  try {
+    const bin = path.join(temp, 'bin'); fs.mkdirSync(bin);
+    fs.writeFileSync(path.join(bin, 'apt-get'), '#!/bin/sh\nexit 100\n');
+    fs.chmodSync(path.join(bin, 'apt-get'), 0o755);
+
+    const script = path.join(temp, 'install-linux.sh');
+    fs.copyFileSync(path.join(root, 'installer', 'install-linux.sh'), script);
+    fs.copyFileSync(path.join(root, 'TERMS_AND_CONDITIONS.txt'), path.join(temp, 'TERMS_AND_CONDITIONS.txt'));
+    fs.writeFileSync(path.join(temp, `brightdesk-${productVersion}-x64.deb`), 'test package');
+    fs.writeFileSync(path.join(bin, 'sudo'), '#!/bin/sh\n"$@"\n');
+    fs.chmodSync(path.join(bin, 'sudo'), 0o755);
+
+    const result = spawnSync('bash', [script], {
+      input: 'yes\n',
+      encoding: 'utf8',
+      env: { ...process.env, PATH: `${bin}:${process.env.PATH}` }
+    });
+    assert.equal(result.status, 100);
+    assert.match(result.stderr, /Linux package installation failed with exit code 100/);
   } finally { fs.rmSync(temp, { recursive: true, force: true }); }
 });

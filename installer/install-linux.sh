@@ -27,5 +27,10 @@ if ! command -v apt-get >/dev/null 2>&1; then
   echo "This installer requires a Debian/Ubuntu system with apt-get." >&2
   exit 1
 fi
-sudo apt-get install -y "${DEB_FILES[0]}"
-echo "Brightdesk installation completed. You can now launch Brightdesk from your applications menu."
+if sudo apt-get install -y "${DEB_FILES[0]}"; then
+  echo "Brightdesk installation completed. You can now launch Brightdesk from your applications menu."
+else
+  install_status=$?
+  echo "Linux package installation failed with exit code $install_status." >&2
+  exit "$install_status"
+fi
