@@ -36,9 +36,14 @@ if [[ ! -f "$MODEL_FILE" ]]; then
 fi
 printf '%s  %s\n' "$MODEL_SHA256" "$MODEL_FILE" | sha256sum --check --status
 
-if [[ -f "$CACHE_DIR/server.pid" ]] && kill -0 "$(cat "$CACHE_DIR/server.pid")" 2>/dev/null; then
-  echo "Brightdesk local AI model server is already running."
-  exit 0
+if [[ -f "$CACHE_DIR/server.pid" ]]; then
+  old_pid="$(cat "$CACHE_DIR/server.pid")"
+  if [[ "$old_pid" =~ ^[0-9]+$ ]] && kill -0 "$old_pid" 2>/dev/null &&
+    ps -p "$old_pid" -o args= | grep -q '[l]lama-server'; then
+    echo "Brightdesk local AI model server is already running."
+    exit 0
+  fi
+  rm -f "$CACHE_DIR/server.pid"
 fi
 
 "$LLAMA_SERVER" \
