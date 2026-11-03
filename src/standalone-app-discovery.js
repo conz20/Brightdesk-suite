@@ -122,6 +122,9 @@ async function discoverMacApps(options) {
         try {
           plist = await fs.readFile(plistPath, 'utf8');
         } catch {
+          plist = '';
+        }
+        if (!/<plist[\\s>]/i.test(plist)) {
           try {
             plist = await options.runCommand('plutil', ['-convert', 'xml1', '-o', '-', plistPath]);
           } catch {
@@ -176,7 +179,7 @@ async function discoverWindowsApps(options) {
     'HKLM\\Software\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall'
   ];
   for (const [id, name] of Object.entries(APP_NAMES)) {
-    if (found.has(id)) continue;
+    const existingRecord = installed.find(item => item.id === id) || null;
     const expectedName = 'Brightdesk ' + name;
     for (const uninstallRoot of uninstallRoots) {
       let keys = '';
@@ -205,11 +208,18 @@ async function discoverWindowsApps(options) {
         for (const executablePath of candidates) {
           if (!await pathExists(executablePath)) continue;
           const version = parseRegistryValue(values, 'DisplayVersion');
+          if (existingRecord) {
+            const sameLocation = existingRecord.executablePath.toLowerCase() === executablePath.toLowerCase() ||
+              (installLocation && existingRecord.executablePath.toLowerCase().startsWith(installLocation.toLowerCase()));
+            if (sameLocation && version) existingRecord.version = normaliseVersion(version);
+            if (sameLocation) break;
+            continue;
+          }
           installed.push(createRecord(id, version, executablePath, 'win32'));
           found.add(id);
           break;
         }
-        if (found.has(id)) break;
+        if (found.has(id) || (existingRecord && existingRecord.version !== 'unknown')) break;
       }
       if (found.has(id)) break;
     }
