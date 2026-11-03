@@ -683,5 +683,7 @@
     ]
   },
   "findings": [],
-  "result": "no-static-findings"
+  "result": "no-static-findings",
+  "stale": true,
+  "staleReason": "Generated 2026-11-01 from an older local export; regenerate with npm run rea:inspect on the current main checkout before using it for release decisions."
 }
