@@ -7,6 +7,7 @@ const fs = require('node:fs/promises');
 const { openOfficeFile, exportOfficeFile, cleanFileName, ensureExtension } = require('./file-service');
 const { BUILTIN_LANGUAGES, validateLanguagePack, getBuiltinLanguage } = require('./language-service');
 const { DictionaryService } = require('./dictionary-service');
+const { readSharedUpdateSettings, writeSharedUpdateSettings } = require('./update-preferences');
 const { registerStandaloneApp, listInstalledStandaloneApps } = require('./standalone-app-registry');
 const { checkStandaloneAppUpdates, getStandaloneAppDownload, compareVersions } = require('./app-update-service');
 const {
@@ -33,25 +34,20 @@ if (applicationId && !supportedApplications.has(applicationId)) {
   throw new Error(`Unsupported Brightdesk application: ${applicationId}`);
 }
 
-const updateSettingsPath = path.join(app.getPath('userData'), 'update-settings.json');
-const defaultUpdateSettings = { autoCheck: false, autoDownload: false, autoInstall: false };
+const legacyUpdateSettingsPath = path.join(app.getPath('userData'), 'update-settings.json');
 
 async function readUpdateSettings() {
-  try {
-    const raw = await fs.readFile(updateSettingsPath, 'utf8');
-    const parsed = JSON.parse(raw);
-    return { ...defaultUpdateSettings, ...parsed };
-  } catch (error) {
-    if (error.code !== 'ENOENT') console.warn('Could not read Brightdesk update settings.', error);
-    return { ...defaultUpdateSettings };
-  }
+  return readSharedUpdateSettings({
+    appDataPath: app.getPath('appData'),
+    legacyUserDataPath: path.dirname(legacyUpdateSettingsPath)
+  });
 }
 
 async function writeUpdateSettings(settings = {}) {
-  const next = { ...defaultUpdateSettings, ...(settings || {}), autoInstall: false };
-  await fs.mkdir(app.getPath('userData'), { recursive: true });
-  await fs.writeFile(updateSettingsPath, `${JSON.stringify(next, null, 2)}\n`, { mode: 0o600 });
-  return next;
+  return writeSharedUpdateSettings({
+    appDataPath: app.getPath('appData'),
+    settings
+  });
 }
 
 function sendUpdateState(state) { if (mainWindow && !mainWindow.isDestroyed()) mainWindow.webContents.send('updates:state', state); }
