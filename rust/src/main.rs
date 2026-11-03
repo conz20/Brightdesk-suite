@@ -3,7 +3,7 @@ use std::io::{self, BufRead, Write};
 use brightdesk_rust_core::analyze_text;
 
 fn decode_hex(input: &str) -> Result<String, &'static str> {
-    if input.len() % 2 != 0 {
+    if input.len() & 1 == 1 {
         return Err("invalid_hex_length");
     }
 
