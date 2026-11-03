@@ -31,6 +31,10 @@ if [[ -z "$LLAMA_SERVER" || ! -x "$LLAMA_SERVER" ]]; then
   exit 1
 fi
 
+while IFS= read -r library_dir; do
+  export LD_LIBRARY_PATH="$library_dir${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+done < <(find "$EXTRACT_DIR" -type f \\( -name 'libllama*.so*' -o -name 'libggml*.so*' \\) -printf '%h\\n' | sort -u)
+
 if [[ ! -f "$MODEL_FILE" ]]; then
   curl --fail --location --retry 3 --retry-delay 2 "$MODEL_URL" --output "$MODEL_FILE"
 fi
