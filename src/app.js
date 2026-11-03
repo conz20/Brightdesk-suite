@@ -684,7 +684,7 @@ async function refreshInstalledAppList() {
     return standaloneApps;
   } catch (error) {
     updateMessage(`Could not refresh installed apps: ${error.message}`, 'error');
-    throw error;
+    return null;
   }
 }
 
