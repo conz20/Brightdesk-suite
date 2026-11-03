@@ -24,6 +24,6 @@ The script builds only for the operating system where it is run:
 - Windows: x64 EXE
 - Linux: x64 AppImage and DEB
 
-Build output is kept in the local `release/` folder. The script does not upload artifacts, create a GitHub Release or publish anything. Review the generated files and checksum report before sharing them.
+Build output is kept in the local `release/` folder. The script does not upload artifacts, create a GitHub Release or publish anything. Review the generated files and checksum report before sharing them. Local builds are unsigned unless signing credentials are already configured. Unsigned macOS apps may show a Gatekeeper warning, and unsigned Windows installers may show a SmartScreen warning. A successful unsigned build is not the same as a signed, notarised production release.
 
 Run it separately on each operating system you intend to distribute Brightdesk for. A successful build on one platform does not verify the other platforms.
