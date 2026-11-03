@@ -14,6 +14,9 @@ let autoUpdater;
 const updatePublishingConfigured = Array.isArray(packageConfig.build?.publish) && packageConfig.build.publish.some(item => item?.provider === 'github' && item?.owner && item.owner !== 'YOUR_GITHUB_ACCOUNT');
 let updateCheckInProgress = false;
 let lastUpdateCheckAt = 0;
+let updateCheckTimeout = null;
+let updateCheckInterval = null;
+let automaticUpdateChecksEnabled = DEFAULT_UPDATE_SETTINGS.autoCheck;
 let dictionaryService;
 const supportedApplications = new Set(['pages', 'sheets', 'slides', 'notes']);
 const applicationId = packageConfig.brightdeskAppId || null;
@@ -52,7 +55,7 @@ function createWindow() {
   mainWindow.loadFile(path.join(__dirname, 'index.html'));
   mainWindow.webContents.setWindowOpenHandler(() => ({ action: 'deny' }));
   mainWindow.webContents.on('will-navigate', event => event.preventDefault());
-  mainWindow.on('focus', () => { if (autoUpdater) checkForUpdates({ quiet: true }); });
+  mainWindow.on('focus', () => { if (autoUpdater && automaticUpdateChecksEnabled) checkForUpdates({ quiet: true }); });
 }
 function senderIsMain(event) { return mainWindow && event.sender === mainWindow.webContents; }
 
@@ -255,6 +258,21 @@ async function checkForUpdates({ quiet = false, force = false } = {}) {
   } finally { updateCheckInProgress = false; }
 }
 
+function configureAutomaticUpdateChecks(enabled) {
+  automaticUpdateChecksEnabled = enabled === true;
+  if (updateCheckTimeout) clearTimeout(updateCheckTimeout);
+  if (updateCheckInterval) clearInterval(updateCheckInterval);
+  updateCheckTimeout = null;
+  updateCheckInterval = null;
+  if (!autoUpdater) return;
+  if (!automaticUpdateChecksEnabled) {
+    sendUpdateState({ status: 'manual', message: 'Automatic update checks are off. You can still check manually when you want.' });
+    return;
+  }
+  updateCheckTimeout = setTimeout(() => checkForUpdates({ quiet: true, force: true }), 12000);
+  updateCheckInterval = setInterval(() => checkForUpdates({ quiet: true, force: true }), 6 * 60 * 60 * 1000);
+}
+
 async function initUpdater() {
   if (!app.isPackaged) return;
   const settings = await readUpdateSettings();
@@ -276,12 +294,7 @@ async function initUpdater() {
     autoUpdater.on('download-progress', p => sendUpdateState({ status: 'downloading', message: `Downloading update: ${Math.round(p.percent)}%` }));
     autoUpdater.on('update-downloaded', info => sendUpdateState({ status: 'downloaded', message: `Brightdesk ${info.version} is ready to install. Use Install now when you are ready.` }));
     autoUpdater.on('error', err => sendUpdateState({ status: 'error', message: err.message || 'Update check failed.' }));
-    if (settings.autoCheck !== false) {
-      setTimeout(() => checkForUpdates({ quiet: true, force: true }), 12000);
-      setInterval(() => checkForUpdates({ quiet: true, force: true }), 6 * 60 * 60 * 1000);
-    } else {
-      sendUpdateState({ status: 'manual', message: 'Automatic update checks are off. You can still check manually when you want.' });
-    }
+    configureAutomaticUpdateChecks(settings.autoCheck !== false);
   } catch (error) { sendUpdateState({ status: 'unavailable', message: 'Update service is not configured in this build.' }); }
 }
 
@@ -337,6 +350,7 @@ ipcMain.handle('updates:settings', async event => { if (!senderIsMain(event)) th
 ipcMain.handle('updates:set-settings', async (event, payload) => {
   if (!senderIsMain(event)) throw new Error('Invalid sender.');
   const settings = await writeUpdateSettings(payload);
+  configureAutomaticUpdateChecks(settings.autoCheck);
   if (autoUpdater) {
     Object.assign(autoUpdater, getUpdaterPreferences());
   }
