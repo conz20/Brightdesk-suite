@@ -57,3 +57,7 @@ Brightdesk uses original product names, code, artwork and interface design. Micr
 ## Updates and customer control
 
 Automatic update checking can be turned on or off. Turning it off stops scheduled and focus-triggered checks. Brightdesk never downloads or installs an update automatically; the customer must choose **Download update** and then **Install update**. The release feed is not configured in the current development build, so update checks will remain unavailable until the approved distribution repository is configured.
+
+## Rust native engine
+
+The suite includes a Rust workspace for local source processing and lexical feature extraction, with a Node.js JSON Lines bridge and JavaScript fallback. Build and test it with `npm run rust:check`. The Rust executable is compiled from source on the target platform and is not committed. Current lexical vectors are not semantic embeddings; external model providers are not enabled. See [Rust engine integration](docs/RUST_ENGINE_INTEGRATION.md).
