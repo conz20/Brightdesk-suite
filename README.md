@@ -23,7 +23,7 @@ All ten apps are implemented in the integrated 0.1.0 codebase and are designed t
 
 ## Quality verification
 
-The integrated shell provides dedicated workspaces for Database, Forms, Lists, Planner and Workspace. The test suite now includes `tests/workspace-dom-contract.test.js`, which checks that every static DOM element referenced by the four standalone workspace modules exists in `src/index.html` and that element IDs are unique. These checks protect the module-to-shell connection; they do not replace real app interaction, data-persistence, cross-platform build, installation, upgrade or uninstall testing.
+The integrated shell provides dedicated workspaces for Database, Forms, Lists, Planner and Workspace. The test suite now includes `tests/workspace-dom-contract.test.js`, which checks that every static DOM element referenced by the four standalone workspace modules and the Lists workspace renderer exists in `src/index.html`, and that element IDs are unique. These checks protect the module-to-shell connection; they do not replace real app interaction, data-persistence, cross-platform build, installation, upgrade or uninstall testing.
 
 “Available” in the app table means the app module is included in the integrated codebase. It is not a claim that the complete first release has passed all quality gates. Full Suite test and installer verification remains required before release.
 
