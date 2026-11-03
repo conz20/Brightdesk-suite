@@ -13,5 +13,5 @@ export async function runRustEngine(request,{timeoutMs=10000}={}){
  const timer=setTimeout(()=>{child.kill();finish(new Error("Brightdesk Rust engine request timed out."));},timeoutMs);
  child.stdout.setEncoding("utf8");child.stderr.setEncoding("utf8");child.stdout.on("data",chunk=>{stdout+=chunk;});child.stderr.on("data",chunk=>{stderr+=chunk;});child.on("error",error=>finish(error));
  child.on("close",code=>{if(code!==0)return finish(new Error(stderr.trim()||`Rust engine exited with code ${code}.`));try{const response=JSON.parse(stdout.trim());if(!response.ok)return finish(new Error(response.error||"Rust engine rejected the request."));finish(null,response);}catch{finish(new Error("Rust engine returned invalid JSON."));}});
- child.stdin.end(JSON.stringify(request)+"\\n");});
+ child.stdin.end(JSON.stringify(request)+"\n");});
 }
