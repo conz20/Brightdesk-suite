@@ -1128,8 +1128,12 @@ function renderAppUpdates(result) {
         status.textContent = 'No installer published for this platform';
         status.classList.add('muted');
       }
+    } else if (staged) {
+      version.textContent = `Not installed · Downloaded ${staged.version}`;
+      status.textContent = 'Ready to install';
+      status.classList.add('available');
     } else if (inSuite) {
-      version.textContent = `Included in Brightdesk ${state.currentVersion}`;
+      version.textContent = `Included in Brightdesk ${state.currentVersion} · No desktop install`;
       status.textContent = 'Updates with the suite';
       status.classList.add('current');
     } else {
