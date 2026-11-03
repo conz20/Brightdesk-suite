@@ -478,13 +478,8 @@ function launchStandaloneExecutable(record) {
     let command = record.executablePath;
     let args = [];
     if (record.platform === 'darwin') {
-      const marker = `/Contents/MacOS/`;
-      const markerIndex = command.indexOf(marker);
-      if (markerIndex >= 0) {
-        const appBundle = command.slice(0, markerIndex);
-        command = 'open';
-        args = ['-a', appBundle];
-      }
+      command = 'open';
+      args = ['-a', record.executablePath];
     }
     const child = spawn(command, args, {
       detached: true,
@@ -544,9 +539,9 @@ app.whenReady().then(async () => {
         appDataPath: app.getPath('appData'),
         appId: applicationId,
         version: app.getVersion(),
-        executablePath: process.platform === 'linux' && process.env.APPIMAGE
-          ? process.env.APPIMAGE
-          : app.getPath('exe'),
+        executablePath: process.platform === 'darwin' && app.getPath('exe').includes('/Contents/MacOS/')
+          ? app.getPath('exe').split('/Contents/MacOS/')[0]
+          : (process.platform === 'linux' && process.env.APPIMAGE ? process.env.APPIMAGE : app.getPath('exe')),
         platform: process.platform
       });
       const stagedUpdates = await listStagedStandaloneAppUpdates({ appDataPath: app.getPath('appData') });
