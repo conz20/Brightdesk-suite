@@ -3,6 +3,9 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 TERMS_FILE="$SCRIPT_DIR/TERMS_AND_CONDITIONS.txt"
+if [[ ! -f "$TERMS_FILE" ]]; then
+  TERMS_FILE="$SCRIPT_DIR/Brightdesk-Linux-TERMS_AND_CONDITIONS.txt"
+fi
 mapfile -t DEB_FILES < <(find "$SCRIPT_DIR" -maxdepth 1 -type f -name 'brightdesk-*.deb' -print | sort)
 
 if [[ ! -f "$TERMS_FILE" ]]; then

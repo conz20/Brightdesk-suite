@@ -102,3 +102,24 @@ test('Linux installer reports a bounded package-install failure code', { skip: s
     assert.match(result.stderr, /Linux package installation failed with exit code 100/);
   } finally { fs.rmSync(temp, { recursive: true, force: true }); }
 });
+
+
+test('Linux installer accepts the prefixed terms filename used by release preparation', { skip: skipInstaller }, () => {
+  const temp = fs.mkdtempSync(path.join(os.tmpdir(), 'brightdesk-installer-release-terms-'));
+  try {
+    fs.copyFileSync(path.join(root, 'installer', 'install-linux.sh'), path.join(temp, 'install-linux.sh'));
+    fs.copyFileSync(path.join(root, 'TERMS_AND_CONDITIONS.txt'), path.join(temp, 'Brightdesk-Linux-TERMS_AND_CONDITIONS.txt'));
+    fs.writeFileSync(path.join(temp, `brightdesk-${productVersion}-x64.deb`), 'test package');
+
+    const result = spawnSync('bash', [path.join(temp, 'install-linux.sh')], {
+      input: 'no\n',
+      encoding: 'utf8',
+      env: process.env
+    });
+
+    assert.equal(result.status, 1, result.stderr);
+    assert.match(result.stdout, /TERMS AND CONDITIONS/);
+    assert.match(result.stdout, /You did not agree/i);
+    assert.doesNotMatch(result.stderr, /terms file is missing/i);
+  } finally { fs.rmSync(temp, { recursive: true, force: true }); }
+});
