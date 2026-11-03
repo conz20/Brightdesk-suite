@@ -33,6 +33,8 @@ The automated test suite includes service tests, app-shell integration tests and
 
 The GitHub Actions build workflow is configured to test the project and build platform installers. Recent hosted workflow runs have failed before any runner steps were recorded, so no installer build is currently verified as passing. Do not describe an installer as ready until its platform build, legal files, SHA-256 checksums and release tests have passed.
 
+The public Brightdesk-Pages maintenance runner provides a separate, no-publication test path for this private repository. On 3 November 2026 it checked out Suite `main` at `d504abfa7084b6907235210b69c5d84f4b55f3ba`, selected Node.js 24.22.2, verified the dependency lock, installed locked dependencies, verified third-party licences and completed release preflight. The full `npm test` command still failed on that run and its repeat; private test output was withheld from public logs. The five other existing app repositories passed their Linux test jobs in the same maintenance run. Issue [#27](https://github.com/connormolloy12/Brightdesk-suite/issues/27) tracks the Suite test investigation. The DOM markup repair in [PR #30](https://github.com/connormolloy12/Brightdesk-suite/pull/30) is therefore not yet sufficient to call the full Suite test suite green. No candidate installer build or installation is verified.
+
 ## Supported installer targets
 
 The release workflow is designed to build macOS universal DMG, PKG and ZIP packages, Windows x64 EXE installers, and Linux x64 AppImage and DEB packages. A platform build is only considered ready after its artifacts, legal documents and SHA-256 checksums have been verified. No public release should be published without explicit owner approval.
