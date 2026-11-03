@@ -11,16 +11,19 @@ const APP_IDS = ['pages', 'sheets', 'slides', 'notes', 'database', 'forms', 'lis
 const BASE = 'https://github.com/connormolloy12/Brightdesk-suite/releases/download/v1.2.0/';
 
 function makeReleaseData() {
-  const apps = Object.fromEntries(APP_IDS.map((id, index) => [id, {
-    id,
-    name: `Brightdesk ${id}`,
-    version: id === 'pages' ? '1.3.0' : '1.2.0',
-    platforms: {
-      win32: { x64: [{ fileName: `Brightdesk-${id}-${version}-x64.exe`, packageType: 'nsis', architecture: 'x64', size: 1000 + index, sha256: 'a'.repeat(64) }] },
-      darwin: { universal: [{ fileName: `Brightdesk-${id}-${version}-universal.pkg`, packageType: 'pkg', architecture: 'universal', size: 2000 + index, sha256: 'b'.repeat(64) }] },
-      linux: { x64: [{ fileName: `brightdesk-${id}-${version}-x64.deb`, packageType: 'deb', architecture: 'x64', size: 3000 + index, sha256: 'c'.repeat(64) }] }
-    }
-  }]));
+  const apps = Object.fromEntries(APP_IDS.map((id, index) => {
+    const version = id === 'pages' ? '1.3.0' : '1.2.0';
+    return [id, {
+      id,
+      name: `Brightdesk ${id}`,
+      version,
+      platforms: {
+        win32: { x64: [{ fileName: `Brightdesk-${id}-${version}-x64.exe`, packageType: 'nsis', architecture: 'x64', size: 1000 + index, sha256: 'a'.repeat(64) }] },
+        darwin: { universal: [{ fileName: `Brightdesk-${id}-${version}-universal.pkg`, packageType: 'pkg', architecture: 'universal', size: 2000 + index, sha256: 'b'.repeat(64) }] },
+        linux: { x64: [{ fileName: `brightdesk-${id}-${version}-x64.deb`, packageType: 'deb', architecture: 'x64', size: 3000 + index, sha256: 'c'.repeat(64) }] }
+      }
+    }];
+  }));
   const manifest = {
     schemaVersion: 1,
     generatedAt: '2026-11-03T00:00:00.000Z',
