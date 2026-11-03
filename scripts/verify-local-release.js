@@ -20,6 +20,10 @@ if (!platform) {
 
 const root = path.resolve(__dirname, '..');
 const npm = process.platform === 'win32' ? 'npm.cmd' : 'npm';
+const buildEnvironment = { ...process.env };
+if (platform === 'mac' && !buildEnvironment.CSC_LINK) {
+  buildEnvironment.CSC_IDENTITY_AUTO_DISCOVERY = 'false';
+}
 
 function run(args) {
   const command = [npm, ...args].join(' ');
@@ -28,7 +32,7 @@ function run(args) {
     cwd: root,
     stdio: 'inherit',
     shell: process.platform === 'win32',
-    env: process.env
+    env: buildEnvironment
   });
   if (result.error) throw result.error;
   if (result.status !== 0) {
