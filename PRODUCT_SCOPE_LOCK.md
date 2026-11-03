@@ -19,6 +19,8 @@ The first-release lineup is all ten apps listed above. The suite launcher and Ap
 
 The Suite launcher is its own desktop application. Each approved app must also be independently buildable and installable on Windows, macOS and Linux. Users choose which apps to add to the Suite experience and which individual desktop apps to download. Never silently select or install every app.
 
+The complete setup experience must also let users choose which standalone app packages to install, with Select All and Clear All controls, and later modify that selection. Only selected standalone apps are installed alongside the Suite launcher. A first-run choice of which apps appear inside the Suite is not a substitute for this installer selection flow; keep this as unfinished work until verified on all three platforms.
+
 ## Version 0.1.0 source implementation status
 
 All ten apps have integrated local-first workflows and dedicated app modules in the current integrated source line:
