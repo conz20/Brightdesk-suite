@@ -1,13 +1,14 @@
 const { app, BrowserWindow, Menu, ipcMain, dialog, shell } = require('electron');
 const packageConfig = require('../package.json');
 const path = require('node:path');
+const { spawn } = require('node:child_process');
 const crypto = require('node:crypto');
 const fs = require('node:fs/promises');
 const { openOfficeFile, exportOfficeFile, cleanFileName, ensureExtension } = require('./file-service');
 const { BUILTIN_LANGUAGES, validateLanguagePack, getBuiltinLanguage } = require('./language-service');
 const { DictionaryService } = require('./dictionary-service');
 const { registerStandaloneApp, listInstalledStandaloneApps } = require('./standalone-app-registry');
-const { checkStandaloneAppUpdates } = require('./app-update-service');
+const { checkStandaloneAppUpdates, getStandaloneAppDownload } = require('./app-update-service');
 let mainWindow;
 let agreementWindow;
 let termsAccepted = false;
@@ -374,22 +375,50 @@ ipcMain.handle('apps:download-update', async (event, appId) => {
   return { ok: true, version: update.availableVersion };
 });
 
+function launchStandaloneExecutable(record) {
+  return new Promise((resolve, reject) => {
+    let command = record.executablePath;
+    let args = [];
+    if (record.platform === 'darwin') {
+      const marker = `/Contents/MacOS/`;
+      const markerIndex = command.indexOf(marker);
+      if (markerIndex >= 0) {
+        const appBundle = command.slice(0, markerIndex);
+        command = 'open';
+        args = ['-a', appBundle];
+      }
+    }
+    const child = spawn(command, args, {
+      detached: true,
+      stdio: 'ignore',
+      cwd: path.dirname(record.executablePath)
+    });
+    child.once('error', reject);
+    child.once('spawn', () => {
+      child.unref();
+      resolve();
+    });
+  });
+}
+
 ipcMain.handle('apps:launch-standalone', async (event, appId) => {
   if (!senderIsMain(event)) throw new Error('Invalid sender.');
   if (!supportedApplications.has(appId)) throw new Error('That Brightdesk application is not in the approved app catalogue.');
   const installed = await listInstalledStandaloneApps({ appDataPath: app.getPath('appData') });
-  if (!installed.some(item => item.id === appId)) {
-    throw new Error('This standalone app has not been registered on this computer yet. Open it once from its desktop icon, then try again.');
+  const record = installed.find(item => item.id === appId);
+  if (!record) {
+    throw new Error('This standalone app is not registered on this computer yet. Open it once from its desktop icon, then return to Brightdesk.');
   }
-  await shell.openExternal(`brightdesk-${appId}://launch`);
+  await launchStandaloneExecutable(record);
   return { ok: true, appId };
 });
 
 ipcMain.handle('apps:downloads', async (event, appId) => {
   if (!senderIsMain(event)) throw new Error('Invalid sender.');
   if (!supportedApplications.has(appId)) throw new Error('That Brightdesk application is not in the approved app catalogue.');
-  await shell.openExternal('https://github.com/connormolloy12/Brightdesk-suite/releases/latest');
-  return { ok: true, appId, appName: applicationNames[appId] };
+  const download = await getStandaloneAppDownload({ appId, platform: process.platform });
+  await shell.openExternal(download.downloadUrl);
+  return { ok: true, appId, appName: applicationNames[appId], version: download.version, fileName: download.fileName };
 });
 
 ipcMain.handle('updates:check', async event => { if (!senderIsMain(event)) throw new Error('Invalid sender.'); return checkForUpdates({ force: true }); });
@@ -419,7 +448,6 @@ app.whenReady().then(async () => {
         executablePath: app.getPath('exe'),
         platform: process.platform
       });
-      app.setAsDefaultProtocolClient(`brightdesk-${applicationId}`);
     } catch (error) {
       console.warn('The standalone Brightdesk app could not register with the suite launcher.', error);
     }
