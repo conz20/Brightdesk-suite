@@ -44,6 +44,7 @@ test('the customer-facing release version has one authoritative source across th
   const preload = fs.readFileSync(path.join(root, 'src', 'preload.js'), 'utf8');
   const main = fs.readFileSync(path.join(root, 'src', 'main.js'), 'utf8');
   const versioning = fs.readFileSync(path.join(root, 'docs', 'VERSIONING.md'), 'utf8');
+  const workflow = fs.readFileSync(path.join(root, '.github', 'workflows', 'build-release.yml'), 'utf8');
 
   assert.equal(pkg.version, '0.1.0');
   assert.equal(lock.version, pkg.version);
@@ -52,10 +53,13 @@ test('the customer-facing release version has one authoritative source across th
   assert.match(catalogSource, /window\.brightdesk\?\.version/);
   assert.match(preload, /ipcRenderer\.sendSync\('app:version-sync'\)/);
   assert.match(main, /ipcMain\.on\('app:version-sync'.*app\.getVersion\(\)/);
-  assert.match(html, /Version 0\\.1\\.0/);
-  assert.match(html, /Brightdesk 0\\.1\\.0/);
+  assert.match(html, /Version 0\.1\.0/);
+  assert.match(html, /Brightdesk 0\.1\.0/);
   assert.match(versioning, /package\.json.*single source of truth/i);
   assert.match(versioning, /Brightdesk-AI.*no Brightdesk customer release number/i);
+  assert.doesNotMatch(workflow, /Brightdesk-0\\.1\\.0-Installers|default: 'v0\\.1\\.0'/);
+  assert.match(workflow, /Brightdesk-\$\{\{ steps\.release-version\.outputs\.version \}\}-Installers/);
+  assert.match(workflow, /tag_name: v\$\{\{ needs\.collect\.outputs\.version \}\}/);
 });
 
 test('Brightdesk keeps its own identity and does not claim Microsoft affiliation', () => {
