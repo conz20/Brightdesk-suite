@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
     inputs:
       run_native_build:
-        description: Run the existing Windows, macOS and Linux installer build workflow
+        description: Run the existing Suite installer workflow without publishing a release
         type: boolean
         required: true
         default: false
@@ -59,7 +59,7 @@ jobs:
           exit "$audit_status"
 
   weekly-native-build:
-    name: Weekly Windows, macOS and Linux installer build
+    name: Weekly build using the current Suite installer workflow
     if: >-
       (github.event_name == 'schedule' && github.event.schedule == '41 18 * * 0') ||
       (github.event_name == 'workflow_dispatch' && inputs.run_native_build == true)
@@ -89,5 +89,6 @@ jobs:
             --ref "$REF_NAME" \
             --field publish_release=false \
             --field release_tag="v$VERSION"
-          echo "Started the existing native installer workflow for Brightdesk v$VERSION." >> "$GITHUB_STEP_SUMMARY"
+          echo "Started the existing Suite installer workflow for Brightdesk v$VERSION." >> "$GITHUB_STEP_SUMMARY"
+          echo "This uses the current main-branch build workflow. Separate standalone app build coverage remains dependent on the Suite build workflow being updated and verified." >> "$GITHUB_STEP_SUMMARY"
           echo "The build is verification-only. It does not publish or replace a customer release." >> "$GITHUB_STEP_SUMMARY"
