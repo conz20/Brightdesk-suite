@@ -85,7 +85,8 @@ test('unknown discovered app versions are retained without inventing an update v
     const installed = await listInstalledStandaloneApps({
       appDataPath: basePath, platform: 'freebsd'
     }).catch(error => { throw error; });
-    assert.equal(installed.length, 0);
+    assert.equal(installed.length, 1);
+    assert.equal(installed[0].version, 'unknown');
   } finally {
     await fs.rm(basePath, { recursive: true, force: true });
   }
