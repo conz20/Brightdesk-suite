@@ -39,3 +39,10 @@ test('Downloads separates standalone OS installation from the in-suite selection
 test('standalone app windows do not display Suite navigation or Suite Downloads', () => {
   assert.match(app, /\$\('downloads-nav'\)\.hidden = Boolean\(launchAppId\)/);
 });
+
+test('Downloads disables a package action when the current CPU architecture has no build', () => {
+  assert.match(app, /const supportedArchitecture = platform === 'darwin'/);
+  assert.match(app, /const platformSupported = Boolean\(platformNames\[platform\]\) && supportedArchitecture/);
+  assert.match(app, /action\.disabled = !platformSupported/);
+  assert.match(app, /No Brightdesk installer is currently built for this combination/);
+});
