@@ -2,6 +2,7 @@
 'use strict';
 
 const fs = require('node:fs');
+const crypto = require('node:crypto');
 const path = require('node:path');
 const packageConfig = require('../package.json');
 const catalog = require('../src/app-catalog');
@@ -41,10 +42,30 @@ function packageArchitecture(fileName) {
   return match ? match[1].toLowerCase() : null;
 }
 
+function sha256File(filePath) {
+  const hash = crypto.createHash('sha256');
+  const descriptor = fs.openSync(filePath, 'r');
+  const buffer = Buffer.allocUnsafe(1024 * 1024);
+  try {
+    let bytesRead;
+    do {
+      bytesRead = fs.readSync(descriptor, buffer, 0, buffer.length, null);
+      if (bytesRead > 0) hash.update(buffer.subarray(0, bytesRead));
+    } while (bytesRead > 0);
+  } finally {
+    fs.closeSync(descriptor);
+  }
+  return hash.digest('hex');
+}
+
 function artifactRecord(filePath, expectedChecksum, context) {
   const stat = fs.statSync(filePath);
   if (!stat.isFile() || stat.size <= 0) throw new Error(`Invalid or empty release file for ${context}: ${filePath}`);
   if (!expectedChecksum) throw new Error(`Missing SHA-256 entry for ${context}: ${path.basename(filePath)}`);
+  const actualChecksum = sha256File(filePath);
+  if (actualChecksum !== expectedChecksum.toLowerCase()) {
+    throw new Error(`SHA-256 mismatch for ${context}: ${path.basename(filePath)}.`);
+  }
   const fileName = path.basename(filePath);
   const architecture = packageArchitecture(fileName);
   const type = packageType(fileName);
@@ -54,7 +75,7 @@ function artifactRecord(filePath, expectedChecksum, context) {
     packageType: type,
     architecture,
     size: stat.size,
-    sha256: expectedChecksum
+    sha256: actualChecksum
   };
 }
 
@@ -126,4 +147,4 @@ if (require.main === module) {
   }
 }
 
-module.exports = { generateReleaseManifest, readChecksums, packageType, packageArchitecture };
+module.exports = { generateReleaseManifest, readChecksums, packageType, packageArchitecture, sha256File };
