@@ -436,18 +436,41 @@ ipcMain.handle('apps:list-installed', async event => {
 });
 ipcMain.handle('apps:check-updates', async event => {
   if (!senderIsMain(event)) throw new Error('Invalid sender.');
-  const installedApps = await listInstalledStandaloneApps({ appDataPath: app.getPath('appData') });
-  return checkStandaloneAppUpdates({ installedApps, platform: process.platform });
+  return refreshStandaloneAppUpdates({ notify: false });
+});
+ipcMain.handle('apps:list-staged-updates', async event => {
+  if (!senderIsMain(event)) throw new Error('Invalid sender.');
+  return listStagedStandaloneAppUpdates({ appDataPath: app.getPath('appData') });
 });
 ipcMain.handle('apps:download-update', async (event, appId) => {
   if (!senderIsMain(event)) throw new Error('Invalid sender.');
   if (!supportedApplications.has(appId)) throw new Error('That Brightdesk application is not in the approved app catalogue.');
+  return stageStandaloneApp(appId);
+});
+ipcMain.handle('apps:install-staged-update', async (event, appId) => {
+  if (!senderIsMain(event)) throw new Error('Invalid sender.');
+  if (!supportedApplications.has(appId)) throw new Error('That Brightdesk application is not in the approved app catalogue.');
   const installedApps = await listInstalledStandaloneApps({ appDataPath: app.getPath('appData') });
-  const result = await checkStandaloneAppUpdates({ installedApps, platform: process.platform });
-  const update = result.apps?.find(item => item.id === appId && item.updateAvailable && item.downloadUrl);
-  if (!update) throw new Error(result.message || 'There is no standalone app update available for this app and platform.');
-  await shell.openExternal(update.downloadUrl);
-  return { ok: true, version: update.availableVersion };
+  const installed = installedApps.find(item => item.id === appId);
+  const stagedApps = await listStagedStandaloneAppUpdates({ appDataPath: app.getPath('appData') });
+  const staged = stagedApps.find(item => item.appId === appId);
+  if (!staged) throw new Error('There is no verified installer ready for this app.');
+  if (installed && compareVersions(staged.version, installed.version) <= 0) {
+    await removeStagedStandaloneAppUpdate({ appDataPath: app.getPath('appData'), appId });
+    throw new Error('This app is already at the staged version or newer. The old installer was removed.');
+  }
+  const fileRoot = path.resolve(app.getPath('appData'), 'Brightdesk', 'updates', appId);
+  const filePath = path.resolve(staged.filePath);
+  if (!filePath.startsWith(fileRoot + path.sep)) throw new Error('The staged installer path is invalid.');
+  const stat = await fs.stat(filePath);
+  if (!stat.isFile() || stat.size !== staged.size) throw new Error('The staged installer file is missing or has changed.');
+  const hash = crypto.createHash('sha256');
+  const fileStream = require('node:fs').createReadStream(filePath);
+  for await (const chunk of fileStream) hash.update(chunk);
+  if (hash.digest('hex') !== staged.sha256) throw new Error('The staged installer failed its SHA-256 check.');
+  const openError = await shell.openPath(filePath);
+  if (openError) throw new Error(`Could not open the installer: ${openError}`);
+  return { ok: true, appId, version: staged.version };
 });
 
 function launchStandaloneExecutable(record) {
