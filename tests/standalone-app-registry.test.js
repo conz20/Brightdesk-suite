@@ -122,3 +122,39 @@ test('registry refreshes the installed version when OS metadata reports a newer 
     await fs.rm(basePath, { recursive: true, force: true });
   }
 });
+
+test('registry replaces a stale installation path when the app is reinstalled elsewhere', async () => {
+  const basePath = await fs.mkdtemp(path.join(os.tmpdir(), 'brightdesk-registry-relocate-'));
+  try {
+    const oldBundle = path.join(basePath, 'Old location', 'Brightdesk Pages.app');
+    const oldExecutable = path.join(oldBundle, 'Contents', 'MacOS', 'Brightdesk Pages');
+    await fs.mkdir(path.dirname(oldExecutable), { recursive: true });
+    await fs.writeFile(oldExecutable, 'old app');
+    await registerStandaloneApp({
+      appDataPath: basePath, appId: 'pages', version: '0.1.0',
+      executablePath: oldBundle, platform: 'darwin'
+    });
+
+    const newBundle = path.join(basePath, 'Applications', 'Brightdesk Pages.app');
+    const newExecutable = path.join(newBundle, 'Contents', 'MacOS', 'Brightdesk Pages');
+    await fs.mkdir(path.dirname(newExecutable), { recursive: true });
+    await fs.writeFile(newExecutable, 'new app');
+    await fs.writeFile(path.join(newBundle, 'Contents', 'Info.plist'), `<?xml version="1.0"?>
+<plist><dict>
+<key>CFBundleExecutable</key><string>Brightdesk Pages</string>
+<key>CFBundleShortVersionString</key><string>0.2.0</string>
+</dict></plist>`);
+
+    const installed = await listInstalledStandaloneApps({
+      appDataPath: basePath,
+      platform: 'darwin',
+      homeDirectory: basePath,
+      searchDirectories: { macApplications: [path.dirname(newBundle)] }
+    });
+    assert.equal(installed.length, 1);
+    assert.equal(installed[0].executablePath, newBundle);
+    assert.equal(installed[0].version, '0.2.0');
+  } finally {
+    await fs.rm(basePath, { recursive: true, force: true });
+  }
+});
