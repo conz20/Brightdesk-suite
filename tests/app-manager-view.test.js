@@ -23,3 +23,14 @@ test('App Centre offers accessible grid and list layouts', () => {
   assert.match(css, /\.manager-grid\.list-view\{/);
   assert.match(css, /\.manager-grid\.list-view \.app-card\{/);
 });
+
+test('first-run app selection provides Select All and Clear All controls', () => {
+  assert.match(html, /id="select-all-apps"/);
+  assert.match(html, /id="clear-all-apps"/);
+  assert.match(app, /\$\('select-all-apps'\)\.addEventListener\('click'/);
+  assert.match(app, /state\.firstRunSelection = new Set\(installableCatalog\.map\(item => item\.id\)\)/);
+  assert.match(app, /\$\('clear-all-apps'\)\.addEventListener\('click'/);
+  assert.match(app, /state\.firstRunSelection\.clear\(\)/);
+  assert.match(app, /\$\('select-all-apps'\)\.hidden = state\.setupComplete/);
+  assert.match(app, /\$\('clear-all-apps'\)\.hidden = state\.setupComplete/);
+});
