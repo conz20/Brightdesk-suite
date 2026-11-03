@@ -10,9 +10,7 @@ on:
       - 'tests/**'
       - 'package.json'
       - 'package-lock.json'
-      - 'AGENTS.md'
       - 'PRODUCT_SCOPE_LOCK.md'
-      - 'PROJECT_MEMORY.md'
       - 'README.md'
       - '.github/workflows/brightdesk-feature-quality.yml'
   pull_request:
@@ -30,7 +28,7 @@ concurrency:
 jobs:
   quality:
     name: Verify Brightdesk source and tests
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 30
     steps:
       - name: Check out Brightdesk
