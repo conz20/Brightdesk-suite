@@ -35,18 +35,23 @@ async function createReleaseFixture({ omitApp, tamperApp } = {}) {
     await fs.writeFile(suitePath, suiteBytes);
     checksumRows.push(`${checksum(suiteBytes)}  ${definition.suite}`);
 
+    const filesToTamper = [];
     for (const app of catalog) {
-      if (omitApp && omitApp.id === app.id && omitApp.platform === definition.key) continue;
       const folder = path.join(directory, 'Apps', app.id);
       await fs.mkdir(folder, { recursive: true });
+      if (omitApp && omitApp.id === app.id && omitApp.platform === definition.key) continue;
       const fileName = packageName(definition.key, app.id, app.name.replaceAll(' ', ''));
       const filePath = path.join(folder, fileName);
-      const bytes = Buffer.from(`${app.id} ${definition.key}${tamperApp && tamperApp.id === app.id && tamperApp.platform === definition.key ? ' tampered' : ''}`);
+      const bytes = Buffer.from(`${app.id} ${definition.key}`);
       await fs.writeFile(filePath, bytes);
       checksumRows.push(`${checksum(bytes)}  apps/${app.id}/${fileName}`);
+      if (tamperApp && tamperApp.id === app.id && tamperApp.platform === definition.key) filesToTamper.push(filePath);
     }
 
     await fs.writeFile(path.join(directory, definition.checksum), `${checksumRows.join('\n')}\n`);
+    for (const filePath of filesToTamper) {
+      await fs.appendFile(filePath, ' changed after checksum generation');
+    }
   }
   return root;
 }
