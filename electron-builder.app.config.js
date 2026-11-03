@@ -46,6 +46,6 @@ module.exports = {
     icon: path.join('src', 'assets', 'app-icons', `${appId}.svg`),
     target: ['AppImage', 'deb'],
     category: 'Office',
-    artifactName: 'brightdesk-' + appNames[appId].toLowerCase() + '-${version}-${arch}.${ext}'
+    artifactName: 'brightdesk-' + appId + '-${version}-${arch}.${ext}'
   }
 };
