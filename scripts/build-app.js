@@ -10,7 +10,7 @@ const targets = {
   linux: ['--linux', 'AppImage', 'deb', '--x64']
 };
 if (!apps.has(appId) || !targets[platform]) {
-  console.error('Usage: node scripts/build-app.js <pages|sheets|slides|notes> <win|mac|linux>');
+  console.error('Usage: node scripts/build-app.js <pages|sheets|slides|notes|database|forms|lists|planner|todo|loop> <win|mac|linux>');
   process.exit(2);
 }
 const npmExec = process.platform === 'win32' ? 'npx.cmd' : 'npx';
