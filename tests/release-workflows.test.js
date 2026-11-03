@@ -48,6 +48,9 @@ test('release workflow builds and verifies all three desktop platforms', () => {
   assert.match(workflow, /npm run lock:verify/);
   assert.ok(workflow.indexOf('npm run lock:verify') < workflow.indexOf('npm ci --no-audit --no-fund'));
   assert.doesNotMatch(workflow, /npm run lock:prepare/);
+  const buildJob = workflow.split('  build:')[1].split('  collect:')[0];
+  assert.ok(buildJob.indexOf('npm run lock:verify') < buildJob.indexOf('npm ci --no-audit --no-fund'));
+  assert.ok(buildJob.indexOf('npm run release:verify:') < buildJob.indexOf('actions/upload-artifact@'));
   assert.doesNotMatch(workflow, /brightdesk-dependency-lock/);
   assert.match(workflow, /npm run release:preflight/);
   assert.match(workflow, /npm test/);
@@ -87,7 +90,7 @@ test('platform release artifacts remain in separate folders and release lock met
     assert.ok(workflow.includes(`path: ${folder}`), `${platform} is downloaded into its own folder`);
   }
   assert.match(workflow, /name: Check out verified source and dependency lock/);
-  assert.match(workflow, /name: Include the committed dependency lock in release metadata[\\s\\S]*?cp package-lock\\.json release\\/build-metadata\\/package-lock\\.json/);
+  assert.match(workflow, /name: Include the committed dependency lock in release metadata[\s\S]*?cp package-lock\.json release\/build-metadata\/package-lock\.json/);
   assert.doesNotMatch(workflow, /name: Download the exact dependency lock used for this release/);
   assert.match(workflow, /files: release\/\*\*\/\*/);
   assert.doesNotMatch(workflow, /merge-multiple: true/);
