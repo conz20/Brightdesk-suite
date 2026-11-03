@@ -268,7 +268,7 @@ async function checkForUpdates({ quiet = false, force = false } = {}) {
 }
 
 async function stageStandaloneApp(appId) {
-  const download = await getStandaloneAppDownload({ appId, platform: process.platform });
+  const download = await getStandaloneAppDownload({ appId, platform: process.platform, architecture: process.arch });
   return stageStandaloneAppUpdate({
     appDataPath: app.getPath('appData'),
     ...download,
@@ -278,7 +278,7 @@ async function stageStandaloneApp(appId) {
 
 async function refreshStandaloneAppUpdates({ notify = true } = {}) {
   const installedApps = await listInstalledStandaloneApps({ appDataPath: app.getPath('appData') });
-  const result = await checkStandaloneAppUpdates({ installedApps, platform: process.platform });
+  const result = await checkStandaloneAppUpdates({ installedApps, platform: process.platform, architecture: process.arch });
   if (!result.ok) return { ...result, stagedApps: await listStagedStandaloneAppUpdates({ appDataPath: app.getPath('appData') }) };
 
   const settings = await readUpdateSettings();
