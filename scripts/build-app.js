@@ -3,7 +3,7 @@ const { spawnSync } = require('node:child_process');
 const path = require('node:path');
 const appId = process.argv[2];
 const platform = process.argv[3];
-const apps = new Set(['pages', 'sheets', 'slides', 'notes']);
+const apps = new Set(['pages', 'sheets', 'slides', 'notes', 'database', 'forms', 'lists', 'planner', 'todo', 'loop']);
 const targets = {
   win: ['--win', 'nsis', '--x64'],
   mac: ['--mac', 'dmg', 'pkg', 'zip', '--universal'],
