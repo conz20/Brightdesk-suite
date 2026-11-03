@@ -44,6 +44,9 @@ test('standalone build commands cover exactly the ten approved app IDs', () => {
 test('electron-builder standalone configuration maps every approved app to its own identity', () => {
   const configPath = require.resolve('../electron-builder.app.config');
   const original = process.env.BRIGHTDESK_APP_ID;
+  const versionPlaceholder = '$' + '{version}';
+  const archPlaceholder = '$' + '{arch}';
+  const extPlaceholder = '$' + '{ext}';
   try {
     for (const app of APPROVED_APPS) {
       process.env.BRIGHTDESK_APP_ID = app.id;
@@ -61,40 +64,10 @@ test('electron-builder standalone configuration maps every approved app to its o
       assert.ok(config.linux.target.includes('AppImage'));
       assert.ok(config.linux.target.includes('deb'));
       const slug = app.id === 'todo' ? 'To-Do' : app.name;
-      assert.equal(config.win.artifactName, `Brightdesk-${slug}-${'
-    }
-    process.env.BRIGHTDESK_APP_ID = 'outlook';
-    delete require.cache[configPath];
-    assert.throws(() => require(configPath), /Set BRIGHTDESK_APP_ID/);
-  } finally {
-    if (original === undefined) delete process.env.BRIGHTDESK_APP_ID;
-    else process.env.BRIGHTDESK_APP_ID = original;
-    delete require.cache[configPath];
-  }
-});
-}{version}-${'
-    }
-    process.env.BRIGHTDESK_APP_ID = 'outlook';
-    delete require.cache[configPath];
-    assert.throws(() => require(configPath), /Set BRIGHTDESK_APP_ID/);
-  } finally {
-    if (original === undefined) delete process.env.BRIGHTDESK_APP_ID;
-    else process.env.BRIGHTDESK_APP_ID = original;
-    delete require.cache[configPath];
-  }
-});
-}{arch}.${'
-    }
-    process.env.BRIGHTDESK_APP_ID = 'outlook';
-    delete require.cache[configPath];
-    assert.throws(() => require(configPath), /Set BRIGHTDESK_APP_ID/);
-  } finally {
-    if (original === undefined) delete process.env.BRIGHTDESK_APP_ID;
-    else process.env.BRIGHTDESK_APP_ID = original;
-    delete require.cache[configPath];
-  }
-});
-}{ext}`);
+      const artifactName = `Brightdesk-${slug}-${versionPlaceholder}-${archPlaceholder}.${extPlaceholder}`;
+      assert.equal(config.win.artifactName, artifactName);
+      assert.equal(config.mac.artifactName, artifactName);
+      assert.equal(config.linux.artifactName, `brightdesk-${slug.toLowerCase()}-${versionPlaceholder}-${archPlaceholder}.${extPlaceholder}`);
     }
     process.env.BRIGHTDESK_APP_ID = 'outlook';
     delete require.cache[configPath];
