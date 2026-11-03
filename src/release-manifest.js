@@ -6,7 +6,6 @@ const APP_IDS = Object.freeze([
 ]);
 const PLATFORM_KEYS = Object.freeze(['win32', 'darwin', 'linux']);
 const TRUSTED_DOWNLOAD_PREFIX = 'https://github.com/connormolloy12/Brightdesk-suite/releases/download/';
-const VERSION_PATTERN = /^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?$/;
 const HASH_PATTERN = /^[a-f0-9]{64}$/i;
 
 function compareVersions(left, right) {
@@ -27,7 +26,7 @@ function compareVersions(left, right) {
   return a.prerelease.localeCompare(b.prerelease, undefined, { numeric: true });
 }
 
-function validateArtifact(artifact, context) {
+function validateArtifact(artifact, context, platform, expectedVersion, architecture) {
   if (!artifact || typeof artifact !== 'object') throw new Error(`Invalid release artifact for ${context}.`);
   if (typeof artifact.fileName !== 'string' || artifact.fileName !== artifact.fileName.split(/[\\/]/).pop() ||
       !artifact.fileName.startsWith('Brightdesk-') && !artifact.fileName.startsWith('brightdesk-')) {
@@ -35,11 +34,24 @@ function validateArtifact(artifact, context) {
   }
   if (!Number.isSafeInteger(artifact.size) || artifact.size <= 0) throw new Error(`Invalid release size for ${context}.`);
   if (typeof artifact.sha256 !== 'string' || !HASH_PATTERN.test(artifact.sha256)) throw new Error(`Invalid release SHA-256 for ${context}.`);
-  if (typeof artifact.packageType !== 'string' || !['nsis', 'pkg', 'dmg', 'zip', 'deb', 'appimage'].includes(artifact.packageType)) {
-    throw new Error(`Unsupported release package type for ${context}.`);
+
+  const extensions = { nsis: '.exe', pkg: '.pkg', dmg: '.dmg', zip: '.zip', deb: '.deb', appimage: '.appimage' };
+  const extension = extensions[artifact.packageType];
+  if (!extension || !artifact.fileName.toLowerCase().endsWith(extension)) {
+    throw new Error(`Unsupported package type or filename for ${context}.`);
+  }
+  const allowedByPlatform = { win32: ['nsis'], darwin: ['pkg', 'dmg', 'zip'], linux: ['deb', 'appimage'] };
+  if (platform && !allowedByPlatform[platform]?.includes(artifact.packageType)) {
+    throw new Error(`Package type ${artifact.packageType} is not supported on ${platform} for ${context}.`);
   }
   if (typeof artifact.architecture !== 'string' || !['x64', 'arm64', 'universal'].includes(artifact.architecture)) {
     throw new Error(`Unsupported release architecture for ${context}.`);
+  }
+  if (architecture && artifact.architecture !== architecture) {
+    throw new Error(`Package architecture does not match its release manifest entry for ${context}.`);
+  }
+  if (expectedVersion && !artifact.fileName.includes(`-${expectedVersion}-`)) {
+    throw new Error(`Package filename version does not match its release manifest entry for ${context}.`);
   }
   return artifact;
 }
@@ -51,11 +63,13 @@ function validateReleaseManifest(manifest) {
   if (!manifest.release || typeof manifest.release.tag !== 'string' ||
       !/^v?\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?$/.test(manifest.release.tag) ||
       typeof manifest.release.version !== 'string' ||
-      compareVersions(manifest.release.version, manifest.release.version) === null) {
+      compareVersions(manifest.release.version, manifest.release.version) === null ||
+      manifest.release.tag.replace(/^v/i, '') !== manifest.release.version) {
     throw new Error('The Brightdesk release manifest has invalid release metadata.');
   }
   if (!manifest.suite || typeof manifest.suite.version !== 'string' ||
       compareVersions(manifest.suite.version, manifest.suite.version) === null ||
+      manifest.suite.version !== manifest.release.version ||
       !manifest.suite.platforms || typeof manifest.suite.platforms !== 'object') {
     throw new Error('The Brightdesk release manifest is missing Suite version or platform packages.');
   }
@@ -80,7 +94,7 @@ function validateReleaseManifest(manifest) {
         if (!['x64', 'arm64', 'universal'].includes(architecture) || !Array.isArray(artifacts) || artifacts.length === 0) {
           throw new Error(`Invalid package list for ${appId} on ${platform}.`);
         }
-        artifacts.forEach(item => validateArtifact(item, `${appId}/${platform}/${architecture}`));
+        artifacts.forEach(item => validateArtifact(item, `${appId}/${platform}/${architecture}`, platform, app.version, architecture));
       }
     }
   }
@@ -91,7 +105,7 @@ function validateReleaseManifest(manifest) {
       if (!['x64', 'arm64', 'universal'].includes(architecture) || !Array.isArray(artifacts) || artifacts.length === 0) {
         throw new Error(`Invalid Suite package list for ${platform}/${architecture}.`);
       }
-      artifacts.forEach(item => validateArtifact(item, `suite/${platform}/${architecture}`));
+      artifacts.forEach(item => validateArtifact(item, `suite/${platform}/${architecture}`, platform, manifest.suite.version, architecture));
     }
   }
   return manifest;
