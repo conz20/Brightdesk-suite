@@ -19,7 +19,7 @@ The first-release product lineup is all ten apps listed above. The catalogue and
 
 ## Integrated implementation status
 
-All ten approved app modules are now integrated into the main suite. The codebase contains dedicated service/workspace modules and automated coverage for the integrated app shell and workspace DOM contracts.
+All ten approved app modules are now integrated into the main suite. The codebase contains dedicated feature modules, service/workspace modules where appropriate, and automated coverage for the integrated app shell and workspace DOM contracts.
 
 Integration status must not be presented as final acceptance. Real user workflows, accessibility, local data persistence and recovery, upgrades, uninstall, legal packaging and each platform installer still require verification before release.
 
