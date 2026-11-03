@@ -49,3 +49,5 @@ test('To Do is registered as a separate Brightdesk app with its own navigation c
   assert.match(renderer, /todo: \{ title: 'Brightdesk To Do'/);
   assert.match(renderer, /function setApp\(app\).*configs\[app\] \|\| genericConfigs\[app\]/);
 });
+
+test('To Do only reports a successful save when local storage succeeds',()=>{assert.match(renderer,/function persist\(\) \{[\s\S]*return true;[\s\S]*return false;/);assert.match(renderer,/function saveTodoTasks\(\) \{ const saved = persist\(\)/);assert.match(renderer,/saved \? 'Saved on this device' : 'Could not save locally'/);});
