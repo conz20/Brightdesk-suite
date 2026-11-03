@@ -42,3 +42,5 @@ test('Lists is registered under the approved Brightdesk app name', () => {
   assert.equal(item.name, 'Brightdesk Lists');
   assert.equal(item.microsoftReference, 'Lists');
 });
+
+test('Lists only reports a successful save when local storage succeeds',()=>{assert.match(renderer,/function persist\(\) \{[\s\S]*return true;[\s\S]*return false;/);assert.match(renderer,/function saveLists\(\) \{ const saved = persist\(\)/);assert.match(renderer,/saved \? 'Saved on this device' : 'Could not save locally'/);});
