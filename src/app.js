@@ -530,6 +530,17 @@ function renderAppManager() {
     card.append(preview, header, description, footer); grid.append(card);
   });
 }
+async function refreshInstalledAppList() {
+  try {
+    state.standaloneApps = await window.brightdesk.listStandaloneApps();
+    state.stagedAppUpdates = await window.brightdesk.listStagedStandaloneAppUpdates();
+    renderAppManager();
+    updateMessage(`Found ${state.standaloneApps.length} separately installed Brightdesk app${state.standaloneApps.length === 1 ? '' : 's'}.`, 'success');
+  } catch (error) {
+    updateMessage(`Could not refresh installed apps: ${error.message}`, 'error');
+  }
+}
+
 function toggleAppInstall(id) {
   if (!installableCatalog.some(item => item.id === id) || launchAppId) return;
   if (installedApp(id)) {
@@ -901,6 +912,7 @@ $('check-current-document').addEventListener('click',checkCurrentDocumentSpellin
 $('back-to-apps').addEventListener('click',()=>{state.view=state.setupComplete?'workspace':'manager';render();});
 $('manager-grid-view').addEventListener('click', () => { state.managerView = 'grid'; localStorage.setItem('brightdesk-manager-view', state.managerView); renderAppManager(); });
 $('manager-list-view').addEventListener('click', () => { state.managerView = 'list'; localStorage.setItem('brightdesk-manager-view', state.managerView); renderAppManager(); });
+$('refresh-installed-apps').addEventListener('click', refreshInstalledAppList);
 $('finish-app-setup').addEventListener('click',()=>{if(state.setupComplete){state.view=state.installedApps.length ? 'workspace' : 'manager';render();}else completeAppSetup();});
 $('skip-app-setup').addEventListener('click',()=>{
   state.installedApps = [];
