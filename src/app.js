@@ -1187,6 +1187,13 @@ async function checkForUpdatesManually() {
       window.brightdesk.checkStandaloneAppUpdates()
     ]);
     state.stagedAppUpdates = appResult?.stagedApps || await window.brightdesk.listStagedStandaloneAppUpdates();
+    if (!suiteResult?.ok) {
+      state.suiteUpdate = {
+        status: 'unavailable',
+        currentVersion: state.currentVersion,
+        message: suiteResult?.message || 'The Suite update service is unavailable.'
+      };
+    }
     renderAppUpdates(appResult);
     const standaloneUpdates = appResult?.ok ? appResult.apps.filter(item => item.updateAvailable) : [];
     $('update-status-dot').hidden = standaloneUpdates.length === 0;
