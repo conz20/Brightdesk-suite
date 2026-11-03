@@ -34,3 +34,14 @@ The release workflow is designed to build macOS universal DMG and PKG installers
 Building and testing Brightdesk requires exactly Node.js 24.22.2. This is a developer/CI requirement only; it is not a customer installation requirement. Run `npm run setup:dev` after activating that runtime. The project uses its checked-in package lock and automated Node.js tests.
 
 Brightdesk uses original product names, code, artwork and interface design. Microsoft product names are used only as internal workflow comparisons.
+
+## Engineering and design direction
+
+Brightdesk's clean-room capability review, original visual identity, installer design and staged Rust engine plan are documented here:
+
+- [Reference capability review](docs/REFERENCE_CAPABILITY_REVIEW.md)
+- [Brightdesk visual identity](docs/BRAND_SYSTEM.md)
+- [Installer and update design](docs/INSTALLER_DESIGN.md)
+- [Rust engine roadmap](docs/RUST_ENGINE_ROADMAP.md)
+
+The initial Rust core is a separate, tested foundation and is not yet linked into the Electron application. It must pass its own formatting, lint and test workflow before any native bridge is considered.

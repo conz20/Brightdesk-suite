@@ -10,7 +10,7 @@
 </head>
 <body>
   <aside class="sidebar">
-    <div class="brand"><div class="brand-mark">B</div><div><b>brightdesk</b><small data-i18n="sidebar.workspace">YOUR WORKSPACE</small></div></div>
+    <div class="brand"><img class="brand-logo" src="assets/brand/brightdesk-suite-mark.svg" alt="" aria-hidden="true" width="38" height="38"><div><b>brightdesk</b><small data-i18n="sidebar.workspace">YOUR WORKSPACE</small></div></div>
     <div class="section-label" data-i18n="sidebar.yourApps">YOUR APPS</div>
     <button class="nav active" data-app="pages"><span class="app-icon pages">P</span><span><b>Brightdesk Pages</b><small data-i18n="sidebar.documents">Documents</small></span></button>
     <button class="nav" data-app="sheets"><span class="app-icon sheets">S</span><span><b>Brightdesk Sheets</b><small data-i18n="sidebar.spreadsheets">Spreadsheets</small></span></button>
@@ -70,7 +70,12 @@
       <section id="workspace-app-wrap" class="workspace-app" aria-label="Brightdesk Workspace" hidden><aside class="workspace-sidebar"><div class="workspace-brand-row"><b>YOUR WORKSPACES</b><button type="button" id="workspace-create" class="primary small-action">New workspace</button></div><div id="workspace-list"></div></aside><div id="workspace-detail"></div></section>
     </section>
     <section class="app-manager" id="app-manager" hidden>
-      <div class="manager-hero"><div><div class="eyebrow" data-i18n="manager.eyebrow">BRIGHTDESK APP CENTRE</div><h2 id="manager-title">Choose the apps you need</h2><p id="manager-description">Set up your Brightdesk workspace.</p></div></div>
+      <div class="manager-hero"><div><div class="eyebrow" data-i18n="manager.eyebrow">BRIGHTDESK APP CENTRE</div><h2 id="manager-title">Choose the apps you need</h2><p id="manager-description">Set up your Brightdesk workspace.</p></div><img class="manager-hero-logo" src="assets/brand/brightdesk-suite-mark.svg" alt="Brightdesk" width="64" height="64"></div>
+      <div class="manager-view-controls" role="group" aria-label="Application display">
+        <span class="manager-view-label" data-i18n="manager.view">View</span>
+        <button type="button" class="manager-view-button" id="manager-grid-view" aria-pressed="true" data-i18n="manager.gridView">Grid</button>
+        <button type="button" class="manager-view-button" id="manager-list-view" aria-pressed="false" data-i18n="manager.listView">List</button>
+      </div>
       <div class="manager-grid" id="app-manager-grid"></div>
       <div class="manager-bottom"><p id="manager-note">Choose one or more apps. Your documents stay on this device, even if you remove an app from your workspace.</p><button class="primary" id="finish-app-setup" data-i18n="manager.done">Done</button></div>
     </section>
