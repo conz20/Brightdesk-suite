@@ -6,7 +6,7 @@ const appId = process.env.BRIGHTDESK_APP_ID;
 const appNames = { pages: 'Pages', sheets: 'Sheets', slides: 'Decks', notes: 'Notes', database: 'Database', forms: 'Forms', lists: 'Lists', planner: 'Planner', todo: 'To Do', loop: 'Workspace' };
 const appCatalog = require('./src/app-catalog');
 const appVersion = appCatalog.find(item => item.id === appId)?.moduleVersion;
-if (!appVersion || !/^\\d+\\.\\d+\\.\\d+(?:-[0-9A-Za-z.-]+)?$/.test(appVersion)) {
+if (!appVersion || !/^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?$/.test(appVersion)) {
   throw new Error(`No valid module version is configured for Brightdesk ${appNames[appId]}.`);
 }
 
