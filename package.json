@@ -47,7 +47,11 @@
     "lock:prepare": "npm install --package-lock-only --ignore-scripts --no-audit --no-fund",
     "lock:verify": "node scripts/verify-lockfile.js",
     "setup:dev": "node scripts/setup/bootstrap-dev.js",
-    "verify:local-release": "node scripts/verify-local-release.js"
+    "verify:local-release": "node scripts/verify-local-release.js",
+    "rust:fmt": "cargo fmt --manifest-path rust/Cargo.toml --all -- --check",
+    "rust:test": "cargo test --manifest-path rust/Cargo.toml --workspace",
+    "rust:build": "cargo build --manifest-path rust/Cargo.toml --workspace --release",
+    "rust:check": "npm run rust:fmt && cargo clippy --manifest-path rust/Cargo.toml --workspace --all-targets -- -D warnings && npm run rust:test && npm run rust:build"
   },
   "dependencies": {
     "docx": "9.15.1",
