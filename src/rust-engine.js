@@ -27,6 +27,12 @@ try {
   nativeLoadFailure = error;
 }
 
+if (!nativeEngine && process.env.BRIGHTDESK_REQUIRE_NATIVE_ENGINE === '1') {
+  const error = new Error('Brightdesk native Rust engine is required but could not be loaded.');
+  error.cause = nativeLoadFailure;
+  throw error;
+}
+
 const fallbackEngine = createJavaScriptFallback();
 const activeEngine = nativeEngine || fallbackEngine;
 
