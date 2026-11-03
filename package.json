@@ -47,7 +47,10 @@
     "lock:prepare": "npm install --package-lock-only --ignore-scripts --no-audit --no-fund",
     "lock:verify": "node scripts/verify-lockfile.js",
     "setup:dev": "node scripts/setup/bootstrap-dev.js",
-    "dist:app": "npm run verify:licenses && node scripts/build-app.js"
+    "dist:app": "npm run verify:licenses && node scripts/build-app.js",
+    "release:apps:win": "npm run verify:licenses && node scripts/build-apps.js win always",
+    "release:apps:mac": "npm run verify:licenses && node scripts/build-apps.js mac always",
+    "release:apps:linux": "npm run verify:licenses && node scripts/build-apps.js linux always"
   },
   "dependencies": {
     "docx": "9.15.1",
