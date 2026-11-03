@@ -26,7 +26,7 @@ The model runs on the GitHub Linux runner. Failure logs and /ai question context
 - A deterministic audit of the pinned Node.js version, package/lock version match, approved app catalogue, installer formats, current architecture settings and existing workflows.
 - Explanations of Windows, macOS and Linux uninstall behaviour.
 
-The helper does not change application source code. The audit currently reports configuration and version-file facts; it does not prove that an installer was installed, launched, upgraded or uninstalled.
+The helper does not change application source code. The audit currently reports configuration and version-file facts; it does not prove that an installer was installed, launched, upgraded or uninstalled. On the current main branch, the existing build-release workflow builds the Suite package; it does not yet build every standalone app. That wider build coverage is being handled separately and must be merged and tested before the weekly job can claim coverage for all ten standalone apps.
 
 ## Current platform baseline
 
