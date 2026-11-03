@@ -72,9 +72,36 @@ async function getStandaloneAppDownload({ appId, platform, fetchImpl = global.fe
   const release = await response.json();
   const version = String(release.tag_name || '').replace(/^v/i, '');
   if (compareVersions(version, version) === null) throw new Error('The latest Brightdesk release does not contain a valid version tag.');
-  const asset = findStandaloneAppInstaller(release.assets, appId, version, platform);
+  const assets = Array.isArray(release.assets) ? release.assets : [];
+  const asset = findStandaloneAppInstaller(assets, appId, version, platform);
   if (!asset) throw new Error(`No Brightdesk ${APP_NAMES[appId]} installer for ${platform} is published in release ${version}.`);
-  return { appId, version, fileName: asset.name, downloadUrl: asset.browser_download_url, releaseUrl: release.html_url || '' };
+
+  const platformLabels = { win32: 'WIN', darwin: 'MAC', linux: 'LINUX' };
+  const manifestName = `Brightdesk-SHA256SUMS-${platformLabels[platform]}.txt`;
+  const manifestAsset = assets.find(item => item.name === manifestName &&
+    typeof item.browser_download_url === 'string' &&
+    item.browser_download_url.startsWith(TRUSTED_DOWNLOAD_PREFIX));
+  if (!manifestAsset) throw new Error(`The ${platform} release is missing its SHA-256 verification manifest.`);
+
+  const manifestResponse = await fetchImpl(manifestAsset.browser_download_url, {
+    headers: { Accept: 'text/plain', 'User-Agent': 'Brightdesk-Office-Suite' }
+  });
+  if (!manifestResponse.ok) throw new Error('Could not download the Brightdesk installer verification manifest.');
+  const manifestText = await manifestResponse.text();
+  const expectedPath = `apps/${appId}/${asset.name}`;
+  const checksumLine = manifestText.split(/\\r?\\n/).find(line => line.trim().endsWith(`  ${expectedPath}`));
+  const checksumMatch = checksumLine && checksumLine.match(/^([a-f0-9]{64})\\s+/i);
+  if (!checksumMatch) throw new Error(`The release manifest does not contain a valid checksum for ${asset.name}.`);
+
+  return {
+    appId,
+    version,
+    fileName: asset.name,
+    downloadUrl: asset.browser_download_url,
+    expectedSize: Number.isFinite(asset.size) ? asset.size : null,
+    sha256: checksumMatch[1].toLowerCase(),
+    releaseUrl: release.html_url || ''
+  };
 }
 
 async function checkStandaloneAppUpdates({ installedApps, platform, fetchImpl = global.fetch } = {}) {
