@@ -33,6 +33,31 @@ test('first release version is consistently 0.1.0 across package, available apps
   assert.match(html, /Brightdesk 0\.1\.0/);
 });
 
+test('the customer-facing release version has one authoritative source across the suite', () => {
+  const fs = require('node:fs');
+  const path = require('node:path');
+  const root = path.join(__dirname, '..');
+  const pkg = JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8'));
+  const lock = JSON.parse(fs.readFileSync(path.join(root, 'package-lock.json'), 'utf8'));
+  const html = fs.readFileSync(path.join(root, 'src', 'index.html'), 'utf8');
+  const catalogSource = fs.readFileSync(path.join(root, 'src', 'app-catalog.js'), 'utf8');
+  const preload = fs.readFileSync(path.join(root, 'src', 'preload.js'), 'utf8');
+  const main = fs.readFileSync(path.join(root, 'src', 'main.js'), 'utf8');
+  const versioning = fs.readFileSync(path.join(root, 'docs', 'VERSIONING.md'), 'utf8');
+
+  assert.equal(pkg.version, '0.1.0');
+  assert.equal(lock.version, pkg.version);
+  assert.equal(lock.packages[''].version, pkg.version);
+  assert.ok(catalog.every(item => item.moduleVersion === pkg.version));
+  assert.match(catalogSource, /window\.brightdesk\?\.version/);
+  assert.match(preload, /ipcRenderer\.sendSync\('app:version-sync'\)/);
+  assert.match(main, /ipcMain\.on\('app:version-sync'.*app\.getVersion\(\)/);
+  assert.match(html, /Version 0\\.1\\.0/);
+  assert.match(html, /Brightdesk 0\\.1\\.0/);
+  assert.match(versioning, /package\.json.*single source of truth/i);
+  assert.match(versioning, /Brightdesk-AI.*not a customer release/i);
+});
+
 test('Brightdesk keeps its own identity and does not claim Microsoft affiliation', () => {
   const fs = require('node:fs');
   const readme = fs.readFileSync(require('node:path').join(__dirname, '..', 'README.md'), 'utf8');
