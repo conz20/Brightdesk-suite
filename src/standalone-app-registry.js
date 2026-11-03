@@ -127,16 +127,12 @@ async function listInstalledStandaloneApps({
       installedById.set(record.id, record);
       changed = true;
     } else if (
-      existing.executablePath === record.executablePath &&
-      record.version !== 'unknown' &&
-      existing.version !== record.version
+      existing.executablePath !== record.executablePath ||
+      (record.version !== 'unknown' && existing.version !== record.version)
     ) {
       registry.apps[record.id] = {
-        ...existing,
-        version: record.version,
-        platform: record.platform,
-        source: record.source,
-        registeredAt: record.registeredAt
+        ...record,
+        discoveredAt: record.registeredAt
       };
       installedById.set(record.id, registry.apps[record.id]);
       changed = true;
