@@ -31,7 +31,10 @@ Brightdesk-AI remains a private control plane and is not bundled into customer a
 - `npm run rust:fmt` formats the Rust workspace.
 - `npm run rust:test` runs Rust unit tests.
 - `npm run rust:check` runs formatting, Clippy, tests, and native compilation.
-- `npm start`, `npm test`, and installer build scripts compile the native addon before use.
+- Installer build scripts compile the native addon before packaging. Run `npm run native:build` when you want to build it explicitly during development.
+- Ordinary `npm start` and `npm test` remain available without a compiled addon and use the bounded JavaScript fallback when native loading is unavailable.
+
+The fallback preserves the same host-facing source-analysis and vector-operation contract. It does not replace native verification: the Rust CI gate must still build the Node-API module and require `native: true` before a platform is considered verified.
 - Windows and Linux build the native addon for the runner architecture. macOS builds both `aarch64-apple-darwin` and `x86_64-apple-darwin` libraries and combines them into a universal module for the universal desktop installer.
 
 The Rust toolchain is pinned to 1.99.1. Cross-platform CI targets Linux, Windows, and macOS. GitHub has not assigned runners to the current jobs yet, so compilation and test results remain unverified until those workflows actually execute.
