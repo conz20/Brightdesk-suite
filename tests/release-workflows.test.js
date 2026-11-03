@@ -100,7 +100,7 @@ test('individual app installer builds explicitly disable implicit publishing', (
 
 test('all customer installer build commands explicitly disable implicit publishing', () => {
   const manifest = JSON.parse(read('package.json'));
-  for (const name of ['dist', 'dist:win', 'dist:mac', 'dist:linux']) {
+  for (const name of ['dist', 'dist:win', 'dist:mac', 'dist:linux', 'release']) {
     assert.match(manifest.scripts[name], /--publish never$/, `${name} must build locally without publishing`);
   }
 });
