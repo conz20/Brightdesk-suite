@@ -4,6 +4,11 @@ const path = require('node:path');
 
 const appId = process.env.BRIGHTDESK_APP_ID;
 const appNames = { pages: 'Pages', sheets: 'Sheets', slides: 'Decks', notes: 'Notes', database: 'Database', forms: 'Forms', lists: 'Lists', planner: 'Planner', todo: 'To Do', loop: 'Workspace' };
+const appCatalog = require('./src/app-catalog');
+const appVersion = appCatalog.find(item => item.id === appId)?.moduleVersion;
+if (!appVersion || !/^\\d+\\.\\d+\\.\\d+(?:-[0-9A-Za-z.-]+)?$/.test(appVersion)) {
+  throw new Error(`No valid module version is configured for Brightdesk ${appNames[appId]}.`);
+}
 
 if (!appNames[appId]) {
   throw new Error('Set BRIGHTDESK_APP_ID to one of: pages, sheets, slides, notes, database, forms, lists, planner, todo, loop.');
@@ -12,7 +17,7 @@ if (!appNames[appId]) {
 module.exports = {
   appId: `org.brightdesk.${appId}`,
   productName: 'Brightdesk ' + appNames[appId],
-  extraMetadata: { brightdeskAppId: appId, productName: 'Brightdesk ' + appNames[appId] },
+  extraMetadata: { brightdeskAppId: appId, productName: 'Brightdesk ' + appNames[appId], version: appVersion },
   asar: true,
   files: ['src/**/*', 'package.json', 'LICENSE', 'THIRD_PARTY_NOTICES.md', 'TERMS_AND_CONDITIONS.txt'],
   directories: { output: path.join('release', 'apps', appId), buildResources: 'assets/branding' },
