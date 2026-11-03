@@ -52,7 +52,49 @@ test('electron-builder standalone configuration maps every approved app to its o
       assert.equal(config.appId, `org.brightdesk.${app.id}`);
       assert.equal(config.productName, `Brightdesk ${app.name}`);
       assert.equal(config.directories.output, path.join('release', 'apps', app.id));
+      assert.equal(config.extraMetadata.desktopName, `org.brightdesk.${app.id}.desktop`);
       assert.equal(config.publish.length, 0, 'standalone builds must not publish automatically');
+      assert.equal(config.linux.syncDesktopName, true);
+      assert.ok(config.mac.target.includes('dmg'));
+      assert.ok(config.mac.target.includes('pkg'));
+      assert.ok(config.mac.target.includes('zip'));
+      assert.ok(config.linux.target.includes('AppImage'));
+      assert.ok(config.linux.target.includes('deb'));
+      const slug = app.id === 'todo' ? 'To-Do' : app.name;
+      assert.equal(config.win.artifactName, `Brightdesk-${slug}-${'
+    }
+    process.env.BRIGHTDESK_APP_ID = 'outlook';
+    delete require.cache[configPath];
+    assert.throws(() => require(configPath), /Set BRIGHTDESK_APP_ID/);
+  } finally {
+    if (original === undefined) delete process.env.BRIGHTDESK_APP_ID;
+    else process.env.BRIGHTDESK_APP_ID = original;
+    delete require.cache[configPath];
+  }
+});
+}{version}-${'
+    }
+    process.env.BRIGHTDESK_APP_ID = 'outlook';
+    delete require.cache[configPath];
+    assert.throws(() => require(configPath), /Set BRIGHTDESK_APP_ID/);
+  } finally {
+    if (original === undefined) delete process.env.BRIGHTDESK_APP_ID;
+    else process.env.BRIGHTDESK_APP_ID = original;
+    delete require.cache[configPath];
+  }
+});
+}{arch}.${'
+    }
+    process.env.BRIGHTDESK_APP_ID = 'outlook';
+    delete require.cache[configPath];
+    assert.throws(() => require(configPath), /Set BRIGHTDESK_APP_ID/);
+  } finally {
+    if (original === undefined) delete process.env.BRIGHTDESK_APP_ID;
+    else process.env.BRIGHTDESK_APP_ID = original;
+    delete require.cache[configPath];
+  }
+});
+}{ext}`);
     }
     process.env.BRIGHTDESK_APP_ID = 'outlook';
     delete require.cache[configPath];
