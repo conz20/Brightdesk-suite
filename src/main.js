@@ -14,7 +14,7 @@ const updatePublishingConfigured = Array.isArray(packageConfig.build?.publish) &
 let updateCheckInProgress = false;
 let lastUpdateCheckAt = 0;
 let dictionaryService;
-const supportedApplications = new Set(['pages', 'sheets', 'slides', 'notes']);
+const supportedApplications = new Set(['pages', 'sheets', 'slides', 'notes', 'database', 'forms', 'lists', 'planner', 'todo', 'loop']);
 const applicationId = packageConfig.brightdeskAppId || null;
 if (applicationId && !supportedApplications.has(applicationId)) {
   throw new Error(`Unsupported Brightdesk application: ${applicationId}`);
