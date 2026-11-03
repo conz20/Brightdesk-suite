@@ -15,7 +15,7 @@
     "check:node": "node scripts/check-node24.js",
     "start": "electron .",
     "test": "node --test",
-    "dist": "npm run verify:licenses && electron-builder --publish never",
+    "dist": "npm run native:build && npm run verify:licenses && electron-builder --publish never",
     "dist:win": "npm run native:build && npm run verify:licenses && electron-builder --win nsis --x64 --publish never",
     "dist:mac": "npm run native:build && npm run verify:licenses && electron-builder --mac dmg pkg zip --universal --publish never",
     "dist:linux": "npm run native:build && npm run verify:licenses && electron-builder --linux AppImage deb --x64 --publish never",
@@ -52,9 +52,7 @@
     "rust:test": "cargo test --manifest-path rust/Cargo.toml --workspace",
     "rust:build": "cargo build --manifest-path rust/Cargo.toml --workspace --release",
     "rust:check": "npm run rust:fmt && cargo clippy --manifest-path rust/Cargo.toml --workspace --all-targets -- -D warnings && npm run rust:test && npm run native:build",
-    "native:build": "node scripts/build-native.js",
-    "prestart": "npm run native:build",
-    "pretest": "npm run native:build"
+    "native:build": "node scripts/build-native.js"
   },
   "dependencies": {
     "docx": "9.15.1",
