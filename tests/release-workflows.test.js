@@ -31,7 +31,7 @@ test('one consolidated PR quality workflow verifies the committed lock and runs 
   ]) assert.ok(workflow.includes(command), `quality gate includes ${command}`);
   assert.ok(workflow.indexOf('npm run lock:verify') < workflow.indexOf('npm ci --no-audit --no-fund'));
   assert.doesNotMatch(workflow, /npm run lock:prepare/);
-  for (const obsolete of ['integration-ci.yml', 'lists-ci.yml', 'security-audit.yml']) {
+  for (const obsolete of ['integration-ci.yml', 'lists-ci.yml', 'security-audit.yml', 'todo-ci.yml']) {
     assert.equal(fs.existsSync(path.join(root, '.github', 'workflows', obsolete)), false, `${obsolete} must not duplicate the consolidated gate`);
   }
 });
