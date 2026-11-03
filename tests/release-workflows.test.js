@@ -104,3 +104,13 @@ test('all customer installer build commands explicitly disable implicit publishi
     assert.match(manifest.scripts[name], /--publish never$/, `${name} must build locally without publishing`);
   }
 });
+
+test('local release verification runs tests and builds only for the current native platform', () => {
+  const script = read('scripts/verify-local-release.js');
+  for (const step of ['check:node', 'lock:verify', 'ci --no-audit --no-fund', 'verify:licenses', 'test', 'release:preflight', 'audit --audit-level=high', 'dist:', 'release:prepare', 'release:verify:']) {
+    assert.ok(script.includes(step), `local release script includes ${step}`);
+  }
+  assert.match(script, /process\.versions\.node/);
+  assert.match(script, /process\.platform/);
+  assert.doesNotMatch(script, /publish always|gh release create/i);
+});
