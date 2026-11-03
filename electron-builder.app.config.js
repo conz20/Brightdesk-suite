@@ -3,7 +3,11 @@
 const path = require('node:path');
 
 const appId = process.env.BRIGHTDESK_APP_ID;
-const appNames = { pages: 'Pages', sheets: 'Sheets', slides: 'Decks', notes: 'Notes' };
+const appNames = {
+  pages: 'Pages', sheets: 'Sheets', slides: 'Decks', notes: 'Notes',
+  database: 'Database', forms: 'Forms', lists: 'Lists', planner: 'Planner',
+  todo: 'To Do', loop: 'Workspace'
+};
 
 if (!appNames[appId]) {
   throw new Error('Set BRIGHTDESK_APP_ID to one of: pages, sheets, slides, notes.');
