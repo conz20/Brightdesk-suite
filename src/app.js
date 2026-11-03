@@ -1295,6 +1295,11 @@ async function installDownloadedUpdate() {
     updateMessage(`Could not install the update: ${error.message}`, 'error');
   }
 }
+async function reviewAvailableUpdates() {
+  updatePanel.hidden = true;
+  $('app-updates-panel').hidden = false;
+  await checkForUpdatesManually();
+}
 $('updates-button').addEventListener('click', checkForUpdatesManually);
 $('update-settings-button').addEventListener('click', openUpdateSettings);
 $('close-update-settings').addEventListener('click', () => { updatePanel.hidden = true; });
@@ -1317,7 +1322,7 @@ window.brightdesk.onUpdateState?.(updateState => {
   dot.hidden = !hasUpdate;
   if (updateState.status === 'available') {
     updateMessage(updateState.message, 'notice', [
-      { label: 'Review update', run: openUpdateSettings },
+      { label: 'Review update', run: reviewAvailableUpdates },
       { label: 'Download update', run: downloadUpdateManually }
     ]);
   } else if (updateState.status === 'downloaded') {
