@@ -71,7 +71,14 @@ async function listInstalledStandaloneApps({ appDataPath }) {
 
   for (const appId of APPROVED_APP_IDS) {
     const record = registry.apps[appId];
-    if (!record || record.id !== appId || typeof record.executablePath !== 'string') continue;
+    if (!record || record.id !== appId ||
+      typeof record.executablePath !== 'string' || !path.isAbsolute(record.executablePath) ||
+      !path.basename(record.executablePath).toLowerCase().startsWith('brightdesk') ||
+      typeof record.version !== 'string' || !/^\\d+\\.\\d+\\.\\d+(?:-[0-9A-Za-z.-]+)?$/.test(record.version) ||
+      !['win32', 'darwin', 'linux'].includes(record.platform)) {
+      if (record) { delete registry.apps[appId]; changed = true; }
+      continue;
+    }
     try {
       await fs.access(record.executablePath);
       installed.push(record);
