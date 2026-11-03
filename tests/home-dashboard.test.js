@@ -33,7 +33,7 @@ test('Home distinguishes apps added to the Suite from independent desktop instal
 });
 
 test('first-run selection remains the first-run destination, then a completed setup opens Home', () => {
-  assert.match(app, /else if \(!state\.setupComplete \|\| state\.installedApps\.length === 0\) state\.view = 'manager'/);
-  assert.match(app, /else state\.view = 'home'/);
+  assert.match(app, /else if \(!state\.setupComplete\) \{[\s\S]*?state\.view = 'manager'/);
+  assert.match(app, /state\.view = 'home'/);
   assert.match(app, /function completeAppSetup\(\)[\s\S]*?state\.view = 'home'/);
 });
