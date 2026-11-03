@@ -849,7 +849,7 @@ function render() {
     const visible = launchAppId ? btn.dataset.app === launchAppId : installedApp(btn.dataset.app); btn.hidden = !visible; btn.classList.toggle('active', !manager && !languages && btn.dataset.app === state.app);
   });
   $('home-nav').hidden = Boolean(launchAppId);
-  $('manage-apps').hidden = Boolean(launchAppId);
+  $('manage-apps').hidden = true;
   $('home-nav').classList.toggle('active', manager);
   $('manage-apps').classList.toggle('active', false);
   $('manage-languages').classList.toggle('active', languages);
