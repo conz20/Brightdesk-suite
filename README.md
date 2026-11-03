@@ -41,7 +41,7 @@ The release workflow is designed to build macOS universal DMG, PKG and ZIP packa
 
 Building and testing Brightdesk requires exactly Node.js 24.22.2. This is a developer/CI requirement only; it is not a customer installation requirement. Run `npm run setup:dev` after activating that runtime. The project uses its checked-in package lock and automated Node.js tests.
 
-The GitHub Actions workflows pin third-party actions to immutable commit SHAs and use least-privilege permissions. Installer builds, test results and release artifacts must be verified before they are described as passing or ready.
+The GitHub Actions workflows pin third-party actions to immutable commit SHAs and use least-privilege permissions. Installer builds, test results and release artifacts must be verified before they are described as passing or ready. If hosted runners are unavailable, run `npm run verify:local-release` on each target operating system; see [Local release verification](docs/LOCAL-RELEASE-VERIFICATION.md). This local process does not upload or publish anything.
 
 Brightdesk uses original product names, code, artwork and interface design. Microsoft product names are used only as internal workflow comparisons.
 ## Updates and customer control
