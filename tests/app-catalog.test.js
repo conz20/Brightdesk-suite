@@ -55,7 +55,7 @@ test('the customer-facing release version has one authoritative source across th
   assert.match(html, /Version 0\\.1\\.0/);
   assert.match(html, /Brightdesk 0\\.1\\.0/);
   assert.match(versioning, /package\.json.*single source of truth/i);
-  assert.match(versioning, /Brightdesk-AI.*not a customer release/i);
+  assert.match(versioning, /Brightdesk-AI.*no Brightdesk customer release number/i);
 });
 
 test('Brightdesk keeps its own identity and does not claim Microsoft affiliation', () => {
