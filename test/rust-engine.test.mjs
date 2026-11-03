@@ -49,7 +49,7 @@ test("JavaScript fallback matches the native engine's core contract", () => {
   assert.equal(info.engine, "Brightdesk JavaScript Fallback");
   assert.equal(info.native, false);
   assert.equal(info.nodeApiVersion, 0);
-  assert.deepEqual(fallback.analyzeSource("one two\\nthree"), {
+  assert.deepEqual(fallback.analyzeSource("one two\nthree"), {
     bytes: 13,
     lines: 2,
     tokenCount: 3
