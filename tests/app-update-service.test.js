@@ -167,8 +167,8 @@ test('a package with an untrusted release origin is not offered', async () => {
     platform: 'win32',
     fetchImpl: releaseFetch({
       assetOverrides: [{
-        name: 'Brightdesk-pages-1.2.0-x64.exe',
-        browser_download_url: 'https://example.com/Brightdesk-pages-1.2.0-x64.exe',
+        name: 'Brightdesk-Pages-1.3.0-x64.exe',
+        browser_download_url: 'https://example.com/Brightdesk-Pages-1.3.0-x64.exe',
         size: 1000
       }]
     })
