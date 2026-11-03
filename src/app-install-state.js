@@ -38,4 +38,6 @@ function serializeInstallationState(installedApps, setupComplete) {
   };
 }
 
-module.exports = { INSTALLATION_SCHEMA_VERSION, normalizeInstallationState, isAppInstalled, serializeInstallationState };
+const installationStateApi = { INSTALLATION_SCHEMA_VERSION, normalizeInstallationState, isAppInstalled, serializeInstallationState };
+if (typeof window !== 'undefined') window.BrightdeskInstallState = installationStateApi;
+if (typeof module !== 'undefined' && module.exports) module.exports = installationStateApi;
