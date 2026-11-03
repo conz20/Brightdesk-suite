@@ -1166,7 +1166,7 @@ $('update-manual-download').addEventListener('click', downloadUpdateManually);
 $('update-manual-install').addEventListener('click', installDownloadedUpdate);
 window.brightdesk.onUpdateState?.(updateState => {
   const dot = $('update-status-dot');
-  const hasUpdate = ['available', 'downloaded', 'apps-available'].includes(updateState.status);
+  const hasUpdate = ['available', 'downloaded', 'apps-available', 'apps-downloaded'].includes(updateState.status);
   updateReadyToInstall = updateState.status === 'downloaded';
   $('update-manual-install').disabled = !updateReadyToInstall;
   dot.hidden = !hasUpdate;
