@@ -469,7 +469,7 @@ function renderAppManager() {
     ? t('manager.manageDesc')
     : t('manager.chooseDesc');
   $('manager-note').textContent = t('manager.note');
-  $('finish-app-setup').textContent = state.setupComplete ? t('manager.done') : t('manager.installSelected');
+  $('finish-app-setup').textContent = state.setupComplete ? 'Back to launcher' : 'Add selected apps';
   catalog.forEach(item => {
     const canInstall = item.availability === 'available';
     const selected = state.firstRunSelection.has(item.id);
@@ -881,7 +881,15 @@ $('check-current-document').addEventListener('click',checkCurrentDocumentSpellin
 $('back-to-apps').addEventListener('click',()=>{state.view=state.setupComplete?'workspace':'manager';render();});
 $('manager-grid-view').addEventListener('click', () => { state.managerView = 'grid'; localStorage.setItem('brightdesk-manager-view', state.managerView); renderAppManager(); });
 $('manager-list-view').addEventListener('click', () => { state.managerView = 'list'; localStorage.setItem('brightdesk-manager-view', state.managerView); renderAppManager(); });
-$('finish-app-setup').addEventListener('click',()=>{if(state.setupComplete){state.view='workspace';render();}else completeAppSetup();});
+$('finish-app-setup').addEventListener('click',()=>{if(state.setupComplete){state.view=state.installedApps.length ? 'workspace' : 'manager';render();}else completeAppSetup();});
+$('skip-app-setup').addEventListener('click',()=>{
+  state.installedApps = [];
+  state.setupComplete = true;
+  state.app = 'pages';
+  state.view = 'manager';
+  saveAppSetup();
+  render();
+});
 $('doc-title').addEventListener('change',()=>{activeDoc().title=$('doc-title').value;persist();});
 editor.addEventListener('input',()=>{activeDoc().html=editor.innerHTML;persist();});
 $('notes-editor').addEventListener('input',()=>{activeDoc().text=$('notes-editor').value;persist();});
@@ -899,8 +907,115 @@ $('lists-rename').addEventListener('click',renameCurrentList);
 $('lists-delete').addEventListener('click',deleteCurrentList);
 $('lists-column-type').addEventListener('change',()=>{$('lists-column-options-wrap').hidden=$('lists-column-type').value!=='choice';});
 $('export-button').addEventListener('click',exportCurrent);$('open-button').addEventListener('click',openFile);$('save-project').addEventListener('click',saveProject);
-$('updates-button').addEventListener('click',async()=>{const msg=$('update-message');msg.hidden=false;msg.textContent=t('common.updateChecking');try{const r=await window.brightdesk.checkForUpdates();if(!r?.ok)msg.textContent=r?.message||'Update checks are not configured yet.';}catch(e){msg.textContent=`Update check failed: ${e.message}`;}});
-window.brightdesk.onUpdateState?.(updateState=>{const msg=$('update-message');msg.hidden=false;msg.textContent=updateState.message;if(updateState.status==='available'){msg.textContent=updateState.message;}if(updateState.status==='downloaded'){const button=document.createElement('button');button.className='text-button';button.textContent=t('common.restartInstall');button.onclick=()=>window.brightdesk.installUpdate();msg.append(' ',button);}});
+const updatePanel = $('update-settings-panel');
+function updateMessage(message, status = 'info', actions = []) {
+  const host = $('update-message');
+  host.replaceChildren();
+  host.hidden = false;
+  host.dataset.status = status;
+  const copy = document.createElement('span');
+  copy.className = 'update-message-copy';
+  copy.textContent = message;
+  host.append(copy);
+  const controls = document.createElement('div');
+  controls.className = 'update-message-actions';
+  actions.forEach(({ label, run, quiet = false }) => {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = quiet ? 'text-button' : 'secondary small-action';
+    button.textContent = label;
+    button.addEventListener('click', run);
+    controls.append(button);
+  });
+  const close = document.createElement('button');
+  close.type = 'button';
+  close.className = 'update-message-close';
+  close.textContent = '×';
+  close.setAttribute('aria-label', 'Dismiss update notification');
+  close.addEventListener('click', () => { host.hidden = true; host.replaceChildren(); });
+  controls.append(close);
+  host.append(controls);
+}
+async function openUpdateSettings() {
+  updatePanel.hidden = false;
+  try {
+    const settings = await window.brightdesk.getUpdateSettings();
+    $('update-auto-check').checked = settings.autoCheck === true;
+    $('update-auto-download').checked = settings.autoDownload === true;
+  } catch (error) {
+    updateMessage(`Could not load update settings: ${error.message}`, 'error');
+  }
+}
+async function saveUpdateSettings() {
+  const settings = {
+    autoCheck: $('update-auto-check').checked,
+    autoDownload: $('update-auto-download').checked,
+    autoInstall: false
+  };
+  try {
+    const saved = await window.brightdesk.setUpdateSettings(settings);
+    $('update-auto-check').checked = saved.autoCheck === true;
+    $('update-auto-download').checked = saved.autoDownload === true;
+    updateMessage('Your update preferences have been saved.', 'success');
+  } catch (error) {
+    updateMessage(`Could not save update settings: ${error.message}`, 'error');
+  }
+}
+async function checkForUpdatesManually() {
+  updateMessage('Checking Brightdesk for updates…', 'info');
+  try {
+    const result = await window.brightdesk.checkForUpdates();
+    if (!result?.ok) updateMessage(result?.message || 'The update check could not be completed.', 'error');
+  } catch (error) {
+    updateMessage(`Update check failed: ${error.message}`, 'error');
+  }
+}
+async function downloadUpdateManually() {
+  try {
+    const result = await window.brightdesk.downloadUpdate();
+    if (!result?.ok) updateMessage(result?.message || 'There is no update ready to download.', 'error');
+  } catch (error) {
+    updateMessage(`Could not download the update: ${error.message}`, 'error');
+  }
+}
+async function installDownloadedUpdate() {
+  try {
+    const result = await window.brightdesk.installUpdate();
+    if (!result?.ok) updateMessage(result?.message || 'No downloaded update is ready to install.', 'error');
+  } catch (error) {
+    updateMessage(`Could not install the update: ${error.message}`, 'error');
+  }
+}
+$('updates-button').addEventListener('click', checkForUpdatesManually);
+$('update-settings-button').addEventListener('click', openUpdateSettings);
+$('close-update-settings').addEventListener('click', () => { updatePanel.hidden = true; });
+$('save-update-settings').addEventListener('click', saveUpdateSettings);
+$('update-manual-check').addEventListener('click', checkForUpdatesManually);
+$('update-manual-download').addEventListener('click', downloadUpdateManually);
+$('update-manual-install').addEventListener('click', installDownloadedUpdate);
+window.brightdesk.onUpdateState?.(updateState => {
+  const dot = $('update-status-dot');
+  const hasUpdate = ['available', 'downloaded'].includes(updateState.status);
+  dot.hidden = !hasUpdate;
+  if (updateState.status === 'available') {
+    updateMessage(updateState.message, 'notice', [
+      { label: 'Review update', run: openUpdateSettings },
+      { label: 'Download update', run: downloadUpdateManually }
+    ]);
+  } else if (updateState.status === 'downloaded') {
+    updateMessage(updateState.message, 'notice', [
+      { label: 'Next · Install update', run: installDownloadedUpdate }
+    ]);
+  } else if (updateState.status === 'error' || updateState.status === 'unavailable' || updateState.status === 'external') {
+    updateMessage(updateState.message, 'error');
+  } else if (updateState.status === 'current') {
+    updateMessage(updateState.message, 'success');
+  } else if (updateState.status === 'checking' || updateState.status === 'downloading') {
+    updateMessage(updateState.message, 'info');
+  } else if (updateState.status === 'manual') {
+    dot.hidden = true;
+  }
+});
 loadLocal();$('platform').textContent=`Desktop app · ${window.brightdesk.platform}`;
 (async()=>{
   try {
