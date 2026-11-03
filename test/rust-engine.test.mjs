@@ -1,9 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { createRequire } from "node:module";
-
-const require = createRequire(import.meta.url);
-const engine = require("../src/rust-engine.js");
+import * as engine from "../scripts/rust-engine.mjs";
 
 test("loads the native engine or a compatible JavaScript fallback", () => {
   const info = engine.engineInfo();
