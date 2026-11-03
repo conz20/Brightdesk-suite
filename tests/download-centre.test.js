@@ -45,3 +45,28 @@ test('Downloads disables a package action when the current CPU architecture has 
   assert.match(app, /action\.disabled = !platformSupported/);
   assert.match(app, /No Brightdesk installer is currently built for this combination/);
 });
+
+test('Downloads lets users choose each supported desktop operating system', () => {
+  assert.match(html, /id="downloads-platform-select"/);
+  assert.match(html, /option value="win32"/);
+  assert.match(html, /option value="darwin"/);
+  assert.match(html, /option value="linux"/);
+  assert.match(app, /targetArchitectures = \{ win32: 'x64', darwin: 'universal', linux: 'x64' \}/);
+  assert.match(app, /window\.brightdesk\.openAppDownloads\(item\.id, targetPlatform, targetArchitecture\)/);
+});
+
+test('Downloads opens only manifest-resolved packages for another operating system', () => {
+  const main = fs.readFileSync(path.join(root, 'src', 'main.js'), 'utf8');
+  const preload = fs.readFileSync(path.join(root, 'src', 'preload.js'), 'utf8');
+  assert.match(preload, /openAppDownloads: \(appId, platform, architecture\)/);
+  assert.match(main, /const supportedArchitectures = \{ win32: \['x64'\], darwin: \['universal'\], linux: \['x64'\] \}/);
+  assert.match(main, /getStandaloneAppDownload\(\{ appId, platform, architecture \}\)/);
+  assert.match(main, /await shell\.openExternal\(download\.downloadUrl\)/);
+  assert.match(main, /sha256: download\.sha256/);
+});
+
+test('Downloads does not offer an install action for a package targeting another computer', () => {
+  assert.match(app, /const installOnThisComputer = targetIsCurrent && currentArchitectureSupported/);
+  assert.match(app, /!installOnThisComputer[\s\S]*?Download for \$\{platformNames\[targetPlatform\]\}/);
+  assert.match(app, /else if \(installOnThisComputer\)[\s\S]*?stageStandaloneAppFromCentre/);
+});
