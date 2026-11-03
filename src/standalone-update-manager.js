@@ -150,22 +150,29 @@ async function stageStandaloneAppUpdate({
   }
 }
 
+function safeStagedRecordPath(paths, record) {
+  if (!record || !APPROVED_APP_IDS.has(record.appId)) return null;
+  if (typeof record.version !== 'string' || !/^\\d+\\.\\d+\\.\\d+(?:-[0-9A-Za-z.-]+)?$/.test(record.version)) return null;
+  if (typeof record.fileName !== 'string' || path.basename(record.fileName) !== record.fileName) return null;
+  const appRoot = path.resolve(paths.downloads, record.appId);
+  const expectedPath = path.resolve(appRoot, record.version, record.fileName);
+  if (!expectedPath.startsWith(appRoot + path.sep)) return null;
+  if (typeof record.filePath !== 'string' || path.resolve(record.filePath) !== expectedPath) return null;
+  return expectedPath;
+}
+
 async function listStagedStandaloneAppUpdates({ appDataPath } = {}) {
   const paths = registryPaths(appDataPath);
   const registry = await readRegistry(paths.registry);
   const available = [];
   let changed = false;
   for (const record of registry.updates) {
-    if (!record || !APPROVED_APP_IDS.has(record.appId) || typeof record.filePath !== 'string') {
+    const expectedPath = safeStagedRecordPath(paths, record);
+    if (!expectedPath) {
       changed = true;
       continue;
     }
     try {
-      const expectedPath = path.resolve(paths.downloads, record.appId, record.version, record.fileName);
-      if (path.resolve(record.filePath) !== expectedPath) {
-        changed = true;
-        continue;
-      }
       const stat = await fs.stat(expectedPath);
       if (!stat.isFile() || stat.size !== record.size) {
         changed = true;
@@ -191,11 +198,8 @@ async function removeStagedStandaloneAppUpdate({ appDataPath, appId } = {}) {
   registry.updates = registry.updates.filter(item => item.appId !== appId);
   await writeRegistry(paths.registry, registry);
   for (const item of matches) {
-    if (typeof item.filePath !== 'string') continue;
-    const expectedPath = path.resolve(paths.downloads, appId, item.version, item.fileName);
-    if (path.resolve(item.filePath) === expectedPath) {
-      await fs.rm(expectedPath, { force: true }).catch(() => {});
-    }
+    const expectedPath = safeStagedRecordPath(paths, item);
+    if (expectedPath) await fs.rm(expectedPath, { force: true }).catch(() => {});
   }
   return { removed: matches.length > 0 };
 }
