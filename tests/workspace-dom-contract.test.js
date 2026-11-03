@@ -7,6 +7,7 @@ const path = require('node:path');
 
 const root = path.join(__dirname, '..');
 const html = fs.readFileSync(path.join(root, 'src', 'index.html'), 'utf8');
+const app = fs.readFileSync(path.join(root, 'src', 'app.js'), 'utf8');
 const workspaceModules = [
   'database-workspace.js',
   'forms-workspace.js',
@@ -17,8 +18,13 @@ const workspaceModules = [
 test('every statically referenced workspace DOM element exists in the integrated HTML shell', () => {
   const missing = [];
 
-  for (const file of workspaceModules) {
-    const source = fs.readFileSync(path.join(root, 'src', file), 'utf8');
+  const listsStart = app.indexOf('function renderListsWorkspace()');
+  const listsEnd = app.indexOf('function renderGenericWorkspace()', listsStart);
+  assert.ok(listsStart >= 0 && listsEnd > listsStart, 'Lists renderer must remain identifiable');
+  const sources = workspaceModules.map(file => ({ file, source: fs.readFileSync(path.join(root, 'src', file), 'utf8') }));
+  sources.push({ file: 'Lists app renderer', source: app.slice(listsStart, listsEnd) });
+
+  for (const { file, source } of sources) {
     const ids = [...source.matchAll(/\$\(['"]([^'"]+)['"]\)/g)].map(match => match[1]);
 
     for (const id of new Set(ids)) {
