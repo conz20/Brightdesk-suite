@@ -17,7 +17,7 @@ test('Rust engine response parser validates request IDs and metric values', () =
 
 test('JavaScript fallback preserves Unicode and line metrics', () => {
   assert.deepEqual(fallbackAnalyzeText('Café 世界\nBrightdesk'), {
-    characters: 16,
+    characters: 18,
     words: 3,
     lines: 2
   });
