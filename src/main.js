@@ -277,7 +277,10 @@ async function stageStandaloneApp(appId) {
 }
 
 async function refreshStandaloneAppUpdates({ notify = true } = {}) {
-  const installedApps = await listInstalledStandaloneApps({ appDataPath: app.getPath('appData') });
+  const allInstalledApps = await listInstalledStandaloneApps({ appDataPath: app.getPath('appData') });
+  const installedApps = applicationId
+    ? allInstalledApps.filter(item => item.id === applicationId)
+    : allInstalledApps;
   const result = await checkStandaloneAppUpdates({ installedApps, platform: process.platform, architecture: process.arch });
   if (!result.ok) return { ...result, stagedApps: await listStagedStandaloneAppUpdates({ appDataPath: app.getPath('appData') }) };
 
