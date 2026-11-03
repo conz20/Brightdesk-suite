@@ -23,7 +23,7 @@ test('Lists UI is connected to the validated local data service', () => {
   for (const method of ['createList','renameList','addColumn','addItem','updateItem','deleteItem','filterItems','sortItems']) {
     assert.ok(renderer.includes('BrightdeskListsService.' + method), method + ' is wired');
   }
-  assert.match(renderer, /function saveLists\(\) \{ persist\(\)/);
+  assert.match(renderer, /function saveLists\(\) \{ const saved = persist\(\)/);
   assert.match(renderer, /function addBrightdeskListColumn/);
   assert.match(renderer, /function saveListRecord/);
 });
