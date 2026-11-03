@@ -66,3 +66,12 @@ test('the app exposes separate customer actions to download and install an updat
   assert.match(ui, /update-manual-download|Download update/);
   assert.match(ui, /update-manual-install|Install update/);
 });
+
+test('turning automatic checks off stops focus and scheduled background checks', () => {
+  const main = fs.readFileSync(require('node:path').join(__dirname, '../src/main.js'), 'utf8');
+  assert.match(main, /if \(autoUpdater && automaticUpdateChecksEnabled\)/);
+  assert.match(main, /clearTimeout\(updateCheckTimeout\)/);
+  assert.match(main, /clearInterval\(updateCheckInterval\)/);
+  assert.match(main, /configureAutomaticUpdateChecks\(settings\.autoCheck !== false\)/);
+  assert.match(main, /configureAutomaticUpdateChecks\(settings\.autoCheck\)/);
+});
