@@ -57,6 +57,8 @@ Brightdesk is an independent desktop product with original names, code, artwork,
 - No verified current release artifact set has been produced from the latest main commit.
 - Confirm current Node.js 24.22.2 runner, real package lock, dependency install, licence audit and all target installer smoke tests before release.
 - Signing/notarisation must be reported accurately; never claim signed status without actual credentials and verification.
+- Feature-branch quality workflow runs on 2026-11-03 (including run 41566954782 at the current feature-branch head) completed as failures before any job step was recorded; the jobs returned empty step lists and no downloadable logs. No Node.js tests, release preflight or audit results were produced by these runs. Treat this as an Actions runner/workflow-start blocker, not evidence that source tests passed or a diagnosed source-code failure. Re-check Actions availability before drawing conclusions.
+
 
 
 ## Full suite launcher direction — 2026-11-03
