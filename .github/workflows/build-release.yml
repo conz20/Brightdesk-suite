@@ -45,10 +45,7 @@ jobs:
           node-version: 24.22.2
           cache: npm
 
-      - name: Prepare exact dependency lock
-        run: npm run lock:prepare
-
-      - name: Verify dependency lock
+      - name: Verify the committed dependency lock
         run: npm run lock:verify
 
       - name: Install locked dependencies
@@ -65,14 +62,6 @@ jobs:
 
       - name: Audit dependencies for high severity vulnerabilities
         run: npm audit --audit-level=high
-
-      - name: Save the exact dependency lock used for this release
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
-        with:
-          name: brightdesk-dependency-lock
-          path: package-lock.json
-          if-no-files-found: error
-          retention-days: 7
 
   build:
     name: Build ${{ matrix.platform }} installer
@@ -100,12 +89,6 @@ jobs:
         with:
           node-version: 24.22.2
           cache: npm
-
-      - name: Restore the exact dependency lock
-        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
-        with:
-          name: brightdesk-dependency-lock
-          path: .
 
       - name: Verify dependency lock
         run: npm run lock:verify
@@ -170,6 +153,9 @@ jobs:
     outputs:
       version: ${{ steps.release-version.outputs.version }}
     steps:
+      - name: Check out verified source and dependency lock
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+
       - name: Download verified Linux build
         uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
         with:
@@ -188,11 +174,10 @@ jobs:
           name: brightdesk-macOS
           path: release/macOS
 
-      - name: Download the exact dependency lock used for this release
-        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
-        with:
-          name: brightdesk-dependency-lock
-          path: release/build-metadata
+      - name: Include the committed dependency lock in release metadata
+        run: |
+          mkdir -p release/build-metadata
+          cp package-lock.json release/build-metadata/package-lock.json
 
       - name: Read the official product version
         id: release-version
