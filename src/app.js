@@ -836,6 +836,7 @@ function render() {
   document.querySelectorAll('.nav[data-app]').forEach(btn => {
     const visible = launchAppId ? btn.dataset.app === launchAppId : installedApp(btn.dataset.app); btn.hidden = !visible; btn.classList.toggle('active', !manager && !languages && btn.dataset.app === state.app);
   });
+  $('home-nav').hidden = Boolean(launchAppId);
   $('manage-apps').hidden = Boolean(launchAppId);
   $('home-nav').classList.toggle('active', manager);
   $('manage-apps').classList.toggle('active', false);
