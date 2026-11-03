@@ -14,6 +14,9 @@ test('native installer workflow uses stable supported OS runner labels', () => {
   assert.match(workflow, /runner: windows-2025/);
   assert.match(workflow, /runner: macos-15/);
   assert.doesNotMatch(workflow, /runner: (?:ubuntu|windows|macos)-latest/);
+  const audit = read('.github/workflows/security-audit.yml');
+  assert.match(audit, /runs-on: ubuntu-24\\.04/);
+  assert.doesNotMatch(audit, /runs-on: ubuntu-latest/);
 });
 
 test('feature quality workflow uses a fixed Ubuntu image and the pinned Node runtime', () => {
@@ -21,6 +24,9 @@ test('feature quality workflow uses a fixed Ubuntu image and the pinned Node run
   assert.match(workflow, /runs-on: ubuntu-24\.04/);
   assert.match(workflow, /node-version: 24\.22\.2/);
   assert.match(workflow, /npm run check:node/);
+  for (const file of ['src/release-manifest.js', 'src/update-preferences.js', 'src/standalone-app-discovery.js', 'scripts/generate-release-manifest.js']) {
+    assert.ok(workflow.includes('node --check ' + file), `missing syntax check for ${file}`);
+  }
 });
 
 test('the cross-platform artifact collection generates and publishes the shared release manifest', () => {
