@@ -114,3 +114,31 @@ Exec=some-other-program %U
 test('discovery rejects unsupported operating systems rather than guessing', async () => {
   await assert.rejects(() => discoverStandaloneApps({ platform: 'freebsd' }), /not supported/);
 });
+
+test('Linux discovery finds an AppImage from its registered desktop entry before first launch', async () => {
+  const root = await fs.mkdtemp(path.join(os.tmpdir(), 'brightdesk-discovery-appimage-'));
+  try {
+    const appImage = path.join(root, 'brightdesk-pages-0.1.0-x64.AppImage');
+    const desktop = path.join(root, 'brightdesk-pages.desktop');
+    await fs.writeFile(appImage, 'appimage binary');
+    await fs.writeFile(desktop, `[Desktop Entry]
+Type=Application
+Name=Brightdesk Pages
+Exec="${appImage}" %U
+X-Brightdesk-AppId=pages
+X-Brightdesk-Version=0.1.0
+`);
+
+    const installed = await discoverStandaloneApps({
+      platform: 'linux',
+      homeDirectory: root,
+      searchDirectories: { linuxDesktopDirectories: [root] }
+    });
+    assert.equal(installed.length, 1);
+    assert.equal(installed[0].id, 'pages');
+    assert.equal(installed[0].version, '0.1.0');
+    assert.equal(installed[0].executablePath, appImage);
+  } finally {
+    await fs.rm(root, { recursive: true, force: true });
+  }
+});
