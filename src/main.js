@@ -6,6 +6,7 @@ const fs = require('node:fs/promises');
 const { openOfficeFile, exportOfficeFile, cleanFileName, ensureExtension } = require('./file-service');
 const { BUILTIN_LANGUAGES, validateLanguagePack, getBuiltinLanguage } = require('./language-service');
 const { DictionaryService } = require('./dictionary-service');
+const { registerStandaloneApp, listInstalledStandaloneApps } = require('./standalone-app-registry');
 let mainWindow;
 let agreementWindow;
 let termsAccepted = false;
@@ -352,6 +353,21 @@ ipcMain.handle('file:pdf', async (event, payload) => {
   const pdf = await mainWindow.webContents.printToPDF({ printBackground: true, pageSize: 'A4', margins: { top: 0.55, bottom: 0.55, left: 0.6, right: 0.6 } });
   await fs.writeFile(filePath, pdf); return { canceled: false, filePath };
 });
+ipcMain.handle('apps:list-installed', async event => {
+  if (!senderIsMain(event)) throw new Error('Invalid sender.');
+  return listInstalledStandaloneApps({ appDataPath: app.getPath('appData') });
+});
+ipcMain.handle('apps:launch-standalone', async (event, appId) => {
+  if (!senderIsMain(event)) throw new Error('Invalid sender.');
+  if (!supportedApplications.has(appId)) throw new Error('That Brightdesk application is not in the approved app catalogue.');
+  const installed = await listInstalledStandaloneApps({ appDataPath: app.getPath('appData') });
+  if (!installed.some(item => item.id === appId)) {
+    throw new Error('This standalone app has not been registered on this computer yet. Open it once from its desktop icon, then try again.');
+  }
+  await shell.openExternal(`brightdesk-${appId}://launch`);
+  return { ok: true, appId };
+});
+
 ipcMain.handle('apps:downloads', async (event, appId) => {
   if (!senderIsMain(event)) throw new Error('Invalid sender.');
   if (!supportedApplications.has(appId)) throw new Error('That Brightdesk application is not in the approved app catalogue.');
@@ -374,6 +390,33 @@ ipcMain.handle('updates:set-settings', async (event, payload) => {
   return settings;
 });
 
-app.whenReady().then(async () => { app.setName(packageConfig.productName || 'Brightdesk'); dictionaryService = new DictionaryService(app.getPath('userData')); Menu.setApplicationMenu(null); termsAccepted = await hasCurrentTermsAcceptance(); if (termsAccepted) { createWindow(); initUpdater(); } else { createAgreementWindow(); } app.on('activate', () => { if (BrowserWindow.getAllWindows().length === 0) { if (termsAccepted) createWindow(); else createAgreementWindow(); } }); });
+app.whenReady().then(async () => {
+  app.setName(packageConfig.productName || 'Brightdesk');
+  dictionaryService = new DictionaryService(app.getPath('userData'));
+  if (applicationId && app.isPackaged) {
+    try {
+      await registerStandaloneApp({
+        appDataPath: app.getPath('appData'),
+        appId: applicationId,
+        version: app.getVersion(),
+        executablePath: app.getPath('exe'),
+        platform: process.platform
+      });
+      app.setAsDefaultProtocolClient(`brightdesk-${applicationId}`);
+    } catch (error) {
+      console.warn('The standalone Brightdesk app could not register with the suite launcher.', error);
+    }
+  }
+  Menu.setApplicationMenu(null);
+  termsAccepted = await hasCurrentTermsAcceptance();
+  if (termsAccepted) { createWindow(); initUpdater(); }
+  else createAgreementWindow();
+  app.on('activate', () => {
+    if (BrowserWindow.getAllWindows().length === 0) {
+      if (termsAccepted) createWindow();
+      else createAgreementWindow();
+    }
+  });
+});
 app.on('window-all-closed', () => { if (process.platform !== 'darwin') app.quit(); });
 
