@@ -95,8 +95,8 @@ jobs:
             exit 0
           fi
 
-          existing_comment="$(gh api "repos/$REPO/issues/$PR_NUMBER/comments" --paginate \
-            --jq ".[] | select(.body | contains(\\"$marker\\")) | .id" | head -n 1 || true)"
+          gh api "repos/$REPO/issues/$PR_NUMBER/comments" --paginate > "$work_dir/comments.json"
+          existing_comment="$(jq -sr --arg marker "$marker" 'add | .[] | select(.body | contains($marker)) | .id' "$work_dir/comments.json" | head -n 1 || true)"
 
           if [[ -n "$existing_comment" ]]; then
             gh api -X PATCH "repos/$REPO/issues/comments/$existing_comment" \
