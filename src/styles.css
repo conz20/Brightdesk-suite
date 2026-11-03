@@ -363,3 +363,9 @@ body{background:var(--bd-canvas);color:var(--bd-ink)}
 .home-empty-state{grid-column:1/-1;margin:0;padding:16px;color:#7a879b;background:#fff;border:1px dashed #d8e1ea;border-radius:10px;font-size:10px;line-height:1.6}
 @media(max-width:950px){.home-app-grid{grid-template-columns:1fr}}
 @media(max-width:620px){.home-hero{padding:18px;align-items:flex-start}.home-hero img{width:48px;height:48px;flex-basis:48px}.home-hero h2{font-size:18px}.home-stat-grid{grid-template-columns:1fr}.home-action-row{display:grid;grid-template-columns:1fr}.home-section-heading{align-items:flex-start}.home-app-card,.home-desktop-app-row{flex-wrap:wrap}.home-app-card button,.home-desktop-app-row button{width:100%}}
+
+.downloads-platform-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.downloads-platform-select-label{font-size:9px;color:#728096;font-weight:600}
+.downloads-platform-select{min-height:32px;padding:5px 9px;border:1px solid #dce3ec;border-radius:7px;background:#fff;color:var(--bd-ink);font:inherit;font-size:10px}
+.downloads-platform-select:focus-visible{outline:2px solid var(--bd-accent);outline-offset:2px}
+@media(max-width:620px){.downloads-platform-actions{width:100%;display:grid;grid-template-columns:1fr}.downloads-platform-select{width:100%}}
