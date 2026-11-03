@@ -66,14 +66,15 @@ function auditRepository({ rootDir = path.resolve(__dirname, '../..') } = {}) {
   const scripts = packageJson.scripts || {};
   const build = packageJson.build || {};
   const identity = findAppIdentity(root, packageJson);
-  const builderScript = [
-    scripts['dist:win'], scripts['dist:mac'], scripts['dist:linux'],
-    scripts['dist:product:win'], scripts['dist:product:mac'], scripts['dist:product:linux'],
-    scripts['dist:desktop:win'], scripts['dist:desktop:mac'], scripts['dist:desktop:linux']
-  ].filter(Boolean).join('\n');
   const buildScriptPath = path.join(root, 'scripts', 'build-app.js');
   const buildScript = exists(buildScriptPath) ? fs.readFileSync(buildScriptPath, 'utf8') : '';
-  const packageTargets = {
+
+  const platformCommands = {
+    win: scripts['dist:win'] || scripts['dist:product:win'] || scripts['dist:desktop:win'] || '',
+    mac: scripts['dist:mac'] || scripts['dist:product:mac'] || scripts['dist:desktop:mac'] || '',
+    linux: scripts['dist:linux'] || scripts['dist:product:linux'] || scripts['dist:desktop:linux'] || ''
+  };
+  const platformTargets = {
     win: asArray(build.win?.target),
     mac: asArray(build.mac?.target),
     linux: asArray(build.linux?.target)
@@ -141,37 +142,31 @@ function auditRepository({ rootDir = path.resolve(__dirname, '../..') } = {}) {
     }
   }
 
-  const winTargets = packageTargets.win;
-  const macTargets = packageTargets.mac;
-  const linuxTargets = packageTargets.linux;
-  const hasWin = winTargets.some(value => String(value).toLowerCase() === 'nsis') ||
-    /--win\s+nsis/i.test(builderScript) || /win:\s*\[[^\]]*nsis/i.test(buildScript);
-  const hasMac = containsAll(macTargets, ['dmg', 'pkg', 'zip']) ||
-    /--mac\s+dmg\s+pkg\s+zip/i.test(builderScript) ||
+  const hasWin = platformTargets.win.some(value => String(value).toLowerCase() === 'nsis') ||
+    /--win\s+nsis/i.test(platformCommands.win) || /win:\s*\[[^\]]*nsis/i.test(buildScript);
+  const hasMac = containsAll(platformTargets.mac, ['dmg', 'pkg', 'zip']) ||
+    /--mac\s+dmg\s+pkg\s+zip/i.test(platformCommands.mac) ||
     /mac:\s*\[[^\]]*dmg[^\]]*pkg[^\]]*zip/i.test(buildScript);
-  const hasLinux = containsAll(linuxTargets, ['appimage', 'deb']) ||
-    /--linux\s+appimage\s+deb/i.test(builderScript) ||
+  const hasLinux = containsAll(platformTargets.linux, ['appimage', 'deb']) ||
+    /--linux\s+appimage\s+deb/i.test(platformCommands.linux) ||
     /linux:\s*\[[^\]]*appimage[^\]]*deb/i.test(buildScript);
+
+  const winX64 = /--x64/.test(platformCommands.win) ||
+    /win:\s*\[[^\]]*'--x64'/i.test(buildScript) ||
+    asArray(packageJson.brightdeskBuildTargets?.win).includes('x64');
+  const macUniversal = /--universal/.test(platformCommands.mac) ||
+    /mac:\s*\[[^\]]*'--universal'/i.test(buildScript) ||
+    asArray(packageJson.brightdeskBuildTargets?.mac).includes('universal');
+  const linuxX64 = /--x64/.test(platformCommands.linux) ||
+    /linux:\s*\[[^\]]*'--x64'/i.test(buildScript) ||
+    asArray(packageJson.brightdeskBuildTargets?.linux).includes('x64');
 
   add('Windows installer format', hasWin, 'Expected an NSIS .exe installer with its built-in Windows uninstaller.');
   add('macOS installer formats', hasMac, 'Expected DMG, PKG and ZIP packages. macOS does not normally use a separate uninstaller.');
   add('Linux installer formats', hasLinux, 'Expected AppImage and DEB packages. DEB removal is handled by the package manager.');
-  add(
-    'Windows x64 build target',
-    /--x64/.test(builderScript) || /win:\s*\[[^\]]*x64/i.test(buildScript) || packageJson.brightdeskBuildTargets?.win?.includes('x64'),
-    'Current checked-in build configuration must explicitly request Windows x64.'
-  );
-  add(
-    'macOS universal build target',
-    /--universal/.test(builderScript) || /universal/.test(buildScript) || packageJson.brightdeskBuildTargets?.mac?.includes('universal'),
-    'Current checked-in build configuration must explicitly request a universal macOS package.'
-  );
-  add(
-    'Linux x64 build target',
-    /--x64/.test(builderScript) || /linux:\s*\[[^\]]*x64/i.test(buildScript) || packageJson.brightdeskBuildTargets?.linux?.includes('x64'),
-    'Current checked-in build configuration must explicitly request Linux x64.'
-  );
-
+  add('Windows x64 build target', winX64, 'The Windows build command or configuration must explicitly select x64.');
+  add('macOS universal build target', macUniversal, 'The macOS build command or configuration must explicitly select universal architecture.');
+  add('Linux x64 build target', linuxX64, 'The Linux build command or configuration must explicitly select x64.');
   add(
     'Windows uninstaller configuration',
     hasWin && (!build.nsis || build.nsis.oneClick === false),
