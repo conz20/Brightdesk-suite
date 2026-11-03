@@ -1145,7 +1145,21 @@ function renderAppUpdates(result) {
     details.append(title, version);
     const actions = document.createElement('div');
     actions.className = 'app-update-actions';
-    if (standalone && staged) {
+    if (staged && !standalone) {
+      const install = document.createElement('button');
+      install.type = 'button';
+      install.className = 'primary small-action';
+      install.textContent = 'Next · Install desktop app';
+      install.addEventListener('click', async () => {
+        try {
+          await window.brightdesk.installStagedStandaloneAppUpdate(item.id);
+          updateMessage(`Opened the ${staged.version} installer for ${item.name}. Follow its steps to install it.`, 'success');
+        } catch (error) {
+          updateMessage(`Could not open the installer for ${item.name}: ${error.message}`, 'error');
+        }
+      });
+      actions.append(install);
+    } else if (standalone && staged) {
       const install = document.createElement('button');
       install.type = 'button';
       install.className = 'primary small-action';
@@ -1166,10 +1180,9 @@ function renderAppUpdates(result) {
       download.textContent = 'Download update';
       download.addEventListener('click', async () => {
         try {
-          await window.brightdesk.downloadStandaloneAppUpdate(item.id);
+          await stageStandaloneAppFromCentre(item.id, item.name);
           state.stagedAppUpdates = await window.brightdesk.listStagedStandaloneAppUpdates();
-          renderAppUpdates(result);
-          updateMessage(`${item.name} ${update.availableVersion} has been downloaded and verified. Press Next when ready to install.`, 'success');
+          renderAppUpdates(currentResult);
         } catch (error) {
           updateMessage(`Could not download the update for ${item.name}: ${error.message}`, 'error');
         }
@@ -1185,14 +1198,19 @@ function renderAppUpdates(result) {
         catch (error) { updateMessage(error.message, 'error'); }
       });
       actions.append(open);
-    } else if (!inSuite) {
+    } else {
       const download = document.createElement('button');
       download.type = 'button';
       download.className = 'text-button';
-      download.textContent = 'Get app';
+      download.textContent = 'Download desktop app';
       download.addEventListener('click', async () => {
-        try { await window.brightdesk.openAppDownloads(item.id); }
-        catch (error) { updateMessage(error.message, 'error'); }
+        try {
+          await stageStandaloneAppFromCentre(item.id, item.name);
+          state.stagedAppUpdates = await window.brightdesk.listStagedStandaloneAppUpdates();
+          renderAppUpdates(currentResult);
+        } catch (error) {
+          updateMessage(`Could not download ${item.name}: ${error.message}`, 'error');
+        }
       });
       actions.append(download);
     }
