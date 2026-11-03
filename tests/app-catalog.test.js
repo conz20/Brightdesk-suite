@@ -181,6 +181,6 @@ test('README presents all ten apps as the integrated first-release lineup', () =
   const readme = fs.readFileSync(require('node:path').join(__dirname, '..', 'README.md'), 'utf8');
   for (const app of catalog) assert.ok(readme.includes(app.name), `README missing ${app.name}`);
   assert.match(readme, /ten-app desktop suite/i);
-  assert.match(readme, /all ten.*implemented/i);
+  assert.match(readme, /all ten apps have integrated local-first workflows/i);
   assert.doesNotMatch(readme, /other six.*not yet working apps/i);
 });
