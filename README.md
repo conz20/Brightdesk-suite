@@ -1,6 +1,6 @@
 # Brightdesk Office Suite
 
-Brightdesk is an independent native desktop productivity suite. It is not affiliated with Microsoft.
+Brightdesk is an independent ten-app desktop suite for productivity and creative work. It is not affiliated with Microsoft.
 
 ## First release
 
