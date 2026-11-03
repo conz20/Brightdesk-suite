@@ -108,6 +108,7 @@ test('standalone app packaging has independent product IDs and all three platfor
   for (const platform of ['win', 'mac', 'linux']) {
     assert.ok(pkg.scripts[`dist:apps:${platform}`], `missing all-apps ${platform} build command`);
   }
+  assert.equal(pkg.scripts['release:manifest'], 'node scripts/generate-release-manifest.js');
   const builder = fs.readFileSync(path.join(root, 'electron-builder.app.config.js'), 'utf8');
   assert.match(builder, /org\.brightdesk\.\$\{appId\}/);
   assert.match(builder, /brightdeskAppId: appId/);
@@ -127,6 +128,7 @@ test('standalone app packaging has independent product IDs and all three platfor
       assert.equal(config.appId, `org.brightdesk.${id}`);
       assert.equal(config.extraMetadata.brightdeskAppId, id);
       assert.equal(config.extraMetadata.productName, `Brightdesk ${name}`);
+      assert.equal(config.extraMetadata.version, catalog.find(item => item.id === id).moduleVersion);
       assert.ok(config.win.artifactName.includes(name));
       assert.equal(config.directories.output, `release/apps/${id}`);
       assert.ok(config.mac.target.includes('pkg'), `${name} mac build must include pkg for installer licence`);
