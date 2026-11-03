@@ -14,7 +14,7 @@ The approved product scope is fixed at ten apps:
 - To Do
 - Workspace
 
-All ten approved app modules are integrated into the main Brightdesk suite. The codebase includes dedicated service/workspace modules and automated tests. Integration is not the same as final product acceptance: real user workflows, accessibility, persistence, upgrades, uninstall and platform installers still require verification.
+All ten approved app modules are integrated into the main Brightdesk suite. The codebase includes dedicated feature modules, service/workspace modules where appropriate, and automated tests. Integration is not the same as final product acceptance: real user workflows, accessibility, persistence, upgrades, uninstall and platform installers still require verification.
 
 Outlook, OneDrive and Teams are excluded. Do not add them.
 
