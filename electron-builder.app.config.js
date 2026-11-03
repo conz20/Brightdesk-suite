@@ -13,7 +13,7 @@ if (!appVersion || !/^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?$/.test(appVersion)) {
 module.exports = {
   appId: `org.brightdesk.${appId}`,
   productName: 'Brightdesk ' + appNames[appId],
-  extraMetadata: { brightdeskAppId: appId, productName: 'Brightdesk ' + appNames[appId], version: appVersion, desktopName: `org.brightdesk.${appId}` },
+  extraMetadata: { brightdeskAppId: appId, productName: 'Brightdesk ' + appNames[appId], version: appVersion, desktopName: `org.brightdesk.${appId}.desktop` },
   asar: true,
   files: ['src/**/*', 'package.json', 'LICENSE', 'THIRD_PARTY_NOTICES.md', 'TERMS_AND_CONDITIONS.txt'],
   directories: { output: path.join('release', 'apps', appId), buildResources: 'assets/branding' },
