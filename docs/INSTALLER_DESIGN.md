@@ -90,6 +90,21 @@ The fixed product catalogue is:
 
 The App Centre must start with no apps selected. Users can add individual apps to the in-suite navigation, skip selection and return later, or open the standalone-app download page from each product card. The launcher must distinguish clearly between **Add to suite** (opens the app inside the launcher) and **Download desktop app** (installs the separate OS application).
 
+### Standalone app selection during setup
+
+The end-to-end setup experience must provide a dedicated standalone-app selection step, separate from the in-suite navigation choice:
+
+- Show all ten approved apps with their SVG icon, purpose, platform availability and installed state.
+- Start with no standalone apps selected. Never treat an automatic selection from an older build as user approval.
+- Provide **Select All** and **Clear All** controls.
+- Install the Suite launcher plus only the standalone app packages the user selects.
+- Provide a later **Modify installation** action to add or remove individual standalone apps.
+- Show download, verification, install and error states for each selected app.
+- Verify the installed app registry and version after each completed installation.
+- Do not claim this flow is implemented merely because the App Centre can add apps to the launcher's navigation or download one app at a time.
+
+**Current gap:** the feature branch has separate build scripts and per-app installer targets, plus the App Centre's in-suite selection and individual desktop download actions. A complete cross-platform multi-app setup/modify wizard is not yet implemented or verified. Treat it as a release blocker until the full flow is implemented and smoke-tested on native Windows, macOS and Linux runners.
+
 Every app has an original Brightdesk SVG icon under `src/assets/app-icons/`. All ten apps must be supported by the standalone build scripts and receive distinct application IDs, product names, installer artifacts and update channels. Separate build output directories are used so application artifacts cannot overwrite one another.
 
 Standalone builds use these commands:
