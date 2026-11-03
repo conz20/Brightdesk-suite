@@ -84,3 +84,13 @@ test('invalid legacy preference values are not migrated or enabled', async () =>
     await fs.rm(root, { recursive: true, force: true });
   }
 });
+
+test('the Electron main process reads and writes preferences in the shared app-data directory', () => {
+  const main = require('node:fs').readFileSync(
+    require('node:path').join(__dirname, '..', 'src', 'main.js'),
+    'utf8'
+  );
+  assert.match(main, /readSharedUpdateSettings\([\s\S]*?appDataPath: app\.getPath\('appData'\)/);
+  assert.match(main, /writeSharedUpdateSettings\([\s\S]*?appDataPath: app\.getPath\('appData'\)/);
+  assert.match(main, /legacyUserDataPath: path\.dirname\(legacyUpdateSettingsPath\)/);
+});
