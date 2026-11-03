@@ -40,7 +40,7 @@ if (process.platform === 'darwin') {
 
   const libraries = targets.map(target => {
     run('cargo', [
-      'build', '--manifest-path', manifest, '--workspace', '--release', '--target', target
+      'build', '--manifest-path', manifest, '--workspace', '--release', '--locked', '--target', target
     ]);
     const library = path.join(root, 'rust', 'target', target, 'release', nativeNames.darwin);
     if (!fs.existsSync(library)) {
@@ -52,7 +52,7 @@ if (process.platform === 'darwin') {
   run('xcrun', ['lipo', '-create', ...libraries, '-output', destination]);
 } else {
   run(process.platform === 'win32' ? 'cargo.exe' : 'cargo', [
-    'build', '--manifest-path', manifest, '--workspace', '--release'
+    'build', '--manifest-path', manifest, '--workspace', '--release', '--locked'
   ]);
   const library = path.join(releaseDir, nativeNames[process.platform]);
   if (!fs.existsSync(library)) {
