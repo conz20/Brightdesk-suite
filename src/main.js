@@ -277,7 +277,8 @@ async function checkInstalledStandaloneUpdates() {
     if (available.length) {
       sendUpdateState({
         status: 'apps-available',
-        apps: available,
+        releaseVersion: result.releaseVersion,
+        apps: result.apps,
         message: `${available.length} standalone Brightdesk app update${available.length === 1 ? '' : 's'} available.`
       });
     }
