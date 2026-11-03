@@ -30,7 +30,7 @@ test('To Do task controls are wired to the tested task service and local save fl
   assert.match(renderer, /BrightdeskTodoService\.updateTask/);
   assert.match(renderer, /BrightdeskTodoService\.setCompleted/);
   assert.match(renderer, /BrightdeskTodoService\.deleteTask/);
-  assert.match(renderer, /function saveTodoTasks\(\) \{ persist\(\)/);
+  assert.match(renderer, /function saveTodoTasks\(\) \{ const saved = persist\(\)/);
   assert.ok(html.indexOf('src="todo-service.js"') < html.indexOf('src="app.js"'));
 });
 
