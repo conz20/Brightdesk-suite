@@ -7,12 +7,12 @@ Rust is being added as a complementary core for deterministic, performance-sensi
 ## Initial integration boundary
 
 - The existing Electron main process, preload bridge, renderer isolation, user data, installers and release version remain unchanged.
-- The `rust/` directory is a standalone Cargo library containing the versioned host-protocol contract and deterministic Unicode text metrics (`analyze_text`) for character, word and line counts. The metrics are implemented and unit-tested in Rust; they are not yet called by the Electron/Node application.
+- The `rust/` directory contains the dependency-free Rust core library and a native sidecar executable. The core exposes a versioned host contract and deterministic Unicode text metrics (`analyze_text`); the sidecar serves those metrics to Node.js through a persistent, line-based standard-I/O protocol.
 - The crate has no third-party Rust dependencies and forbids unsafe Rust.
 - Rust code must not access the network, write user files, read secrets, spawn processes, or bypass the existing Electron IPC boundary.
 - Brightdesk-AI remains a separate private development project and must never be bundled into customer products.
 
-This first step intentionally does not build or ship a native addon or sidecar executable. A Node-API/NAPI-RS or sidecar bridge can be introduced for a specific feature only after the Electron ABI, platform packaging, startup, permissions and failure-recovery behavior have been tested on Windows, macOS and Linux.
+The Suite now uses the sidecar bridge for the first shared Rust operation. The Electron main process owns the child process; renderer code can request text metrics only through the isolated preload API and validated IPC sender checks. The sidecar reads only text supplied on standard input, writes metrics to standard output, does not access the network or user files, and is terminated when the app quits. If the native process is unavailable, the Node bridge falls back to equivalent JavaScript metrics so existing app workflows remain available. The sidecar is built for the current target OS during development and installer packaging, then included as an extra resource rather than shipped as a source dependency.
 
 ## Toolchain and checks
 
@@ -25,9 +25,10 @@ rustup toolchain install 1.99.1 --profile minimal --component rustfmt --componen
 cargo fmt --manifest-path rust/Cargo.toml --all -- --check
 cargo clippy --manifest-path rust/Cargo.toml --locked --all-targets -- -D warnings
 cargo test --manifest-path rust/Cargo.toml --locked
+npm test
 ```
 
-The existing Brightdesk-Pages maintenance controller runs the Rust checks for the suite and private app repositories. Brightdesk-Pages checks its own Rust crate in its controller validation job. Brightdesk-AI runs its Rust tests in a separate network-isolated container. These checks are additive to, not replacements for, the existing Node.js checks.
+The existing Brightdesk-Pages maintenance controller runs the Rust checks for the suite and private app repositories. Suite `npm test` builds the sidecar and exercises the real Node-to-Rust process boundary. The Suite installer workflows install the pinned Rust toolchain on Linux, Windows and macOS before building the platform-specific sidecar. Brightdesk-Pages checks its own Rust crate in its controller validation job. Brightdesk-AI runs its Rust tests in a separate network-isolated container. These checks are additive to, not replacements for, the existing Node.js checks.
 
 ## Future app repositories
 
