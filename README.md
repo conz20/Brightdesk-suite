@@ -23,6 +23,12 @@ The first integrated 0.1.0 codebase implements Pages, Sheets, Decks and Notes. D
 
 The first release remains local-first; the suite does not claim cloud collaboration or Microsoft service integration.
 
+## Quality verification
+
+The integrated shell provides dedicated workspaces for Database, Forms, Lists, Planner and Workspace. The test suite now includes `tests/workspace-dom-contract.test.js`, which checks that every static DOM element referenced by the four standalone workspace modules and the Lists workspace renderer exists in `src/index.html`, and that element IDs are unique. These checks protect the module-to-shell connection; they do not replace real app interaction, data-persistence, cross-platform build, installation, upgrade or uninstall testing.
+
+“Available” in the app table means the app module is included in the integrated codebase. It is not a claim that the complete first release has passed all quality gates. Full Suite test and installer verification remains required before release.
+
 ## Supported installer targets
 
 The release workflow is designed to build macOS universal DMG, PKG and ZIP packages, Windows x64 EXE installers, and Linux x64 AppImage and DEB packages. A platform build is only considered ready after its artifacts, legal documents and SHA-256 checksums have been verified. No public release should be published without explicit owner approval.
