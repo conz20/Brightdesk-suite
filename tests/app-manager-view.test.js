@@ -34,3 +34,17 @@ test('first-run app selection provides Select All and Clear All controls', () =>
   assert.match(app, /\$\('select-all-apps'\)\.hidden = state\.setupComplete/);
   assert.match(app, /\$\('clear-all-apps'\)\.hidden = state\.setupComplete/);
 });
+
+test('App Centre supports searching and filtering all ten apps by installation state', () => {
+  assert.match(html, /id="manager-search"/);
+  assert.match(html, /id="manager-filter"/);
+  assert.match(html, /value="in-suite"/);
+  assert.match(html, /value="desktop-installed"/);
+  assert.match(html, /value="not-installed"/);
+  assert.match(html, /id="manager-results-count"/);
+  assert.match(app, /managerFilter: 'all'/);
+  assert.match(app, /managerSearch: ''/);
+  assert.match(app, /state\.managerSearch\.trim\(\)\.toLowerCase\(\)/);
+  assert.match(app, /state\.managerFilter === 'desktop-installed'/);
+  assert.match(app, /state\.managerFilter === 'in-suite'/);
+});
