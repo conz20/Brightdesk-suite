@@ -16,7 +16,7 @@ function makeControl(field,value,editing=false){
 }
 function render(){
  const table=current(),side=$('database-table-list');side.innerHTML='';
- database.tables.forEach(t=>{const b=document.createElement('button');b.type='button';b.className='database-table-item'+(t.id===selectedTable?' active':'');b.textContent=t.name;b.onclick=()=>{selectedTable=t.id;search='';$('database-search').value='';sortBy='';render();};side.append(b);});
+ database.tables.forEach(t=>{const b=document.createElement('button');b.type='button';b.className='database-table-item'+(t.id===selectedTable?' active':'');b.textContent=t.name;b.onclick=()=>{selectedTable=t.id;search='';$('database-search').value='';sortBy='';direction='asc';render();};side.append(b);});
  $('database-name').textContent=database.name;$('database-heading')?.replaceChildren();
  if(!table){$('database-grid-wrap').textContent='Create a table to get started.';return;}
  $('database-table-summary').textContent=table.rows.length+' records · '+table.fields.length+' fields';
