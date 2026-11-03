@@ -13,9 +13,10 @@ function checksum(bytes) {
   return crypto.createHash('sha256').update(bytes).digest('hex');
 }
 
-function packageName(platform, id, name) {
-  if (platform === 'win32') return `Brightdesk-${name}-0.1.0-x64.exe`;
-  if (platform === 'darwin') return `Brightdesk-${name}-0.1.0-universal.pkg`;
+function packageName(platform, id, appName) {
+  const productName = appName.replace(/^Brightdesk /, '');
+  if (platform === 'win32') return `Brightdesk-${productName}-0.1.0-x64.exe`;
+  if (platform === 'darwin') return `Brightdesk-${productName}-0.1.0-universal.pkg`;
   return `brightdesk-${id}-0.1.0-x64.deb`;
 }
 
@@ -40,7 +41,7 @@ async function createReleaseFixture({ omitApp, tamperApp } = {}) {
       const folder = path.join(directory, 'Apps', app.id);
       await fs.mkdir(folder, { recursive: true });
       if (omitApp && omitApp.id === app.id && omitApp.platform === definition.key) continue;
-      const fileName = packageName(definition.key, app.id, app.name.replaceAll(' ', ''));
+      const fileName = packageName(definition.key, app.id, app.name);
       const filePath = path.join(folder, fileName);
       const bytes = Buffer.from(`${app.id} ${definition.key}`);
       await fs.writeFile(filePath, bytes);
