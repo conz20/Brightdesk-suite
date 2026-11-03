@@ -52,15 +52,15 @@ pub fn chunk_source(source: &str, max_bytes: usize) -> Vec<String> {
     if source.is_empty() { return Vec::new(); }
     let mut chunks=Vec::new(); let mut current=String::new();
     for line in source.lines() {
-        let piece=format!("{line}\\n");
-        if !current.is_empty() && current.len()+piece.len()>max_bytes { chunks.push(current.trim_end_matches('\\n').to_string()); current.clear(); }
+        let piece=format!("{line}\n");
+        if !current.is_empty() && current.len()+piece.len()>max_bytes { chunks.push(current.trim_end_matches('\n').to_string()); current.clear(); }
         if piece.len()>max_bytes {
-            if !current.is_empty() { chunks.push(current.trim_end_matches('\\n').to_string()); current.clear(); }
+            if !current.is_empty() { chunks.push(current.trim_end_matches('\n').to_string()); current.clear(); }
             let mut start=0;
             while start<line.len() { let mut end=(start+max_bytes).min(line.len()); while !line.is_char_boundary(end) { end-=1; } chunks.push(line[start..end].to_string()); start=end; }
         } else { current.push_str(&piece); }
     }
-    if !current.is_empty() { chunks.push(current.trim_end_matches('\\n').to_string()); }
+    if !current.is_empty() { chunks.push(current.trim_end_matches('\n').to_string()); }
     chunks
 }
 fn tokenize(text:&str)->Vec<String>{text.split(|c:char|!(c.is_alphanumeric()||c=='_'||c=='$')).filter(|s|s.chars().count()>=2).map(str::to_lowercase).collect()}
