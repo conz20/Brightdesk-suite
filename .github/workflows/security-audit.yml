@@ -8,12 +8,6 @@ on:
       - 'package-lock.json'
       - '.github/workflows/security-audit.yml'
       - 'scripts/verify-lockfile.js'
-  pull_request:
-    paths:
-      - 'package.json'
-      - 'package-lock.json'
-      - '.github/workflows/security-audit.yml'
-      - 'scripts/verify-lockfile.js'
   schedule:
     - cron: '23 5 * * 1'
   workflow_dispatch:
