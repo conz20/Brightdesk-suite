@@ -1,5 +1,6 @@
 const { app, BrowserWindow, Menu, ipcMain, dialog } = require('electron');
 const packageConfig = require('../package.json');
+const { assertPackagedVersion, assertMainWindowReady } = require('./startup-smoke');
 const path = require('node:path');
 const crypto = require('node:crypto');
 const fs = require('node:fs/promises');
@@ -46,16 +47,16 @@ async function writeUpdateSettings(settings = {}) {
 }
 
 function sendUpdateState(state) { if (mainWindow && !mainWindow.isDestroyed()) mainWindow.webContents.send('updates:state', state); }
-function createWindow() {
+function createWindow({ show = true } = {}) {
   mainWindow = new BrowserWindow({
-    width: 1440, height: 920, minWidth: 980, minHeight: 680,
+    width: 1440, height: 920, minWidth: 980, minHeight: 680, show,
     title: applicationId ? `Brightdesk ${({ pages: 'Pages', sheets: 'Sheets', slides: 'Decks', notes: 'Notes' })[applicationId]}` : 'Brightdesk', backgroundColor: '#f5f6fa',
     webPreferences: { preload: path.join(__dirname, 'preload.js'), contextIsolation: true, nodeIntegration: false, sandbox: true, additionalArguments: applicationId ? [`--brightdesk-app=${applicationId}`] : [] }
   });
-  mainWindow.loadFile(path.join(__dirname, 'index.html'));
   mainWindow.webContents.setWindowOpenHandler(() => ({ action: 'deny' }));
   mainWindow.webContents.on('will-navigate', event => event.preventDefault());
   mainWindow.on('focus', () => { if (autoUpdater && automaticUpdateChecksEnabled) checkForUpdates({ quiet: true }); });
+  return mainWindow.loadFile(path.join(__dirname, 'index.html'));
 }
 function senderIsMain(event) { return mainWindow && event.sender === mainWindow.webContents; }
 
@@ -358,6 +359,43 @@ ipcMain.handle('updates:set-settings', async (event, payload) => {
   return settings;
 });
 
-app.whenReady().then(async () => { app.setName(packageConfig.productName || 'Brightdesk'); dictionaryService = new DictionaryService(app.getPath('userData')); Menu.setApplicationMenu(null); termsAccepted = await hasCurrentTermsAcceptance(); if (termsAccepted) { createWindow(); initUpdater(); } else { createAgreementWindow(); } app.on('activate', () => { if (BrowserWindow.getAllWindows().length === 0) { if (termsAccepted) createWindow(); else createAgreementWindow(); } }); });
+async function runPackagedStartupSmokeTest() {
+  try {
+    assertPackagedVersion(app.getVersion(), packageConfig.version);
+    await readTerms();
+    await readBundledLanguagePack('en-AU');
+    await createWindow({ show: false });
+    const startupState = await mainWindow.webContents.executeJavaScript(`({
+      title: document.title,
+      hasSidebar: Boolean(document.querySelector('.sidebar')),
+      hasAppManager: Boolean(document.querySelector('#app-manager')),
+      hasLanguageManager: Boolean(document.querySelector('#language-manager'))
+    })`);
+    assertMainWindowReady(startupState);
+    if (mainWindow && !mainWindow.isDestroyed()) mainWindow.destroy();
+    app.exit(0);
+  } catch (error) {
+    console.error('Brightdesk packaged startup smoke test failed:', error.message);
+    if (mainWindow && !mainWindow.isDestroyed()) mainWindow.destroy();
+    app.exit(1);
+  }
+}
+
+app.whenReady().then(async () => {
+  app.setName(packageConfig.productName || 'Brightdesk');
+  dictionaryService = new DictionaryService(app.getPath('userData'));
+  Menu.setApplicationMenu(null);
+  if (process.env.BRIGHTDESK_STARTUP_SMOKE_TEST === '1') {
+    await runPackagedStartupSmokeTest();
+    return;
+  }
+  termsAccepted = await hasCurrentTermsAcceptance();
+  if (termsAccepted) { createWindow(); initUpdater(); } else { createAgreementWindow(); }
+  app.on('activate', () => {
+    if (BrowserWindow.getAllWindows().length === 0) {
+      if (termsAccepted) createWindow(); else createAgreementWindow();
+    }
+  });
+});
 app.on('window-all-closed', () => { if (process.platform !== 'darwin') app.quit(); });
 
