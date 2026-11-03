@@ -2,7 +2,7 @@ name: Build and verify Brightdesk installers
 
 on:
   pull_request:
-    branches: [main, feature/storytold-inspired-engine-launcher]
+    branches: [main, feature/storytold-inspired-engine-launcher, feature/complete-suite-launcher-apps]
   push:
     branches: [main]
     paths:
@@ -175,6 +175,14 @@ jobs:
     needs: [prepare, build]
     runs-on: ubuntu-latest
     steps:
+      - name: Check out the release source
+        uses: actions/checkout@v4
+
+      - name: Set up the required Node.js runtime
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24.22.2
+
       - name: Download verified Linux build
         uses: actions/download-artifact@v4
         with:
@@ -198,6 +206,9 @@ jobs:
         with:
           name: brightdesk-dependency-lock
           path: release/build-metadata
+
+      - name: Generate the shared Suite and ten-app release manifest
+        run: npm run release:manifest -- release
 
       - name: Upload complete Brightdesk installer bundle
         uses: actions/upload-artifact@v4
