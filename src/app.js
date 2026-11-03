@@ -75,10 +75,10 @@ function loadLocal() {
     if (launchAppId) {
       state.app = launchAppId;
       state.view = 'workspace';
-    } else if (!state.setupComplete || state.installedApps.length === 0) {
+    } else if (!state.setupComplete) {
       state.view = 'manager';
     } else {
-      if (!installedApp(state.app)) state.app = state.installedApps[0] || 'pages';
+      if (state.installedApps.length && !installedApp(state.app)) state.app = state.installedApps[0];
       state.view = 'home';
     }
     state.displayLanguage = localStorage.getItem('brightdesk-display-language') || 'en-AU';
