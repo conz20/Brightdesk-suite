@@ -103,7 +103,12 @@ async function stageStandaloneAppUpdate({
         received += chunk.length;
         if (received > expectedSize) throw new Error('The downloaded installer is larger than its published size.');
         hash.update(chunk);
-        await handle.write(chunk);
+        let offset = 0;
+        while (offset < chunk.length) {
+          const result = await handle.write(chunk, offset, chunk.length - offset);
+          if (!result.bytesWritten) throw new Error('The installer could not be written to disk completely.');
+          offset += result.bytesWritten;
+        }
       }
       await handle.sync();
     } finally {
