@@ -4,30 +4,30 @@ Brightdesk is an independent native desktop productivity suite. It is not affili
 
 ## First release
 
-Version 0.1.0 presents the complete ten-app Brightdesk catalogue. All ten apps remain visible in the suite; availability reflects implementation progress rather than hiding planned products.
+Version 0.1.0 contains the complete ten-app Brightdesk catalogue and integrated app modules. All ten apps remain visible in the suite.
 
 | App | What it does | Implementation status |
 | --- | --- | --- |
-| Brightdesk Pages | Write and format documents. | Implemented |
-| Brightdesk Sheets | Build spreadsheets, formulas and tables. | Implemented |
-| Brightdesk Decks | Create slide presentations. | Implemented |
-| Brightdesk Notes | Keep notes and ideas together. | Implemented |
-| Brightdesk Database | Organise records, tables and structured data locally. | Planned |
-| Brightdesk Forms | Create surveys, quizzes and collect responses locally. | Planned |
-| Brightdesk Lists | Track projects, inventories and records locally. | Planned |
-| Brightdesk Planner | Plan work, tasks and progress locally. | Planned |
-| Brightdesk To Do | Manage daily tasks and reminders locally. | Planned |
-| Brightdesk Workspace | Bring project notes, tasks and resources together locally. | Planned |
+| Brightdesk Pages | Write and format documents. | Integrated |
+| Brightdesk Sheets | Build spreadsheets, formulas and tables. | Integrated |
+| Brightdesk Decks | Create slide presentations. | Integrated |
+| Brightdesk Notes | Keep notes and ideas together. | Integrated |
+| Brightdesk Database | Organise records, tables and structured data locally. | Integrated |
+| Brightdesk Forms | Create surveys, quizzes and collect responses locally. | Integrated |
+| Brightdesk Lists | Track projects, inventories and records locally. | Integrated |
+| Brightdesk Planner | Plan work, tasks and progress locally. | Integrated |
+| Brightdesk To Do | Manage daily tasks and reminders. | Integrated |
+| Brightdesk Workspace | Bring project notes, tasks and resources together locally. | Integrated |
 
-The first integrated 0.1.0 codebase implements Pages, Sheets, Decks and Notes. Database, Forms, Lists, Planner, To Do and Workspace are part of the approved product scope and catalogue, but are not yet implemented. Do not interpret their catalogue presence as a completed feature claim.
+All ten approved app modules are present in the integrated suite, with dedicated service/workspace code and automated integration coverage. “Integrated” describes the current codebase; it does not mean every workflow, accessibility scenario, data migration, installer or operating-system build has passed final acceptance testing.
 
 The first release remains local-first; the suite does not claim cloud collaboration or Microsoft service integration.
 
 ## Quality verification
 
-The integrated shell provides dedicated workspaces for Database, Forms, Lists, Planner and Workspace. The test suite now includes `tests/workspace-dom-contract.test.js`, which checks that every static DOM element referenced by the four standalone workspace modules and the Lists workspace renderer exists in `src/index.html`, and that element IDs are unique. These checks protect the module-to-shell connection; they do not replace real app interaction, data-persistence, cross-platform build, installation, upgrade or uninstall testing.
+The automated test suite includes service tests, app-shell integration tests and DOM-contract checks for the integrated workspaces. These checks help protect module-to-shell connections and core logic. They do not replace real app interaction, data-persistence, accessibility, cross-platform build, installation, upgrade or uninstall testing.
 
-“Available” in the app table means the app module is included in the integrated codebase. It is not a claim that the complete first release has passed all quality gates. Full Suite test and installer verification remains required before release.
+The GitHub Actions build workflow is configured to test the project and build platform installers. Recent hosted workflow runs have failed before any runner steps were recorded, so no installer build is currently verified as passing. Do not describe an installer as ready until its platform build, legal files, SHA-256 checksums and release tests have passed.
 
 ## Supported installer targets
 
@@ -41,6 +41,6 @@ The release workflow is designed to build macOS universal DMG, PKG and ZIP packa
 
 Building and testing Brightdesk requires exactly Node.js 24.22.2. This is a developer/CI requirement only; it is not a customer installation requirement. Run `npm run setup:dev` after activating that runtime. The project uses its checked-in package lock and automated Node.js tests.
 
-The GitHub Actions workflows pin third-party actions to immutable commit SHAs and use least-privilege permissions. Installer builds, test results and release artifacts must be verified in GitHub Actions before they are described as passing or ready.
+The GitHub Actions workflows pin third-party actions to immutable commit SHAs and use least-privilege permissions. Installer builds, test results and release artifacts must be verified before they are described as passing or ready.
 
 Brightdesk uses original product names, code, artwork and interface design. Microsoft product names are used only as internal workflow comparisons.
