@@ -43,6 +43,16 @@ The run produced no uploaded workflow artifacts and no customer release. Private
 
 The release workflow is designed to build macOS universal DMG, PKG and ZIP packages, Windows x64 EXE installers, and Linux x64 AppImage and DEB packages. A platform build is only considered ready after its artifacts, legal documents and SHA-256 checksums have been verified. No public release should be published without explicit owner approval.
 
+## Standalone app builds
+
+The source repository includes non-publishing build commands for all ten standalone app editions. To build every app for one operating system, use:
+
+- Windows: `npm run dist:apps:win`
+- macOS: `npm run dist:apps:mac`
+- Linux: `npm run dist:apps:linux`
+
+Individual commands are also available as `npm run dist:<app>:<platform>` for Pages, Sheets, Decks, Notes, Database, Forms, Lists, Planner, To Do and Workspace. Replace `<platform>` with `win`, `mac` or `linux`. These commands build local candidate packages only; they do not publish releases or replace the required per-platform artifact and installation checks.
+
 ## Installing Brightdesk
 
 **End users do not need to download or install Node.js.** The native desktop application is packaged with the Electron runtime it needs. Install Brightdesk using the installer for your operating system and open it like any other desktop app. See [INSTALLATION.md](docs/INSTALLATION.md) for instructions.
