@@ -55,12 +55,16 @@ function loadLocal() {
     const stored = JSON.parse(localStorage.getItem('brightdesk-docs-v3') || localStorage.getItem('brightdesk-docs-v2') || 'null');
     if (stored && typeof stored === 'object') state.docs = { ...clone(defaults), ...stored };
     const appSetup = JSON.parse(localStorage.getItem('brightdesk-app-setup-v1') || 'null');
-    if (appSetup && Array.isArray(appSetup.installedApps)) {
+    const legacyAutoSelectedAllApps = appSetup && appSetup.schemaVersion !== 2 &&
+      appSetup.setupComplete === true && Array.isArray(appSetup.installedApps) &&
+      appSetup.installedApps.length === installableCatalog.length &&
+      installableCatalog.every(item => appSetup.installedApps.includes(item.id));
+    if (appSetup && Array.isArray(appSetup.installedApps) && !legacyAutoSelectedAllApps) {
       state.installedApps = launchAppId ? [launchAppId] : appSetup.installedApps.filter(id => installableCatalog.some(item => item.id === id));
       state.setupComplete = launchAppId ? true : appSetup.setupComplete === true;
     } else {
-      // The suite launcher is installed independently. A fresh install must not
-      // silently enable or install any of the ten standalone desktop applications.
+      // Fresh installs and legacy builds that silently selected all ten apps
+      // return to app selection. Existing documents remain untouched.
       state.installedApps = launchAppId ? [launchAppId] : [];
       state.setupComplete = Boolean(launchAppId);
       if (!launchAppId) state.view = 'manager';
@@ -73,7 +77,7 @@ function loadLocal() {
   } catch (error) { console.warn('Local project or app settings could not be read.', error); state.view = 'manager'; }
 }
 function saveAppSetup() {
-  localStorage.setItem('brightdesk-app-setup-v1', JSON.stringify({ installedApps: state.installedApps, setupComplete: state.setupComplete }));
+  localStorage.setItem('brightdesk-app-setup-v1', JSON.stringify({ schemaVersion: 2, installedApps: state.installedApps, setupComplete: state.setupComplete }));
 }
 function installedApp(id) { return state.installedApps.includes(id); }
 function appLabel(id) { return catalog.find(item => item.id === id)?.name || id; }
