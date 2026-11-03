@@ -586,10 +586,20 @@ function renderDownloads() {
   const platform = window.brightdesk.platform;
   const architecture = window.brightdesk.architecture;
   const platformNames = { win32: 'Windows', darwin: 'macOS', linux: 'Linux' };
-  const architectureNames = { x64: '64-bit Intel / AMD', arm64: 'ARM64', arm: '32-bit ARM' };
+  const architectureNames = {
+    x64: platform === 'darwin' ? 'Universal Intel / Apple silicon package' : '64-bit Intel / AMD',
+    arm64: platform === 'darwin' ? 'Universal Intel / Apple silicon package' : 'ARM64',
+    arm: '32-bit ARM'
+  };
   const packageNames = { win32: 'Windows installer (.exe)', darwin: 'Universal Mac installer (.pkg)', linux: 'Debian / Ubuntu package (.deb)' };
+  const supportedArchitecture = platform === 'darwin'
+    ? ['x64', 'arm64'].includes(architecture)
+    : architecture === 'x64';
+  const platformSupported = Boolean(platformNames[platform]) && supportedArchitecture;
   $('downloads-platform-name').textContent = platformNames[platform] || 'Unsupported platform';
-  $('downloads-platform-details').textContent = `${architectureNames[architecture] || architecture || 'Unknown architecture'} · ${packageNames[platform] || 'No supported package'}`;
+  $('downloads-platform-details').textContent = platformSupported
+    ? `${architectureNames[architecture] || architecture || 'Unknown architecture'} · ${packageNames[platform]}`
+    : `${architectureNames[architecture] || architecture || 'Unknown architecture'} · No Brightdesk installer is currently built for this combination.`;
   const host = $('downloads-app-grid');
   host.replaceChildren();
   const available = catalog.filter(item => item.availability === 'available');
@@ -615,15 +625,18 @@ function renderDownloads() {
     description.textContent = item.description;
     const status = document.createElement('span');
     status.className = 'downloads-app-status';
-    status.textContent = staged
-      ? `Downloaded ${staged.version} · Ready to install`
-      : installed
-        ? `Installed separately · Version ${installed.version}`
-        : 'Not installed on this computer';
+    status.textContent = !platformSupported
+      ? 'Not available for this operating system / architecture'
+      : staged
+        ? `Downloaded ${staged.version} · Ready to install`
+        : installed
+          ? `Installed separately · Version ${installed.version}`
+          : 'Not installed on this computer';
     const action = document.createElement('button');
     action.type = 'button';
     action.className = staged ? 'primary small-action' : 'secondary small-action';
-    action.textContent = staged ? 'Next · Install' : installed ? 'Open desktop app' : 'Download desktop app';
+    action.disabled = !platformSupported;
+    action.textContent = !platformSupported ? 'Not available' : staged ? 'Next · Install' : installed ? 'Open desktop app' : 'Download desktop app';
     action.addEventListener('click', async () => {
       try {
         if (staged) {
