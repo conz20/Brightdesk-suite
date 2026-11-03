@@ -941,7 +941,9 @@ $('lists-column-type').addEventListener('change',()=>{$('lists-column-options-wr
 $('export-button').addEventListener('click',exportCurrent);$('open-button').addEventListener('click',openFile);$('save-project').addEventListener('click',saveProject);
 const updatePanel = $('update-settings-panel');
 let updateReadyToInstall = false;
+let suiteUpdateAvailable = false;
 $('update-manual-install').disabled = true;
+$('update-manual-download').disabled = true;
 function updateMessage(message, status = 'info', actions = []) {
   const host = $('update-message');
   host.replaceChildren();
@@ -1155,10 +1157,19 @@ async function checkForUpdatesManually() {
   }
 }
 async function downloadUpdateManually() {
+  if (!suiteUpdateAvailable) {
+    updateMessage('There is no Brightdesk Suite update available to download.', 'info');
+    return;
+  }
+  $('update-manual-download').disabled = true;
   try {
     const result = await window.brightdesk.downloadUpdate();
-    if (!result?.ok) updateMessage(result?.message || 'There is no update ready to download.', 'error');
+    if (!result?.ok) {
+      $('update-manual-download').disabled = false;
+      updateMessage(result?.message || 'The update could not be downloaded.', 'error');
+    }
   } catch (error) {
+    $('update-manual-download').disabled = false;
     updateMessage(`Could not download the update: ${error.message}`, 'error');
   }
 }
@@ -1186,7 +1197,9 @@ window.brightdesk.onUpdateState?.(updateState => {
   const dot = $('update-status-dot');
   const hasUpdate = ['available', 'downloaded', 'apps-available', 'apps-downloaded'].includes(updateState.status);
   updateReadyToInstall = updateState.status === 'downloaded';
+  suiteUpdateAvailable = updateState.status === 'available';
   $('update-manual-install').disabled = !updateReadyToInstall;
+  $('update-manual-download').disabled = !suiteUpdateAvailable;
   dot.hidden = !hasUpdate;
   if (updateState.status === 'available') {
     updateMessage(updateState.message, 'notice', [
