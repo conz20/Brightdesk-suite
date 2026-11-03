@@ -59,8 +59,10 @@ test('standalone launcher arguments support only the ten approved app ids', () =
 test('update settings require user confirmation before installing an update', () => {
   const main = read('src/main.js');
   const app = read('src/app.js');
+  const html = read('src/index.html');
   assert.match(main, /autoInstallOnAppQuit\\s*=\\s*false/);
-  assert.match(app, /update-settings-button[\\s\\S]*?update-auto-check/);
+  assert.match(app, /update-settings-button[\\s\\S]*?openUpdateSettings/);
+  assert.match(html, /id="update-auto-check"/);
   assert.match(app, /update-manual-check/);
   assert.match(app, /update-manual-install/);
 });
