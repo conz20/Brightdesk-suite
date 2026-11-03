@@ -49,18 +49,23 @@ function normalizeEmbedding(values) {
   return vector.map(value => value / magnitude);
 }
 
-function cosineSimilarity(left, right) {
-  const a = vectorNorm(left);
+function cosineSimilarityWithLeftNorm(left, leftNorm, right) {
   const b = vectorNorm(right);
-  if (a.vector.length !== b.vector.length) {
+  if (left.length !== b.vector.length) {
     throw new RangeError('Embedding vectors must have matching dimensions.');
   }
-  const dot = a.vector.reduce((sum, value, index) => sum + value * b.vector[index], 0);
-  return Math.max(-1, Math.min(1, dot / (a.magnitude * b.magnitude)));
+  const dot = left.reduce((sum, value, index) => sum + value * b.vector[index], 0);
+  return Math.max(-1, Math.min(1, dot / (leftNorm * b.magnitude)));
+}
+
+function cosineSimilarity(left, right) {
+  const a = vectorNorm(left);
+  return cosineSimilarityWithLeftNorm(a.vector, a.magnitude, right);
 }
 
 function rankEmbeddings(query, candidates, limit) {
-  const q = toVector(query);
+  const queryDetails = vectorNorm(query);
+  const q = queryDetails.vector;
   if (!Array.isArray(candidates)) throw new TypeError('Embedding candidates must be an array.');
   if (candidates.length > MAX_CANDIDATES) {
     throw new RangeError('Embedding ranking request exceeds configured limits.');
@@ -80,7 +85,7 @@ function rankEmbeddings(query, candidates, limit) {
   }
   const ranked = candidates.map((candidate, index) => ({
     index,
-    score: cosineSimilarity(q, candidate)
+    score: cosineSimilarityWithLeftNorm(q, queryDetails.magnitude, candidate)
   }));
   ranked.sort((a, b) => (b.score - a.score) || (a.index - b.index));
   return ranked.slice(0, limit === undefined || limit === null ? ranked.length : limit);
