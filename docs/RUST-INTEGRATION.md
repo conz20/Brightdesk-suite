@@ -7,7 +7,7 @@ Rust is being added as a complementary core for deterministic, performance-sensi
 ## Initial integration boundary
 
 - The existing Electron main process, preload bridge, renderer isolation, user data, installers and release version remain unchanged.
-- The `rust/` directory is a standalone Cargo library foundation. It currently exposes only engine identity and a versioned host-protocol contract; no existing app feature has been rewritten in Rust.
+- The `rust/` directory is a standalone Cargo library containing the versioned host-protocol contract and deterministic Unicode text metrics (`analyze_text`) for character, word and line counts. The metrics are implemented and unit-tested in Rust; they are not yet called by the Electron/Node application.
 - The crate has no third-party Rust dependencies and forbids unsafe Rust.
 - Rust code must not access the network, write user files, read secrets, spawn processes, or bypass the existing Electron IPC boundary.
 - Brightdesk-AI remains a separate private development project and must never be bundled into customer products.
