@@ -22,7 +22,7 @@
     <button class="nav" data-app="notes"><img class="app-nav-icon" src="assets/app-icons/notes.svg" alt="" aria-hidden="true"><span><b>Brightdesk Notes</b><small data-i18n="sidebar.quickNotes">Quick notes</small></span></button>
     <div id="dynamic-app-nav"></div>
     <div class="sidebar-divider"></div>
-    <button class="nav manager-nav" id="manage-apps"><span class="app-icon manager-icon">＋</span><span><b data-i18n="sidebar.getApps">Get apps</b><small data-i18n="sidebar.installManage">Install and manage apps</small></span></button>
+    <button class="nav manager-nav" id="manage-apps"><span class="app-icon manager-icon">＋</span><span><b>Apps</b><small>Browse and manage your apps</small></span></button>
     <button class="nav manager-nav" id="downloads-nav" type="button"><span class="app-icon manager-icon">↓</span><span><b>Downloads</b><small>Standalone desktop apps</small></span></button>
     <button class="nav manager-nav" id="manage-languages"><span class="app-icon manager-icon">文</span><span><b data-i18n="sidebar.languages">Languages</b><small data-i18n="sidebar.languagePacks">Language packs and dictionaries</small></span></button>
     <div class="sidebar-bottom">
@@ -76,6 +76,34 @@
       <section id="planner-wrap" class="planner-app" aria-label="Brightdesk Planner" hidden><aside class="planner-sidebar"><b>Your plans</b><div id="planner-sidebar-items"></div><form id="planner-new-form"><input id="planner-new-name" type="text" maxlength="120" placeholder="New plan" required><button type="submit" class="primary">Create plan</button></form></aside><div id="planner-detail"></div></section>
       <section id="database-wrap" class="database-app" aria-label="Brightdesk Database" hidden><aside class="database-sidebar"><div class="database-sidebar-title">TABLES</div><div id="database-tab-list"></div></aside><div id="database-detail"></div></section>
       <section id="workspace-app-wrap" class="workspace-app" aria-label="Brightdesk Workspace" hidden><aside class="workspace-sidebar"><div class="workspace-brand-row"><b>YOUR WORKSPACES</b><button type="button" id="workspace-create" class="primary small-action">New workspace</button></div><div id="workspace-list"></div></aside><div id="workspace-detail"></div></section>
+    </section>
+    <section class="home-panel" id="home-panel" aria-labelledby="home-panel-title" hidden>
+      <div class="home-hero">
+        <div>
+          <div class="eyebrow">YOUR BRIGHTDESK WORKSPACE</div>
+          <h2 id="home-panel-title">Welcome to Brightdesk</h2>
+          <p>Open your apps, manage your desktop installations and keep your work moving.</p>
+        </div>
+        <img src="assets/brand/brightdesk-suite-mark.svg" alt="Brightdesk" width="64" height="64">
+      </div>
+      <div class="home-action-row">
+        <button type="button" class="primary" id="home-open-apps">Browse apps</button>
+        <button type="button" class="secondary" id="home-open-downloads">Download desktop apps</button>
+        <button type="button" class="secondary" id="home-check-updates">Check for updates</button>
+      </div>
+      <div class="home-stat-grid">
+        <article class="home-stat-card"><span>IN YOUR SUITE</span><b id="home-suite-app-count">0</b><small>Apps available inside Brightdesk</small></article>
+        <article class="home-stat-card"><span>DESKTOP INSTALLED</span><b id="home-desktop-app-count">0</b><small>Independent desktop applications</small></article>
+        <article class="home-stat-card"><span>BRIGHTDESK VERSION</span><b id="home-suite-version">0.1.0</b><small>Suite launcher version</small></article>
+      </div>
+      <section class="home-app-section" aria-labelledby="home-suite-apps-title">
+        <div class="home-section-heading"><div><h3 id="home-suite-apps-title">Apps in your Suite</h3><p>Open the apps you've added to your Brightdesk workspace.</p></div><button type="button" class="text-button" id="home-view-all-apps">View all apps</button></div>
+        <div id="home-app-grid" class="home-app-grid"></div>
+      </section>
+      <section class="home-app-section" aria-labelledby="home-desktop-apps-title">
+        <div class="home-section-heading"><div><h3 id="home-desktop-apps-title">Standalone desktop apps</h3><p>These apps can also be opened directly from your operating system.</p></div><button type="button" class="text-button" id="home-manage-downloads">Manage downloads</button></div>
+        <div id="home-desktop-app-list" class="home-desktop-app-list"></div>
+      </section>
     </section>
     <section class="app-manager" id="app-manager" hidden>
       <div class="manager-hero"><div><div class="eyebrow" data-i18n="manager.eyebrow">BRIGHTDESK APP CENTRE</div><h2 id="manager-title">Choose the apps you need</h2><p id="manager-description">Set up your Brightdesk workspace.</p></div><img class="manager-hero-logo" src="assets/brand/brightdesk-suite-mark.svg" alt="Brightdesk" width="64" height="64"></div>
