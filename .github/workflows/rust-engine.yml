@@ -26,7 +26,9 @@ jobs:
       - name: Install pinned Rust toolchain
         run: rustup toolchain install 1.99.1 --profile minimal --component rustfmt --component clippy && rustup default 1.99.1
       - name: Check Rust formatting
-        run: npm run rust:fmt
+        run: cargo fmt --manifest-path rust/Cargo.toml --all -- --check
+      - name: Check Electron main-process syntax
+        run: node --check src/main.js
       - name: Run Clippy
         run: cargo clippy --manifest-path rust/Cargo.toml --workspace --all-targets -- -D warnings
       - name: Run Rust tests
