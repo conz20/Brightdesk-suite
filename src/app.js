@@ -33,7 +33,7 @@ const state = {
   app: launchAppId || 'pages', view: 'workspace', docs: structuredClone(defaults),
   todoView: 'my-day', todoQuery: '',
   selectedCell: { row: 0, col: 0 }, update: null, ribbonTab: 'home',
-  installedApps: [], setupComplete: false, firstRunSelection: new Set(installableCatalog.map(item => item.id)),
+  installedApps: [], setupComplete: false, firstRunSelection: new Set(),
   managerView: localStorage.getItem('brightdesk-manager-view') === 'list' ? 'list' : 'grid',
   slideTheme: 'lavender', focusMode: false, editorZoom: 100, sheetZoom: 100,
   languageCatalog: [], installedLanguagePacks: [], spellCheckerLanguages: [], usesNativeMacSpellChecker: false,
@@ -57,16 +57,16 @@ function loadLocal() {
     const appSetup = JSON.parse(localStorage.getItem('brightdesk-app-setup-v1') || 'null');
     if (appSetup && Array.isArray(appSetup.installedApps)) {
       state.installedApps = launchAppId ? [launchAppId] : appSetup.installedApps.filter(id => installableCatalog.some(item => item.id === id));
-      state.setupComplete = launchAppId ? true : appSetup.setupComplete === true && state.installedApps.length > 0;
+      state.setupComplete = launchAppId ? true : appSetup.setupComplete === true;
     } else {
-      // Fresh installs start with every app that is already bundled in Brightdesk.
-      // Users should not have to complete a second app-selection wizard after setup.
-      state.installedApps = launchAppId ? [launchAppId] : installableCatalog.map(item => item.id);
-      state.setupComplete = state.installedApps.length > 0;
-      if (!launchAppId) saveAppSetup();
+      // The suite launcher is installed independently. A fresh install must not
+      // silently enable or install any of the ten standalone desktop applications.
+      state.installedApps = launchAppId ? [launchAppId] : [];
+      state.setupComplete = Boolean(launchAppId);
+      if (!launchAppId) state.view = 'manager';
     }
     if (launchAppId) { state.app = launchAppId; state.view = 'workspace'; }
-    else if (!state.setupComplete) state.view = 'manager';
+    else if (!state.setupComplete || state.installedApps.length === 0) state.view = 'manager';
     else if (!installedApp(state.app)) state.app = state.installedApps[0] || 'pages';
     state.displayLanguage = localStorage.getItem('brightdesk-display-language') || 'en-AU';
     state.proofingLanguage = localStorage.getItem('brightdesk-proofing-language') || state.displayLanguage;
@@ -75,7 +75,7 @@ function loadLocal() {
 function saveAppSetup() {
   localStorage.setItem('brightdesk-app-setup-v1', JSON.stringify({ installedApps: state.installedApps, setupComplete: state.setupComplete }));
 }
-function installedApp(id) { return state.installedApps.includes(id) || ['todo','lists','forms','planner','database','loop'].includes(id); }
+function installedApp(id) { return state.installedApps.includes(id); }
 function appLabel(id) { return catalog.find(item => item.id === id)?.name || id; }
 
 function safeHtml(html) {
@@ -477,7 +477,7 @@ function renderAppManager() {
     const card = document.createElement('article'); card.className = 'app-card';
     const preview = document.createElement('img'); preview.className = 'app-preview'; preview.src = `assets/apps/${item.id}.svg`; preview.alt = `${item.name} example screen`;
     const header = document.createElement('div'); header.className = 'app-card-header';
-    const icon = document.createElement('span'); icon.className = `app-icon ${item.className}`; icon.textContent = item.icon;
+    const icon = document.createElement('img'); icon.className = 'app-icon-image'; icon.src = item.icon; icon.alt = ''; icon.setAttribute('aria-hidden', 'true');
     const heading = document.createElement('div'); heading.className = 'app-card-heading';
     const name = document.createElement('b'); name.textContent = item.name;
     const subtitle = document.createElement('small'); subtitle.textContent = item.subtitle;
@@ -497,27 +497,45 @@ function renderAppManager() {
       label.append(check, document.createTextNode(` ${t('manager.includeApp')}`)); footer.append(label);
     } else {
       const action = document.createElement('button'); action.className = isInstalled ? 'secondary small-action' : 'primary small-action';
-      action.textContent = isInstalled ? t('manager.remove') : t('manager.install');
+      action.textContent = isInstalled ? 'Remove from suite' : 'Add to suite';
       action.addEventListener('click', () => toggleAppInstall(item.id)); footer.append(action);
-      const stateTag = document.createElement('span'); stateTag.className = isInstalled ? 'app-state installed' : 'app-state'; stateTag.textContent = isInstalled ? t('manager.inWorkspace') : t('manager.notInstalled');
+      const stateTag = document.createElement('span'); stateTag.className = isInstalled ? 'app-state installed' : 'app-state'; stateTag.textContent = isInstalled ? 'Available in suite' : 'Not added to suite';
       footer.append(stateTag);
     }
+    const desktopDownload = document.createElement('button');
+    desktopDownload.type = 'button';
+    desktopDownload.className = 'text-button desktop-app-download';
+    desktopDownload.textContent = 'Download standalone app';
+    desktopDownload.addEventListener('click', async () => {
+      try { await window.brightdesk.openAppDownloads(item.id); }
+      catch (error) { alert(`Could not open desktop downloads: ${error.message}`); }
+    });
+    footer.append(desktopDownload);
     card.append(preview, header, description, footer); grid.append(card);
   });
 }
 function toggleAppInstall(id) {
   if (!installableCatalog.some(item => item.id === id) || launchAppId) return;
   if (installedApp(id)) {
-    if (state.installedApps.length === 1) { alert('Keep at least one app installed in your Brightdesk workspace.'); return; }
     state.installedApps = state.installedApps.filter(appId => appId !== id);
-    if (state.app === id) { state.app = state.installedApps[0]; state.ribbonTab = 'home'; }
-  } else { state.installedApps.push(id); }
+    if (state.app === id) {
+      state.app = state.installedApps[0] || 'pages';
+      state.ribbonTab = 'home';
+      if (state.installedApps.length === 0) state.view = 'manager';
+    }
+  } else {
+    state.installedApps.push(id);
+    state.app = id;
+    state.view = 'workspace';
+    state.ribbonTab = 'home';
+  }
   saveAppSetup(); render();
 }
 function completeAppSetup() {
   const selected = [...state.firstRunSelection].filter(id => installableCatalog.some(item => item.id === id));
-  if (!selected.length) { alert('Choose at least one app to install.'); return; }
-  state.installedApps = selected; state.setupComplete = true; state.app = selected[0]; state.view = 'workspace';
+  state.installedApps = selected; state.setupComplete = true;
+  state.app = selected[0] || 'pages';
+  state.view = selected.length ? 'workspace' : 'manager';
   saveAppSetup(); render();
 }
 
@@ -534,7 +552,7 @@ function syncAppNavigation() {
   host.innerHTML = '';
   catalog.filter(item => !['pages','sheets','slides','notes'].includes(item.id) && installedApp(item.id)).forEach(item => {
     const button=document.createElement('button'); button.className='nav'; button.dataset.app=item.id;
-    const icon=document.createElement('span'); icon.className=`app-icon ${item.className}`; icon.textContent=item.icon;
+    const icon=document.createElement('img'); icon.className='app-nav-icon'; icon.src=item.icon; icon.alt=''; icon.setAttribute('aria-hidden','true');
     const label=document.createElement('span'); const name=document.createElement('b'); name.textContent=item.name; const sub=document.createElement('small'); sub.textContent=item.subtitle;
     label.append(name,sub); button.append(icon,label);
     button.addEventListener('click',()=>setApp(item.id)); host.append(button);
