@@ -468,8 +468,9 @@ function renderAppManager() {
   $('manager-description').textContent = state.setupComplete
     ? t('manager.manageDesc')
     : t('manager.chooseDesc');
-  $('manager-note').textContent = t('manager.note');
+  $('manager-note').textContent = 'Choose apps to show in your suite, or download an app as a separate desktop application.';
   $('finish-app-setup').textContent = state.setupComplete ? 'Back to launcher' : 'Add selected apps';
+  $('skip-app-setup').hidden = state.setupComplete;
   catalog.forEach(item => {
     const canInstall = item.availability === 'available';
     const selected = state.firstRunSelection.has(item.id);
@@ -484,28 +485,35 @@ function renderAppManager() {
     heading.append(name, subtitle); header.append(icon, heading);
     const description = document.createElement('p'); description.textContent = item.description;
     const footer = document.createElement('div'); footer.className = 'app-card-footer';
-    const version = document.createElement('span'); version.className = 'module-version'; version.textContent = `Module ${item.moduleVersion}`;
+    const version = document.createElement('span'); version.className = 'module-version'; version.textContent = `Version ${item.moduleVersion}`;
     footer.append(version);
     if (!canInstall) {
       const comingSoon = document.createElement('span'); comingSoon.className = 'app-state'; comingSoon.textContent = 'In development'; footer.append(comingSoon);
     } else if (!state.setupComplete) {
       const label = document.createElement('label'); label.className = 'app-select-label';
-      const check = document.createElement('input'); check.type = 'checkbox'; check.checked = selected; check.addEventListener('change', () => {
+      const check = document.createElement('input'); check.type = 'checkbox'; check.checked = selected;
+      check.addEventListener('change', () => {
         if (check.checked) state.firstRunSelection.add(item.id); else state.firstRunSelection.delete(item.id);
         renderAppManager();
       });
-      label.append(check, document.createTextNode(` ${t('manager.includeApp')}`)); footer.append(label);
+      label.append(check, document.createTextNode(' Include in suite')); footer.append(label);
     } else {
-      const action = document.createElement('button'); action.className = isInstalled ? 'secondary small-action' : 'primary small-action';
-      action.textContent = isInstalled ? 'Remove from suite' : 'Add to suite';
-      action.addEventListener('click', () => toggleAppInstall(item.id)); footer.append(action);
-      const stateTag = document.createElement('span'); stateTag.className = isInstalled ? 'app-state installed' : 'app-state'; stateTag.textContent = isInstalled ? 'Available in suite' : 'Not added to suite';
+      if (isInstalled) {
+        const open = document.createElement('button'); open.type = 'button'; open.className = 'primary small-action'; open.textContent = 'Open in suite';
+        open.addEventListener('click', () => setApp(item.id)); footer.append(open);
+        const remove = document.createElement('button'); remove.type = 'button'; remove.className = 'text-button'; remove.textContent = 'Remove';
+        remove.addEventListener('click', () => toggleAppInstall(item.id)); footer.append(remove);
+      } else {
+        const add = document.createElement('button'); add.type = 'button'; add.className = 'primary small-action'; add.textContent = 'Add to suite';
+        add.addEventListener('click', () => toggleAppInstall(item.id)); footer.append(add);
+      }
+      const stateTag = document.createElement('span'); stateTag.className = isInstalled ? 'app-state installed' : 'app-state'; stateTag.textContent = isInstalled ? 'In your suite' : 'Not in your suite';
       footer.append(stateTag);
     }
     const desktopDownload = document.createElement('button');
     desktopDownload.type = 'button';
     desktopDownload.className = 'text-button desktop-app-download';
-    desktopDownload.textContent = 'Download standalone app';
+    desktopDownload.textContent = 'Download desktop app';
     desktopDownload.addEventListener('click', async () => {
       try { await window.brightdesk.openAppDownloads(item.id); }
       catch (error) { alert(`Could not open desktop downloads: ${error.message}`); }
@@ -521,13 +529,9 @@ function toggleAppInstall(id) {
     if (state.app === id) {
       state.app = state.installedApps[0] || 'pages';
       state.ribbonTab = 'home';
-      if (state.installedApps.length === 0) state.view = 'manager';
     }
   } else {
     state.installedApps.push(id);
-    state.app = id;
-    state.view = 'workspace';
-    state.ribbonTab = 'home';
   }
   saveAppSetup(); render();
 }
