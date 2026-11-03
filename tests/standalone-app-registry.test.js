@@ -91,3 +91,39 @@ test('unknown discovered app versions are retained without inventing an update v
     await fs.rm(basePath, { recursive: true, force: true });
   }
 });
+
+test('registry refreshes the installed version when the same OS app path is upgraded', async () => {
+  const basePath = await fs.mkdtemp(path.join(os.tmpdir(), 'brightdesk-registry-upgrade-'));
+  try {
+    const executablePath = path.join(basePath, 'Brightdesk Pages.exe');
+    await fs.writeFile(executablePath, 'test executable');
+    await registerStandaloneApp({
+      appDataPath: basePath, appId: 'pages', version: '0.1.0',
+      executablePath, platform: 'win32'
+    });
+    const installed = await listInstalledStandaloneApps({
+      appDataPath: basePath,
+      platform: 'win32',
+      homeDirectory: basePath,
+      environment: { LOCALAPPDATA: basePath, ProgramFiles: '', 'ProgramFiles(x86)': '' },
+      searchDirectories: { windowsInstallRoots: [basePath] },
+      runCommand: async () => { throw new Error('Registry is not needed when the install path is found.'); }
+    });
+    assert.equal(installed[0].version, '0.1.0');
+    await registerStandaloneApp({
+      appDataPath: basePath, appId: 'pages', version: '0.2.0',
+      executablePath, platform: 'win32'
+    });
+    const refreshed = await listInstalledStandaloneApps({
+      appDataPath: basePath,
+      platform: 'win32',
+      homeDirectory: basePath,
+      environment: { LOCALAPPDATA: basePath, ProgramFiles: '', 'ProgramFiles(x86)': '' },
+      searchDirectories: { windowsInstallRoots: [basePath] },
+      runCommand: async () => { throw new Error('Registry is not needed when the install path is found.'); }
+    });
+    assert.equal(refreshed[0].version, '0.2.0');
+  } finally {
+    await fs.rm(basePath, { recursive: true, force: true });
+  }
+});
