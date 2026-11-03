@@ -19,7 +19,7 @@
     "dist:win": "npm run verify:licenses && electron-builder --win nsis --x64 --publish never",
     "dist:mac": "npm run verify:licenses && electron-builder --mac dmg pkg zip --universal --publish never",
     "dist:linux": "npm run verify:licenses && electron-builder --linux AppImage deb --x64 --publish never",
-    "release": "npm run verify:licenses && electron-builder --publish always",
+    "release": "npm run verify:licenses && electron-builder --publish never",
     "verify:licenses": "node scripts/verify-licenses.js",
     "postinstall": "npm run verify:licenses",
     "dist:apps:win": "node scripts/build-apps.js win",
