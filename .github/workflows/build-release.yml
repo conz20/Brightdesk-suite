@@ -41,7 +41,7 @@ concurrency:
 jobs:
   prepare:
     name: Test and lock dependencies
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: Check out Brightdesk
         uses: actions/checkout@v4
@@ -89,13 +89,13 @@ jobs:
       matrix:
         include:
           - platform: Linux
-            runner: ubuntu-latest
+            runner: ubuntu-24.04
             script: linux
           - platform: Windows
-            runner: windows-latest
+            runner: windows-2025
             script: win
           - platform: macOS
-            runner: macos-latest
+            runner: macos-15
             script: mac
     runs-on: ${{ matrix.runner }}
     steps:
@@ -173,7 +173,7 @@ jobs:
   collect:
     name: Collect verified installers
     needs: [prepare, build]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: Check out the release source
         uses: actions/checkout@v4
@@ -222,7 +222,7 @@ jobs:
     name: Publish GitHub Release (manual approval only)
     needs: collect
     if: github.event_name == 'workflow_dispatch' && inputs.publish_release == true
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     permissions:
       contents: write
     steps:
