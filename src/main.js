@@ -513,12 +513,33 @@ ipcMain.handle('apps:launch-standalone', async (event, appId) => {
   return { ok: true, appId };
 });
 
-ipcMain.handle('apps:downloads', async (event, appId) => {
+ipcMain.handle('apps:downloads', async (event, payload) => {
   if (!senderIsMain(event)) throw new Error('Invalid sender.');
+  const request = typeof payload === 'string' ? { appId: payload } : payload;
+  const appId = request?.appId;
+  const platform = request?.platform || process.platform;
+  const architecture = request?.architecture || (platform === 'darwin' ? 'universal' : 'x64');
   if (!supportedApplications.has(appId)) throw new Error('That Brightdesk application is not in the approved app catalogue.');
-  const download = await getStandaloneAppDownload({ appId, platform: process.platform });
-  await shell.openExternal(download.downloadUrl);
-  return { ok: true, appId, appName: applicationNames[appId], version: download.version, fileName: download.fileName };
+  const supportedArchitectures = { win32: ['x64'], darwin: ['universal'], linux: ['x64'] };
+  if (!supportedArchitectures[platform]?.includes(architecture)) {
+    throw new Error(`Brightdesk does not currently publish a ${platform}/${architecture} installer.`);
+  }
+  const download = await getStandaloneAppDownload({ appId, platform, architecture });
+  const result = await shell.openExternal(download.downloadUrl);
+  if (result) throw new Error(`Could not open the trusted Brightdesk download: ${result}`);
+  return {
+    ok: true,
+    appId,
+    appName: applicationNames[appId],
+    platform,
+    architecture,
+    version: download.version,
+    fileName: download.fileName,
+    packageType: download.packageType,
+    expectedSize: download.expectedSize,
+    sha256: download.sha256,
+    releaseUrl: download.releaseUrl
+  };
 });
 
 ipcMain.handle('updates:check', async event => {
