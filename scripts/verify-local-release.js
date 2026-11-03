@@ -49,6 +49,7 @@ run(['run', 'lock:verify']);
 run(['ci', '--no-audit', '--no-fund']);
 run(['run', 'verify:licenses']);
 run(['test']);
+run(['run', 'rea:inspect']);
 run(['run', 'release:preflight']);
 run(['audit', '--audit-level=high']);
 run(['run', `dist:${platform}`]);
