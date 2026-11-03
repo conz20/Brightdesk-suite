@@ -1,5 +1,5 @@
 (function() {
-  const defaults = { autoCheck: true, autoDownload: true, autoInstall: false };
+  const defaults = { autoCheck: true, autoDownload: false, autoInstall: false };
   const byId = (id) => document.getElementById(id);
   const message = () => byId('update-message');
 
@@ -12,13 +12,11 @@
         <div class="update-settings-header">
           <div>
             <h3 id="suite-update-heading">Brightdesk Office Suite updates</h3>
-            <p>Choose how this installed suite checks for and receives suite releases.</p>
+            <p>Choose whether this suite checks for updates automatically. Downloads and installation always require your confirmation.</p>
           </div>
           <button class="secondary small-action" id="close-update-settings" type="button">Close</button>
         </div>
         <label class="toggle-row"><input type="checkbox" id="update-auto-check" /> Check for suite updates automatically</label>
-        <label class="toggle-row"><input type="checkbox" id="update-auto-download" /> Download suite updates automatically</label>
-        <label class="toggle-row"><input type="checkbox" id="update-auto-install" /> Install a downloaded suite update when the app quits</label>
         <div class="update-settings-actions">
           <button class="primary small-action" id="update-manual-check" type="button">Check for suite updates now</button>
           <button class="secondary small-action" id="update-manual-download" type="button">Download suite update</button>
@@ -30,7 +28,7 @@
         <p>Pages, Sheets, Decks and Notes are updated with the Brightdesk Office Suite release. They do not have separate update downloads or settings in the suite, so an application update will not be applied independently.</p>
       </section>`;
     byId('close-update-settings').addEventListener('click', () => { panel.hidden = true; });
-    ['update-auto-check', 'update-auto-download', 'update-auto-install'].forEach(id => {
+    ['update-auto-check'].forEach(id => {
       byId(id).addEventListener('change', saveSettings);
     });
     registerManualAction('update-manual-check', () => window.brightdesk.checkForUpdates?.());
@@ -41,8 +39,6 @@
   function syncSettings(settings) {
     const value = { ...defaults, ...(settings || {}) };
     byId('update-auto-check').checked = value.autoCheck !== false;
-    byId('update-auto-download').checked = value.autoDownload !== false;
-    byId('update-auto-install').checked = value.autoInstall === true;
   }
 
   async function loadSettings() {
@@ -58,8 +54,6 @@
   async function saveSettings() {
     const prefs = {
       autoCheck: byId('update-auto-check').checked,
-      autoDownload: byId('update-auto-download').checked,
-      autoInstall: byId('update-auto-install').checked
     };
     try {
       const saved = await window.brightdesk.setUpdateSettings?.(prefs);
