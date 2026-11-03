@@ -23,6 +23,7 @@
     <div id="dynamic-app-nav"></div>
     <div class="sidebar-divider"></div>
     <button class="nav manager-nav" id="manage-apps"><span class="app-icon manager-icon">＋</span><span><b data-i18n="sidebar.getApps">Get apps</b><small data-i18n="sidebar.installManage">Install and manage apps</small></span></button>
+    <button class="nav manager-nav" id="downloads-nav" type="button"><span class="app-icon manager-icon">↓</span><span><b>Downloads</b><small>Standalone desktop apps</small></span></button>
     <button class="nav manager-nav" id="manage-languages"><span class="app-icon manager-icon">文</span><span><b data-i18n="sidebar.languages">Languages</b><small data-i18n="sidebar.languagePacks">Language packs and dictionaries</small></span></button>
     <div class="sidebar-bottom">
       <div class="free-pill">✦ Ad-free · Subscription-free · Free forever</div>
@@ -85,9 +86,35 @@
         <button type="button" class="secondary small-action" id="select-all-apps">Select All</button>
         <button type="button" class="secondary small-action" id="clear-all-apps">Clear All</button>
         <button type="button" class="secondary small-action" id="refresh-installed-apps">Refresh installed apps</button>
+        <label class="manager-filter-label" for="manager-filter">Show</label>
+        <select id="manager-filter" class="manager-filter" aria-label="Filter Brightdesk apps">
+          <option value="all">All apps</option>
+          <option value="in-suite">In suite</option>
+          <option value="desktop-installed">Desktop installed</option>
+          <option value="not-installed">Not installed</option>
+        </select>
+        <label class="manager-search-label" for="manager-search">Search</label>
+        <input type="search" id="manager-search" class="manager-search" placeholder="Find an app…" autocomplete="off" aria-label="Search Brightdesk apps">
       </div>
+      <p id="manager-results-count" class="manager-results-count" role="status">Showing all 10 approved apps.</p>
       <div class="manager-grid" id="app-manager-grid"></div>
       <div class="manager-bottom"><p id="manager-note">Choose which apps appear in your Brightdesk launcher. You can also download each app as a separate desktop application.</p><div class="manager-bottom-actions"><button class="secondary" id="skip-app-setup" type="button">Skip for now</button><button class="primary" id="finish-app-setup" data-i18n="manager.done">Add selected apps</button></div></div>
+    </section>
+    <section class="downloads-panel" id="downloads-panel" aria-labelledby="downloads-title" hidden>
+      <div class="manager-hero downloads-hero">
+        <div>
+          <div class="eyebrow">BRIGHTDESK DOWNLOADS</div>
+          <h2 id="downloads-title">Choose the desktop apps you need</h2>
+          <p>Download individual Brightdesk applications for this computer. Each app installs separately and can be opened from your desktop or the Suite.</p>
+        </div>
+        <img class="manager-hero-logo" src="assets/brand/brightdesk-suite-mark.svg" alt="Brightdesk" width="64" height="64">
+      </div>
+      <article class="downloads-platform-card" aria-live="polite">
+        <div><span class="eyebrow">RECOMMENDED FOR THIS DEVICE</span><b id="downloads-platform-name">Checking your platform…</b><small id="downloads-platform-details">Choosing a compatible Brightdesk package.</small></div>
+        <button type="button" class="secondary small-action" id="refresh-downloads">Refresh installed apps</button>
+      </article>
+      <div class="downloads-grid" id="downloads-app-grid"></div>
+      <p id="downloads-status" class="downloads-status" role="status">Choose an app to download its verified desktop installer.</p>
     </section>
     <section class="language-manager" id="language-manager" hidden>
       <div class="manager-hero"><div><div class="eyebrow" data-i18n="language.eyebrow">BRIGHTDESK LANGUAGE CENTRE</div><h2 data-i18n="language.title">Language settings</h2><p data-i18n="language.description">Choose how Brightdesk displays and checks language.</p></div></div>
