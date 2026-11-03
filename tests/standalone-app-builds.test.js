@@ -27,8 +27,8 @@ test('standalone build commands cover exactly the ten approved app IDs', () => {
   const matrix = buildApps.match(/const apps = (\[[\s\S]*?\]);/);
   assert.ok(guard, 'single-app builder must declare its supported app IDs');
   assert.ok(matrix, 'multi-app builder must declare its supported app IDs');
-  assert.deepEqual(JSON.parse(guard[1]), APPROVED_APPS.map(app => app.id));
-  assert.deepEqual(JSON.parse(matrix[1]), APPROVED_APPS.map(app => app.id));
+  assert.deepEqual(JSON.parse(guard[1].replace(/'/g, '"')), APPROVED_APPS.map(app => app.id));
+  assert.deepEqual(JSON.parse(matrix[1].replace(/'/g, '"')), APPROVED_APPS.map(app => app.id));
 
   for (const app of APPROVED_APPS) {
     for (const platform of ['win', 'mac', 'linux']) {
