@@ -84,6 +84,8 @@ async function stageStandaloneAppUpdate({
   await fs.mkdir(appDirectory, { recursive: true });
   const destination = path.join(appDirectory, fileName);
   const temporaryPath = `${destination}.part`;
+  await fs.rm(temporaryPath, { force: true });
+  await fs.rm(destination, { force: true });
 
   let response;
   try {
