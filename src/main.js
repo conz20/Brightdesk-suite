@@ -544,7 +544,9 @@ app.whenReady().then(async () => {
         appDataPath: app.getPath('appData'),
         appId: applicationId,
         version: app.getVersion(),
-        executablePath: app.getPath('exe'),
+        executablePath: process.platform === 'linux' && process.env.APPIMAGE
+          ? process.env.APPIMAGE
+          : app.getPath('exe'),
         platform: process.platform
       });
       const stagedUpdates = await listStagedStandaloneAppUpdates({ appDataPath: app.getPath('appData') });
