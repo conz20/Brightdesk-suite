@@ -1125,7 +1125,13 @@ async function checkForUpdatesManually() {
     const standaloneUpdates = appResult?.ok ? appResult.apps.filter(item => item.updateAvailable) : [];
     $('update-status-dot').hidden = standaloneUpdates.length === 0;
     if (standaloneUpdates.length) {
-      updateMessage(`${standaloneUpdates.length} standalone app update${standaloneUpdates.length === 1 ? '' : 's'} available. Review the version details below.`, 'notice');
+      const stagedCount = state.stagedAppUpdates.filter(staged =>
+        standaloneUpdates.some(update => update.id === staged.appId && update.availableVersion === staged.version)
+      ).length;
+      const message = stagedCount === standaloneUpdates.length
+        ? `${stagedCount} standalone app update${stagedCount === 1 ? '' : 's'} downloaded and verified. Press Next beside an app when you are ready to install.`
+        : `${standaloneUpdates.length} standalone app update${standaloneUpdates.length === 1 ? '' : 's'} available. Review the version details below.`;
+      updateMessage(message, 'notice');
     } else if (!suiteResult?.ok) {
       updateMessage(suiteResult?.message || 'The Brightdesk suite update check could not be completed.', 'error');
     } else if (suiteResult.status === 'current') {
