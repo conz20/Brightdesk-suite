@@ -54,7 +54,7 @@ async function checkStandaloneAppUpdates({ installedApps, platform, fetchImpl = 
 
     const release = await response.json();
     const availableVersion = String(release.tag_name || '').replace(/^v/i, '');
-    if (!compareVersions(availableVersion, availableVersion) && compareVersions(availableVersion, '0.0.0') === null) {
+    if (compareVersions(availableVersion, availableVersion) === null) {
       throw new Error('The latest Brightdesk release does not contain a valid version tag.');
     }
     const assets = Array.isArray(release.assets) ? release.assets : [];
@@ -72,6 +72,7 @@ async function checkStandaloneAppUpdates({ installedApps, platform, fetchImpl = 
         currentVersion: installed.version,
         availableVersion,
         updateAvailable: updateAvailable && Boolean(trustedUrl),
+        installerAvailable: Boolean(trustedUrl),
         downloadUrl: trustedUrl,
         releaseUrl: release.html_url || ''
       };
