@@ -77,6 +77,7 @@ jobs:
           node scripts/brightdesk-ai/respond.js \
             .github/ai-helper/instructions.md "$work_dir/user-context.md" \
             > "$work_dir/answer.md"
+          node scripts/brightdesk-ai/redact.js "$work_dir/answer.md"
 
           marker="<!-- brightdesk-ai-run:$RUN_ID -->"
           {
@@ -182,6 +183,7 @@ jobs:
           node scripts/brightdesk-ai/respond.js \
             .github/ai-helper/instructions.md "$work_dir/user-context.md" \
             > "$work_dir/answer.md"
+          node scripts/brightdesk-ai/redact.js "$work_dir/answer.md"
 
           {
             cat "$work_dir/answer.md"
