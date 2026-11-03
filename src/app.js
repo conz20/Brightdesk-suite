@@ -33,7 +33,9 @@ const state = {
   app: launchAppId || 'pages', view: 'workspace', docs: structuredClone(defaults),
   todoView: 'my-day', todoQuery: '',
   selectedCell: { row: 0, col: 0 }, update: null, ribbonTab: 'home',
-  installedApps: [], standaloneApps: [], stagedAppUpdates: [], currentVersion: '0.1.0', setupComplete: false, firstRunSelection: new Set(),
+  installedApps: [], standaloneApps: [], stagedAppUpdates: [], currentVersion: '0.1.0',
+  suiteUpdate: { status: 'unknown' }, lastAppUpdateResult: null,
+  setupComplete: false, firstRunSelection: new Set(),
   managerView: localStorage.getItem('brightdesk-manager-view') === 'list' ? 'list' : 'grid',
   slideTheme: 'lavender', focusMode: false, editorZoom: 100, sheetZoom: 100,
   languageCatalog: [], installedLanguagePacks: [], spellCheckerLanguages: [], usesNativeMacSpellChecker: false,
@@ -999,11 +1001,61 @@ async function saveUpdateSettings() {
   }
 }
 function renderAppUpdates(result) {
+  if (result) state.lastAppUpdateResult = result;
+  const currentResult = result || state.lastAppUpdateResult || { ok: false, apps: [] };
   const host = $('app-updates-list');
   host.replaceChildren();
-  const appUpdates = new Map((result?.apps || []).map(item => [item.id, item]));
+  const appUpdates = new Map((currentResult?.apps || []).map(item => [item.id, item]));
   const stagedUpdates = new Map(state.stagedAppUpdates.map(item => [item.appId, item]));
-  const hasPublishedRelease = result?.ok === true;
+  const hasPublishedRelease = currentResult?.ok === true;
+
+  const suiteRow = document.createElement('article');
+  suiteRow.className = 'app-update-row suite-update-row';
+  const suiteIcon = document.createElement('img');
+  suiteIcon.className = 'app-update-icon';
+  suiteIcon.src = 'assets/brand/brightdesk-suite-mark.svg';
+  suiteIcon.alt = '';
+  suiteIcon.setAttribute('aria-hidden', 'true');
+  const suiteDetails = document.createElement('div');
+  suiteDetails.className = 'app-update-details';
+  const suiteTitle = document.createElement('b');
+  suiteTitle.textContent = 'Brightdesk Office Suite';
+  const suiteVersion = document.createElement('small');
+  const suiteStatus = document.createElement('span');
+  suiteStatus.className = 'app-update-status';
+  const suiteActions = document.createElement('div');
+  suiteActions.className = 'app-update-actions';
+  const suiteState = state.suiteUpdate || { status: 'unknown' };
+
+  if (suiteState.status === 'available' || suiteState.status === 'downloaded') {
+    suiteVersion.textContent = suiteState.status === 'downloaded'
+      ? `Installed ${suiteState.currentVersion || state.currentVersion} · Downloaded ${suiteState.availableVersion || 'new version'}`
+      : `Installed ${suiteState.currentVersion || state.currentVersion} · Available ${suiteState.availableVersion || 'new version'}`;
+    suiteStatus.textContent = suiteState.status === 'downloaded' ? 'Ready to install' : 'Update available';
+    suiteStatus.classList.add('available');
+    const suiteAction = document.createElement('button');
+    suiteAction.type = 'button';
+    suiteAction.className = 'primary small-action';
+    suiteAction.textContent = suiteState.status === 'downloaded' ? 'Next · Install update' : 'Download update';
+    suiteAction.addEventListener('click', suiteState.status === 'downloaded' ? installDownloadedUpdate : downloadUpdateManually);
+    suiteActions.append(suiteAction);
+  } else if (suiteState.status === 'current') {
+    suiteVersion.textContent = `Installed ${suiteState.currentVersion || state.currentVersion}`;
+    suiteStatus.textContent = 'Up to date';
+    suiteStatus.classList.add('current');
+  } else if (suiteState.status === 'checking' || suiteState.status === 'downloading') {
+    suiteVersion.textContent = `Installed ${state.currentVersion}`;
+    suiteStatus.textContent = suiteState.status === 'checking' ? 'Checking…' : 'Downloading…';
+    suiteStatus.classList.add('muted');
+  } else {
+    suiteVersion.textContent = `Installed ${state.currentVersion}`;
+    suiteStatus.textContent = suiteState.message || 'Check for updates';
+    suiteStatus.classList.add('muted');
+  }
+  suiteDetails.append(suiteTitle, suiteVersion);
+  suiteActions.prepend(suiteStatus);
+  suiteRow.append(suiteIcon, suiteDetails, suiteActions);
+  host.append(suiteRow);
 
   catalog.forEach(item => {
     const standalone = state.standaloneApps.find(installed => installed.id === item.id) || null;
@@ -1029,13 +1081,13 @@ function renderAppUpdates(result) {
       version.textContent = staged
         ? `Installed ${standalone.version} · Downloaded ${staged.version}`
         : (hasPublishedRelease
-          ? `Installed ${standalone.version} · Latest ${update?.availableVersion || result.releaseVersion || 'unknown'}`
+          ? `Installed ${standalone.version} · Latest ${update?.availableVersion || currentResult.releaseVersion || 'unknown'}`
           : `Installed ${standalone.version}`);
       if (staged) {
         status.textContent = 'Ready to install';
         status.classList.add('available');
       } else if (!hasPublishedRelease) {
-        status.textContent = result?.message || 'Release information unavailable';
+        status.textContent = currentResult?.message || 'Release information unavailable';
         status.classList.add('muted');
       } else if (update?.updateAvailable) {
         status.textContent = 'Update available';
@@ -1196,6 +1248,10 @@ $('update-manual-install').addEventListener('click', installDownloadedUpdate);
 window.brightdesk.onUpdateState?.(updateState => {
   const dot = $('update-status-dot');
   const hasUpdate = ['available', 'downloaded', 'apps-available', 'apps-downloaded'].includes(updateState.status);
+  if (['available', 'downloaded', 'current', 'checking', 'downloading', 'unavailable', 'external', 'error'].includes(updateState.status)) {
+    state.suiteUpdate = updateState;
+    if (!$('app-updates-panel').hidden) renderAppUpdates();
+  }
   updateReadyToInstall = updateState.status === 'downloaded';
   suiteUpdateAvailable = updateState.status === 'available';
   $('update-manual-install').disabled = !updateReadyToInstall;
