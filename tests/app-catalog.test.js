@@ -134,6 +134,11 @@ test('standalone app packaging has independent product IDs and all three platfor
       assert.ok(config.mac.target.includes('pkg'), `${name} mac build must include pkg for installer licence`);
       assert.ok(config.mac.target.includes('dmg'), `${name} mac build must include dmg`);
       assert.ok(config.mac.target.includes('zip'), `${name} mac build must include zip`);
+      assert.equal(config.linux.executableName, `brightdesk-${id}`);
+      assert.equal(config.deb.packageName, `brightdesk-${id}`);
+      assert.equal(config.linux.desktop.entry.Name, `Brightdesk ${name}`);
+      assert.equal(config.linux.desktop.entry['X-Brightdesk-AppId'], id);
+      assert.equal(config.linux.desktop.entry['X-Brightdesk-Version'], catalog.find(item => item.id === id).moduleVersion);
       products.push(config.productName);
     }
   } finally {
