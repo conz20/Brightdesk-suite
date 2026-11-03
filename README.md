@@ -44,3 +44,6 @@ Building and testing Brightdesk requires exactly Node.js 24.22.2. This is a deve
 The GitHub Actions workflows pin third-party actions to immutable commit SHAs and use least-privilege permissions. Installer builds, test results and release artifacts must be verified before they are described as passing or ready.
 
 Brightdesk uses original product names, code, artwork and interface design. Microsoft product names are used only as internal workflow comparisons.
+## Updates and customer control
+
+Automatic update checking can be turned on or off. Brightdesk never downloads or installs an update automatically; the customer must choose **Download update** and then **Install update**.
