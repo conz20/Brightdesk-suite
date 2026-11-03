@@ -36,4 +36,7 @@ jobs:
       - name: Build the Node-API addon
         run: npm run native:build
       - name: Test Node-API and provider-neutral bridge
+      - name: Test the native Node-API module and provider bridge
+        env:
+          BRIGHTDESK_REQUIRE_NATIVE_ENGINE: "1"
         run: node --test test/rust-engine.test.mjs test/embedding-bridge.test.mjs
