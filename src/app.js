@@ -1092,7 +1092,15 @@ async function checkForUpdatesManually() {
       window.brightdesk.checkStandaloneAppUpdates()
     ]);
     renderAppUpdates(appResult);
-    if (!suiteResult?.ok) updateMessage(suiteResult?.message || 'The Brightdesk suite update check could not be completed.', 'error');
+    const standaloneUpdates = appResult?.ok ? appResult.apps.filter(item => item.updateAvailable) : [];
+    $('update-status-dot').hidden = standaloneUpdates.length === 0;
+    if (standaloneUpdates.length) {
+      updateMessage(`${standaloneUpdates.length} standalone app update${standaloneUpdates.length === 1 ? '' : 's'} available. Review the version details below.`, 'notice');
+    } else if (!suiteResult?.ok) {
+      updateMessage(suiteResult?.message || 'The Brightdesk suite update check could not be completed.', 'error');
+    } else if (suiteResult.status === 'current') {
+      updateMessage(`Brightdesk ${state.currentVersion} is up to date. No standalone app updates were found.`, 'success');
+    }
   } catch (error) {
     renderAppUpdates({ ok: false, message: error.message, apps: [] });
     updateMessage(`Update check failed: ${error.message}`, 'error');
@@ -1128,7 +1136,7 @@ $('update-manual-download').addEventListener('click', downloadUpdateManually);
 $('update-manual-install').addEventListener('click', installDownloadedUpdate);
 window.brightdesk.onUpdateState?.(updateState => {
   const dot = $('update-status-dot');
-  const hasUpdate = ['available', 'downloaded'].includes(updateState.status);
+  const hasUpdate = ['available', 'downloaded', 'apps-available'].includes(updateState.status);
   updateReadyToInstall = updateState.status === 'downloaded';
   $('update-manual-install').disabled = !updateReadyToInstall;
   dot.hidden = !hasUpdate;
@@ -1140,6 +1148,14 @@ window.brightdesk.onUpdateState?.(updateState => {
   } else if (updateState.status === 'downloaded') {
     updateMessage(updateState.message, 'notice', [
       { label: 'Next · Install update', run: installDownloadedUpdate }
+    ]);
+  } else if (updateState.status === 'apps-available') {
+    renderAppUpdates({ ok: true, releaseVersion: updateState.releaseVersion, apps: updateState.apps || [] });
+    updateMessage(updateState.message, 'notice', [
+      { label: 'Review updates', run: () => {
+        updatePanel.hidden = true;
+        $('app-updates-panel').hidden = false;
+      }}
     ]);
   } else if (updateState.status === 'error' || updateState.status === 'unavailable' || updateState.status === 'external') {
     updateMessage(updateState.message, 'error');
