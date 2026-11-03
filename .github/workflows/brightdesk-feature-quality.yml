@@ -1,21 +1,10 @@
 name: Brightdesk feature quality checks
 
 on:
-  push:
-    branches:
-      - feature/brightdesk-original-suite-experience
-    paths:
-      - 'src/**'
-      - 'scripts/**'
-      - 'tests/**'
-      - 'package.json'
-      - 'package-lock.json'
-      - 'PRODUCT_SCOPE_LOCK.md'
-      - 'README.md'
-      - '.github/workflows/brightdesk-feature-quality.yml'
   pull_request:
     branches:
       - main
+      - feature/storytold-inspired-engine-launcher
       - feature/complete-suite-launcher-apps
   workflow_dispatch:
 
