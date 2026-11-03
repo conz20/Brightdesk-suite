@@ -7,9 +7,9 @@ const crypto = require('node:crypto');
 
 const APPROVED_APP_IDS = ['pages', 'sheets', 'slides', 'notes', 'database', 'forms', 'lists', 'planner', 'todo', 'loop'];
 const STANDALONE_EXPECTED = {
-  win: /\\.exe$/i,
-  mac: /\\.(?:dmg|pkg|zip)$/i,
-  linux: /\\.(?:AppImage|deb)$/i
+  win: /\.exe$/i,
+  mac: /\.(?:dmg|pkg|zip)$/i,
+  linux: /\.(?:AppImage|deb)$/i
 };
 
 const EXPECTED = {
