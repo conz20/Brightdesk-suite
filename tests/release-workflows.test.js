@@ -26,13 +26,15 @@ test('one consolidated quality gate uses the self-hosted runner and verifies the
     'npm run lock:verify',
     'npm ci --no-audit --no-fund',
     'npm run verify:licenses',
+    'npm run build',
+    'npm run typecheck',
     'npm test',
     'npm run release:preflight',
     'npm audit --audit-level=high'
   ]) assert.ok(workflow.includes(command), `quality gate includes ${command}`);
   assert.ok(workflow.indexOf('npm run lock:verify') < workflow.indexOf('npm ci --no-audit --no-fund'));
   assert.doesNotMatch(workflow, /npm run lock:prepare/);
-  for (const obsolete of ['integration-ci.yml', 'lists-ci.yml', 'security-audit.yml', 'todo-ci.yml']) {
+  for (const obsolete of ['ci.yml', 'integration-ci.yml', 'lists-ci.yml', 'security-audit.yml', 'todo-ci.yml']) {
     assert.equal(fs.existsSync(path.join(root, '.github', 'workflows', obsolete)), false, `${obsolete} must not duplicate the consolidated gate`);
   }
 });
