@@ -53,15 +53,20 @@ Each application has its own repository and product documentation:
 
 ## Development
 
-Use Node.js **24.22.2 LTS**.
+Use Node.js **24.22.2 LTS** for all development, testing and release work.
+
+From the repository root:
 
 ```sh
-npm ci
+npm run check:node
+npm ci --no-audit --no-fund
 npm test
+npm run build
 ```
 
-See [installation guidance](docs/INSTALLATION.md), [release verification](docs/LOCAL-RELEASE-VERIFICATION.md) and [versioning](docs/VERSIONING.md) before preparing a release.
+The test command runs the Node.js service, interface, packaging and release tests first, followed by the Vitest workspace tests. Network-backed dictionary tests are skipped unless explicitly enabled. Run `npm run release:preflight` before preparing any installer.
 
+See [installation guidance](docs/INSTALLATION.md), [local release verification](docs/LOCAL-RELEASE-VERIFICATION.md) and [versioning](docs/VERSIONING.md) before preparing a release.
 ## Scope and identity
 
 The approved suite contains exactly the ten applications listed above. Outlook, OneDrive and Teams are excluded. Brightdesk is independent and is not affiliated with Microsoft, Adobe or ArtCraft. Those products are quality references only; Brightdesk uses its own names, code, interface design and artwork.
