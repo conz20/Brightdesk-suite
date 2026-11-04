@@ -1,2 +1,6 @@
 export * from "./theme.js";
-console.log("Brightdesk UI Design System loaded.");
+export * from "./components/Button.js";
+export * from "./components/Card.js";
+export * from "./components/Input.js";
+
+console.log("Brightdesk UI Design System & Component Library loaded.");
