@@ -1,0 +1,14 @@
+'use strict';
+const test=require('node:test');
+const assert=require('node:assert/strict');
+const fs=require('node:fs');
+const path=require('node:path');
+const root=path.join(__dirname,'..');
+const app=fs.readFileSync(path.join(root,'src','app.js'),'utf8');
+const html=fs.readFileSync(path.join(root,'src','index.html'),'utf8');
+const css=fs.readFileSync(path.join(root,'src','styles.css'),'utf8');
+const workspace=fs.readFileSync(path.join(root,'src','database-workspace.js'),'utf8');
+test('Database has a dedicated table and record workspace',()=>{assert.match(html,/id="database-wrap"/);assert.match(html,/id="database-table-list"/);assert.match(html,/id="database-grid-wrap"/);assert.ok(html.indexOf('src="database-service.js"')<html.indexOf('src="app.js"'));assert.ok(html.indexOf('src="database-workspace.js"')<html.indexOf('src="app.js"'));});
+test('Database opens through Brightdesk navigation and is available in the integrated catalogue',()=>{assert.match(app,/database: \{ title: 'My database' \}/);assert.match(app,/database: \{ title: 'Brightdesk Database'/);assert.match(app,/window\.BrightdeskDatabaseUI\.render\(\)/);const catalog=require('../src/app-catalog');assert.equal(catalog.find(item=>item.id==='database').availability,'available');});
+test('Database provides table, field, record, search, sort and CSV controls',()=>{for(const id of ['database-new-table','database-new-field','database-new-record','database-search','database-sort','database-export'])assert.ok(html.includes('id="'+id+'"'),id);assert.match(workspace,/BrightdeskDatabaseService/);assert.match(workspace,/brightdesk-database-v1/);assert.match(workspace,/toCSV/);});
+test('Database UI uses accessible labels and responsive dedicated styling',()=>{assert.match(html,/aria-label="Brightdesk Database"/);assert.match(html,/aria-live="polite"/);assert.match(css,/\.database-app\{/);assert.match(css,/@media\(max-width:760px\)\{\.database-app/);});

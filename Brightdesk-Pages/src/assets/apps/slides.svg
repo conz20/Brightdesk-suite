@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 300" role="img" aria-labelledby="title desc">
+<title id="title">Brightdesk SLIDES workspace preview</title>
+<desc id="desc">Original Brightdesk interface illustration showing slides tools and workspace layout.</desc>
+<rect width="640" height="300" rx="18" fill="#f2f5f9"/>
+<rect x="14" y="14" width="612" height="272" rx="12" fill="#fff" stroke="#dfe5ee"/>
+<rect x="14" y="14" width="612" height="32" rx="12" fill="#f7f9fc"/>
+<circle cx="32" cy="30" r="4" fill="#c5ceda"/><circle cx="46" cy="30" r="4" fill="#c5ceda"/><circle cx="60" cy="30" r="4" fill="#c5ceda"/>
+<rect x="28" y="58" width="135" height="214" rx="6" fill="#f7f9fc"/>
+<rect x="43" y="75" width="78" height="7" rx="3" fill="#c45b2c"/>
+<rect x="43" y="96" width="100" height="5" rx="2" fill="#cbd4e1"/>
+<rect x="43" y="113" width="88" height="5" rx="2" fill="#d7dee8"/>
+<rect x="43" y="137" width="100" height="25" rx="4" fill="#fff0e8"/>
+<rect x="43" y="174" width="94" height="5" rx="2" fill="#d7dee8"/>
+<rect x="43" y="190" width="80" height="5" rx="2" fill="#d7dee8"/>
+<rect x="43" y="206" width="92" height="5" rx="2" fill="#d7dee8"/>
+<rect x="190" y="72" width="100" height="58" rx="5" fill="#fff" stroke="#dfe5ee"/><rect x="190" y="142" width="100" height="58" rx="5" fill="#fff" stroke="#dfe5ee"/><rect x="190" y="212" width="100" height="48" rx="5" fill="#fff" stroke="#dfe5ee"/><rect x="316" y="70" width="280" height="178" rx="7" fill="#fff" stroke="#dfe5ee"/><rect x="346" y="105" width="150" height="12" rx="5" fill="#c45b2c"/><rect x="346" y="132" width="215" height="6" rx="3" fill="#cbd4e1"/><rect x="346" y="147" width="195" height="6" rx="3" fill="#cbd4e1"/><rect x="346" y="178" width="92" height="42" rx="5" fill="#fff0e8"/><rect x="450" y="178" width="110" height="42" rx="5" fill="#eef2f7"/>
+</svg>

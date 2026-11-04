@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+  <title id="title">Brightdesk</title>
+  <desc id="desc">Original Brightdesk mark: layered document panels forming a forward-moving letter B.</desc>
+  <defs>
+    <linearGradient id="bg" x1="52" y1="32" x2="460" y2="488" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#152A52"/>
+      <stop offset="1" stop-color="#101827"/>
+    </linearGradient>
+    <linearGradient id="front" x1="150" y1="108" x2="382" y2="404" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#70E1D1"/>
+      <stop offset="1" stop-color="#36C7B4"/>
+    </linearGradient>
+    <linearGradient id="back" x1="88" y1="80" x2="290" y2="352" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#9AAEFF"/>
+      <stop offset="1" stop-color="#667FE0"/>
+    </linearGradient>
+  </defs>
+  <rect x="20" y="20" width="472" height="472" rx="112" fill="url(#bg)"/>
+  <path d="M112 112h164c54 0 91 31 91 78 0 29-15 51-41 63 39 10 62 38 62 76 0 55-42 91-105 91H112V112Z" fill="url(#back)" opacity=".98"/>
+  <path d="M164 145h136c45 0 73 24 73 62 0 28-17 49-46 58 40 7 64 33 64 70 0 47-35 77-91 77H164V145Z" fill="url(#front)"/>
+  <path d="M222 202h69c20 0 32 10 32 27s-12 28-32 28h-69v-55Zm0 106h77c23 0 37 11 37 30s-14 30-37 30h-77v-60Z" fill="#10233B"/>
+  <path d="M112 112h52v305h-52z" fill="#F5FBFF" opacity=".9"/>
+</svg>

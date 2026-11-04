@@ -1,0 +1,112 @@
+name: Build Brightdesk Sheets desktop installers
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  schedule:
+    - cron: '17 4 * * *'
+  workflow_dispatch:
+    inputs:
+      build_installers:
+        description: Build the Windows, macOS and Linux desktop installers
+        type: boolean
+        required: true
+        default: true
+      publish_release:
+        description: Publish a GitHub Release after all product installers pass verification
+        type: boolean
+        required: true
+        default: false
+      release_tag:
+        description: Release tag
+        type: string
+        required: true
+        default: v0.1.0
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  test:
+    name: Test Brightdesk Sheets
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - name: Set up Rust toolchain
+        uses: actions-rust-lang/setup-rust-toolchain@ecabd13d1c56bd1345c230e542e9144811ad706f # v2.0.0
+        with:
+          components: clippy, rustfmt
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7
+        with:
+          node-version: 24.22.2
+          cache: npm
+      - run: npm run lock:verify
+      - run: npm ci --no-audit --no-fund
+      - run: npm run verify:licenses
+      - run: npm test
+      - name: Test Rust workspace
+        run: cargo test --manifest-path rust/Cargo.toml --workspace
+      - name: Check Rust formatting
+        run: cargo fmt --manifest-path rust/Cargo.toml --all -- --check
+      - name: Check Rust code quality
+        run: cargo clippy --manifest-path rust/Cargo.toml --workspace --all-targets -- -D warnings
+      - run: npm run release:preflight
+      - run: npm audit --audit-level=high
+
+  build:
+    name: Build ${{ matrix.platform }} desktop installer
+    if: github.event_name == 'workflow_dispatch' && inputs.build_installers == true
+    needs: test
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: win
+            runner: windows-latest
+          - platform: mac
+            runner: macos-latest
+          - platform: linux
+            runner: ubuntu-latest
+    runs-on: ${{ matrix.runner }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - name: Set up Rust toolchain
+        uses: actions-rust-lang/setup-rust-toolchain@ecabd13d1c56bd1345c230e542e9144811ad706f # v2.0.0
+        with:
+          components: clippy, rustfmt
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7
+        with:
+          node-version: 24.22.2
+          cache: npm
+      - run: npm ci --no-audit --no-fund
+      - run: npm run dist:product:${{ matrix.platform }}
+      - run: npm run verify:product:${{ matrix.platform }}
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        with:
+          name: Brightdesk-Sheets-${{ matrix.platform }}
+          path: release/apps/sheets/**
+          if-no-files-found: error
+          retention-days: 14
+
+  publish:
+    name: Publish approved Brightdesk Sheets release
+    if: github.event_name == 'workflow_dispatch' && inputs.publish_release == true && inputs.build_installers == true
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8
+        with:
+          pattern: Brightdesk-Sheets-*
+          path: release
+          merge-multiple: true
+      - uses: softprops/action-gh-release@efb35369e0ad2afab669f228072c1b0d510eae64 # v3
+        with:
+          tag_name: ${{ inputs.release_tag }}
+          name: Brightdesk Sheets ${{ inputs.release_tag }}
+          generate_release_notes: true
+          files: release/**

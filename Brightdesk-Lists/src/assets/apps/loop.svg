@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 300" role="img" aria-labelledby="title desc">
+<title id="title">Brightdesk WORKSPACE workspace preview</title>
+<desc id="desc">Original Brightdesk interface illustration showing workspace tools and workspace layout.</desc>
+<rect width="640" height="300" rx="18" fill="#f2f5f9"/>
+<rect x="14" y="14" width="612" height="272" rx="12" fill="#fff" stroke="#dfe5ee"/>
+<rect x="14" y="14" width="612" height="32" rx="12" fill="#f7f9fc"/>
+<circle cx="32" cy="30" r="4" fill="#c5ceda"/><circle cx="46" cy="30" r="4" fill="#c5ceda"/><circle cx="60" cy="30" r="4" fill="#c5ceda"/>
+<rect x="28" y="58" width="135" height="214" rx="6" fill="#f7f9fc"/>
+<rect x="43" y="75" width="78" height="7" rx="3" fill="#4b68a8"/>
+<rect x="43" y="96" width="100" height="5" rx="2" fill="#cbd4e1"/>
+<rect x="43" y="113" width="88" height="5" rx="2" fill="#d7dee8"/>
+<rect x="43" y="137" width="100" height="25" rx="4" fill="#e9effb"/>
+<rect x="43" y="174" width="94" height="5" rx="2" fill="#d7dee8"/>
+<rect x="43" y="190" width="80" height="5" rx="2" fill="#d7dee8"/>
+<rect x="43" y="206" width="92" height="5" rx="2" fill="#d7dee8"/>
+<rect x="185" y="63" width="112" height="205" rx="6" fill="#f6f8fb" stroke="#e2e7ef"/><rect x="201" y="82" width="78" height="8" rx="4" fill="#4b68a8"/><rect x="201" y="105" width="80" height="22" rx="4" fill="#e9effb"/><rect x="201" y="136" width="80" height="22" rx="4" fill="#fff" stroke="#e2e7ef"/><rect x="201" y="167" width="80" height="22" rx="4" fill="#fff" stroke="#e2e7ef"/><rect x="318" y="63" width="290" height="205" rx="6" fill="#fff" stroke="#dfe5ee"/><rect x="337" y="82" width="150" height="11" rx="4" fill="#4b68a8"/><rect x="337" y="111" width="250" height="5" rx="2" fill="#cbd4e1"/><rect x="337" y="126" width="235" height="5" rx="2" fill="#cbd4e1"/><rect x="337" y="154" width="250" height="43" rx="5" fill="#e9effb"/><rect x="337" y="211" width="105" height="35" rx="5" fill="#eef2f7"/><rect x="454" y="211" width="133" height="35" rx="5" fill="#eef2f7"/>
+</svg>

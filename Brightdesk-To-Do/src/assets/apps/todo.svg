@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 300" role="img" aria-labelledby="title desc">
+<title id="title">Brightdesk TODO workspace preview</title>
+<desc id="desc">Original Brightdesk interface illustration showing todo tools and workspace layout.</desc>
+<rect width="640" height="300" rx="18" fill="#f2f5f9"/>
+<rect x="14" y="14" width="612" height="272" rx="12" fill="#fff" stroke="#dfe5ee"/>
+<rect x="14" y="14" width="612" height="32" rx="12" fill="#f7f9fc"/>
+<circle cx="32" cy="30" r="4" fill="#c5ceda"/><circle cx="46" cy="30" r="4" fill="#c5ceda"/><circle cx="60" cy="30" r="4" fill="#c5ceda"/>
+<rect x="28" y="58" width="135" height="214" rx="6" fill="#f7f9fc"/>
+<rect x="43" y="75" width="78" height="7" rx="3" fill="#27834f"/>
+<rect x="43" y="96" width="100" height="5" rx="2" fill="#cbd4e1"/>
+<rect x="43" y="113" width="88" height="5" rx="2" fill="#d7dee8"/>
+<rect x="43" y="137" width="100" height="25" rx="4" fill="#e8f4eb"/>
+<rect x="43" y="174" width="94" height="5" rx="2" fill="#d7dee8"/>
+<rect x="43" y="190" width="80" height="5" rx="2" fill="#d7dee8"/>
+<rect x="43" y="206" width="92" height="5" rx="2" fill="#d7dee8"/>
+<rect x="185" y="63" width="423" height="205" rx="6" fill="#fff" stroke="#dfe5ee"/><rect x="202" y="83" width="140" height="11" rx="4" fill="#27834f"/><g stroke="#e8edf3"><path d="M202 123H590M202 164H590M202 205H590"/></g><g fill="none" stroke="#27834f" stroke-width="2"><rect x="203" y="135" width="13" height="13" rx="3"/><rect x="203" y="176" width="13" height="13" rx="3"/><rect x="203" y="217" width="13" height="13" rx="3"/></g><g fill="#cbd4e1"><rect x="229" y="138" width="185" height="6" rx="3"/><rect x="229" y="179" width="160" height="6" rx="3"/><rect x="229" y="220" width="205" height="6" rx="3"/></g><rect x="500" y="132" width="70" height="18" rx="9" fill="#e8f4eb"/><rect x="500" y="173" width="70" height="18" rx="9" fill="#e5f4ed"/>
+</svg>

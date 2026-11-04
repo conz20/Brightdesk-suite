@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self'; img-src 'self' data:; connect-src 'none'; object-src 'none'; base-uri 'none';">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="light" />
+  <title>Brightdesk</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="design-system.css" />
+</head>
+<body>
+  <aside class="sidebar">
+    <div class="brand"><img class="brand-logo" src="assets/brand/brightdesk-suite-mark.svg" alt="" aria-hidden="true" width="38" height="38"><div><b>brightdesk</b><small data-i18n="sidebar.workspace">YOUR WORKSPACE</small></div></div>
+    <div class="section-label" data-i18n="sidebar.yourApps">YOUR PRODUCTS</div>
+    <button class="nav active" data-app="pages"><span class="app-icon pages">P</span><span><b>Brightdesk Pages</b><small data-i18n="sidebar.documents">Documents</small></span></button>
+    <button class="nav" data-app="sheets"><span class="app-icon sheets">S</span><span><b>Brightdesk Sheets</b><small data-i18n="sidebar.spreadsheets">Spreadsheets</small></span></button>
+    <button class="nav" data-app="slides"><span class="app-icon slides">D</span><span><b>Brightdesk Decks</b><small data-i18n="sidebar.presentations">Presentations</small></span></button>
+    <button class="nav" data-app="notes"><span class="app-icon notes">N</span><span><b>Brightdesk Notes</b><small data-i18n="sidebar.quickNotes">Quick notes</small></span></button>
+    <div id="dynamic-app-nav"></div>
+    <div class="sidebar-divider"></div>
+    <button class="nav manager-nav" id="manage-apps"><span class="app-icon manager-icon">＋</span><span><b data-i18n="sidebar.getApps">Get products</b><small data-i18n="sidebar.installManage">Install and manage</small></span></button>
+    <button class="nav manager-nav" id="manage-languages"><span class="app-icon manager-icon">文</span><span><b data-i18n="sidebar.languages">Languages</b><small data-i18n="sidebar.languagePacks">Install language packs</small></span></button>
+    <div class="sidebar-bottom">
+      <div class="free-pill" data-i18n="sidebar.freeIndependent">✦ Free and independent</div>
+      <button class="text-button" id="updates-button" data-i18n="sidebar.checkUpdates">Check for updates</button>
+      <button class="text-button" id="update-settings-button">Update settings</button>
+      <small id="platform">Brightdesk desktop</small>
+      <small id="version-label">Version 0.1.0</small>
+    </div>
+  </aside>
+  <main class="main">
+    <header class="topbar">
+      <div><div class="eyebrow" data-i18n="sidebar.workspace">YOUR WORKSPACE</div><h1 id="app-title">Brightdesk Pages</h1></div>
+      <div class="top-actions" id="top-actions"><span class="save-status" id="save-status" data-i18n="top.savedOnDevice">Saved on this device</span><button class="secondary" id="open-button" data-i18n="top.open">Open</button><button class="secondary" id="save-project" data-i18n="top.saveProject">Save project</button><button class="primary" id="export-button" data-i18n="top.export">Export</button></div>
+    </header>
+    <section class="welcome" id="welcome"><div><div class="eyebrow" data-i18n="welcome.eyebrow">YOUR WORK. ONE CONNECTED SUITE.</div><h2 id="welcome-title">Make room for your ideas.</h2><p id="welcome-desc">Create, edit and keep your work together in one place.</p></div><div class="welcome-orb">✳</div></section>
+    <section class="workspace" id="workspace">
+      <div class="document-bar"><input id="doc-title" value="Untitled document" aria-label="Document title" /><span class="local-tag" data-i18n="top.storedLocally">● Stored locally</span></div>
+      <div id="ribbon-tabs" class="ribbon-tabs" role="tablist" aria-label="Application ribbon"></div>
+      <div id="toolbar" class="toolbar" aria-label="Ribbon commands"></div>
+      <div id="editor" class="editor" contenteditable="true" spellcheck="true" aria-label="Document editor"></div>
+      <div id="sheet-wrap" class="sheet-wrap" hidden></div>
+      <div id="slide-wrap" class="slide-wrap" hidden></div>
+      <div id="notes-wrap" class="notes-wrap" hidden><textarea id="notes-editor" aria-label="Notes editor" placeholder="Type a note, idea or reminder…" data-i18n-placeholder="common.notesPlaceholder"></textarea><div class="notes-hint" data-i18n="common.notesHint">Your notes save automatically on this device.</div></div>
+      <section id="todo-wrap" class="todo-app" aria-label="Brightdesk To Do" hidden>
+        <nav class="todo-sidebar" aria-label="Task views">
+          <h2>My tasks</h2>
+          <button type="button" class="todo-view active" data-todo-view="my-day">My Day</button>
+          <button type="button" class="todo-view" data-todo-view="important">Important</button>
+          <button type="button" class="todo-view" data-todo-view="planned">Planned</button>
+          <button type="button" class="todo-view" data-todo-view="tasks">Tasks</button>
+          <button type="button" class="todo-view" data-todo-view="completed">Completed</button>
+        </nav>
+        <div class="todo-content">
+          <header class="todo-heading"><div><div class="eyebrow">BRIGHTDESK TO DO</div><h2 id="todo-view-title">My Day</h2><p id="todo-view-description">Focus on what you want to get done today.</p></div><span id="todo-task-count" class="todo-count">0 tasks</span></header>
+          <label class="todo-search-label" for="todo-search">Search your tasks</label>
+          <input id="todo-search" class="todo-search" type="search" placeholder="Search tasks and notes" autocomplete="off">
+          <form id="todo-create-form" class="todo-create-form">
+            <input id="todo-new-title" type="text" maxlength="240" placeholder="Add a task" aria-label="New task title" required>
+            <button type="submit" class="primary">Add task</button>
+          </form>
+          <div id="todo-task-list" class="todo-task-list" role="list" aria-live="polite"></div>
+          <p id="todo-status" class="todo-status" role="status">Your tasks save on this device.</p>
+        </div>
+      </section>
+      <section id="lists-wrap" class="lists-app" aria-label="Brightdesk Lists" hidden><aside class="lists-sidebar"><b>Your lists</b><div id="lists-sidebar-items"></div><form id="lists-new-list-form"><input id="lists-new-name" maxlength="100" placeholder="New list name" aria-label="New list name" required><input id="lists-new-description" maxlength="240" placeholder="Description (optional)" aria-label="List description"><button class="primary" type="submit">Create list</button></form></aside><div class="lists-main"><div id="lists-empty"><h2>Start your first list</h2><p>Create a list for projects, stock, contacts or anything you need to track.</p></div><div id="lists-detail" hidden><header><h2 id="lists-title">Your list</h2><p id="lists-description"></p><button id="lists-rename" type="button">Rename</button><button id="lists-delete" type="button">Delete list</button></header><div class="lists-toolbar"><button id="lists-add-record" class="primary" type="button">Add record</button><input id="lists-search" type="search" placeholder="Search this list" aria-label="Search this list"><select id="lists-status-filter" aria-label="Filter by status"><option value="">All statuses</option><option>Not started</option><option>In progress</option><option>Done</option></select><select id="lists-sort-column" aria-label="Sort by column"></select><select id="lists-sort-direction" aria-label="Sort direction"><option value="asc">A to Z</option><option value="desc">Z to A</option></select><button id="lists-sort-button" type="button">Sort</button><span id="lists-record-count">0 records</span></div><form id="lists-record-form" hidden></form><div class="lists-table-scroll"><table id="lists-table" class="lists-table"></table></div><details><summary>Add a custom column</summary><form id="lists-column-form"><input id="lists-column-name" maxlength="100" placeholder="Column name" aria-label="Column name" required><select id="lists-column-type" aria-label="Column type"><option value="text">Text</option><option value="date">Date</option><option value="choice">Choice</option></select><div id="lists-column-options-wrap" hidden><input id="lists-column-options" placeholder="Choices separated by commas" aria-label="Choice options"></div><button type="submit">Add column</button></form></details></div><p id="lists-status" role="status" aria-live="polite">Your lists save on this device.</p></div></section>
+      <section id="forms-wrap" class="forms-app" aria-label="Brightdesk Forms" hidden><aside class="forms-sidebar"><b>Your forms</b><div id="forms-sidebar-items"></div><form id="forms-new-form"><input id="forms-new-title" placeholder="New form name" aria-label="New form name" required><button class="primary" type="submit">Create form</button></form></aside><div class="forms-main"><div id="forms-empty"><h2>Create your first form</h2><p>Build a survey, questionnaire or quiz and collect responses on this device.</p></div><div id="forms-detail" hidden><header class="forms-heading"><div><div class="eyebrow">BRIGHTDESK FORMS</div><h2 id="forms-title">Your form</h2><p id="forms-description"></p></div><span id="forms-response-count">0 responses</span></header><div class="forms-tabs" role="tablist" aria-label="Form workspace"><button type="button" data-forms-tab="questions" class="active">Questions</button><button type="button" data-forms-tab="preview">Preview</button><button type="button" data-forms-tab="responses">Responses</button></div><section id="forms-questions-panel"><form id="forms-details-form"><input id="forms-title-input" aria-label="Form title" placeholder="Form title" required><textarea id="forms-description-input" aria-label="Form description" placeholder="Description"></textarea><button class="secondary" type="submit">Save form details</button></form><div id="forms-question-list"></div><form id="forms-add-question-form"><h3>Add a question</h3><input id="forms-question-label" placeholder="Question text" aria-label="Question text" required><select id="forms-question-type" aria-label="Question type"><option value="short-text">Short answer</option><option value="long-text">Long answer</option><option value="choice">Single choice</option><option value="multi-choice">Multiple choice</option><option value="date">Date</option></select><input id="forms-question-options" placeholder="Choices separated by commas" aria-label="Answer choices" hidden><label><input id="forms-question-required" type="checkbox"> Required</label><button class="primary" type="submit">Add question</button></form></section>
+      <section id="planner-wrap" class="planner-app" aria-label="Brightdesk Planner" hidden><aside class="planner-sidebar"><b>Your plans</b><div id="planner-sidebar-items"></div><form id="planner-new-plan"><input id="planner-new-name" placeholder="New plan name" aria-label="New plan name" required><button class="primary" type="submit">Create plan</button></form></aside><div class="planner-main"><div id="planner-empty"><h2>Start a plan</h2><p>Create a plan, add buckets and organise tasks into a clear board.</p></div><div id="planner-detail" hidden><header class="planner-heading"><div><div class="eyebrow">BRIGHTDESK PLANNER</div><h2 id="planner-title">Your plan</h2><p id="planner-description"></p></div><button id="planner-rename" class="secondary" type="button">Rename plan</button></header><div class="planner-tools"><input id="planner-search" type="search" placeholder="Search tasks" aria-label="Search tasks"><select id="planner-progress-filter" aria-label="Filter progress"><option value="">All progress</option><option value="not-started">Not started</option><option value="in-progress">In progress</option><option value="completed">Completed</option></select><select id="planner-priority-filter" aria-label="Filter priority"><option value="">All priorities</option><option value="low">Low</option><option value="normal">Normal</option><option value="high">High</option></select></div><div id="planner-board" class="planner-board"></div><form id="planner-new-bucket"><input id="planner-bucket-name" placeholder="New bucket name" aria-label="New bucket name" required><button class="secondary" type="submit">Add bucket</button></form><form id="planner-new-task" class="planner-task-form"><h3>Add a task</h3><input id="planner-task-title" placeholder="Task title" aria-label="Task title" required><textarea id="planner-task-description" placeholder="Description (optional)" aria-label="Task description"></textarea><select id="planner-task-bucket" aria-label="Bucket"></select><select id="planner-task-priority" aria-label="Priority"><option value="low">Low priority</option><option value="normal" selected>Normal priority</option><option value="high">High priority</option></select><select id="planner-task-progress" aria-label="Progress"><option value="not-started">Not started</option><option value="in-progress">In progress</option><option value="completed">Completed</option></select><input id="planner-task-due" type="date" aria-label="Due date"><input id="planner-task-assignee" placeholder="Assigned to (optional)" aria-label="Assigned to"><input id="planner-task-labels" placeholder="Labels, separated by commas" aria-label="Task labels"><button class="primary" type="submit">Add task</button></form></div><p id="planner-status" role="status" aria-live="polite">Your plans save on this device.</p></div></section>
+      <section id="database-wrap" class="database-app" aria-label="Brightdesk Database" hidden><aside class="database-sidebar"><div class="database-sidebar-title">TABLES</div><div id="database-table-list" class="database-table-list"></div><form id="database-new-table" class="database-new-table"><input id="database-new-table-name" placeholder="New table name" aria-label="New table name" required><button class="primary" type="submit">Create table</button></form><p class="database-local-note">Your database is saved on this device.</p></aside><div class="database-main"><header class="database-heading"><div><div class="eyebrow">BRIGHTDESK DATABASE</div><h2 id="database-name">My database</h2><p id="database-table-summary">Create tables and manage structured records.</p></div><div class="database-heading-actions"><button id="database-rename-table" class="secondary" type="button">Rename table</button><button id="database-delete-table" class="secondary" type="button">Delete table</button></div></header><div class="database-toolbar"><input id="database-search" type="search" placeholder="Search records" aria-label="Search records"><label>Sort by <select id="database-sort" aria-label="Sort records"><option value="">Default order</option></select></label><button id="database-export" class="secondary" type="button">Export CSV</button></div><div id="database-grid-wrap" class="database-grid-wrap"></div><details class="database-panel"><summary>Manage fields</summary><div id="database-fields-list" class="database-fields-list"></div><form id="database-new-field" class="database-form"><h3>Add a field</h3><input id="database-field-name" placeholder="Field name" aria-label="Field name" required><select id="database-field-type" aria-label="Field type"><option value="text">Text</option><option value="number">Number</option><option value="date">Date</option><option value="email">Email</option><option value="url">Web address</option><option value="checkbox">Checkbox</option><option value="select">Choice list</option></select><input id="database-field-options" placeholder="Choice options, separated by commas" aria-label="Choice options" hidden><label class="database-required-label"><input id="database-field-required" type="checkbox"> Required field</label><button class="primary" type="submit">Add field</button></form></details><details class="database-panel" open><summary>Add a record</summary><form id="database-new-record" class="database-record-form"><div id="database-record-fields" class="database-record-fields"></div><button class="primary" type="submit">Add record</button></form></details><p id="database-status" class="database-status" role="status" aria-live="polite">Saved on this device.</p></div></section>
+      <section id="workspace-app-wrap" class="workspace-app" aria-label="Brightdesk Workspace" hidden><aside class="workspace-sidebar"><div class="workspace-brand-row"><b>YOUR WORKSPACES</b><button id="workspace-add" type="button" title="Create workspace">＋</button></div><div id="workspace-list" class="workspace-list"></div><form id="workspace-create-form" class="workspace-create-form" hidden><input id="workspace-create-name" placeholder="Workspace name" aria-label="Workspace name" required><button class="primary" type="submit">Create</button></form><div class="workspace-sidebar-divider"></div><div class="workspace-pages-heading"><b>PAGES</b><button id="workspace-add-page" type="button" title="Add page">＋</button></div><input id="workspace-page-search" type="search" placeholder="Find a page" aria-label="Find a page"><div id="workspace-page-list" class="workspace-page-list"></div><p class="workspace-local-note">Saved locally on this device.</p></aside><div class="workspace-main"><header class="workspace-main-heading"><div><div class="eyebrow">BRIGHTDESK WORKSPACE</div><h2 id="workspace-page-title">Getting started</h2><p id="workspace-name-label">Your workspace</p></div><div class="workspace-heading-actions"><button id="workspace-rename-page" class="secondary" type="button">Rename page</button><button id="workspace-delete-page" class="secondary" type="button">Delete page</button><button id="workspace-rename" class="secondary" type="button">Rename workspace</button><button id="workspace-delete" class="secondary" type="button">Delete workspace</button></div></header><div id="workspace-page-search-results" class="workspace-search-results" hidden></div><div id="workspace-block-list" class="workspace-block-list"></div><form id="workspace-add-block" class="workspace-add-block"><select id="workspace-block-type" aria-label="Content block type"><option value="paragraph">Text</option><option value="heading">Heading</option><option value="bullet">Bullet point</option><option value="callout">Callout</option><option value="checklist">Checklist</option><option value="divider">Divider</option></select><input id="workspace-block-content" placeholder="Write something to add…" aria-label="New block content"><button class="primary" type="submit">Add to page</button></form><p id="workspace-status" class="workspace-status" role="status" aria-live="polite">Your workspace saves on this device.</p></div></section>
+    </section>
+    <section class="app-manager" id="app-manager" hidden>
+      <div class="manager-hero"><div><div class="eyebrow" data-i18n="manager.eyebrow">BRIGHTDESK PRODUCT CENTRE</div><h2 id="manager-title">Choose the products you need</h2><p id="manager-description">Set up your workspace with the tools you want to use.</p></div><img class="manager-hero-logo" src="assets/brand/brightdesk-suite-mark.svg" alt="Brightdesk" width="64" height="64"></div>
+      <div class="manager-view-controls" role="group" aria-label="Product display">
+        <span class="manager-view-label" data-i18n="manager.view">View</span>
+        <button type="button" class="manager-view-button" id="manager-grid-view" aria-pressed="true" data-i18n="manager.gridView">Grid</button>
+        <button type="button" class="manager-view-button" id="manager-list-view" aria-pressed="false" data-i18n="manager.listView">List</button>
+      </div>
+      <div class="manager-grid" id="app-manager-grid"></div>
+      <div class="manager-bottom"><p id="manager-note">Choose the products you need. Your documents stay on this device, even if you remove a product from your workspace.</p><button class="primary" id="finish-app-setup">Add selected products</button></div>
+    </section>
+    <section class="language-manager" id="language-manager" hidden>
+      <div class="manager-hero"><div><div class="eyebrow" data-i18n="language.eyebrow">BRIGHTDESK LANGUAGE CENTRE</div><h2 data-i18n="language.title">Language settings</h2><p data-i18n="language.description">Choose the Brightdesk display language and the spelling language you want to use. Language-pack contents and dictionary licences are protected.</p></div><div class="manager-hero-mark">文</div></div>
+      <div class="language-settings-grid">
+        <article class="language-setting-card"><h3 data-i18n="language.displayTitle">Display language</h3><p data-i18n="language.displayDescription">Changes the language used for Brightdesk menus, buttons and tools. Changes apply straight away.</p><select id="display-language" aria-label="Display language"></select><small class="language-help" data-i18n="language.restartNotNeeded">No restart needed.</small></article>
+        <article class="language-setting-card"><h3 data-i18n="language.proofingTitle">Proofing language</h3><p data-i18n="language.proofingDescription">Sets the language used for spelling checks while you write. This setting is separate from the display language.</p><select id="proofing-language" aria-label="Proofing language"></select><small class="language-help" id="proofing-status"></small></article>
+      </div>
+      <h3 class="language-section-title" data-i18n="language.installedTitle">Installed language packs</h3>
+      <div class="manager-grid" id="installed-language-grid"></div>
+      <h3 class="language-section-title" data-i18n="language.availableTitle">Available language packs</h3>
+      <div class="manager-grid" id="available-language-grid"></div>
+      <section class="dictionary-centre" aria-labelledby="dictionary-centre-title">
+        <h3 class="language-section-title" id="dictionary-centre-title">Spelling dictionaries</h3>
+        <p class="dictionary-intro">Protected resources: you can install and select a language, but dictionary words, licences, source details and author credits cannot be edited, replaced or removed inside Brightdesk. Changes to these resources must come from an official Brightdesk release.</p>
+        <p class="dictionary-intro">Choose from the protected Brightdesk dictionary catalogue. Dictionary contents, original licence terms and attribution records cannot be edited or replaced by users.</p>
+        <article class="language-setting-card dictionary-check-card">
+          <h3>Check the current document</h3>
+          <p>Choose an installed dictionary, then run a spelling check on the open Brightdesk Pages, Sheets, Decks or Notes document.</p>
+          <div class="dictionary-check-controls"><select id="proofing-dictionary" aria-label="Spelling dictionary"></select><button class="primary" id="check-current-document">Check spelling</button></div>
+          <small class="language-help" id="dictionary-status" role="status">No separate dictionaries installed yet.</small>
+        </article>
+        <h3 class="language-section-title">Available spelling dictionaries</h3>
+        <p class="dictionary-intro">Browse the 92 language and regional variants in the built-in catalogue. Search by language, region or locale code. Installing adds the original read-only dictionary; it does not change its words, source or licence. The spelling engine supports a subset of Hunspell features, so some dictionaries may not work fully.</p>
+        <label class="dictionary-search-label" for="dictionary-search">Find a language</label>
+        <input id="dictionary-search" class="dictionary-search" type="search" placeholder="Search languages, regions or codes (for example, English Australia)" autocomplete="off">
+        <small id="dictionary-catalogue-count" class="language-help" role="status"></small>
+        <div class="manager-grid" id="available-dictionary-grid"></div>
+        <h3 class="language-section-title">Installed spelling dictionaries</h3>
+        <div class="manager-grid" id="installed-dictionary-grid"></div>
+      </section>
+      <div class="manager-bottom"><p id="language-status" role="status"></p><button class="secondary" id="back-to-apps" data-i18n="language.backToApps">Back to products</button></div>
+    </section>
+    <section id="update-settings-panel" class="update-settings-panel" hidden></section>
+    <div class="update-message" id="update-message" role="status" hidden></div>
+    <footer><span id="footer-version">Brightdesk 0.1.0</span> · Independent software · Not affiliated with Microsoft</footer>
+  </main>
+  <script src="formula.js"></script>
+  <script src="page-layout.js"></script>
+  <script src="app-catalog.js"></script>
+  <script src="todo-service.js"></script>
+  <script src="lists-service.js"></script>
+  <script src="forms-service.js"></script>
+  <script src="forms-workspace.js"></script>
+  <script src="planner-service.js"></script>
+  <script src="planner-workspace.js"></script>
+  <script src="database-service.js"></script>
+  <script src="database-workspace.js"></script>
+  <script src="workspace-service.js"></script>
+  <script src="workspace-editor.js"></script>
+  <script src="i18n.js"></script>
+  <script src="update-settings.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

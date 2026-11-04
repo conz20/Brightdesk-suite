@@ -1,0 +1,33 @@
+BRIGHTDESK — TERMS AND CONDITIONS
+Version 1.0 | 1 November 2026
+
+PLEASE READ BEFORE INSTALLING OR FIRST USING BRIGHTDESK
+
+1. FREE AND OPEN-SOURCE SOFTWARE
+Brightdesk is provided free of charge. No activation code, product key, serial number, paid subscription or account registration is required to install or use it. The Brightdesk source code is licensed under the MIT License supplied with the software. The MIT License governs your rights to use, copy, modify and distribute the source code and covered software. These Terms do not take away rights granted by that licence.
+
+2. ACCEPTANCE
+By selecting “Yes, I agree” you confirm that you have read and accept these Terms for your use of the Brightdesk application. If you select “No, I do not agree”, close the installer or application; installation or first use will not continue. You can review these Terms again at any time in the installed Brightdesk application folder.
+
+3. YOUR FILES AND DATA
+Brightdesk is designed to store your work locally on your device. You are responsible for keeping suitable backups of important documents and for checking exported files before relying on them. Some optional functions, such as checking for software updates, may contact online services when configured. Brightdesk does not require an online account to use its core local features.
+
+4. THIRD-PARTY SOFTWARE AND CONTENT
+Brightdesk may include or use third-party open-source software, fonts, dictionaries and language resources. Those components remain subject to their own licence terms and notices. The included THIRD_PARTY_NOTICES.md and resource-specific notices identify applicable terms where available. If a third-party licence conflicts with these Terms, that third-party licence governs that component.
+
+5. ACCEPTABLE USE
+You agree to use Brightdesk lawfully and not to use it to infringe another person's rights, distribute malicious code, or interfere with another person's systems or data. These conditions do not limit the permissions granted by the MIT License for the software itself.
+
+6. NO WARRANTY
+Brightdesk is provided “AS IS”, without warranty of any kind, to the fullest extent permitted by applicable law. The separate MIT License contains the full warranty disclaimer and limitation wording applicable to the licensed software. Nothing in these Terms excludes rights or remedies that cannot lawfully be excluded under the laws that apply to you.
+
+7. LIABILITY
+To the fullest extent permitted by applicable law, the Brightdesk contributors are not liable for indirect, incidental, special or consequential loss arising from use of the software. Nothing in these Terms limits liability where doing so would be unlawful, including applicable consumer guarantees and non-excludable rights under Australian law.
+
+8. CHANGES
+A future release may include updated Terms. If the Terms change, Brightdesk will ask you to review and accept the updated version before first use of that release. The source-code licence continues to apply according to its own terms.
+
+9. CONTACT AND LEGAL INFORMATION
+Brightdesk is an independent community software project. No company address, legal entity or support contact is represented by this document. Project contact and support details will be published with an official release when established.
+
+END OF TERMS AND CONDITIONS

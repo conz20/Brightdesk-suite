@@ -1,0 +1,3 @@
+Brightdesk has been installed.
+
+You can open Brightdesk from your Applications folder. On first launch, you will be asked to confirm the Terms and Conditions if they have not already been accepted for this version.

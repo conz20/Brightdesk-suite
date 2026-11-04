@@ -1,0 +1,12 @@
+'use strict';
+const test=require('node:test');
+const assert=require('node:assert/strict');
+const fs=require('node:fs');
+const path=require('node:path');
+const root=path.join(__dirname,'..');
+const app=fs.readFileSync(path.join(root,'src','app.js'),'utf8');
+const html=fs.readFileSync(path.join(root,'src','index.html'),'utf8');
+const css=fs.readFileSync(path.join(root,'src','styles.css'),'utf8');
+test('Forms has a dedicated app workspace and separate modules',()=>{assert.match(html,/id="forms-wrap"/);assert.match(html,/id="forms-question-list"/);assert.match(html,/id="forms-response-count"/);assert.ok(html.indexOf('src="forms-service.js"')<html.indexOf('src="app.js"'));assert.ok(html.indexOf('src="forms-workspace.js"')<html.indexOf('src="app.js"'));});
+test('Forms is connected to the app shell, not the generic editor',()=>{assert.match(app,/forms: \{ title: 'My forms' \}/);assert.match(app,/forms: \{ title: 'Brightdesk Forms'/);assert.match(app,/window\.BrightdeskFormsUI\.render\(\)/);assert.match(app,/configs\[app\] \|\| genericConfigs\[app\]/);});
+test('Forms supports questions, preview and response review',()=>{assert.match(html,/data-forms-tab="questions"/);assert.match(html,/data-forms-tab="preview"/);assert.match(html,/data-forms-tab="responses"/);assert.match(html,/forms-response-count/);assert.match(css,/\.forms-app\{/);assert.match(css,/@media\(max-width:760px\)\{\.forms-app/);});

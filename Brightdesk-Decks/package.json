@@ -1,0 +1,219 @@
+{
+  "name": "brightdesk-decks",
+  "version": "0.1.0",
+  "description": "Brightdesk Decks — native desktop productivity product",
+  "main": "src/main.js",
+  "author": {
+    "name": "Brightdesk",
+    "email": "noreply@github.com"
+  },
+  "license": "MIT",
+  "engines": {
+    "node": "24.22.2"
+  },
+  "scripts": {
+    "check:node": "node scripts/check-node24.js",
+    "start": "electron .",
+    "test": "node --test tests/app-repository-seeds.test.js tests/database-service.test.js tests/database-ui-integration.test.js tests/dictionary-service.test.js tests/file-service.test.js tests/forms-service.test.js tests/forms-ui-integration.test.js tests/formula.test.js tests/installer-agreement.test.js tests/integrated-app-shell.test.js tests/language-service.test.js tests/license-verification.test.js tests/lists-service.test.js tests/lists-ui-integration.test.js tests/node-runtime-setup.test.js tests/page-layout.test.js tests/planner-service.test.js tests/planner-ui-integration.test.js tests/rea-bench.test.js tests/release-readiness.test.js tests/resource-protection.test.js tests/standalone-downloads.test.js tests/standalone-pages.test.js tests/todo-service.test.js tests/todo-ui-integration.test.js tests/update-settings.test.js tests/workspace-service.test.js tests/workspace-ui-integration.test.js",
+    "dist": "npm run verify:licenses && electron-builder --publish never",
+    "dist:win": "npm run verify:licenses && electron-builder --win nsis --x64 --publish never",
+    "dist:mac": "npm run verify:licenses && electron-builder --mac dmg pkg zip --universal --publish never",
+    "dist:linux": "npm run verify:licenses && electron-builder --linux AppImage deb --x64 --publish never",
+    "release": "npm run verify:licenses && electron-builder --publish always",
+    "verify:licenses": "node scripts/verify-licenses.js",
+    "postinstall": "npm run verify:licenses",
+    "dist:apps:win": "node scripts/build-apps.js win",
+    "dist:apps:mac": "node scripts/build-apps.js mac",
+    "dist:apps:linux": "node scripts/build-apps.js linux",
+    "dist:pages:win": "node scripts/build-app.js pages win",
+    "dist:pages:mac": "node scripts/build-app.js pages mac",
+    "dist:pages:linux": "node scripts/build-app.js pages linux",
+    "dist:sheets:win": "node scripts/build-app.js sheets win",
+    "dist:sheets:mac": "node scripts/build-app.js sheets mac",
+    "dist:sheets:linux": "node scripts/build-app.js sheets linux",
+    "dist:decks:win": "node scripts/build-app.js slides win",
+    "dist:decks:mac": "node scripts/build-app.js slides mac",
+    "dist:decks:linux": "node scripts/build-app.js slides linux",
+    "dist:notes:win": "node scripts/build-app.js notes win",
+    "dist:notes:mac": "node scripts/build-app.js notes mac",
+    "dist:notes:linux": "node scripts/build-app.js notes linux",
+    "rea:inspect": "node scripts/brightdesk-rea.js inspect",
+    "fix:app-js": "node scripts/fix-app-js.js",
+    "release:preflight": "node scripts/release-preflight.js",
+    "release:verify:win": "node scripts/verify-release-artifacts.js win",
+    "release:verify:mac": "node scripts/verify-release-artifacts.js mac",
+    "release:verify:linux": "node scripts/verify-release-artifacts.js linux",
+    "release:prepare": "node scripts/prepare-release-assets.js",
+    "lock:prepare": "npm install --package-lock-only --ignore-scripts --no-audit --no-fund",
+    "lock:verify": "node scripts/verify-lockfile.js",
+    "setup:dev": "node scripts/setup/bootstrap-dev.js",
+    "dist:database:win": "node scripts/build-app.js database win",
+    "dist:database:mac": "node scripts/build-app.js database mac",
+    "dist:database:linux": "node scripts/build-app.js database linux",
+    "dist:forms:win": "node scripts/build-app.js forms win",
+    "dist:forms:mac": "node scripts/build-app.js forms mac",
+    "dist:forms:linux": "node scripts/build-app.js forms linux",
+    "dist:lists:win": "node scripts/build-app.js lists win",
+    "dist:lists:mac": "node scripts/build-app.js lists mac",
+    "dist:lists:linux": "node scripts/build-app.js lists linux",
+    "dist:planner:win": "node scripts/build-app.js planner win",
+    "dist:planner:mac": "node scripts/build-app.js planner mac",
+    "dist:planner:linux": "node scripts/build-app.js planner linux",
+    "dist:todo:win": "node scripts/build-app.js todo win",
+    "dist:todo:mac": "node scripts/build-app.js todo mac",
+    "dist:todo:linux": "node scripts/build-app.js todo linux",
+    "dist:workspace:win": "node scripts/build-app.js loop win",
+    "dist:workspace:mac": "node scripts/build-app.js loop mac",
+    "dist:workspace:linux": "node scripts/build-app.js loop linux",
+    "release:verify:apps:win": "node scripts/verify-standalone-apps.js win",
+    "release:verify:apps:mac": "node scripts/verify-standalone-apps.js mac",
+    "release:verify:apps:linux": "node scripts/verify-standalone-apps.js linux",
+    "repositories:prepare": "node scripts/create-app-repository-seeds.js",
+    "dist:products:win": "node scripts/build-apps.js win",
+    "dist:products:mac": "node scripts/build-apps.js mac",
+    "dist:products:linux": "node scripts/build-apps.js linux",
+    "release:verify:products:win": "node scripts/verify-standalone-apps.js win",
+    "release:verify:products:mac": "node scripts/verify-standalone-apps.js mac",
+    "release:verify:products:linux": "node scripts/verify-standalone-apps.js linux",
+    "build:native": "node scripts/build-native.js",
+    "predist": "npm run build:native",
+    "predist:win": "npm run build:native",
+    "predist:mac": "npm run build:native",
+    "predist:linux": "npm run build:native",
+    "prerelease": "npm run build:native",
+    "predist:apps:win": "npm run build:native",
+    "predist:apps:mac": "npm run build:native",
+    "predist:apps:linux": "npm run build:native",
+    "predist:pages:win": "npm run build:native",
+    "predist:pages:mac": "npm run build:native",
+    "predist:pages:linux": "npm run build:native",
+    "predist:sheets:win": "npm run build:native",
+    "predist:sheets:mac": "npm run build:native",
+    "predist:sheets:linux": "npm run build:native",
+    "predist:decks:win": "npm run build:native",
+    "predist:decks:mac": "npm run build:native",
+    "predist:decks:linux": "npm run build:native",
+    "predist:notes:win": "npm run build:native",
+    "predist:notes:mac": "npm run build:native",
+    "predist:notes:linux": "npm run build:native",
+    "predist:database:win": "npm run build:native",
+    "predist:database:mac": "npm run build:native",
+    "predist:database:linux": "npm run build:native",
+    "predist:forms:win": "npm run build:native",
+    "predist:forms:mac": "npm run build:native",
+    "predist:forms:linux": "npm run build:native",
+    "predist:lists:win": "npm run build:native",
+    "predist:lists:mac": "npm run build:native",
+    "predist:lists:linux": "npm run build:native",
+    "predist:planner:win": "npm run build:native",
+    "predist:planner:mac": "npm run build:native",
+    "predist:planner:linux": "npm run build:native",
+    "predist:todo:win": "npm run build:native",
+    "predist:todo:mac": "npm run build:native",
+    "predist:todo:linux": "npm run build:native",
+    "predist:workspace:win": "npm run build:native",
+    "predist:workspace:mac": "npm run build:native",
+    "predist:workspace:linux": "npm run build:native",
+    "predist:products:win": "npm run build:native",
+    "predist:products:mac": "npm run build:native",
+    "predist:products:linux": "npm run build:native",
+    "dist:product:win": "node scripts/build-app.js slides win",
+    "dist:product:mac": "node scripts/build-app.js slides mac",
+    "dist:product:linux": "node scripts/build-app.js slides linux",
+    "prestart": "npm run build:native",
+    "predist:product:win": "npm run build:native",
+    "predist:product:mac": "npm run build:native",
+    "predist:product:linux": "npm run build:native",
+    "verify:product:win": "node scripts/verify-standalone-apps.js win release/apps slides",
+    "verify:product:mac": "node scripts/verify-standalone-apps.js mac release/apps slides",
+    "verify:product:linux": "node scripts/verify-standalone-apps.js linux release/apps slides"
+  },
+  "dependencies": {
+    "docx": "9.15.1",
+    "electron-updater": "6.8.11",
+    "exceljs": "4.4.0",
+    "fast-xml-parser": "5.11.2",
+    "jszip": "3.10.2",
+    "mammoth": "1.13.0",
+    "nspell": "2.1.5",
+    "pptxgenjs": "4.0.1"
+  },
+  "devDependencies": {
+    "electron": "45.2.1",
+    "electron-builder": "26.18.0"
+  },
+  "overrides": {
+    "pptxgenjs": {
+      "image-size": "2.0.4"
+    }
+  },
+  "build": {
+    "appId": "org.brightdesk.slides",
+    "productName": "Brightdesk Decks",
+    "asar": true,
+    "files": [
+      "src/**/*",
+      "package.json",
+      "LICENSE",
+      "THIRD_PARTY_NOTICES.md",
+      "TERMS_AND_CONDITIONS.txt",
+      "native/**/*"
+    ],
+    "directories": {
+      "output": "release",
+      "buildResources": "assets/branding"
+    },
+    "publish": [],
+    "win": {
+      "target": [
+        "nsis"
+      ],
+      "artifactName": "Brightdesk-Setup-${version}-${arch}.${ext}",
+      "icon": "brightdesk-suite-mark.svg"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "license": "TERMS_AND_CONDITIONS.txt"
+    },
+    "mac": {
+      "target": [
+        "dmg",
+        "pkg",
+        "zip"
+      ],
+      "category": "public.app-category.productivity",
+      "artifactName": "Brightdesk-${version}-${arch}.${ext}",
+      "icon": "brightdesk-suite-mark.svg"
+    },
+    "dmg": {
+      "sign": false
+    },
+    "linux": {
+      "target": [
+        "AppImage",
+        "deb"
+      ],
+      "category": "Office",
+      "artifactName": "brightdesk-${version}-${arch}.${ext}",
+      "syncDesktopName": true,
+      "icon": "brightdesk-suite-mark.svg"
+    },
+    "appImage": {
+      "artifactName": "Brightdesk-${version}-${arch}.${ext}"
+    },
+    "pkg": {
+      "license": "TERMS_AND_CONDITIONS.txt",
+      "welcome": "installer/mac-welcome.txt",
+      "conclusion": "installer/mac-conclusion.txt",
+      "installLocation": "/Applications"
+    },
+    "asarUnpack": [
+      "native/**/*.node"
+    ]
+  },
+  "desktopName": "org.brightdesk.suite.desktop",
+  "brightdeskAppId": "slides"
+}
