@@ -1,11 +1,46 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <title>Brightdesk Lists</title>
-  </head>
-  <body>
-    <div id="app"></div>
-    <script type="module" src="./index.js"></script>
-  </body>
+<head>
+  <meta charset="UTF-8">
+  <title>Brightdesk Lists</title>
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+  <div class="lists-container">
+    <aside class="lists-sidebar">
+      <h2>Filters</h2>
+      <ul class="filter-menu">
+        <li class="filter-item active">Inbox</li>
+        <li class="filter-item">Today</li>
+        <li class="filter-item">Upcoming</li>
+        <li class="filter-item">Projects</li>
+      </ul>
+    </aside>
+    <main class="lists-main">
+      <header class="lists-header">
+        <h1>Inbox</h1>
+        <div class="task-input-bar">
+          <input type="text" placeholder="Add task and press Enter..." class="quick-task-input" />
+        </div>
+      </header>
+      <div class="task-list">
+        <div class="task-row">
+          <input type="checkbox" />
+          <span class="task-text">Review enterprise UI mockups for Brightdesk Suite</span>
+          <span class="task-badge priority-p1">P1</span>
+        </div>
+        <div class="task-row">
+          <input type="checkbox" />
+          <span class="task-text">Verify monorepo build and typecheck status</span>
+          <span class="task-badge priority-p2">P2</span>
+        </div>
+        <div class="task-row">
+          <input type="checkbox" />
+          <span class="task-text">Deploy updated workspace bundles to GitHub Pages</span>
+          <span class="task-badge priority-p3">P3</span>
+        </div>
+      </div>
+    </main>
+  </div>
+</body>
 </html>
