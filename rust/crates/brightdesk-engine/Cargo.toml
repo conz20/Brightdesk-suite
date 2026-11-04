@@ -1,0 +1,20 @@
+[package]
+name = "brightdesk-engine"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+description = "Node-API native engine for Brightdesk desktop applications"
+build = "build.rs"
+autobins = false
+
+[lib]
+name = "brightdesk_engine"
+crate-type = ["cdylib"]
+
+[dependencies]
+napi = { version = "=3.16.1", default-features = false, features = ["napi8", "dyn-symbols"] }
+napi-derive = "=3.7.0"
+
+[build-dependencies]
+napi-build = "=2.6.0"

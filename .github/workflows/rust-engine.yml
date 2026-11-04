@@ -1,0 +1,41 @@
+name: Brightdesk Rust Node-API engine
+on:
+  push:
+    branches: [main, "feature/**"]
+    paths: ["rust/**", "native/**", "scripts/build-native.js", "scripts/build-app.js", "scripts/build-apps.js", "src/rust-engine.js", "src/rust-engine-fallback.js", "src/embedding-bridge.js", "electron-builder.app.config.js", "package.json", "package-lock.json", "test/**", "tests/**", ".github/workflows/rust-engine.yml"]
+  pull_request:
+    paths: ["rust/**", "native/**", "scripts/build-native.js", "scripts/build-app.js", "scripts/build-apps.js", "src/rust-engine.js", "src/rust-engine-fallback.js", "src/embedding-bridge.js", "electron-builder.app.config.js", "package.json", "package-lock.json", "test/**", "tests/**", ".github/workflows/rust-engine.yml"]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: brightdesk-rust-native-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  native:
+    # This repository's free self-hosted Mac runner replaces paid hosted runners.
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: "24.22.2"
+      - name: Install pinned Rust toolchain
+        uses: dtolnay/rust-toolchain@683b588c487a69d01f6c6ddf40f036ff682cc2c8
+        with:
+          toolchain: 1.99.1
+          components: rustfmt, clippy
+      - name: Check Rust formatting
+        run: cargo fmt --manifest-path rust/Cargo.toml --all -- --check
+      - name: Check Electron main-process syntax
+        run: node --check src/main.js
+      - name: Run Clippy
+        run: cargo clippy --manifest-path rust/Cargo.toml --workspace --all-targets --locked -- -D warnings
+      - name: Run Rust tests
+        run: cargo test --manifest-path rust/Cargo.toml --workspace --locked
+      - name: Build the Node-API addon
+        run: npm run native:build
+      - name: Test the native Node-API module and provider bridge
+        env:
+          BRIGHTDESK_REQUIRE_NATIVE_ENGINE: "1"
+        run: node --test test/rust-engine.test.mjs test/embedding-bridge.test.mjs
