@@ -16,8 +16,11 @@ test('Node.js 24.22.2 remains the single exact Brightdesk runtime', () => {
   assert.match(read('.npmrc'), /engine-strict=true/);
   assert.match(read('.devcontainer/Dockerfile'), /^FROM node:24\.22\.2-bookworm/m);
   assert.match(read('.devcontainer/devcontainer.json'), /npm run setup:dev/);
-  assert.match(read('.github/workflows/build-release.yml'), /node-version: 24\.22\.2/);
-  assert.match(read('.github/workflows/quality.yml'), /node-version: 24\.22\.2/);
+  const workflowDir = path.join(root, '.github', 'workflows');
+  const workflowFiles = fs.readdirSync(workflowDir).filter(file => /\\.ya?ml$/i.test(file));
+  const nodeWorkflows = workflowFiles.map(file => ({ file, source: fs.readFileSync(path.join(workflowDir, file), 'utf8') })).filter(item => /uses:\\s*actions\\/setup-node/.test(item.source));
+  assert.ok(nodeWorkflows.length > 0, 'at least one workflow must configure Node.js');
+  for (const workflow of nodeWorkflows) assert.match(workflow.source, /node-version:\\s*['\"]?24\\.22\\.2/, `${workflow.file} must use Node.js 24.22.2`);
   assert.match(read('AGENTS.md'), /exactly Node\.js \*\*24\.22\.2 LTS\*\*/);
   assert.match(read('PROJECT_MEMORY.md'), /standing project requirement/);
 });
