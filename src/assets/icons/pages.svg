@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256" role="img" aria-labelledby="title desc">
+<title id="title">Brightdesk Pages application icon</title><desc id="desc">Original Pages symbol with a distinct pages visual metaphor.</desc>
+<defs>
+<linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2B76D8"/><stop offset="1" stop-color="#174A9D"/></linearGradient>
+<radialGradient id="light" cx="24%" cy="12%" r="90%"><stop offset="0" stop-color="#8BC5FF" stop-opacity=".65"/><stop offset="1" stop-color="#8BC5FF" stop-opacity="0"/></radialGradient>
+<linearGradient id="glass" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".21"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>
+<filter id="shadow" x="-30%" y="-30%" width="160%" height="180%"><feDropShadow dx="0" dy="10" stdDeviation="9" flood-color="#10234A" flood-opacity=".24"/></filter>
+</defs>
+<rect x="8" y="8" width="240" height="240" rx="58" fill="url(#bg)"/>
+<rect x="8" y="8" width="240" height="240" rx="58" fill="url(#light)"/>
+<path d="M66 9h124a58 58 0 0 1 58 58v14C173 52 93 43 9 100V67A58 58 0 0 1 66 9z" fill="url(#glass)"/>
+<rect x="9.5" y="9.5" width="237" height="237" rx="56.5" fill="none" stroke="#fff" stroke-opacity=".26" stroke-width="3"/>
+<ellipse cx="128" cy="219" rx="73" ry="10" fill="#10234A" opacity=".15"/>
+<g filter="url(#shadow)"><path d="M78 46h75l33 34v126a13 13 0 0 1-13 13H78a13 13 0 0 1-13-13V59a13 13 0 0 1 13-13z" fill="#F9FCFF"/><path d="M153 46v28a7 7 0 0 0 7 7h26z" fill="#D9E9FB"/><path d="M153 46v28a7 7 0 0 0 7 7h26" fill="none" stroke="#B7D2F2" stroke-width="3"/><rect x="86" y="101" width="69" height="8" rx="4" fill="#4D8FE2"/><rect x="86" y="121" width="86" height="6" rx="3" fill="#CBD9EA"/><rect x="86" y="139" width="80" height="6" rx="3" fill="#CBD9EA"/><rect x="86" y="157" width="70" height="6" rx="3" fill="#CBD9EA"/><rect x="86" y="175" width="55" height="6" rx="3" fill="#CBD9EA"/><g transform="rotate(37 171 171)"><rect x="158" y="130" width="24" height="78" rx="9" fill="#1C4E9C"/><rect x="161" y="137" width="18" height="53" rx="4" fill="#6BA9F3"/><path d="M158 197h24l-12 22z" fill="#D7E8FA"/><path d="M169 213h4l-2 6z" fill="#243D65"/></g></g>
+</svg>
