@@ -10,7 +10,7 @@
   "scripts": {
     "dev": "npm run --workspaces dev --if-present",
     "build": "npm run --workspaces build --if-present",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "npx tsc --noEmit",
     "test": "echo 'Running suite test suite...'"
   },
   "devDependencies": {
