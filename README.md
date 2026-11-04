@@ -33,11 +33,18 @@ The first release remains local-first; the suite does not claim cloud collaborat
 
 The automated test suite includes service tests, app-shell integration tests and DOM-contract checks for the integrated workspaces. Database supports ascending and descending record sorting, and CSV export prefixes formula-like text values so spreadsheet programs are less likely to interpret user-entered text as formulas. These checks help protect module-to-shell connections and core logic; they do not replace real app interaction, data-persistence, accessibility, cross-platform build, installation, upgrade or uninstall testing.
 
-The private repository's native Actions runner issue is still tracked in [Brightdesk-suite issue #23](https://github.com/connormolloy12/Brightdesk-suite/issues/23). The public Brightdesk-Pages maintenance controller provides a separate no-publication path using short-lived, repository-scoped read-only tokens and private issue-only diagnostics.
+### Current CI verification — 4 November 2026
 
-The latest full test and installer verification is [Brightdesk-Pages run 41718905454](https://github.com/connormolloy12/Brightdesk-Pages/actions/runs/41718905454). The controller regression tests passed under Node.js 24.22.2. The complete `npm test` command passed for Brightdesk-suite and the other five existing private repositories on Linux. The Suite startup smoke-test implementation was added in [Brightdesk-suite PR #34](https://github.com/connormolloy12/Brightdesk-suite/pull/34); the trusted native installer checker was updated in [Brightdesk-Pages PR #33](https://github.com/connormolloy12/Brightdesk-Pages/pull/33). On the latest run, the Brightdesk Suite Linux and Windows installer jobs passed package verification, checksum generation, temporary installation, the packaged startup/interface check, and uninstall. The macOS job has not started: it remains queued without a hosted runner assignment. The matrix is therefore not complete.
+Brightdesk Suite PR #38 now has successful self-hosted macOS runs for all four principal checks on commit `4f16721cc6f3847da8f23f75d8c31ccdd5c874c2`:
 
-The run produced no uploaded workflow artifacts and no customer release. Private source, raw command output and installer files remain on temporary runners. The Linux and Windows test results verify those two candidate paths only; they do not make Brightdesk generally release-ready.
+- [Rust Node-API integration](https://github.com/connormolloy12/Brightdesk-suite/actions/runs/41747718533) — formatting, Clippy, Rust tests, native addon build and Node-API/embedding bridge tests passed.
+- [Integrated Suite checks](https://github.com/connormolloy12/Brightdesk-suite/actions/runs/41747718491) — dependency install, renderer syntax, all app-module syntax and `npm test` passed.
+- [Lists checks](https://github.com/connormolloy12/Brightdesk-suite/actions/runs/41747718483) — dependency install, syntax and `npm test` passed.
+- [Security and dependency audit](https://github.com/connormolloy12/Brightdesk-suite/actions/runs/41747718495) — lock preparation/verification, licence verification, tests and high-severity dependency audit passed.
+
+These current CI runs execute on the repository's self-hosted macOS runner. They verify the Mac environment only; they do not establish Windows or Linux native builds, installers, or runtime acceptance. The other Brightdesk repositories still require their own runner setup or another approved CI execution path before their Rust changes can be described as CI-verified.
+
+No customer release, installer publication or workflow artifact was produced by these checks. The PR remains open and unmerged pending the remaining repository and platform verification.
 
 ## Supported installer targets
 
@@ -61,9 +68,10 @@ Individual commands are available as `npm run dist:<product>:<platform>` for Pag
 
 Building and testing Brightdesk requires exactly Node.js 24.22.2. This is a developer/CI requirement only; it is not a customer installation requirement. Run `npm run setup:dev` after activating that runtime. The project uses its checked-in package lock and automated Node.js tests.
 
-The GitHub Actions workflows pin third-party actions to immutable commit SHAs and use least-privilege permissions. Installer builds, test results and release artifacts must be verified before they are described as passing or ready. If hosted runners are unavailable, run `npm run verify:local-release` on each target operating system; see [Local release verification](docs/LOCAL-RELEASE-VERIFICATION.md). This local process does not upload or publish anything.
+The GitHub Actions workflows pin third-party actions to immutable commit SHAs and use least-privilege permissions. The current PR validation workflows use a repository-scoped self-hosted macOS runner labelled `self-hosted`; the runner must be online for those checks to start. This is a macOS CI path, not a substitute for Windows and Linux verification. Installer builds, test results and release artifacts must be verified before they are described as passing or ready. See [Local release verification](docs/LOCAL-RELEASE-VERIFICATION.md) for the separate local installer verification process; this process does not upload or publish anything.
 
 Brightdesk uses original product names, code, artwork and interface design. Microsoft product names are used only as internal workflow comparisons.
+
 ## Updates and customer control
 
 Automatic update checking can be turned on or off. Turning it off stops scheduled and focus-triggered checks. Brightdesk never downloads or installs an update automatically; the customer must choose **Download update** and then **Install update**. The release feed is not configured in the current development build, so update checks will remain unavailable until the approved distribution repository is configured.
