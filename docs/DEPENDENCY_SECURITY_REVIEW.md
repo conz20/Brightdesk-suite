@@ -23,14 +23,18 @@ These overrides are intentionally scoped to their parent packages. They do not f
 - app-builder-lib resolves minimatch 11.0.4 or later within the 11.x major line and the `Minimatch` / `minimatch` APIs used by the builder work.
 - The root package manifest retains both scoped overrides.
 
-The regenerated lockfile was created on the existing self-hosted Mac runner. `npm ls --package-lock-only --depth=0` passed, and the Suite CI passed Node/runtime, lockfile, licence, syntax, full automated test and release-preflight steps on the current code revision. The Rust CI also passed formatting, Clippy, Cargo tests, the native build and native-engine tests. The `npm audit --audit-level=high` step passed its high-severity threshold; that is not a claim that all moderate findings are gone.
+The regenerated lockfile was created on the existing self-hosted Mac runner. `npm ls --package-lock-only --depth=0` passed. On commit `eaab5e76e71dde81e3f8cb95708f6acc03b76948`, the Suite CI reported 236 tests, 231 passed, 0 failed and 5 skipped; licence checks, syntax checks and release preflight passed. The Rust CI also passed formatting, Clippy, Cargo tests, the native build and native-engine tests.
+
+The full `npm audit` report on that commit contained **16 moderate findings**, all remaining under the nested `minimatch@3.1.5` and `minimatch@5.1.9` paths listed below. No uuid finding and no app-builder-lib `minimatch@10.2.6` finding remained. The `npm audit --audit-level=high` command passes because these are moderate, not high or critical; moderate-or-higher findings are not all cleared.
 
 ## Remaining minimatch advisory-range question
 
 The lockfile still contains older minimatch copies under legacy dependencies:
 
-- `minimatch@3.1.5` under `glob`.
-- `minimatch@5.1.9` under `readdir-glob`.
+- `minimatch@3.1.5` at `node_modules/glob/node_modules/minimatch`, reached through the Electron packaging dependency tree.
+- `minimatch@5.1.9` at `node_modules/readdir-glob/node_modules/minimatch`, reached through ExcelJS's archive dependency tree.
+
+Together these paths account for the 16 moderate audit findings in the `eaab5e76` CI run.
 
 The minimatch maintainer's advisory identifies 10.2.6 as affected and 11.0.1 as patched. The GitHub Advisory Database currently publishes the broader affected range `<11.0.1`, which causes scanner reports to include the older 3.x and 5.x copies.
 
@@ -49,7 +53,7 @@ References:
 
 ## Release decision
 
-This review records targeted remediation and compatibility tests; it does **not** grant a release exception. Keep the release blocked until the remaining moderate audit output has been reviewed against the published dependency paths and either:
+This review records targeted remediation and compatibility tests; it does **not** grant a release exception. Keep the release blocked until the 16 moderate findings have been reviewed against the published dependency paths and either:
 
 1. the advisory database clarifies the older minimatch range and the release audit is clean; or
 2. the release owner records a named, time-limited exception, affected paths, evidence, impact assessment and remediation/review date in `docs/RELEASE_GATE.md`.
