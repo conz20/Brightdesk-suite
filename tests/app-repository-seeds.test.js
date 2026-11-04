@@ -9,9 +9,9 @@ test('generator includes exactly the ten approved products',()=>{
  assert.deepEqual(PRODUCT_REPOSITORIES.map(p=>p.appId),['pages','sheets','slides','notes','database','forms','lists','planner','todo','loop']);
 });
 test('generated tests include required regression gates and exclude suite-only/network tests',()=>{
- for(const f of ['tests/focus-mode.test.js','tests/app-upgrade-preservation.test.js','tests/product-launch-lock.test.js','tests/native-engine-integration.test.js','tests/nsis-uninstaller-patch.test.js']) assert.ok(PRODUCT_TEST_FILES.includes(f),f);
+ for(const f of ['tests/focus-mode.test.js','tests/app-upgrade-preservation.test.js','tests/product-launch-lock.test.js','tests/native-engine-integration.test.js','tests/nsis-uninstaller-patch.test.js','tests/dependency-security.test.js']) assert.ok(PRODUCT_TEST_FILES.includes(f),f);
  for(const f of ['tests/app-catalog.test.js','tests/dictionary-service-live.test.js','tests/release-workflows.test.js']) assert.ok(!PRODUCT_TEST_FILES.includes(f),f);
- assert.equal(PRODUCT_TEST_FILES.length,37);
+ assert.equal(PRODUCT_TEST_FILES.length,38);
  for(const suiteOnly of ['tests/standalone-app-builds.test.js','tests/standalone-rust-packaging.test.js']) assert.ok(!PRODUCT_TEST_FILES.includes(suiteOnly),suiteOnly);
 });
 test('generated README states shared source trade-off and product lock',()=>{
@@ -41,6 +41,8 @@ test('generated manifests use canonical platform artifact names and native hooks
    assert.equal(m.build.mac.artifactName,'Brightdesk-'+slug+'-\${version}-\${arch}.\${ext}');
    assert.equal(m.build.linux.artifactName,'brightdesk-'+slug.toLowerCase()+'-\${version}-\${arch}.\${ext}');
    assert.equal(m.build.appImage,undefined);
+   assert.equal(m.overrides.exceljs.uuid,'^11.1.1');
+   assert.equal(m.overrides['app-builder-lib'].minimatch,'^11.0.1');
    for(const p of ['win','mac','linux']) assert.ok(!m.scripts['dist:product:'+p].includes('build:native'));
    assert.equal(m.scripts['predist:product:win'],'node scripts/patch-electron-builder-nsis.js');
   }
