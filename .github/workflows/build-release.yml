@@ -1,20 +1,6 @@
 name: Build and verify Brightdesk installers
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - 'package.json'
-      - 'package-lock.json'
-      - 'src/**'
-      - 'scripts/**'
-      - 'installer/**'
-      - 'tests/**'
-      - 'electron-builder.app.config.js'
-      - 'TERMS_AND_CONDITIONS.txt'
-      - 'LICENSE'
-      - 'THIRD_PARTY_NOTICES.md'
-      - '.github/workflows/build-release.yml'
   workflow_dispatch:
     inputs:
       publish_release:
