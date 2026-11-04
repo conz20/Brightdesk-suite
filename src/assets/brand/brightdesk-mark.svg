@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="160" height="160" viewBox="0 0 160 160" role="img" aria-labelledby="title desc">
+  <title id="title">Brightdesk mark</title>
+  <desc id="desc">A geometric four-panel Brightdesk symbol in blue, violet and teal on a deep navy tile.</desc>
+  <defs>
+    <linearGradient id="mark-gradient" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#53C8E8"/>
+      <stop offset="1" stop-color="#7868E8"/>
+    </linearGradient>
+  </defs>
+  <rect x="12" y="12" width="136" height="136" rx="34" fill="#101B35"/>
+  <path d="M43 43h31a13 13 0 0 1 13 13v31H56a13 13 0 0 1-13-13z" fill="url(#mark-gradient)"/>
+  <path d="M91 43h14a13 13 0 0 1 13 13v14H91z" fill="#8C7CF0"/>
+  <path d="M91 91h27v14a13 13 0 0 1-13 13H91z" fill="#43B9A7"/>
+  <path d="M43 91h31v27H56a13 13 0 0 1-13-13z" fill="#4B8DE8"/>
+</svg>
