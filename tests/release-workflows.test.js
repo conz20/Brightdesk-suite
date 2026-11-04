@@ -16,7 +16,7 @@ test('Dependabot checks npm dependencies and GitHub Actions weekly', () => {
 });
 
 test('scheduled dependency audit prepares and verifies a lockfile before blocking high severity vulnerabilities', () => {
-  const workflow = read('.github/workflows/security-audit.yml');
+  const workflow = read('.github/workflows/quality.yml');
   assert.match(workflow, /cron:/);
   assert.match(workflow, /node-version: 24\.22\.2/);
   assert.match(workflow, /npm run lock:prepare/);
@@ -90,7 +90,7 @@ test('Node.js runtime is pinned consistently to the current 24 LTS patch', () =>
   assert.equal(read('.node-version').trim(), '24.22.2');
   assert.match(read('.devcontainer/Dockerfile'), /^FROM node:24\.22\.2-bookworm/m);
   assert.match(read('.github/workflows/build-release.yml'), /node-version: 24\.22\.2/);
-  assert.match(read('.github/workflows/security-audit.yml'), /node-version: 24\.22\.2/);
+  assert.match(read('.github/workflows/quality.yml'), /node-version: 24\.22\.2/);
 });
 
 test('individual app installer builds explicitly disable implicit publishing', () => {
@@ -114,4 +114,10 @@ test('local release verification runs tests and builds only for the current nati
   assert.match(script, /process\.platform/);
   assert.match(script, /CSC_IDENTITY_AUTO_DISCOVERY/);
   assert.doesNotMatch(script, /publish always|gh release create/i);
+});
+
+test('dependency-maintenance workflows use the existing self-hosted runner', () => {
+  for (const file of ['.github/workflows/generate-lockfile.yml', '.github/workflows/generate-third-party-notices.yml']) {
+    assert.match(read(file), /runs-on: self-hosted/, `${file} must not consume hosted-runner minutes`);
+  }
 });
