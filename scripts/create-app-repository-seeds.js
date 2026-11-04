@@ -133,7 +133,7 @@ function socialPreview(product) {
 }
 
 function repositoryBundleReadme() {
-  const folders = APP_REPOSITORIES.map(product => '- ' + product.repository + ' — ' + product.name).join('\\n');
+  const folders = APP_REPOSITORIES.map(product => '- ' + product.repository + ' — ' + product.name).join('\n');
   return [
     '# Brightdesk product repositories',
     '',
@@ -157,7 +157,7 @@ function repositoryBundleReadme() {
     'The bundle includes Pages, Sheets, Decks, Notes, Database, Forms, Lists, Planner, To Do and Workspace only. Outlook, OneDrive and Teams are excluded.',
     '',
     'Brightdesk is an independent product with original names, code, branding and artwork.'
-  ].join('\\n') + '\\n';
+  ].join('\n') + '\n';
 }
 
 function repositoryReadme(product) {
