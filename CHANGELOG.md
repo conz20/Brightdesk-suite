@@ -21,9 +21,9 @@ All notable changes to Brightdesk are recorded here. Versions follow the project
 
 ### Still pending — not claimed as completed
 
-- The shared Suite CI passed on commit `eaab5e76e71dde81e3f8cb95708f6acc03b76948`: 236 tests, 231 passed, 0 failed, 5 skipped; release preflight and the high-severity audit threshold passed. Rust formatting, Clippy, Cargo tests, native build and native-engine tests also passed on that commit. The subsequent onboarding-document correction is documentation-only and has a fresh CI run pending.
-- The regenerated dependency lock resolves ExcelJS's `uuid` dependency to 11.1.1 and app-builder-lib's `minimatch` dependency to 11.0.4. The ExcelJS archive chain is also moved from `archiver@5.3.2` / `readdir-glob@1.1.3` to `readdir-glob@3.0.0`, with a compatibility test that creates a ZIP archive through the old Archiver API.
-- The latest dependency lockfile is committed on this branch. A fresh clean-install, full test and audit run against that exact lock is the final outstanding check for this PR.
+- The current clean-install quality run passed lock verification, `npm ci`, licence checks and source syntax checks. The full test run then exposed two incorrect assertions for the scoped Archiver override key; those assertions are fixed in the current branch. The audit and release preflight were skipped on that run and must be rechecked. The Rust workflow passed formatting, Clippy, Cargo tests, native addon build and native-engine/provider bridge tests.
+- The committed dependency lock resolves ExcelJS's `uuid` dependency to 11.1.1 and app-builder-lib's `minimatch` dependency to 11.0.4. The ExcelJS archive chain is moved from `archiver@5.3.2` / `readdir-glob@1.1.3` to `readdir-glob@3.0.0` with scoped minimatch 11.0.4; an integration test creates a ZIP through the existing Archiver API.
+- A clean install against the committed lock has passed. The full suite and fresh audit still need a clean CI run after the assertion correction; do not mark dependency verification complete until then.
 - The permanent product-folder bundle and remote product updates remain pending.
 - Run `npm run repositories:prepare` from the merged shared Suite source to create all ten product folders. The automated test currently creates temporary folders to verify the generator; it does not populate remote repositories.
 - Run each generated product's 38-file test command and verify its installer filenames/checksum workflow before pushing any product folder.
@@ -33,9 +33,9 @@ All notable changes to Brightdesk are recorded here. Versions follow the project
 
 ### Security
 
-- Scoped overrides replace ExcelJS's `uuid@8.3.2` with `uuid@11.1.1`, and app-builder-lib's `minimatch@10.2.6` with `minimatch@11.0.4`. Compatibility tests cover both uses.
-- Two older nested minimatch packages remain in the lock: `minimatch@3.1.5` through `glob` and `minimatch@5.1.9` through `readdir-glob`. The GitHub Advisory Database currently publishes a broad `<11.0.1` range, while contributors have asked for clarification about earlier releases in issue [#10811](https://github.com/github/advisory-database/issues/10811). Do not force a minimatch 11 override onto those legacy callers without evidence of API compatibility.
-- The CI `npm audit --audit-level=high` step passed on commit `eaab5e76e71dde81e3f8cb95708f6acc03b76948`, but its full report contains **16 moderate findings**, all remaining under `minimatch@3.1.5` and `minimatch@5.1.9` via `glob` and `readdir-glob`. The earlier `uuid` and app-builder `minimatch@10.2.6` findings are no longer present. The broad GitHub Advisory Database affected range still flags the older copies; see [issue #10811](https://github.com/github/advisory-database/issues/10811). This is not a clean moderate-or-higher audit and does not clear the release blocker.
+- Scoped overrides replace ExcelJS's `uuid@8.3.2` with `uuid@11.1.1`, and app-builder-lib's `minimatch@10.2.6` with `minimatch@11.0.4`. A scoped Archiver override also replaces `readdir-glob@1.1.3` with `3.0.0` and pins that branch to minimatch 11.0.4. Compatibility tests cover the workbook round-trip, builder API and archive creation.
+- The current lock retains `minimatch@3.1.5` through the legacy `glob` path; the former `readdir-glob@1.1.3` / `minimatch@5.1.9` path is no longer present. The advisory database currently publishes a broad `<11.0.1` range; clarification is tracked in [issue #10811](https://github.com/github/advisory-database/issues/10811).
+- The earlier **16 moderate findings** were reported against the previous lock graph and should not be carried forward as the current count. The latest CI did not reach the audit step because the tests failed on incorrect override-key assertions. A full current-lock audit remains pending; keep the release blocker in place until it is complete.
 - No owner-approved exception is claimed. Keep release approval blocked until the remaining audit paths are formally reviewed and either cleared by authoritative advisory clarification or covered by a named, time-limited owner exception with evidence and a remediation plan.
 
 ### Known limitations
