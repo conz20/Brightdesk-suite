@@ -1,5 +1,6 @@
 # Locally built Node-API modules and Rust outputs
 /native/*.node
 /rust/target/
+**/target/
 dist/
 node_modules/
