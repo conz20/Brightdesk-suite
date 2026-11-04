@@ -133,7 +133,7 @@ function socialPreview(product) {
 }
 
 function repositoryBundleReadme() {
-  const folders = APP_REPOSITORIES.map(product => '- ' + product.repository + ' — ' + product.name).join('\n');
+  const folders = APP_REPOSITORIES.map(product => '- ' + product.repository + ' — ' + product.name).join('\\n');
   return [
     '# Brightdesk product repositories',
     '',
@@ -143,11 +143,12 @@ function repositoryBundleReadme() {
     '',
     folders,
     '',
-    '## Add a product repository to GitHub',
+    '## Populate the matching GitHub repository',
     '',
-    '1. Create an empty GitHub repository using the matching folder name.',
-    '2. Upload the folder contents to the repository root on the main branch. Keep hidden files, including .github/workflows/product-installers.yml.',
-    '3. Confirm the repository shows its README, product artwork and desktop-installer workflow.',
+    '1. Use the matching existing repository listed in docs/PRODUCT-REPOSITORIES.md. Do not create a duplicate repository.',
+    '2. Inspect its default branch before writing. If it already contains source, compare the generated folder and prepare a reviewed pull request; never overwrite its source or force-push.',
+    '3. If the existing repository is empty, prepare an initial commit on a new branch and open a pull request. Keep hidden files, including .github/workflows/product-installers.yml.',
+    '4. Confirm the repository shows its README, product artwork, desktop-installer workflow and passing checks before merging.',
     '',
     'Each product repository is a separate home for its named product. Brightdesk-suite remains the complete ten-product desktop suite.',
     '',
@@ -156,7 +157,7 @@ function repositoryBundleReadme() {
     'The bundle includes Pages, Sheets, Decks, Notes, Database, Forms, Lists, Planner, To Do and Workspace only. Outlook, OneDrive and Teams are excluded.',
     '',
     'Brightdesk is an independent product with original names, code, branding and artwork.'
-  ].join('\n') + '\n';
+  ].join('\\n') + '\\n';
 }
 
 function repositoryReadme(product) {
@@ -450,11 +451,11 @@ function createProductRepositorySeeds({ rootDir = path.resolve(__dirname, '..'),
 
 - Product: ${product.name}
 - Product ID: \`${product.appId}\`
-- Repository visibility: choose when creating the GitHub repository
+- Repository visibility: preserve the existing GitHub repository setting; do not create a duplicate
 - Description: ${product.description}
 - Main suite: https://github.com/connormolloy12/Brightdesk-suite
 
-This product folder is ready to upload to a GitHub repository named \`${product.repository}\`. It is the dedicated desktop edition of ${product.name}. The shared suite keeps the complete ten-product experience.
+This generated folder is the source for the existing GitHub repository named \`${product.repository}\`. Inspect and compare the remote before opening a pull request; do not overwrite a populated default branch. It is the dedicated desktop edition of ${product.name}. The shared suite keeps the complete ten-product experience.
 `);
     results.push({ ...product, path: target });
   }
