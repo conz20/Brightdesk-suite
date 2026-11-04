@@ -77,8 +77,7 @@ function saveAppSetup() {
 function installedApp(id) { return state.installedApps.includes(id) || ['todo','lists','forms','planner','database','loop'].includes(id); }
 function appLabel(id) { return catalog.find(item => item.id === id)?.name || id; }
 function appIconPath(item) {
-  const iconId = ({ slides: 'decks', todo: 'to-do', loop: 'workspace' })[item.id] || item.id;
-  return `assets/icons/${iconId}.svg`;
+  return `assets/icons/${item.iconAsset}`;
 }
 
 
