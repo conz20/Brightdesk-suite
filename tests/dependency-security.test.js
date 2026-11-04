@@ -9,7 +9,10 @@ function packageAt(entryFile) {
   let directory = path.dirname(entryFile);
   while (true) {
     const manifestPath = path.join(directory, 'package.json');
-    if (fs.existsSync(manifestPath)) return JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+    if (fs.existsSync(manifestPath)) {
+      const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+      if (manifest.name && manifest.version) return manifest;
+    }
     const parent = path.dirname(directory);
     if (parent === directory) break;
     directory = parent;
