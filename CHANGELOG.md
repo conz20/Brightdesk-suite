@@ -22,7 +22,7 @@ All notable changes to Brightdesk are recorded here. Versions follow the project
 ### Still pending — not claimed as completed
 
 - The shared Suite CI passed on commit `eaab5e76e71dde81e3f8cb95708f6acc03b76948`: 236 tests, 231 passed, 0 failed, 5 skipped; release preflight and the high-severity audit threshold passed. Rust formatting, Clippy, Cargo tests, native build and native-engine tests also passed on that commit. The subsequent onboarding-document correction is documentation-only and has a fresh CI run pending.
-- The regenerated dependency lock resolves ExcelJS's `uuid` dependency to 11.1.1 and app-builder-lib's `minimatch` dependency to 11.0.4. A compatibility regression test covers the ExcelJS XLSX round-trip and the builder's minimatch API.
+- The regenerated dependency lock resolves ExcelJS's `uuid` dependency to 11.1.1 and app-builder-lib's `minimatch` dependency to 11.0.4. The ExcelJS archive chain is also moved from `archiver@5.3.2` / `readdir-glob@1.1.3` to `readdir-glob@3.0.0`, with a compatibility test that creates a ZIP archive through the old Archiver API.
 - The permanent product-folder bundle and remote product updates remain pending.
 - Run `npm run repositories:prepare` from the merged shared Suite source to create all ten product folders. The automated test currently creates temporary folders to verify the generator; it does not populate remote repositories.
 - Run each generated product's 38-file test command and verify its installer filenames/checksum workflow before pushing any product folder.
