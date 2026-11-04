@@ -27,11 +27,11 @@ All ten applications follow the shared [Brightdesk visual and interaction standa
 
 | Area | Current status |
 | --- | --- |
-| Brightdesk Suite | The shared visual refinement is merged into `main`; the suite quality gate passed. |
-| Pages, Sheets, Decks, Notes, Database and Forms | Their shared workspace styling is prepared in draft pull requests. GitHub has not allocated runners for their checks, so these changes remain unmerged and are not marked as test-passed. |
-| Lists, Planner, To Do and Workspace | Product-specific design concepts and README previews are present. Their standalone repositories are still scaffolds and do not yet contain runnable app implementations. |
+| Brightdesk Suite | The shared workspace visual layer is in the live suite renderer and the suite quality gate passed on the original UI refresh. All ten app modules are loaded by the suite. |
+| Pages, Sheets, Decks, Notes, Database and Forms | The professional workspace CSS layer is committed to each repository's `main` branch. Their app HTML loads `src/design-system.css`, so these are runtime styles, not README-only examples. Their individual GitHub Actions checks could not obtain a runner; treat those CSS-only commits as not independently CI-verified. |
+| Lists, Planner, To Do and Workspace | Their integrated app modules, workspaces and UI integration tests live in Brightdesk-suite and use the suite's shared workspace styling. Their individual repositories are still documentation/design scaffolds; separate standalone app source has not yet been published there. |
 
-All README workspace images are **design concepts**, not screenshots from finished, acceptance-tested application screens. They should be replaced with real screenshots as each screen is implemented and visually verified.
+The README images are **design concepts**, not screenshots from finished, acceptance-tested application screens. The live software uses implemented HTML, JavaScript and CSS. Replace concept images with captured app screenshots after the matching screen has been acceptance-tested.
 
 ## The ten Brightdesk applications
 
