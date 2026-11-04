@@ -122,7 +122,7 @@ test('each catalogue app references its own original SVG icon artwork', () => {
     assert.ok(fs.existsSync(path.join(root, 'src', 'assets', 'icons', app.iconAsset)));
   }
   const source = fs.readFileSync(path.join(root, 'src', 'app.js'), 'utf8');
-  assert.match(source, /return `assets\\/icons\\/\$\{item\.iconAsset\}`/);
+  assert.ok(source.includes('return `assets/icons/${item.iconAsset}`'));
 });
 
 test('all catalogue modules have independent Brightdesk metadata', () => {
