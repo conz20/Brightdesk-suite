@@ -4,7 +4,7 @@ const assert=require('node:assert/strict');
 const fs=require('node:fs');
 const os=require('node:os');
 const path=require('node:path');
-const {PRODUCT_REPOSITORIES,PRODUCT_TEST_FILES,createProductRepositorySeeds,repositoryReadme,productWorkflow}=require('../scripts/create-app-repository-seeds');
+const {PRODUCT_REPOSITORIES,PRODUCT_TEST_FILES,createProductRepositorySeeds,repositoryBundleReadme,repositoryReadme,productWorkflow}=require('../scripts/create-app-repository-seeds');
 test('generator includes exactly the ten approved products',()=>{
  assert.deepEqual(PRODUCT_REPOSITORIES.map(p=>p.appId),['pages','sheets','slides','notes','database','forms','lists','planner','todo','loop']);
 });
@@ -13,6 +13,13 @@ test('generated tests include required regression gates and exclude suite-only/n
  for(const f of ['tests/app-catalog.test.js','tests/dictionary-service-live.test.js','tests/release-workflows.test.js']) assert.ok(!PRODUCT_TEST_FILES.includes(f),f);
  assert.equal(PRODUCT_TEST_FILES.length,38);
  for(const suiteOnly of ['tests/standalone-app-builds.test.js','tests/standalone-rust-packaging.test.js']) assert.ok(!PRODUCT_TEST_FILES.includes(suiteOnly),suiteOnly);
+});
+test('repository bundle reuses existing remotes and blocks destructive overwrites',()=>{
+ const readme=repositoryBundleReadme();
+ assert.match(readme,/matching existing repository/);
+ assert.match(readme,/Do not create a duplicate repository/);
+ assert.match(readme,/never overwrite its source or force-push/);
+ assert.match(readme,/open a pull request/);
 });
 test('generated README states shared source trade-off and product lock',()=>{
  const readme=repositoryReadme(PRODUCT_REPOSITORIES.find(p=>p.appId==='todo'));
