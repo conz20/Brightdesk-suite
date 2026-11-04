@@ -14,16 +14,16 @@ This is the shared design contract for Brightdesk Office Suite and all ten appro
 
 | Product | Icon metaphor | Accent family |
 | --- | --- | --- |
-| Pages | Document page and editing pen | Blue |
+| Pages | Document page and editing pen | Blue-violet |
 | Sheets | Spreadsheet grid and chart | Green |
-| Decks | Layered presentation slides | Coral |
-| Notes | Open notebook and bookmark | Amber |
+| Decks | Layered presentation slides | Amber |
+| Notes | Open notebook and bookmark | Blue-teal |
 | Database | Structured data cylinder and rows | Violet |
-| Forms | Form page and response checkboxes | Magenta |
+| Forms | Form page and response checkboxes | Coral |
 | Lists | Ordered checklist rows | Teal |
 | Planner | Calendar and schedule | Royal blue |
 | To Do | Task list and completion check | Green |
-| Workspace | Connected project panels | Indigo |
+| Workspace | Connected project panels | Slate indigo |
 
 The product-specific accents should help recognition, not create ten unrelated design systems. Shared surfaces, typography and interaction patterns remain common.
 
