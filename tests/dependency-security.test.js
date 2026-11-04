@@ -6,7 +6,15 @@ const fs = require('node:fs');
 const path = require('node:path');
 
 function packageAt(entryFile) {
-  return JSON.parse(fs.readFileSync(path.join(path.dirname(entryFile), 'package.json'), 'utf8'));
+  let directory = path.dirname(entryFile);
+  while (true) {
+    const manifestPath = path.join(directory, 'package.json');
+    if (fs.existsSync(manifestPath)) return JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+    const parent = path.dirname(directory);
+    if (parent === directory) break;
+    directory = parent;
+  }
+  throw new Error('Could not locate package.json for ' + entryFile);
 }
 
 test('ExcelJS uses the patched CommonJS-compatible uuid release', () => {
