@@ -32,6 +32,14 @@ Brightdesk uses a shared desktop design language with:
 
 Read the [Brightdesk visual and interaction standard](docs/BRIGHTDESK_VISUAL_STANDARD.md) for the complete design contract.
 
+## Visual preview and screenshots
+
+The preview below is a **design concept**, not a screenshot of a running Brightdesk build. Its example installation states, update counts and controls are illustrative. This repository does not yet contain captured, acceptance-tested screenshots of the running suite or the ten individual product workspaces. Do not treat concept artwork as evidence that a displayed action is implemented.
+
+![Brightdesk app-centre concept preview](assets/previews/suite-dashboard-concept.svg)
+
+Actual screenshots for the suite and each of the ten approved applications should be added only after the corresponding screen is implemented, launched and acceptance-tested.
+
 ## Local-first desktop software
 
 Brightdesk is designed to run as installed desktop software and keep user work on the device. It does not require an account or cloud workspace.
