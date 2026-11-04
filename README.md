@@ -8,13 +8,13 @@ Brightdesk is an independent native desktop productivity suite. It is not affili
 
 ## See Brightdesk
 
-The following artwork gives the project a visual identity and provides an early look at the planned desktop experience.
+The following concept shows the intended Brightdesk app centre: app discovery, updates, downloads, launch controls and per-app management.
 
 <p align="center">
-  <img src="assets/previews/suite-dashboard-concept.svg" alt="Concept preview of the Brightdesk desktop dashboard showing all ten application cards" width="900">
+  <img src="assets/previews/suite-dashboard-concept.svg" alt="Concept preview of the Brightdesk app centre showing all ten original app icons, app descriptions, Open, Update, Download and a three-dot management menu" width="900">
 </p>
 
-> **Important:** This is a concept illustration, not a screenshot of a completed application build. It shows the intended dashboard direction. Actual screens and workflows must be captured from the running app as implementation and acceptance testing progress.
+> **Important:** This is a concept illustration, not a screenshot of a completed application build. It shows a proposed visual direction. The per-app menu, app downloads and update controls are design targets; they must be implemented and acceptance-tested before being described as available functionality.
 
 ## The ten Brightdesk applications
 
