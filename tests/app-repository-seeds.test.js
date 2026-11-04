@@ -63,6 +63,9 @@ test('generated product folders retain legal files, Rust sources, native tooling
   for(const product of PRODUCT_REPOSITORIES){
    const folder=path.join(output,product.repository);
    for(const file of ['LICENSE','TERMS_AND_CONDITIONS.txt','THIRD_PARTY_NOTICES.md','rust/Cargo.toml','src/standalone-downloads.js','scripts/build-native.js','scripts/patch-electron-builder-nsis.js','scripts/verify-standalone-apps.js','.github/workflows/product-installers.yml','assets/brightdesk-product.svg','assets/social-preview.svg']) assert.ok(fs.existsSync(path.join(folder,file)),file);
+   const repositoryInfo=fs.readFileSync(path.join(folder,'REPOSITORY_INFO.md'),'utf8');
+   assert.match(repositoryInfo,/existing GitHub repository/);
+   assert.match(repositoryInfo,/do not overwrite a populated default branch/);
   }
  }finally{fs.rmSync(output,{recursive:true,force:true});}
 });
