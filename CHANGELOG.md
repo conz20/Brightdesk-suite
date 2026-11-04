@@ -20,7 +20,7 @@ All notable changes to Brightdesk are recorded here. Versions follow the project
 
 ### Still pending — not claimed as completed
 
-- The latest full Suite CI run must pass on the current PR head, including the generator tests and restored download/verifier tests, before the shared source is treated as validated.
+- The shared Suite quality and Rust workflows passed on commit `60f0f9661c9fb30730cd7d55af63aa8673b46687`. The Node suite reported 231 tests, 226 passed, 0 failed and 5 skipped. The permanent product-folder bundle and remote product updates remain pending.
 - Run `npm run repositories:prepare` from the merged shared Suite source to create all ten product folders. The automated test currently creates temporary folders to verify the generator; it does not populate remote repositories.
 - Run each generated product's 37-file test command and verify its installer filenames/checksum workflow before pushing any product folder.
 - Populate the remote Brightdesk-To-Do, Brightdesk-Workspace, Brightdesk-Lists and Brightdesk-Planner repositories from their generated folders. Their GitHub repositories existed but had empty `main` branches during the 4 November 2026 check.
@@ -29,8 +29,8 @@ All notable changes to Brightdesk are recorded here. Versions follow the project
 
 ### Security
 
-- The earlier repository review reported 21 moderate advisories involving `minimatch` (GHSA-g3hv-75wg-m249) and `uuid` (GHSA-w5hq-g745-h8pq). This is historical input, not a verified count for the current release commit.
-- No remediation or owner-approved exception is claimed here. Obtain `npm audit --json` from the release commit, investigate the dependency paths, and record remediation or a time-limited approval in the release gate before publication.
+- The CI audit on commit `60f0f9661c9fb30730cd7d55af63aa8673b46687` reported 21 moderate advisories involving `minimatch` (GHSA-g3hv-75wg-m249) and `uuid` (GHSA-w5hq-g745-h8pq). The `npm audit --audit-level=high` step passed because no high-or-critical finding was reported; this does not clear the moderate findings.
+- No remediation or owner-approved exception is claimed. The release remains blocked until a compatible dependency fix is tested and the audit is clean, or an authorised owner records a time-limited exception with evidence and a remediation plan.
 
 ### Known limitations
 
