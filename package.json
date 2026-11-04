@@ -8,7 +8,8 @@
     "packages/*"
   ],
   "scripts": {
-    "build": "echo 'Building all suite applications...'",
+    "dev": "npm run --workspaces dev --if-present",
+    "build": "npm run --workspaces build --if-present",
     "typecheck": "tsc --noEmit",
     "test": "echo 'Running suite test suite...'"
   },
