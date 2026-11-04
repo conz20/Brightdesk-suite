@@ -38,6 +38,26 @@ Each application has its own original, purpose-designed icon. The matching artwo
 | **To Do** | <img src="assets/icons/to-do.svg" width="72" height="72" alt="Brightdesk To Do icon" /> | Manage daily tasks, due dates and priorities. |
 | **Workspace** | <img src="assets/icons/workspace.svg" width="72" height="72" alt="Brightdesk Workspace icon" /> | Bring project notes, tasks and resources together locally. |
 
+## App workspace visuals
+
+These previews let you inspect the intended look of each individual application directly from this README. Select an application name to open its repository and see its full README, design notes and implementation status.
+
+> **Please note:** These are design concepts, not captured screenshots of finished, acceptance-tested standalone applications. The four newer app repositories (Lists, Planner, To Do and Workspace) are visual prototypes while their standalone implementations are still to be built.
+
+| **Pages** | **Sheets** |
+| --- | --- |
+| <a href="https://github.com/connormolloy12/Brightdesk-Pages"><img src="https://raw.githubusercontent.com/connormolloy12/Brightdesk-Pages/main/assets/previews/pages-workspace.svg" alt="Brightdesk Pages workspace concept" width="100%"></a> | <a href="https://github.com/connormolloy12/Brightdesk-Sheets"><img src="https://raw.githubusercontent.com/connormolloy12/Brightdesk-Sheets/main/assets/previews/sheets-workspace.svg" alt="Brightdesk Sheets workspace concept" width="100%"></a> |
+| **Decks** | **Notes** |
+| <a href="https://github.com/connormolloy12/Brightdesk-Decks"><img src="https://raw.githubusercontent.com/connormolloy12/Brightdesk-Decks/main/src/branding/previews/slides.svg" alt="Brightdesk Decks workspace concept" width="100%"></a> | <a href="https://github.com/connormolloy12/Brightdesk-Notes"><img src="https://raw.githubusercontent.com/connormolloy12/Brightdesk-Notes/main/src/branding/previews/notes.svg" alt="Brightdesk Notes workspace concept" width="100%"></a> |
+| **Database** | **Forms** |
+| <a href="https://github.com/connormolloy12/Brightdesk-Database"><img src="https://raw.githubusercontent.com/connormolloy12/Brightdesk-Database/main/src/branding/previews/database.svg" alt="Brightdesk Database workspace concept" width="100%"></a> | <a href="https://github.com/connormolloy12/Brightdesk-Forms"><img src="https://raw.githubusercontent.com/connormolloy12/Brightdesk-Forms/main/src/branding/previews/forms.svg" alt="Brightdesk Forms workspace concept" width="100%"></a> |
+| **Lists** | **Planner** |
+| <a href="https://github.com/connormolloy12/Brightdesk-Lists"><img src="https://raw.githubusercontent.com/connormolloy12/Brightdesk-Lists/main/assets/previews/lists.svg" alt="Brightdesk Lists workspace concept" width="100%"></a> | <a href="https://github.com/connormolloy12/Brightdesk-Planner"><img src="https://raw.githubusercontent.com/connormolloy12/Brightdesk-Planner/main/assets/previews/planner.svg" alt="Brightdesk Planner workspace concept" width="100%"></a> |
+| **To Do** | **Workspace** |
+| <a href="https://github.com/connormolloy12/Brightdesk-To-Do"><img src="https://raw.githubusercontent.com/connormolloy12/Brightdesk-To-Do/main/assets/previews/to-do.svg" alt="Brightdesk To Do workspace concept" width="100%"></a> | <a href="https://github.com/connormolloy12/Brightdesk-Workspace"><img src="https://raw.githubusercontent.com/connormolloy12/Brightdesk-Workspace/main/assets/previews/workspace.svg" alt="Brightdesk Workspace workspace concept" width="100%"></a> |
+
+Each individual app README also includes its own larger preview, product icon and a clear note explaining whether the image is a concept or a running application screenshot.
+
 ## How Brightdesk works
 
 1. **Install:** Choose the installer for Windows, macOS or Linux. End users do not need to install Node.js or Rust.
