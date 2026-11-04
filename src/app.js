@@ -498,6 +498,11 @@ function renderAppManager() {
       });
       label.append(check, document.createTextNode(` ${t('manager.includeApp')}`)); footer.append(label);
     } else {
+      if (isInstalled) {
+        const open = document.createElement('button'); open.className = 'primary small-action app-install-action';
+        open.textContent = 'Open'; open.setAttribute('aria-label', `Open ${item.name}`);
+        open.addEventListener('click', () => setApp(item.id)); footer.append(open);
+      }
       const action = document.createElement('button'); action.className = isInstalled ? 'secondary small-action app-install-action' : 'primary small-action app-install-action';
       action.textContent = isInstalled ? 'Uninstall' : 'Install';
       action.setAttribute('aria-label', `${isInstalled ? 'Uninstall' : 'Install'} ${item.name}`);
