@@ -2,6 +2,7 @@
 'use strict';
 
 const fs = require('node:fs');
+const { createLocalQwenProvider } = require('./local-qwen-provider');
 
 async function main() {
   const [systemPath, userPath] = process.argv.slice(2);
@@ -11,37 +12,18 @@ async function main() {
 
   const system = fs.readFileSync(systemPath, 'utf8');
   const user = fs.readFileSync(userPath, 'utf8');
-  if (Buffer.byteLength(system, 'utf8') > 16000 || Buffer.byteLength(user, 'utf8') > 24000) {
-    throw new Error('The local AI prompt is too large. Reduce the supplied context before retrying.');
-  }
 
-  const response = await fetch('http://127.0.0.1:8080/v1/chat/completions', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      model: 'brightdesk-qwen3-local',
-      messages: [
-        { role: 'system', content: system },
-        { role: 'user', content: user }
-      ],
-      temperature: 0.15,
-      max_tokens: 500,
-      stream: false
-    }),
-    signal: AbortSignal.timeout(120000)
+  // The maintenance workflow explicitly enables this local, zero-API-cost provider.
+  // The adapter itself remains disabled when constructed by any other caller.
+  const provider = createLocalQwenProvider({ enabled: true });
+  const answer = await provider.generate({
+    task: system,
+    input: user,
+    model: provider.model,
+    promptTemplateVersion: 'brightdesk-maintenance-v1'
   });
 
-  if (!response.ok) {
-    const detail = (await response.text()).slice(0, 2000);
-    throw new Error(`The local AI model returned HTTP ${response.status}: ${detail}`);
-  }
-
-  const result = await response.json();
-  const answer = result?.choices?.[0]?.message?.content;
-  if (typeof answer !== 'string' || !answer.trim()) {
-    throw new Error('The local AI model returned an empty answer.');
-  }
-  process.stdout.write(`${answer.trim()}\n`);
+  process.stdout.write(answer + '\n');
 }
 
 main().catch(error => {

@@ -25,6 +25,16 @@ All ten apps are implemented in the integrated 0.1.0 codebase and are designed t
 
 The release workflow is designed to build macOS universal DMG and PKG installers, Windows x64 EXE installers, and Linux x64 AppImage and DEB packages. A build is only considered ready after the platform artifacts, legal documents and SHA-256 checksums have been verified.
 
+## Local AI maintenance helper
+
+The separate developer-maintenance helper uses a local Qwen3 model through llama.cpp. Its Node.js adapter at `scripts/brightdesk-ai/local-qwen-provider.js` follows the same `generate(...)` provider contract used by the private Brightdesk-AI coordinator.
+
+The adapter is disabled by default. The maintenance response script explicitly enables it for that local workflow, and it can only contact `http://127.0.0.1:8080`. It has no remote fallback and needs no model API key. Chat models and embedding models remain separate: Qwen provides chat responses; the Brightdesk-AI Rust engine only processes vectors produced by a real embedding provider.
+
+This helper is development infrastructure only. It is not bundled into customer installers, and the ten Office Suite apps do not depend on Brightdesk-AI or on the helper. Local model inference has no per-request model API fee, but GitHub Actions runner time remains subject to the repository's GitHub usage limits and billing rules.
+
+See [the maintenance guide](docs/BRIGHTDESK_AI_MAINTENANCE.md) for its limits and security boundaries.
+
 ## Installing Brightdesk
 
 **End users do not need to download or install Node.js.** The native desktop application is packaged with the Electron runtime it needs. Install Brightdesk using the installer for your operating system and open it like any other desktop app. See [INSTALLATION.md](docs/INSTALLATION.md) for instructions.

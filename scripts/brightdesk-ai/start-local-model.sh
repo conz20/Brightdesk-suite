@@ -8,6 +8,7 @@ LLAMA_ARCHIVE="llama-${LLAMA_VERSION}-bin-ubuntu-x64.tar.gz"
 LLAMA_SHA256="12d6403e0e1af83e0d4cdf77b54c9eeb776a3bbabd9fb591a12db22dbfd88872"
 LLAMA_URL="https://github.com/ggml-org/llama.cpp/releases/download/${LLAMA_VERSION}/${LLAMA_ARCHIVE}"
 MODEL_NAME="Qwen3-0.6B-Q8_0.gguf"
+MODEL_ALIAS="brightdesk-qwen3-local"
 MODEL_SHA256="9465e63a22add5354d9bb4b99e90117043c7124007664907259bd16d043bb031"
 MODEL_URL="https://huggingface.co/Qwen/Qwen3-0.6B-GGUF/resolve/23749fefcc72300e3a2ad315e1317431b06b590a/${MODEL_NAME}"
 
@@ -52,6 +53,7 @@ fi
 
 "$LLAMA_SERVER" \
   --model "$MODEL_FILE" \
+  --alias "$MODEL_ALIAS" \
   --host 127.0.0.1 \
   --port 8080 \
   --ctx-size 4096 \
