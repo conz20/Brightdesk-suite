@@ -14,6 +14,7 @@ All notable changes to Brightdesk are recorded here. Versions follow the project
 - Restored `scripts/create-app-repository-seeds.js` in the shared Suite and added a 38-file generated product test set, with suite-only and live-network tests kept out.
 - Added canonical product installer artifact names, product-specific desktop identity and shared-engine trade-off wording to generated product packages and READMEs.
 - Restored the shared download map and product artifact verifier (`src/standalone-downloads.js` and `scripts/verify-standalone-apps.js`) so generated `verify:product:*` commands resolve.
+- Updated the generated repository handoff instructions to reuse existing GitHub repositories, compare populated remotes and use pull requests instead of creating duplicates or overwriting default branches.
 - Added regression coverage for upgrade preservation, product launch locking, original product artwork, Rust fallback integration and NSIS uninstaller extraction.
 - Corrected the preload product allow-list so it matches all ten IDs accepted by the Electron main process.
 - Kept the Node-API bridge optional in generated product installers pending its separate architecture and benchmark approval.
