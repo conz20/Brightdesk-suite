@@ -35,7 +35,7 @@ The shared Brightdesk Suite source is the source of truth for product code and g
 npm run repositories:prepare
 ```
 
-Do not hand-edit generated product source or package manifests. Fix the suite source or generator, regenerate, test each folder, and then push its contents to the matching remote repository.
+Do not hand-edit generated product source or package manifests. Fix the suite source or generator, regenerate, and test each folder. Reuse the matching existing GitHub repository rather than creating a duplicate. For populated remotes, compare the generated folder and submit a reviewed pull request; do not overwrite or force-push the default branch. For an existing empty remote, confirm it is still empty before the initial population.
 
 ## Fixed product scope
 
