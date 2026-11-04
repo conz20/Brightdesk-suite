@@ -54,7 +54,7 @@ Each application has its own original, purpose-designed icon. The matching artwo
 
 These previews let you inspect the intended look of each individual application directly from this README. Select an application name to open its repository and see its full README, design notes and implementation status.
 
-> **Please note:** These are design concepts, not captured screenshots of finished, acceptance-tested standalone applications. The four newer app repositories (Lists, Planner, To Do and Workspace) are visual prototypes while their standalone implementations are still to be built.
+> **Please note:** These are design concepts, not screenshots of completed, acceptance-tested screens. Lists, Planner, To Do and Workspace each now have product-specific Electron source, interface modules, design-system styling, Rust engine integration, build scripts and UI tests committed to their own `main` branches. Their individual workflow checks did not obtain a GitHub runner, so their tests and installer builds remain unverified.
 
 | **Pages** | **Sheets** |
 | --- | --- |
