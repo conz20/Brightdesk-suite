@@ -17,10 +17,10 @@ test('Dependabot checks npm dependencies and GitHub Actions weekly', () => {
 
 test('one consolidated quality gate uses the self-hosted runner and verifies the committed dependency lock', () => {
   const workflow = read('.github/workflows/quality.yml');
-  assert.match(workflow, /pull_request:\\s*\\n\\s*branches: \\[main\\]/);
+  assert.match(workflow, /pull_request:\s*\n\s*branches: \[main\]/);
   assert.match(workflow, /cron:/);
   assert.match(workflow, /runs-on: self-hosted/);
-  assert.match(workflow, /node-version: 24\\.22\\.2/);
+  assert.match(workflow, /node-version: 24\.22\.2/);
   for (const command of [
     'npm run check:node',
     'npm run lock:verify',
@@ -45,7 +45,9 @@ test('release workflow builds and verifies all three desktop platforms', () => {
   for (const command of ['dist:linux', 'dist:win', 'dist:mac', 'release:verify:linux', 'release:verify:win', 'release:verify:mac']) {
     assert.ok(workflow.includes(command), `workflow includes ${command}`);
   }
-  assert.match(workflow, /node-version: 24\.22\.2/);
+  assert.match(workflow, /node-version: 24\\.22\\.2/);
+  assert.match(workflow, /^on:\\s*\\n\\s*workflow_dispatch:/);
+  assert.doesNotMatch(workflow, /^\\s+push:/m, 'installer builds must be manual, not automatic on push');
   assert.match(workflow, /^on:\\s*\\n\\s*workflow_dispatch:/);
   assert.doesNotMatch(workflow, /^\\s+push:/m, 'installer builds must be manual, not automatic on push');
   assert.match(workflow, /npm run lock:prepare/);
@@ -136,8 +138,3 @@ test('dependency-maintenance workflows use the existing self-hosted runner', () 
   }
 });
 
-test('dependency-maintenance workflows use the existing self-hosted runner', () => {
-  for (const file of ['.github/workflows/generate-lockfile.yml', '.github/workflows/generate-third-party-notices.yml']) {
-    assert.match(read(file), /runs-on: self-hosted/, `${file} must not consume hosted-runner minutes`);
-  }
-});
