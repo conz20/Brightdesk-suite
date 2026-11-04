@@ -70,7 +70,8 @@
     "dist:todo:linux": "npm run native:build && node scripts/build-app.js todo linux",
     "dist:workspace:win": "npm run native:build && node scripts/build-app.js loop win",
     "dist:workspace:mac": "npm run native:build && node scripts/build-app.js loop mac",
-    "dist:workspace:linux": "npm run native:build && node scripts/build-app.js loop linux"
+    "dist:workspace:linux": "npm run native:build && node scripts/build-app.js loop linux",
+    "repositories:prepare": "node scripts/create-app-repository-seeds.js"
   },
   "dependencies": {
     "docx": "9.15.1",
