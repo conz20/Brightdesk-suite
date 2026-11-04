@@ -60,8 +60,49 @@ test('electron-builder app-builder-lib resolves the patched minimatch package', 
   assert.equal(new minimatch.Minimatch('*.js').match('file.js'), true);
 });
 
+test('ExcelJS archive dependency uses patched readdir-glob and minimatch with compatible CommonJS API', async () => {
+  const exceljsEntry = require.resolve('exceljs');
+  const archiverEntry = require.resolve('archiver', { paths: [path.dirname(exceljsEntry)] });
+  const readdirGlobEntry = require.resolve('readdir-glob', { paths: [path.dirname(archiverEntry)] });
+  const readdirPackage = packageAt(readdirGlobEntry);
+  const minimatchEntry = require.resolve('minimatch', { paths: [path.dirname(readdirGlobEntry)] });
+  const minimatchPackage = packageAt(minimatchEntry);
+  const readdirGlob = require(readdirGlobEntry);
+  const archiver = require(archiverEntry);
+
+  assert.equal(readdirPackage.version, '3.0.0');
+  assert.ok(Number(minimatchPackage.version.split('.')[0]) >= 11);
+  assert.equal(typeof readdirGlob, 'function');
+  assert.equal(typeof readdirGlob.ReaddirGlob, 'function');
+  assert.equal(typeof readdirGlob.ReaddirGlob.prototype.pause, 'function');
+  assert.equal(typeof readdirGlob.ReaddirGlob.prototype.resume, 'function');
+
+  const directory = fs.mkdtempSync(path.join(require('node:os').tmpdir(), 'brightdesk-archiver-security-'));
+  try {
+    fs.writeFileSync(path.join(directory, 'compatibility.txt'), 'Brightdesk archive compatibility');
+    const archive = archiver('zip');
+    const chunks = [];
+    const output = new (require('node:stream').PassThrough)();
+    const completed = new Promise((resolve, reject) => {
+      output.on('data', chunk => chunks.push(chunk));
+      output.on('end', resolve);
+      output.on('error', reject);
+      archive.on('error', reject);
+    });
+    archive.pipe(output);
+    archive.directory(directory, false);
+    await archive.finalize();
+    await completed;
+    assert.ok(Buffer.concat(chunks).length > 0, 'archiver should emit a non-empty ZIP using readdir-glob 3');
+  } finally {
+    fs.rmSync(directory, { recursive: true, force: true });
+  }
+});
+
 test('root overrides are explicitly scoped to ExcelJS and app-builder-lib', () => {
   const manifest = require('../package.json');
   assert.equal(manifest.overrides.exceljs.uuid, '^11.1.1');
   assert.equal(manifest.overrides['app-builder-lib'].minimatch, '^11.0.1');
+  assert.equal(manifest.overrides.archiver['readdir-glob'], '^3.0.0');
+  assert.equal(manifest.overrides['readdir-glob'].minimatch, '^11.0.1');
 });
