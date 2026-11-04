@@ -1,0 +1,43 @@
+name: Brightdesk Qwen provider verification
+
+on:
+  push:
+    branches:
+      - feature/brightdesk-qwen-provider-contract
+
+permissions:
+  contents: read
+
+concurrency:
+  group: brightdesk-qwen-provider-verification
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    name: Node.js 24.22.2 full Suite tests
+    runs-on: [self-hosted, macOS, ARM64]
+    timeout-minutes: 30
+    steps:
+      - name: Check out the adapter branch
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+
+      - name: Set up the pinned Node.js version
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 24.22.2
+          cache: npm
+
+      - name: Verify the required Node.js version
+        run: npm run check:node
+
+      - name: Install exact dependencies without running package lifecycle scripts
+        run: npm ci --ignore-scripts --no-audit --no-fund
+
+      - name: Verify third-party notices
+        run: npm run verify:licenses
+
+      - name: Run the complete Brightdesk test suite
+        run: npm test
+
+      - name: Run release-readiness preflight without building or publishing
+        run: npm run release:preflight
