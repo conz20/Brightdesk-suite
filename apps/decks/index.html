@@ -1,11 +1,43 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <title>Brightdesk Decks</title>
-  </head>
-  <body>
-    <div id="app"></div>
-    <script type="module" src="./index.js"></script>
-  </body>
+<head>
+  <meta charset="UTF-8">
+  <title>Brightdesk Decks</title>
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+  <div class="decks-container">
+    <header class="decks-ribbon">
+      <div class="ribbon-actions">
+        <button class="ribbon-btn active">Slide</button>
+        <button class="ribbon-btn">Design</button>
+        <button class="ribbon-btn">Transitions</button>
+        <button class="ribbon-btn">Animations</button>
+        <button class="ribbon-btn">Slide Show</button>
+      </div>
+    </header>
+    <div class="workspace-layout">
+      <aside class="thumbnail-sidebar">
+        <div class="slide-thumb active">
+          <span class="thumb-num">1</span>
+          <div class="thumb-preview"></div>
+        </div>
+        <div class="slide-thumb">
+          <span class="thumb-num">2</span>
+          <div class="thumb-preview"></div>
+        </div>
+        <div class="slide-thumb">
+          <span class="thumb-num">3</span>
+          <div class="thumb-preview"></div>
+        </div>
+      </aside>
+      <main class="slide-canvas-area">
+        <div class="presentation-slide" contenteditable="true">
+          <h1 class="slide-title">Q3 Strategic Growth</h1>
+          <p class="slide-subtitle">Brightdesk Suite Ecosystem & Vision</p>
+        </div>
+      </main>
+    </div>
+  </div>
+</body>
 </html>
