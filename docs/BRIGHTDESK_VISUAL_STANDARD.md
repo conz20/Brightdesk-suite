@@ -33,7 +33,7 @@ The suite home should make each product immediately recognisable and manageable:
 
 - Use one clear Settings cog as the entry point for local app, language and update management.
 - Show all ten approved products in a responsive app grid with strong, product-specific preview artwork.
-- Every card contains the app icon, product name, a concise purpose line, a truthful Installed or Available state, and an obvious Install or Uninstall action.
+- Every card contains the app icon, product name, a concise purpose line, a truthful Installed or Available state, and obvious Open plus Uninstall actions when installed, or Install when available.
 - Keep installation state and primary actions visible; do not hide them in overflow menus.
 - Confirm uninstall and make clear that removing an app from the suite does not delete its local documents.
 - Put language packs, spelling dictionaries and update preferences in the Settings area.
