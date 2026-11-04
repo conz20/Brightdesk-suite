@@ -70,7 +70,8 @@
     "dist:todo:linux": "npm run native:build && node scripts/build-app.js todo linux",
     "dist:workspace:win": "npm run native:build && node scripts/build-app.js loop win",
     "dist:workspace:mac": "npm run native:build && node scripts/build-app.js loop mac",
-    "dist:workspace:linux": "npm run native:build && node scripts/build-app.js loop linux"
+    "dist:workspace:linux": "npm run native:build && node scripts/build-app.js loop linux",
+    "repositories:prepare": "node scripts/create-app-repository-seeds.js"
   },
   "dependencies": {
     "docx": "9.15.1",
@@ -89,6 +90,18 @@
   "overrides": {
     "pptxgenjs": {
       "image-size": "2.0.4"
+    },
+    "app-builder-lib": {
+      "minimatch": "^11.0.1"
+    },
+    "exceljs": {
+      "uuid": "^11.1.1"
+    },
+    "archiver@5.3.2": {
+      "readdir-glob@^1.1.2": {
+        ".": "^3.0.0",
+        "minimatch": "^11.0.1"
+      }
     }
   },
   "build": {

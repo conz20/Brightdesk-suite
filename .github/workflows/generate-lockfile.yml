@@ -2,7 +2,9 @@ name: Generate dependency lockfile
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
+      - fix/focus-mode-reference-and-regression-2026-11-04
     paths:
       - 'package.json'
       - '.github/workflows/generate-lockfile.yml'
@@ -17,8 +19,10 @@ jobs:
       contents: write
     runs-on: self-hosted
     steps:
-      - name: Check out repository
+      - name: Check out the latest branch tip
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ github.ref_name }}
 
       - name: Set up required Node.js version
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
