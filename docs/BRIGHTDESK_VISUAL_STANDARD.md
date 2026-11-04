@@ -6,8 +6,10 @@ This is the shared design contract for Brightdesk Office Suite and all ten appro
 
 - Use the Brightdesk four-panel mark and lowercase wordmark consistently.
 - Use a calm, light workspace canvas, deep navy navigation, clear white content surfaces and restrained product-specific accents.
-- Use the product's original icon artwork everywhere: launcher card, sidebar, window icon, app-specific README and preview.
-- Keep icon silhouettes recognisable at small sizes. Do not use single-letter placeholders as final product artwork.
+- Use the product's original application icon artwork everywhere: launcher card, sidebar, window icon, application metadata, product README and preview.
+- Application icons must be original, designed SVG or raster assets. **Do not use emoji, Unicode symbols, text glyphs, generic placeholders or single-letter initials as application icons.**
+- Never substitute emoji for application icons in the launcher, navigation, README files, screenshots, previews, documentation or release artwork.
+- Keep icon silhouettes recognisable at small sizes and ensure each product has a distinct visual metaphor.
 - Use consistent spacing, border radii, typography hierarchy, button heights, focus rings and motion across the portfolio.
 
 ## Ten application identities
@@ -69,13 +71,16 @@ Product-specific controls must use the same visual language:
 
 ## README and example artwork
 
-Each product README should show the Brightdesk brand, its own application icon, a product-specific workspace preview, a short explanation and accurate install/build status. Concept art must be labelled as a concept. Replace it with screenshots captured from the running application after that screen has been implemented and acceptance-tested. Do not describe a concept as a working screenshot.
+Each product README should show the Brightdesk brand, its own original application icon, a product-specific workspace preview, a short explanation and accurate install/build status. Concept art must be labelled as a concept. Replace it with screenshots captured from the running application after that screen has been implemented and acceptance-tested. Do not describe a concept as a working screenshot.
+
+All application icons shown in Markdown must be embedded image assets with meaningful alt text. Do not place emoji or Unicode pictographs in headings, tables, navigation labels or application names.
 
 ## Completion criteria
 
 A visual change is not complete until:
-1. The same icon is used in the app, launcher and documentation.
-2. The view remains legible at desktop and narrow widths.
-3. Navigation, focus, keyboard and empty/error states are checked.
-4. The affected app's tests and shared-suite tests pass.
-5. The README accurately distinguishes implemented behaviour from planned behaviour.
+1. The same original application icon is used in the app, launcher and documentation.
+2. No emoji or text-glyph placeholders are used as application icons.
+3. The view remains legible at desktop and narrow widths.
+4. Navigation, focus, keyboard and empty/error states are checked.
+5. The affected app's tests and shared-suite tests pass.
+6. The README accurately distinguishes implemented behaviour from planned behaviour.
