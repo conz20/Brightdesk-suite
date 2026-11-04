@@ -171,8 +171,7 @@ function renderToolbar() {
     } else {
       const view = group('zoom');
       addButton(view, label('zoomOut'), () => changeEditorZoom(-10)); addButton(view, '100%', () => { state.editorZoom = 100; applyEditorZoom(); }); addButton(view, label('zoomIn'), () => changeEditorZoom(10));
-      addButton(view, label('focusMode'), () => { state.focusMode = !state.focusMode; $('workspace').classList.toggle('focus-mode', state.focusMode);
-    $('workspace').classList.toggle('todo-mode', isTodo); });
+      addButton(view, label('focusMode'), () => { state.focusMode = !state.focusMode; $('workspace').classList.toggle('focus-mode', state.focusMode); });
     }
   } else if (app === 'sheets') {
     if (tab === 'home') {
