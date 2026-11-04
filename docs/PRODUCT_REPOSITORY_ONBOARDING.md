@@ -2,7 +2,7 @@
 
 This guide describes how to populate the Brightdesk Lists and Brightdesk Planner product repositories from the shared suite source. It follows the same generated-folder approach used for every product. The current GitHub check found repository records for both names, but their `main` branches were empty; check again before pushing because repository state can change.
 
-This guide assumes the shared suite generator contains the approved test selection, Focus Mode correction, canonical artifact naming and product README updates. Do not hand-edit generated product source or package manifests.
+This guide assumes the shared suite generator contains the approved test selection, Focus Mode correction, canonical artifact naming, product README updates and safe existing-repository instructions. Do not hand-edit generated product source or package manifests. Use an existing remote whenever it exists; never create a duplicate.
 
 ## Prerequisites
 
@@ -11,7 +11,7 @@ This guide assumes the shared suite generator contains the approved test selecti
 - `npm ci` completed in the suite.
 - `npm test` passing in the suite.
 - Permission to push to the target GitHub repositories.
-- Confirmed status of `connormolloy12/Brightdesk-Lists` and `connormolloy12/Brightdesk-Planner`.
+- Confirmed current status of `connormolloy12/Brightdesk-Lists` and `connormolloy12/Brightdesk-Planner`.
 
 ## Step 1 — Generate the product folders
 
@@ -65,30 +65,37 @@ If any expected file is missing, stop and fix the suite generator before pushing
 
 ## Step 3 — Confirm the GitHub repository
 
-Check GitHub for the exact repository name and its default branch.
+Check GitHub for the exact repository name and its default branch immediately before writing.
 
-- If the repository already exists and is empty, use that repository. Do not create a duplicate.
-- If it does not exist, create `Brightdesk-Lists` or `Brightdesk-Planner` using the exact case.
-- Choose visibility at creation time; do not encode visibility in the generated folder.
-- Do not initialise a new repository with a README, `.gitignore` or licence; the generated folder already contains its own files.
-- Use `main` as the default branch.
+- If the repository exists, use it. Do not create a duplicate, even when its default branch is empty.
+- Only create a repository when a fresh GitHub check confirms that the exact name does not exist.
+- Preserve the existing repository's visibility and default-branch settings; do not change either as part of population.
+- Do not initialise a new repository with a README, `.gitignore` or licence; the generated folder already contains those files.
+- Confirm whether `main` has any commits and files. An empty repository can be initialised once; any populated repository must be updated through a reviewed pull request.
 
-## Step 4 — Push the generated folder
+## Step 4 — Prepare a safe repository update
 
-For an existing empty remote repository, from inside the generated folder:
+For a populated remote repository, clone the matching remote and create a branch from its current default branch. Compare the generated folder with the existing source, then copy only the intended generated files into that branch:
 
 ```sh
-git init
-git checkout -b main
-git add -A
-git commit -m "Initial Brightdesk Lists product repository"
-git remote add origin https://github.com/<owner>/Brightdesk-Lists.git
-git push -u origin main
+git clone https://github.com/<owner>/Brightdesk-Lists.git
+cd Brightdesk-Lists
+git switch -c brightdesk/generated-refresh
 ```
 
-For Planner, use the matching repository URL and commit message. If a local Git repository already exists, inspect its remotes and history instead of reinitialising it.
+Copy the generated folder contents into this checkout, inspect the complete diff, then:
 
-If the remote is not empty, stop and compare its history before pushing. Do not force-push or overwrite existing source.
+```sh
+git add -A
+git status --short
+git diff --cached --stat
+git commit -m "Update Brightdesk Lists from shared suite"
+git push -u origin brightdesk/generated-refresh
+```
+
+Open a pull request into the repository's existing default branch. Review the diff and CI before merging. Repeat with a distinct branch for Planner. If the existing remote has history or files, never replace its default branch directly and never force-push.
+
+For a repository whose default branch is confirmed to have no commits and no files, first initialise that existing empty remote with the generated folder as its initial commit. Do not create a second repository. Once the initial branch exists, all later changes must use reviewed pull requests.
 
 Confirm the pushed repository shows:
 
@@ -126,7 +133,7 @@ Use the first-post-fix release-notes template maintained with the release docume
 
 - Do not edit generated product folders after `repositories:prepare`; those edits will be lost on regeneration.
 - Do not copy product folders between each other.
-- Do not push a generated product folder before its local tests pass.
+- Do not push a generated product folder before its local tests pass. For populated remotes, always use a reviewed branch and pull request.
 - Do not force-push over a non-empty remote repository.
 - Do not claim a repository is populated until GitHub confirms that product source is present on `main`.
 - Do not claim CI passed when a job did not start or execute any steps.
