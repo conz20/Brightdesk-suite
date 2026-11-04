@@ -96,8 +96,10 @@ Do not infer the current advisory count from an earlier report. Use the actual `
 
 - [ ] Release tag matches the approved version and release commit.
 - [ ] Publication is a separate, explicit owner action; workflow publication defaults to disabled.
-- [ ] The release workflow verifies a completed release-gate record for the target version before publishing. Do not automate or fabricate human signatures.
+- [ ] Before enabling publication, the release owner manually confirms that the completed release identity, automated results, artifact checks, manual QA, dependency decision and platform sign-offs are recorded in this document and backed by evidence.
 - [ ] Release assets and checksums are inspected before publication.
+
+Publication is a manual owner-controlled step. The current workflow exposes a separate `workflow_dispatch` input whose default is `false`; it does not independently validate the sign-off table or human signatures. Do not enable that input until the release owner has reviewed and recorded every applicable BLOCKER item above. A skipped check, a runner failure before any steps execute, or an `npm audit --audit-level=high` pass with moderate findings is not release approval.
 
 ## 8. Sign-off
 
