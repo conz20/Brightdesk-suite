@@ -126,8 +126,10 @@ test('local server model alias matches the provider model identifier', () => {
     'utf8'
   );
   const providerModel = providerSource.match(/const PROVIDER_MODEL = '([^']+)'/)?.[1];
-  const serverAlias = serverSource.match(/--alias "([^"]+)"/)?.[1];
+  const declaredAlias = serverSource.match(/^MODEL_ALIAS="([^"]+)"/m)?.[1];
+  const serverUsesAlias = /--alias "\$MODEL_ALIAS"/.test(serverSource);
 
   assert.ok(providerModel, 'provider model identifier must be declared');
-  assert.equal(serverAlias, providerModel);
+  assert.equal(declaredAlias, providerModel);
+  assert.equal(serverUsesAlias, true);
 });
