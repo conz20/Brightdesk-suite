@@ -4,7 +4,8 @@
   "description": "Brightdesk Office Suite — 10 applications with a shared design system",
   "private": true,
   "workspaces": [
-    "apps/*"
+    "apps/*",
+    "packages/*"
   ],
   "scripts": {
     "build": "echo 'Building all suite applications...'",
