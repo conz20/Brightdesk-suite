@@ -1,0 +1,80 @@
+# Brightdesk visual and interaction standard
+
+This is the shared design contract for Brightdesk Office Suite and all ten approved applications. It draws on familiar productivity and creative-software conventions while keeping Brightdesk's own brand, layout, icon artwork and interaction language. It must not copy proprietary Microsoft, Adobe or ArtCraft code, logos, screenshots or distinctive trade dress.
+
+## Brand foundation
+
+- Use the Brightdesk four-panel mark and lowercase wordmark consistently.
+- Use a calm, light workspace canvas, deep navy navigation, clear white content surfaces and restrained product-specific accents.
+- Use the product's original icon artwork everywhere: launcher card, sidebar, window icon, app-specific README and preview.
+- Keep icon silhouettes recognisable at small sizes. Do not use single-letter placeholders as final product artwork.
+- Use consistent spacing, border radii, typography hierarchy, button heights, focus rings and motion across the portfolio.
+
+## Ten application identities
+
+| Product | Icon metaphor | Accent family |
+| --- | --- | --- |
+| Pages | Document page and editing pen | Blue |
+| Sheets | Spreadsheet grid and chart | Green |
+| Decks | Layered presentation slides | Coral |
+| Notes | Open notebook and bookmark | Amber |
+| Database | Structured data cylinder and rows | Violet |
+| Forms | Form page and response checkboxes | Magenta |
+| Lists | Ordered checklist rows | Teal |
+| Planner | Calendar and schedule | Royal blue |
+| To Do | Task list and completion check | Green |
+| Workspace | Connected project panels | Indigo |
+
+The product-specific accents should help recognition, not create ten unrelated design systems. Shared surfaces, typography and interaction patterns remain common.
+
+## Suite app-centre experience
+
+The suite home should make each product immediately recognisable and manageable:
+
+- Show all ten approved products in a responsive app grid.
+- Every card contains the app icon, product name, a concise purpose line and a truthful state such as Installed, Update available or Not installed.
+- The primary action follows the real state: Open, Update, Install or Download.
+- Keep a three-dot menu on each card for secondary actions such as Check for updates, App settings, Help and Uninstall.
+- Offer Update all only when at least one verified update is available.
+- Show progress and clear success/failure feedback for downloads and updates.
+- Confirm uninstall and explain that removing an app must not silently remove its user documents.
+- Keep suite-wide Settings, Downloads and Updates easy to find.
+- Never show fabricated update states, availability or version numbers. If an action is only a design target, label it as such in documentation.
+
+## Application workspaces
+
+Each application should use a predictable layout: brand and product navigation, page title and context, task-specific toolbar or controls, a generous working canvas, clear saved/local status and consistent empty/loading/error states. The workspace should put the core task first rather than fill space with decoration.
+
+Product-specific controls must use the same visual language:
+- Pages: document canvas, page layout, readable ribbon groups and print/export affordances.
+- Sheets: formula bar, clear grid, row/column headers, selected-cell focus and chart/data tools.
+- Decks: slide filmstrip, canvas, design controls and obvious presentation mode.
+- Notes: notebook/page navigation, note canvas, headings, lists and quick capture.
+- Database: table navigation, fields, record grid, search and export.
+- Forms: question editor, preview and responses as clear workspace tabs.
+- Lists: searchable, filterable table with visible columns and status.
+- Planner: board and timeline views with readable task cards and priority/status metadata.
+- To Do: fast task entry, My Day and other task views, completion state and daily progress.
+- Workspace: project pages, notes, task and resource blocks with simple navigation.
+
+## Accessibility and responsive quality
+
+- Keyboard access and visible focus for every actionable control.
+- Semantic labels, accessible names and logical reading order.
+- High contrast for normal text; never communicate state by colour alone.
+- Respect reduced-motion preferences.
+- At narrow sizes, navigation and grids must adapt without clipping controls or hiding essential actions.
+- Keep touch/click targets comfortable and avoid tiny three-dot menus.
+
+## README and example artwork
+
+Each product README should show the Brightdesk brand, its own application icon, a product-specific workspace preview, a short explanation and accurate install/build status. Concept art must be labelled as a concept. Replace it with screenshots captured from the running application after that screen has been implemented and acceptance-tested. Do not describe a concept as a working screenshot.
+
+## Completion criteria
+
+A visual change is not complete until:
+1. The same icon is used in the app, launcher and documentation.
+2. The view remains legible at desktop and narrow widths.
+3. Navigation, focus, keyboard and empty/error states are checked.
+4. The affected app's tests and shared-suite tests pass.
+5. The README accurately distinguishes implemented behaviour from planned behaviour.
