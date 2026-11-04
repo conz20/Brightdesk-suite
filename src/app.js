@@ -472,7 +472,7 @@ function renderAppManager() {
     const card = document.createElement('article'); card.className = 'app-card';
     const preview = document.createElement('img'); preview.className = 'app-preview'; preview.src = `assets/apps/${item.id}.svg`; preview.alt = `${item.name} example screen`;
     const header = document.createElement('div'); header.className = 'app-card-header';
-    const icon = document.createElement('span'); icon.className = `app-icon ${item.className}`; icon.textContent = item.icon;
+    const icon = document.createElement('img'); icon.className = 'app-icon-image app-card-app-icon'; icon.src = `assets/icons/${item.id}.svg`; icon.alt = `${item.name} icon`; icon.width = 48; icon.height = 48;
     const heading = document.createElement('div'); heading.className = 'app-card-heading';
     const name = document.createElement('b'); name.textContent = item.name;
     const subtitle = document.createElement('small'); subtitle.textContent = item.subtitle;
@@ -529,7 +529,7 @@ function syncAppNavigation() {
   host.innerHTML = '';
   catalog.filter(item => !['pages','sheets','slides','notes'].includes(item.id) && installedApp(item.id)).forEach(item => {
     const button=document.createElement('button'); button.className='nav'; button.dataset.app=item.id;
-    const icon=document.createElement('span'); icon.className=`app-icon ${item.className}`; icon.textContent=item.icon;
+    const icon=document.createElement('img'); icon.className='app-icon-image'; icon.src=`assets/icons/${item.id}.svg`; icon.alt=''; icon.setAttribute('aria-hidden','true');
     const label=document.createElement('span'); const name=document.createElement('b'); name.textContent=item.name; const sub=document.createElement('small'); sub.textContent=item.subtitle;
     label.append(name,sub); button.append(icon,label);
     button.addEventListener('click',()=>setApp(item.id)); host.append(button);
