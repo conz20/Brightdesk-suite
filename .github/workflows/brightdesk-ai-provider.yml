@@ -1,0 +1,43 @@
+name: Brightdesk local Qwen provider checks
+
+on:
+  push:
+    branches:
+      - feature/brightdesk-qwen-provider-contract
+
+permissions:
+  contents: read
+
+concurrency:
+  group: brightdesk-local-qwen-provider-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  provider-contract:
+    name: Verify local Qwen provider on the private Mac runner
+    runs-on: [self-hosted, macOS, ARM64]
+    timeout-minutes: 10
+    steps:
+      - name: Check out the provider branch
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+
+      - name: Set up the required Node.js version
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 24.22.2
+
+      - name: Confirm the exact Node.js runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(node --version)" = "v24.22.2"
+          node --version
+
+      - name: Check provider and maintenance scripts
+        run: |
+          node --check scripts/brightdesk-ai/local-qwen-provider.js
+          node --check scripts/brightdesk-ai/respond.js
+          bash -n scripts/brightdesk-ai/start-local-model.sh
+
+      - name: Run the local Qwen contract and bootstrap tests
+        run: node --test tests/brightdesk-ai-provider.test.js tests/brightdesk-ai-shell.test.js
