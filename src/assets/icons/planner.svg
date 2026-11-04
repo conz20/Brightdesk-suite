@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256" role="img" aria-labelledby="title desc">
+<title id="title">Brightdesk Planner application icon</title><desc id="desc">Original Planner symbol with a distinct planner visual metaphor.</desc>
+<defs>
+<linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#567FE5"/><stop offset="1" stop-color="#314BA8"/></linearGradient>
+<radialGradient id="light" cx="24%" cy="12%" r="90%"><stop offset="0" stop-color="#A7C0FF" stop-opacity=".65"/><stop offset="1" stop-color="#A7C0FF" stop-opacity="0"/></radialGradient>
+<linearGradient id="glass" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".21"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>
+<filter id="shadow" x="-30%" y="-30%" width="160%" height="180%"><feDropShadow dx="0" dy="10" stdDeviation="9" flood-color="#10234A" flood-opacity=".24"/></filter>
+</defs>
+<rect x="8" y="8" width="240" height="240" rx="58" fill="url(#bg)"/>
+<rect x="8" y="8" width="240" height="240" rx="58" fill="url(#light)"/>
+<path d="M66 9h124a58 58 0 0 1 58 58v14C173 52 93 43 9 100V67A58 58 0 0 1 66 9z" fill="url(#glass)"/>
+<rect x="9.5" y="9.5" width="237" height="237" rx="56.5" fill="none" stroke="#fff" stroke-opacity=".26" stroke-width="3"/>
+<ellipse cx="128" cy="219" rx="73" ry="10" fill="#10234A" opacity=".15"/>
+<g filter="url(#shadow)"><rect x="58" y="60" width="140" height="146" rx="17" fill="#F7FAFF"/><rect x="58" y="60" width="140" height="39" rx="17" fill="#DCE7FF"/><path d="M58 82h140v17H58z" fill="#DCE7FF"/><path d="M92 53v22m72-22v22" stroke="#314BA8" stroke-width="9" stroke-linecap="round"/><g fill="#B6C8F2"><rect x="77" y="116" width="17" height="15" rx="4"/><rect x="105" y="116" width="17" height="15" rx="4"/><rect x="133" y="116" width="17" height="15" rx="4"/><rect x="161" y="116" width="17" height="15" rx="4"/><rect x="77" y="143" width="17" height="15" rx="4"/><rect x="105" y="143" width="17" height="15" rx="4"/><rect x="161" y="143" width="17" height="15" rx="4"/></g><rect x="131" y="140" width="22" height="21" rx="5" fill="#537EE7"/><rect x="77" y="170" width="101" height="8" rx="4" fill="#D6E0F5"/><rect x="77" y="185" width="69" height="6" rx="3" fill="#B6C8F2"/><path d="M138 174h28" stroke="#537EE7" stroke-width="5" stroke-linecap="round"/></g>
+</svg>
