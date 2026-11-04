@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256" role="img" aria-labelledby="title desc">
+<title id="title">Brightdesk To Do application icon</title><desc id="desc">Original To Do symbol with a distinct to do visual metaphor.</desc>
+<defs>
+<linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#32B981"/><stop offset="1" stop-color="#10744F"/></linearGradient>
+<radialGradient id="light" cx="24%" cy="12%" r="90%"><stop offset="0" stop-color="#9CF0C7" stop-opacity=".65"/><stop offset="1" stop-color="#9CF0C7" stop-opacity="0"/></radialGradient>
+<linearGradient id="glass" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".21"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>
+<filter id="shadow" x="-30%" y="-30%" width="160%" height="180%"><feDropShadow dx="0" dy="10" stdDeviation="9" flood-color="#10234A" flood-opacity=".24"/></filter>
+</defs>
+<rect x="8" y="8" width="240" height="240" rx="58" fill="url(#bg)"/>
+<rect x="8" y="8" width="240" height="240" rx="58" fill="url(#light)"/>
+<path d="M66 9h124a58 58 0 0 1 58 58v14C173 52 93 43 9 100V67A58 58 0 0 1 66 9z" fill="url(#glass)"/>
+<rect x="9.5" y="9.5" width="237" height="237" rx="56.5" fill="none" stroke="#fff" stroke-opacity=".26" stroke-width="3"/>
+<ellipse cx="128" cy="219" rx="73" ry="10" fill="#10234A" opacity=".15"/>
+<g filter="url(#shadow)"><rect x="54" y="59" width="148" height="145" rx="19" fill="#F7FFFA"/><rect x="74" y="82" width="108" height="33" rx="9" fill="#E1F8EB"/><circle cx="92" cy="98" r="10" fill="#29B67A"/><path d="m87 98 4 4 7-8" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><rect x="111" y="94" width="57" height="7" rx="3.5" fill="#88CDB0"/><rect x="74" y="126" width="108" height="27" rx="8" fill="#F0F8F3"/><circle cx="92" cy="139" r="8" fill="none" stroke="#A9CCB9" stroke-width="3"/><rect x="111" y="136" width="53" height="6" rx="3" fill="#C4DCD0"/><rect x="74" y="162" width="108" height="27" rx="8" fill="#F0F8F3"/><circle cx="92" cy="175" r="8" fill="none" stroke="#A9CCB9" stroke-width="3"/><rect x="111" y="172" width="42" height="6" rx="3" fill="#C4DCD0"/><circle cx="174" cy="72" r="27" fill="#19A86C" stroke="#E9FFF2" stroke-width="5"/><path d="m160 72 9 9 19-22" fill="none" stroke="#fff" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/></g>
+</svg>
