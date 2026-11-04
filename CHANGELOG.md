@@ -20,7 +20,7 @@ All notable changes to Brightdesk are recorded here. Versions follow the project
 
 ### Still pending — not claimed as completed
 
-- The latest full Suite CI run must pass on the current PR head, including the generator tests, before the shared source is treated as validated.
+- The latest full Suite CI run must pass on the current PR head, including the generator tests and restored download/verifier tests, before the shared source is treated as validated.
 - Run `npm run repositories:prepare` from the merged shared Suite source to create all ten product folders. The automated test currently creates temporary folders to verify the generator; it does not populate remote repositories.
 - Run each generated product's 37-file test command and verify its installer filenames/checksum workflow before pushing any product folder.
 - Populate the remote Brightdesk-To-Do, Brightdesk-Workspace, Brightdesk-Lists and Brightdesk-Planner repositories from their generated folders. Their GitHub repositories existed but had empty `main` branches during the 4 November 2026 check.
