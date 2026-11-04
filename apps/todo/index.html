@@ -1,11 +1,47 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <title>Brightdesk To Do</title>
-  </head>
-  <body>
-    <div id="app"></div>
-    <script type="module" src="./index.js"></script>
-  </body>
+<head>
+  <meta charset="UTF-8">
+  <title>Brightdesk Todo</title>
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+  <div class="todo-container">
+    <aside class="todo-sidebar">
+      <div class="sidebar-user">My Tasks</div>
+      <ul class="todo-nav">
+        <li class="nav-item active">Today</li>
+        <li class="nav-item">Upcoming</li>
+        <li class="nav-item">Completed</li>
+        <li class="nav-item">Important</li>
+      </ul>
+    </aside>
+    <main class="todo-main">
+      <header class="todo-header">
+        <h1>Today</h1>
+        <span class="date-subtitle">Thursday, Nov 5</span>
+      </header>
+      <div class="task-input-card">
+        <input type="text" placeholder="Add a task (e.g., Finalize suite deployment @tomorrow #work)" class="task-add-field" />
+      </div>
+      <div class="task-section">
+        <div class="task-card-row">
+          <input type="checkbox" />
+          <span class="todo-title">Complete all 10 Brightdesk Suite standalone shells</span>
+          <span class="todo-tag">#work</span>
+        </div>
+        <div class="task-card-row">
+          <input type="checkbox" />
+          <span class="todo-title">Verify monorepo build, test, and typecheck passes</span>
+          <span class="todo-tag">#devops</span>
+        </div>
+        <div class="task-card-row">
+          <input type="checkbox" />
+          <span class="todo-title">Push final workspace updates to GitHub repository</span>
+          <span class="todo-tag">#git</span>
+        </div>
+      </div>
+    </main>
+  </div>
+</body>
 </html>
