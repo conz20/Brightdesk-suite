@@ -13,6 +13,10 @@
     "typecheck": "tsc --noEmit",
     "test": "echo 'Running suite test suite...'"
   },
+  "devDependencies": {
+    "typescript": "^5.0.0",
+    "vite": "^5.0.0"
+  },
   "author": "Connor Molloy",
   "license": "MIT"
 }
