@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256" role="img" aria-labelledby="title desc">
+<title id="title">Brightdesk Database application icon</title><desc id="desc">Original Database symbol with a distinct database visual metaphor.</desc>
+<defs>
+<linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8666E9"/><stop offset="1" stop-color="#4C35A9"/></linearGradient>
+<radialGradient id="light" cx="24%" cy="12%" r="90%"><stop offset="0" stop-color="#C0B2FF" stop-opacity=".65"/><stop offset="1" stop-color="#C0B2FF" stop-opacity="0"/></radialGradient>
+<linearGradient id="glass" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".21"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>
+<filter id="shadow" x="-30%" y="-30%" width="160%" height="180%"><feDropShadow dx="0" dy="10" stdDeviation="9" flood-color="#10234A" flood-opacity=".24"/></filter>
+</defs>
+<rect x="8" y="8" width="240" height="240" rx="58" fill="url(#bg)"/>
+<rect x="8" y="8" width="240" height="240" rx="58" fill="url(#light)"/>
+<path d="M66 9h124a58 58 0 0 1 58 58v14C173 52 93 43 9 100V67A58 58 0 0 1 66 9z" fill="url(#glass)"/>
+<rect x="9.5" y="9.5" width="237" height="237" rx="56.5" fill="none" stroke="#fff" stroke-opacity=".26" stroke-width="3"/>
+<ellipse cx="128" cy="219" rx="73" ry="10" fill="#10234A" opacity=".15"/>
+<g filter="url(#shadow)"><path d="M62 82c0-17 30-30 66-30s66 13 66 30v99c0 18-30 31-66 31s-66-13-66-31z" fill="#EDE9FF"/><path d="M62 82c0 17 30 30 66 30s66-13 66-30v25c0 17-30 30-66 30s-66-13-66-30z" fill="#B9A8F9"/><path d="M62 132c0 17 30 30 66 30s66-13 66-30v25c0 17-30 30-66 30s-66-13-66-30z" fill="#9B83EE"/><ellipse cx="128" cy="82" rx="66" ry="30" fill="#F8F6FF"/><ellipse cx="128" cy="82" rx="49" ry="18" fill="#C9BCFF"/><path d="M80 92v7m30-2v7m35-7v7m-65 41v7m31-2v8m35-10v8" stroke="#7058D0" stroke-width="5" stroke-linecap="round"/><path d="M82 126h92" stroke="#7158CF" stroke-width="4" stroke-linecap="round" opacity=".7"/></g>
+</svg>
