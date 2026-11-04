@@ -30,47 +30,53 @@ jobs:
       - name: Verify the required Node.js version
         run: npm run check:node
 
-      - name: Start a checksum-verified local model and exercise the real provider
+      - name: Start the checksum-verified macOS llama.cpp binary and exercise the real provider
         shell: bash
         run: |
           set -euo pipefail
 
-          command -v brew >/dev/null
+          if [[ "$(uname -m)" != "arm64" ]]; then
+            echo "This smoke test requires the owner-managed Apple Silicon runner." >&2
+            exit 1
+          fi
+
           MODEL_DIR="$RUNNER_TEMP/brightdesk-qwen-live"
+          WORK_DIR="$MODEL_DIR/llama"
           MODEL_FILE="$MODEL_DIR/Qwen3-0.6B-Q8_0.gguf"
           SERVER_LOG="$MODEL_DIR/llama-server.log"
+          LLAMA_ARCHIVE="$MODEL_DIR/llama-b10343-bin-macos-arm64.tar.gz"
+          LLAMA_URL="https://github.com/ggml-org/llama.cpp/releases/download/b10343/llama-b10343-bin-macos-arm64.tar.gz"
+          LLAMA_SHA256="7834cb85f67b9f878974e7dd904c78b4b64ba81facb2ad77726a480fbd676d26"
           MODEL_URL="https://huggingface.co/Qwen/Qwen3-0.6B-GGUF/resolve/23749fefcc72300e3a2ad315e1317431b06b590a/Qwen3-0.6B-Q8_0.gguf"
           MODEL_SHA256="9465e63a22add5354d9bb4b99e90117043c7124007664907259bd16d043bb031"
           MODEL_ALIAS="brightdesk-qwen3-local"
           SERVER_PID=""
-          INSTALLED_LLAMA="false"
 
           cleanup() {
             if [[ -n "$SERVER_PID" ]]; then
               kill "$SERVER_PID" 2>/dev/null || true
               wait "$SERVER_PID" 2>/dev/null || true
             fi
-            if [[ "$INSTALLED_LLAMA" == "true" ]]; then
-              brew uninstall llama.cpp >/dev/null 2>&1 || true
-            fi
             rm -rf "$MODEL_DIR"
           }
           trap cleanup EXIT
 
-          mkdir -p "$MODEL_DIR"
-          LLAMA_SERVER="$(command -v llama-server || true)"
-          if [[ -z "$LLAMA_SERVER" ]]; then
-            if ! brew list --versions llama.cpp >/dev/null 2>&1; then
-              brew install llama.cpp
-              INSTALLED_LLAMA="true"
-            fi
-            LLAMA_SERVER="$(brew --prefix llama.cpp)/bin/llama-server"
-          fi
+          mkdir -p "$WORK_DIR"
+          curl --fail --location --retry 3 --retry-delay 2 "$LLAMA_URL" --output "$LLAMA_ARCHIVE"
+          printf '%s  %s\n' "$LLAMA_SHA256" "$LLAMA_ARCHIVE" | shasum --algorithm 256 --check
+          tar -xzf "$LLAMA_ARCHIVE" -C "$WORK_DIR"
 
-          if [[ ! -x "$LLAMA_SERVER" ]]; then
-            echo "llama-server executable was not found after Homebrew setup." >&2
+          LLAMA_SERVER="$(find "$WORK_DIR" -type f -name llama-server -print -quit)"
+          if [[ -z "$LLAMA_SERVER" || ! -f "$LLAMA_SERVER" ]]; then
+            echo "The verified macOS llama.cpp archive did not contain llama-server." >&2
             exit 1
           fi
+          chmod +x "$LLAMA_SERVER"
+
+          while IFS= read -r library_file; do
+            library_dir="$(dirname "$library_file")"
+            export DYLD_LIBRARY_PATH="$library_dir${DYLD_LIBRARY_PATH:+:$DYLD_LIBRARY_PATH}"
+          done < <(find "$WORK_DIR" -type f -name '*.dylib' -print | sort -u)
 
           curl --fail --location --retry 3 --retry-delay 2 "$MODEL_URL" --output "$MODEL_FILE"
           printf '%s  %s\n' "$MODEL_SHA256" "$MODEL_FILE" | shasum --algorithm 256 --check
