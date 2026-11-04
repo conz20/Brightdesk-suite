@@ -51,6 +51,29 @@ References:
 - [uuid 11.1.1 release](https://github.com/uuidjs/uuid/releases/tag/v11.1.1)
 - [uuid CommonJS compatibility note](https://www.npmjs.com/package/uuid)
 
+## Why no further dependency override was applied
+
+The remaining 15 audit findings trace to the legacy packaging chain:
+
+`electron-builder 26.18.x → app-builder-lib → @electron/asar 3.4.1 → glob 7.2.3 → minimatch 3.1.5`.
+
+This is not safely repaired by forcing `minimatch@11` or a modern `glob` into that branch. The current `glob@7.2.3` uses the callback-era API expected by `@electron/asar@3.4.1`; later glob majors use a different API. The `minimatch@3` dependency also has a callable CommonJS export that the legacy consumer expects. A blind override would make the audit output look cleaner while risking an actual packaging regression.
+
+The supported newer ASAR line is not a drop-in patch: the official `@electron/asar@4.3.1` manifest is ESM-only, uses `glob@13` and `minimatch@10`, and changes the package entry point and exports. electron-builder 27 is a major ESM migration and is still published as a prerelease (`27.0.0-alpha.14`) in the current upstream release list; the stable 26.x packaging chain remains on ASAR 3.4.1. Brightdesk is not moving its installer pipeline onto an alpha major solely to silence a moderate transitive audit alert.
+
+The minimatch maintainer has also stated that pre-11 releases are unsupported and that untrusted attacker-controlled patterns can cause denial of service; the maintainer does not offer a compatible backport. That does not make the current 3.1.5 package path safe in general. The focused GHSA evidence in the range-clarification issue shows the described `firstPhasePreProcess` / `secondPhasePreProcess` optimizer is absent from the inspected 3.1.5 source, but GitHub has not amended its broad affected range. The warning therefore remains visible and is not dismissed.
+
+**Decision:** no new override, forced downgrade, advisory suppression or electron-builder prerelease upgrade was applied. Re-evaluate this path when electron-builder 27 has a stable release and the migration can be tested as a separate packaging upgrade. Until then, retain the 15 moderate findings in the audit record and keep release sign-off blocked unless the owner explicitly approves a documented exception.
+
+References:
+
+- [@electron/asar 4.3.1 official release and migration notes](https://github.com/electron/asar/releases/tag/v4.3.1)
+- [@electron/asar 4.3.1 package manifest](https://github.com/electron/asar/blob/v4.3.1/package.json)
+- [electron-builder 27 prerelease and stable 26.18.1 release history](https://github.com/electron-userland/electron-builder/releases)
+- [electron-builder v26 to v27 migration guide](https://www.electron.build/docs/migration/v26-to-v27/)
+- [Minimatch maintainer security response](https://github.com/isaacs/minimatch/issues/333#issuecomment-6563370272)
+- [GitHub Advisory Database range-clarification issue #10811](https://github.com/github/advisory-database/issues/10811)
+
 ## Release decision
 
 This review records targeted remediation and compatibility tests; it does **not** grant a release exception. The quality gate is green, but the audit still reports 15 moderate vulnerabilities under the published minimatch range. Keep release approval blocked until either:
