@@ -474,14 +474,16 @@ function renderAppManager() {
     const canInstall = item.availability === 'available';
     const selected = state.firstRunSelection.has(item.id);
     const isInstalled = installedApp(item.id);
-    const card = document.createElement('article'); card.className = 'app-card';
-    const preview = document.createElement('img'); preview.className = 'app-preview'; preview.src = `assets/apps/${item.id}.svg`; preview.alt = `${item.name} example screen`;
+    const card = document.createElement('article'); card.className = 'app-card'; card.dataset.appId = item.id;
+    const preview = document.createElement('img'); preview.className = 'app-preview'; preview.src = `assets/apps/${item.id}.svg`; preview.alt = `Preview of the ${item.name} desktop interface`;
     const header = document.createElement('div'); header.className = 'app-card-header';
     const icon = document.createElement('img'); icon.className = 'app-icon-image app-card-app-icon'; icon.src = appIconPath(item); icon.alt = `${item.name} icon`; icon.width = 48; icon.height = 48;
     const heading = document.createElement('div'); heading.className = 'app-card-heading';
     const name = document.createElement('b'); name.textContent = item.name;
     const subtitle = document.createElement('small'); subtitle.textContent = item.subtitle;
-    heading.append(name, subtitle); header.append(icon, heading);
+    const stateChip = document.createElement('span'); stateChip.className = `app-status-chip ${!canInstall ? 'development' : (isInstalled ? 'installed' : 'available')}`;
+    stateChip.textContent = !canInstall ? 'In development' : (isInstalled ? 'Installed' : 'Available to install');
+    heading.append(name, subtitle, stateChip); header.append(icon, heading);
     const description = document.createElement('p'); description.textContent = item.description;
     const footer = document.createElement('div'); footer.className = 'app-card-footer';
     const version = document.createElement('span'); version.className = 'module-version'; version.textContent = `Module ${item.moduleVersion}`;
@@ -496,11 +498,10 @@ function renderAppManager() {
       });
       label.append(check, document.createTextNode(` ${t('manager.includeApp')}`)); footer.append(label);
     } else {
-      const action = document.createElement('button'); action.className = isInstalled ? 'secondary small-action' : 'primary small-action';
-      action.textContent = isInstalled ? t('manager.remove') : t('manager.install');
+      const action = document.createElement('button'); action.className = isInstalled ? 'secondary small-action app-install-action' : 'primary small-action app-install-action';
+      action.textContent = isInstalled ? 'Uninstall' : 'Install';
+      action.setAttribute('aria-label', `${isInstalled ? 'Uninstall' : 'Install'} ${item.name}`);
       action.addEventListener('click', () => toggleAppInstall(item.id)); footer.append(action);
-      const stateTag = document.createElement('span'); stateTag.className = isInstalled ? 'app-state installed' : 'app-state'; stateTag.textContent = isInstalled ? t('manager.inWorkspace') : t('manager.notInstalled');
-      footer.append(stateTag);
     }
     card.append(preview, header, description, footer); grid.append(card);
   });
@@ -761,7 +762,7 @@ function render() {
   const languages = state.view === 'languages';
   $('app-manager').hidden = !manager; $('language-manager').hidden = !languages;
   $('workspace').hidden = manager || languages; $('welcome').hidden = manager || languages || ['todo','lists','forms','planner','database','loop'].includes(state.app);
-  $('app-title').textContent = manager ? t('sidebar.getApps') : (languages ? t('language.title') : (catalog.find(item => item.id === state.app)?.name || state.app));
+  $('app-title').textContent = manager ? 'Settings' : (languages ? t('language.title') : (catalog.find(item => item.id === state.app)?.name || state.app));
   $('top-actions').hidden = manager || languages;
   if (manager) {
     $('save-status').textContent = t('manager.manageTitle'); renderAppManager();
@@ -803,7 +804,7 @@ function render() {
     const visible = launchAppId ? btn.dataset.app === launchAppId : installedApp(btn.dataset.app); btn.hidden = !visible; btn.classList.toggle('active', !manager && !languages && btn.dataset.app === state.app);
   });
   $('manage-apps').hidden = Boolean(launchAppId);
-  $('manage-apps').classList.toggle('active', manager);
+  $('manage-apps').classList.toggle('active', manager || languages);
   $('manage-languages').classList.toggle('active', languages);
 }
 function collectDocxBlocks() {
