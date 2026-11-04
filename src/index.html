@@ -18,12 +18,11 @@
     <button class="nav" data-app="notes"><img class="app-icon-image" src="assets/icons/notes.svg" alt="" aria-hidden="true" /><span><b>Brightdesk Notes</b><small data-i18n="sidebar.quickNotes">Quick notes</small></span></button>
     <div id="dynamic-app-nav"></div>
     <div class="sidebar-divider"></div>
-    <button class="nav manager-nav" id="manage-apps"><span class="app-icon manager-icon">＋</span><span><b data-i18n="sidebar.getApps">Get apps</b><small data-i18n="sidebar.installManage">Install and manage apps</small></span></button>
-    <button class="nav manager-nav" id="manage-languages"><span class="app-icon manager-icon">文</span><span><b data-i18n="sidebar.languages">Languages</b><small data-i18n="sidebar.languagePacks">Language packs and dictionaries</small></span></button>
-    <div class="sidebar-bottom">
-      <div class="free-pill" data-i18n="sidebar.freeIndependent">✦ Free and independent</div>
-      <button class="text-button" id="updates-button" data-i18n="sidebar.checkUpdates">Check for updates</button>
-      <button class="text-button" id="update-settings-button">Update settings</button>
+    <button class="nav manager-nav settings-nav" id="manage-apps" aria-label="Open Brightdesk settings">
+      <span class="app-icon manager-icon manager-gear" aria-hidden="true">⚙</span>
+      <span><b>Settings</b><small>Apps, languages and updates</small></span>
+    </button>
+    <div class="sidebar-bottom settings-sidebar-meta">
       <small id="platform">Desktop app</small>
       <small id="version-label">Version</small>
     </div>
@@ -337,6 +336,17 @@
       </section>
     </section>
     <section class="app-manager" id="app-manager" hidden>
+      <div class="settings-toolbar">
+        <div class="settings-context">
+          <span class="eyebrow">LOCAL APPLICATION SETTINGS</span>
+          <p>Manage the apps, language resources and updates installed on this device.</p>
+        </div>
+        <div class="settings-actions">
+          <button class="secondary settings-action" id="manage-languages" type="button">Languages &amp; dictionaries</button>
+          <button class="secondary settings-action" id="updates-button" type="button">Check for updates</button>
+          <button class="secondary settings-action" id="update-settings-button" type="button">Update settings</button>
+        </div>
+      </div>
       <div class="manager-hero"><div><div class="eyebrow" data-i18n="manager.eyebrow">BRIGHTDESK APP CENTRE</div><h2 id="manager-title">Choose the apps you need</h2><p id="manager-description">Set up your Brightdesk workspace.</p></div></div>
       <div class="manager-grid" id="app-manager-grid"></div>
       <div class="manager-bottom"><p id="manager-note">Choose one or more apps. Your documents stay on this device, even if you remove an app from your workspace.</p><button class="primary" id="finish-app-setup" data-i18n="manager.done">Done</button></div>
