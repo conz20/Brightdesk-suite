@@ -475,7 +475,7 @@ function renderAppManager() {
     const selected = state.firstRunSelection.has(item.id);
     const isInstalled = installedApp(item.id);
     const card = document.createElement('article'); card.className = 'app-card'; card.dataset.appId = item.id;
-    const preview = document.createElement('img'); preview.className = 'app-preview'; preview.src = `assets/apps/${item.id}.svg`; preview.alt = `Preview of the ${item.name} desktop interface`;
+    const preview = document.createElement('img'); preview.className = 'app-preview'; preview.src = `assets/apps/${item.id}.svg`; preview.alt = `${item.name} example screen`;
     const header = document.createElement('div'); header.className = 'app-card-header';
     const icon = document.createElement('img'); icon.className = 'app-icon-image app-card-app-icon'; icon.src = appIconPath(item); icon.alt = `${item.name} icon`; icon.width = 48; icon.height = 48;
     const heading = document.createElement('div'); heading.className = 'app-card-heading';
