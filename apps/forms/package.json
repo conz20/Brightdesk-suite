@@ -2,5 +2,11 @@
   "name": "@brightdesk/forms",
   "version": "1.0.0",
   "main": "index.js",
-  "dependencies": { "@brightdesk/ui": "*" }
+  "dependencies": {
+    "@brightdesk/ui": "*"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build"
+  }
 }
