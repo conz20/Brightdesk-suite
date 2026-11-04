@@ -485,7 +485,7 @@ function renderAppManager() {
     stateChip.textContent = !canInstall ? 'In development' : (isInstalled ? 'Installed' : 'Available to install');
     heading.append(name, subtitle, stateChip); header.append(icon, heading);
     const description = document.createElement('p'); description.textContent = item.description;
-    const footer = document.createElement('div'); footer.className = 'app-card-footer';
+    const footer = document.createElement('div'); footer.className = 'app-card-footer app-card-actions';
     const version = document.createElement('span'); version.className = 'module-version'; version.textContent = `Module ${item.moduleVersion}`;
     footer.append(version);
     if (!canInstall) {
