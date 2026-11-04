@@ -1,0 +1,109 @@
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background-color: #ffffff;
+  color: #1f2937;
+}
+.planner-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+.planner-header {
+  padding: 16px 32px;
+  border-bottom: 1px solid #e5e7eb;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #fdfdfd;
+}
+.planner-title h1 {
+  font-size: 20px;
+  font-weight: 600;
+  margin: 0 0 6px 0;
+}
+.view-switcher {
+  display: flex;
+  gap: 6px;
+}
+.view-btn {
+  background: transparent;
+  border: none;
+  padding: 4px 10px;
+  font-size: 13px;
+  color: #4b5563;
+  cursor: pointer;
+  border-radius: 4px;
+}
+.view-btn.active {
+  background: #f3f4f6;
+  color: #111827;
+  font-weight: 500;
+}
+.event-btn {
+  background: #0ea5e9;
+  color: #fff;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+}
+.event-btn:hover {
+  background: #0284c7;
+}
+.calendar-grid-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+.weekdays-row {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  background: #f9fafb;
+  border-bottom: 1px solid #e5e7eb;
+  text-align: center;
+  font-size: 12px;
+  font-weight: 600;
+  color: #6b7280;
+  padding: 8px 0;
+}
+.days-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  grid-auto-rows: minmax(110px, 1fr);
+  flex: 1;
+}
+.day-cell {
+  border-right: 1px solid #e5e7eb;
+  border-bottom: 1px solid #e5e7eb;
+  padding: 8px;
+  font-size: 13px;
+  color: #374151;
+}
+.day-cell.muted {
+  color: #9ca3af;
+  background: #f9fafb;
+}
+.day-cell.today {
+  background: #f0fdf4;
+  border: 2px solid #22c55e;
+}
+.date-num {
+  font-weight: 600;
+  display: inline-block;
+  margin-bottom: 4px;
+}
+.event-pill {
+  background: #e0f2fe;
+  color: #0369a1;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 500;
+  margin-top: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

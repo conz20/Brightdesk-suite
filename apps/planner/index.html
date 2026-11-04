@@ -1,11 +1,38 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <title>Brightdesk Planner</title>
-  </head>
-  <body>
-    <div id="app"></div>
-    <script type="module" src="./index.js"></script>
-  </body>
+<head>
+  <meta charset="UTF-8">
+  <title>Brightdesk Planner</title>
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+  <div class="planner-container">
+    <header class="planner-header">
+      <div class="planner-title">
+        <h1>November 2026</h1>
+        <div class="view-switcher">
+          <button class="view-btn active">Month</button>
+          <button class="view-btn">Week</button>
+          <button class="view-btn">Timeline</button>
+        </div>
+      </div>
+      <button class="event-btn">+ New Event</button>
+    </header>
+    <main class="calendar-grid-area">
+      <div class="weekdays-row">
+        <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
+      </div>
+      <div class="days-grid">
+        <div class="day-cell muted">25</div><div class="day-cell muted">26</div><div class="day-cell muted">27</div><div class="day-cell muted">28</div><div class="day-cell muted">29</div><div class="day-cell muted">30</div><div class="day-cell">1</div>
+        <div class="day-cell">2</div><div class="day-cell">3</div><div class="day-cell">4</div>
+        <div class="day-cell today">
+          <span class="date-num">5</span>
+          <div class="event-pill">Suite Review (10 AM)</div>
+        </div>
+        <div class="day-cell">6</div><div class="day-cell">7</div><div class="day-cell">8</div>
+        <div class="day-cell">9</div><div class="day-cell">10</div><div class="day-cell">11</div><div class="day-cell">12</div><div class="day-cell">13</div><div class="day-cell">14</div><div class="day-cell">15</div>
+      </div>
+    </main>
+  </div>
+</body>
 </html>
