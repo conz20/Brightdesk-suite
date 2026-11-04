@@ -18,20 +18,20 @@ The following artwork gives the project a visual identity and provides an early 
 
 ## The ten Brightdesk applications
 
-Each application has its own icon and purpose. All ten remain part of the approved suite.
+Each application has its own original, purpose-designed icon. The matching artwork is used in the launcher and app navigation, so you can recognise each app by its symbol as well as its name. All ten remain part of the approved suite.
 
 | Application | Icon | Purpose |
 | --- | :---: | --- |
-| **Pages** | ![Pages](assets/icons/pages.svg) | Write and format documents. |
-| **Sheets** | ![Sheets](assets/icons/sheets.svg) | Build spreadsheets, formulas and tables. |
-| **Decks** | ![Decks](assets/icons/decks.svg) | Create slide presentations. |
-| **Notes** | ![Notes](assets/icons/notes.svg) | Keep notes and ideas together. |
-| **Database** | ![Database](assets/icons/database.svg) | Organise records, tables and structured data locally. |
-| **Forms** | ![Forms](assets/icons/forms.svg) | Create surveys, quizzes and collect responses locally. |
-| **Lists** | ![Lists](assets/icons/lists.svg) | Track projects, inventories and records locally. |
-| **Planner** | ![Planner](assets/icons/planner.svg) | Plan work, tasks and progress locally. |
-| **To Do** | ![To Do](assets/icons/to-do.svg) | Manage daily tasks, due dates and priorities. |
-| **Workspace** | ![Workspace](assets/icons/workspace.svg) | Bring project notes, tasks and resources together locally. |
+| **Pages** | <img src="assets/icons/pages.svg" width="72" height="72" alt="Brightdesk Pages icon" /> | Write and format documents. |
+| **Sheets** | <img src="assets/icons/sheets.svg" width="72" height="72" alt="Brightdesk Sheets icon" /> | Build spreadsheets, formulas and tables. |
+| **Decks** | <img src="assets/icons/decks.svg" width="72" height="72" alt="Brightdesk Decks icon" /> | Create slide presentations. |
+| **Notes** | <img src="assets/icons/notes.svg" width="72" height="72" alt="Brightdesk Notes icon" /> | Keep notes and ideas together. |
+| **Database** | <img src="assets/icons/database.svg" width="72" height="72" alt="Brightdesk Database icon" /> | Organise records, tables and structured data locally. |
+| **Forms** | <img src="assets/icons/forms.svg" width="72" height="72" alt="Brightdesk Forms icon" /> | Create surveys, quizzes and collect responses locally. |
+| **Lists** | <img src="assets/icons/lists.svg" width="72" height="72" alt="Brightdesk Lists icon" /> | Track projects, inventories and records locally. |
+| **Planner** | <img src="assets/icons/planner.svg" width="72" height="72" alt="Brightdesk Planner icon" /> | Plan work, tasks and progress locally. |
+| **To Do** | <img src="assets/icons/to-do.svg" width="72" height="72" alt="Brightdesk To Do icon" /> | Manage daily tasks, due dates and priorities. |
+| **Workspace** | <img src="assets/icons/workspace.svg" width="72" height="72" alt="Brightdesk Workspace icon" /> | Bring project notes, tasks and resources together locally. |
 
 ## How Brightdesk works
 
