@@ -27,11 +27,11 @@ All ten applications follow the shared [Brightdesk visual and interaction standa
 
 | Area | Current status |
 | --- | --- |
-| Brightdesk Suite | The shared workspace visual layer is in the live suite renderer and the suite quality gate passed on the original UI refresh. All ten app modules are loaded by the suite. |
-| Pages, Sheets, Decks, Notes, Database and Forms | The professional workspace CSS layer is committed to each repository's `main` branch. Their app HTML loads `src/design-system.css`, so these are runtime styles, not README-only examples. Their individual GitHub Actions checks could not obtain a runner; treat those CSS-only commits as not independently CI-verified. |
-| Lists, Planner, To Do and Workspace | Their integrated app modules, workspaces and UI integration tests live in Brightdesk-suite and use the suite's shared workspace styling. Their individual repositories are still documentation/design scaffolds; separate standalone app source has not yet been published there. |
+| Brightdesk Suite | All ten app modules are integrated into the desktop suite and use the shared workspace styling. The suite quality gate passed after the portfolio visual updates. |
+| Pages, Sheets, Decks, Notes, Database and Forms | The professional workspace visual layer is committed to each repository's `main` branch. Each app's `src/index.html` loads `src/design-system.css`, so these styles are part of the running application source. Their individual GitHub Actions jobs did not receive runners, so those six repositories are not independently CI-verified. |
+| Lists, Planner, To Do and Workspace | Standalone Electron source, app modules, Rust engine integration, UI tests and the professional design-system layer are committed to each repository's `main` branch. Each app loads its design system at runtime and retains its own accent colour. No successful individual CI run has yet been recorded for these four repositories. |
 
-The README images are **design concepts**, not screenshots from finished, acceptance-tested application screens. The live software uses implemented HTML, JavaScript and CSS. Replace concept images with captured app screenshots after the matching screen has been acceptance-tested.
+The README images are **design concepts**, not screenshots from finished, acceptance-tested application screens. The software uses the actual HTML, JavaScript and CSS application code. Replace concept images with screenshots captured from each running app after its screen has been visually and functionally acceptance-tested.
 
 ## The ten Brightdesk applications
 
