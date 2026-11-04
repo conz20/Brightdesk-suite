@@ -1,24 +1,123 @@
 {
   "name": "brightdesk-suite",
-  "version": "1.0.0",
-  "description": "Brightdesk Office Suite — 10 applications with a shared design system",
+  "version": "0.1.0",
+  "description": "Brightdesk Office Suite — ten original local-first desktop applications",
   "private": true,
   "workspaces": [
-    "apps/*",
+    "apps/database",
+    "apps/decks",
+    "apps/forms",
+    "apps/lists",
+    "apps/notes",
+    "apps/pages",
+    "apps/planner",
+    "apps/sheets",
+    "apps/todo",
     "packages/*"
   ],
   "scripts": {
     "dev": "npm run --workspaces dev --if-present",
     "build": "npm run --workspaces build --if-present",
+    "start": "electron .",
+    "check:node": "node scripts/check-node24.js",
     "typecheck": "npx tsc --noEmit",
-    "test": "vitest run"
+    "test": "vitest run",
+    "lock:prepare": "npm install --package-lock-only --ignore-scripts --no-audit --no-fund",
+    "lock:verify": "node scripts/verify-lockfile.js",
+    "verify:licenses": "node scripts/verify-licenses.js",
+    "release:preflight": "node scripts/release-preflight.js",
+    "release:prepare": "node scripts/prepare-release-assets.js",
+    "release:verify:win": "node scripts/verify-release-artifacts.js win",
+    "release:verify:mac": "node scripts/verify-release-artifacts.js mac",
+    "release:verify:linux": "node scripts/verify-release-artifacts.js linux",
+    "dist": "npm run verify:licenses && electron-builder --publish never",
+    "dist:win": "npm run verify:licenses && electron-builder --win nsis --x64 --publish never",
+    "dist:mac": "npm run verify:licenses && electron-builder --mac dmg pkg zip --universal --publish never",
+    "dist:linux": "npm run verify:licenses && electron-builder --linux AppImage deb --x64 --publish never"
   },
   "devDependencies": {
     "jsdom": "^30.1.3",
     "typescript": "^5.0.0",
     "vite": "^5.0.0",
-    "vitest": "^2.1.9"
+    "vitest": "^2.1.9",
+    "electron": "45.2.1",
+    "electron-builder": "26.18.0"
   },
   "author": "Connor Molloy",
-  "license": "MIT"
+  "license": "MIT",
+  "engines": {
+    "node": "24.22.2"
+  },
+  "dependencies": {
+    "docx": "9.15.1",
+    "electron-updater": "6.8.11",
+    "exceljs": "4.4.0",
+    "fast-xml-parser": "5.11.2",
+    "jszip": "3.10.2",
+    "mammoth": "1.12.2",
+    "nspell": "2.1.5",
+    "pptxgenjs": "4.0.1"
+  },
+  "build": {
+    "appId": "org.brightdesk.suite",
+    "productName": "Brightdesk Office Suite",
+    "asar": true,
+    "files": [
+      "src/**/*",
+      "native/brightdesk_engine.node",
+      "package.json",
+      "LICENSE",
+      "THIRD_PARTY_NOTICES.md",
+      "TERMS_AND_CONDITIONS.txt"
+    ],
+    "asarUnpack": [
+      "native/brightdesk_engine.node"
+    ],
+    "directories": {
+      "output": "release"
+    },
+    "publish": [],
+    "win": {
+      "target": [
+        "nsis"
+      ],
+      "artifactName": "Brightdesk-Office-Suite-${version}-${arch}.${ext}"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "license": "TERMS_AND_CONDITIONS.txt"
+    },
+    "mac": {
+      "target": [
+        "dmg",
+        "pkg",
+        "zip"
+      ],
+      "category": "public.app-category.productivity",
+      "artifactName": "Brightdesk-Office-Suite-${version}-${arch}.${ext}"
+    },
+    "dmg": {
+      "sign": false
+    },
+    "pkg": {
+      "license": "TERMS_AND_CONDITIONS.txt",
+      "welcome": "installer/mac-welcome.txt",
+      "conclusion": "installer/mac-conclusion.txt",
+      "installLocation": "/Applications"
+    },
+    "linux": {
+      "target": [
+        "AppImage",
+        "deb"
+      ],
+      "category": "Office",
+      "artifactName": "brightdesk-office-suite-${version}-${arch}.${ext}"
+    },
+    "appImage": {
+      "artifactName": "Brightdesk-Office-Suite-${version}-${arch}.${ext}"
+    }
+  }
 }
