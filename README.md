@@ -21,6 +21,18 @@ The following concept shows the intended Brightdesk app centre: app discovery, u
 
 All ten applications follow the shared [Brightdesk visual and interaction standard](docs/BRIGHTDESK_VISUAL_STANDARD.md), including original product icons, consistent workspace layouts, app-centre actions, responsive behaviour and accessible controls. App screenshots in this README are labelled concepts until captured from running, acceptance-tested screens.
 
+## Visual implementation status
+
+**Portfolio visual status — 4 November 2026**
+
+| Area | Current status |
+| --- | --- |
+| Brightdesk Suite | The shared visual refinement is merged into `main`; the suite quality gate passed. |
+| Pages, Sheets, Decks, Notes, Database and Forms | Their shared workspace styling is prepared in draft pull requests. GitHub has not allocated runners for their checks, so these changes remain unmerged and are not marked as test-passed. |
+| Lists, Planner, To Do and Workspace | Product-specific design concepts and README previews are present. Their standalone repositories are still scaffolds and do not yet contain runnable app implementations. |
+
+All README workspace images are **design concepts**, not screenshots from finished, acceptance-tested application screens. They should be replaced with real screenshots as each screen is implemented and visually verified.
+
 ## The ten Brightdesk applications
 
 Each application has its own original, purpose-designed icon. The matching artwork is used in the launcher and app navigation, so you can recognise each app by its symbol as well as its name. All ten remain part of the approved suite.
