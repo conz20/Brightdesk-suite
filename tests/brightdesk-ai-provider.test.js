@@ -113,3 +113,21 @@ test('provider requires the built-in fetch implementation or an injected test fe
     /fetch implementation/
   );
 });
+
+test('local server model alias matches the provider model identifier', () => {
+  const fs = require('node:fs');
+  const path = require('node:path');
+  const providerSource = fs.readFileSync(
+    path.join(__dirname, '..', 'scripts', 'brightdesk-ai', 'local-qwen-provider.js'),
+    'utf8'
+  );
+  const serverSource = fs.readFileSync(
+    path.join(__dirname, '..', 'scripts', 'brightdesk-ai', 'start-local-model.sh'),
+    'utf8'
+  );
+  const providerModel = providerSource.match(/const PROVIDER_MODEL = '([^']+)'/)?.[1];
+  const serverAlias = serverSource.match(/--alias "([^"]+)"/)?.[1];
+
+  assert.ok(providerModel, 'provider model identifier must be declared');
+  assert.equal(serverAlias, providerModel);
+});
