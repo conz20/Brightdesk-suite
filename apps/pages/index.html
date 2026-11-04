@@ -1,11 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <title>Brightdesk Pages</title>
-  </head>
-  <body>
-    <div id="app"></div>
-    <script type="module" src="./index.js"></script>
-  </body>
+<head>
+  <meta charset="UTF-8">
+  <title>Brightdesk Pages</title>
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+  <div class="app-container">
+    <header class="ribbon">
+      <div class="ribbon-group">
+        <button class="ribbon-btn active">Normal Text</button>
+        <button class="ribbon-btn">Heading 1</button>
+        <button class="ribbon-btn">Bold</button>
+        <button class="ribbon-btn">Italic</button>
+      </div>
+      <div class="ribbon-group">
+        <button class="ribbon-btn">Align Left</button>
+        <button class="ribbon-btn">Center</button>
+      </div>
+    </header>
+    <main class="canvas-container">
+      <div class="document-page" contenteditable="true">
+        <h1>Untitled Document</h1>
+        <p>Start typing your document here...</p>
+      </div>
+    </main>
+  </div>
+</body>
 </html>
