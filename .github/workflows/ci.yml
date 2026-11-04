@@ -2,22 +2,48 @@ name: Brightdesk Suite CI
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: brightdesk-suite-ci-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v4
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - name: Check out Brightdesk
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+
+      - name: Set up required Node.js version
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
-          node-version: 20
-      - name: Build Suite
+          node-version: 24.22.2
+          cache: npm
+
+      - name: Verify Node.js runtime
+        run: npm run check:node
+
+      - name: Verify dependency lock
+        run: npm run lock:verify
+
+      - name: Install locked dependencies
+        run: npm ci --no-audit --no-fund
+
+      - name: Verify third-party licence notices
+        run: npm run verify:licenses
+
+      - name: Build the approved product workspaces
         run: npm run build
-      - name: Type Check
+
+      - name: Type check
         run: npm run typecheck
-      - name: Run Tests
-        run: npm run test
+
+      - name: Run automated tests
+        run: npm test
