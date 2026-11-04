@@ -1,11 +1,39 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <title>Brightdesk Forms</title>
-  </head>
-  <body>
-    <div id="app"></div>
-    <script type="module" src="./index.js"></script>
-  </body>
+<head>
+  <meta charset="UTF-8">
+  <title>Brightdesk Forms</title>
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+  <div class="forms-container">
+    <header class="forms-header">
+      <div class="form-title-group">
+        <h1>Q3 Customer Feedback Survey</h1>
+        <div class="mode-tabs">
+          <button class="mode-btn active">Build</button>
+          <button class="mode-btn">Preview</button>
+          <button class="mode-btn">Responses (24)</button>
+        </div>
+      </div>
+      <button class="share-btn">Publish Form</button>
+    </header>
+    <main class="form-canvas">
+      <div class="question-card active">
+        <div class="question-number">Question 1</div>
+        <input type="text" class="question-input" value="How satisfied are you with the Brightdesk Office Suite?" />
+        <select class="question-type">
+          <option>Multiple Choice</option>
+          <option>Short Text</option>
+          <option>Rating Scale</option>
+        </select>
+        <div class="options-list">
+          <div class="option-row"><input type="radio" disabled /><input type="text" value="Extremely Satisfied" /></div>
+          <div class="option-row"><input type="radio" disabled /><input type="text" value="Very Satisfied" /></div>
+          <div class="option-row"><input type="radio" disabled /><input type="text" value="Somewhat Satisfied" /></div>
+        </div>
+      </div>
+    </main>
+  </div>
+</body>
 </html>
