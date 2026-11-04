@@ -70,6 +70,7 @@ const PRODUCT_TEST_FILES = Object.freeze([
   'tests/rea-bench.test.js',
   'tests/release-readiness.test.js',
   'tests/resource-protection.test.js',
+  'tests/standalone-downloads.test.js',
   'tests/startup-smoke.test.js',
   'tests/todo-service.test.js',
   'tests/todo-ui-integration.test.js',

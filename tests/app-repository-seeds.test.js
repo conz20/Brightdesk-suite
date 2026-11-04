@@ -11,7 +11,7 @@ test('generator includes exactly the ten approved products',()=>{
 test('generated tests include required regression gates and exclude suite-only/network tests',()=>{
  for(const f of ['tests/focus-mode.test.js','tests/app-upgrade-preservation.test.js','tests/product-launch-lock.test.js','tests/native-engine-integration.test.js','tests/nsis-uninstaller-patch.test.js']) assert.ok(PRODUCT_TEST_FILES.includes(f),f);
  for(const f of ['tests/app-catalog.test.js','tests/dictionary-service-live.test.js','tests/release-workflows.test.js']) assert.ok(!PRODUCT_TEST_FILES.includes(f),f);
- assert.equal(PRODUCT_TEST_FILES.length,36);
+ assert.equal(PRODUCT_TEST_FILES.length,37);
  for(const suiteOnly of ['tests/standalone-app-builds.test.js','tests/standalone-rust-packaging.test.js']) assert.ok(!PRODUCT_TEST_FILES.includes(suiteOnly),suiteOnly);
 });
 test('generated README states shared source trade-off and product lock',()=>{
@@ -53,7 +53,7 @@ test('generated product folders retain legal files, Rust sources, native tooling
   createProductRepositorySeeds({rootDir:root,outputDir:output});
   for(const product of PRODUCT_REPOSITORIES){
    const folder=path.join(output,product.repository);
-   for(const file of ['LICENSE','TERMS_AND_CONDITIONS.txt','THIRD_PARTY_NOTICES.md','rust/Cargo.toml','scripts/build-native.js','scripts/patch-electron-builder-nsis.js','.github/workflows/product-installers.yml','assets/brightdesk-product.svg','assets/social-preview.svg']) assert.ok(fs.existsSync(path.join(folder,file)),file);
+   for(const file of ['LICENSE','TERMS_AND_CONDITIONS.txt','THIRD_PARTY_NOTICES.md','rust/Cargo.toml','src/standalone-downloads.js','scripts/build-native.js','scripts/patch-electron-builder-nsis.js','scripts/verify-standalone-apps.js','.github/workflows/product-installers.yml','assets/brightdesk-product.svg','assets/social-preview.svg']) assert.ok(fs.existsSync(path.join(folder,file)),file);
   }
  }finally{fs.rmSync(output,{recursive:true,force:true});}
 });

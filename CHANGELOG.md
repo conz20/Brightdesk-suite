@@ -11,14 +11,21 @@ All notable changes to Brightdesk are recorded here. Versions follow the project
 - Added `docs/RELEASE_GATE.md` to consolidate automated gates, artifact verification, manual QA, dependency decisions and owner sign-off.
 - Added `docs/PRODUCT_REPOSITORY_ONBOARDING.md` to define the supported process for populating the Lists and Planner product repositories.
 - Added `docs/PRODUCT-REPOSITORIES.md` to distinguish remote repository existence from whether its source is populated.
+- Restored `scripts/create-app-repository-seeds.js` in the shared Suite and added a 37-file generated product test set, with suite-only and live-network tests kept out.
+- Added canonical product installer artifact names, product-specific desktop identity and shared-engine trade-off wording to generated product packages and READMEs.
+- Restored the shared download map and product artifact verifier (`src/standalone-downloads.js` and `scripts/verify-standalone-apps.js`) so generated `verify:product:*` commands resolve.
+- Added regression coverage for upgrade preservation, product launch locking, original product artwork, Rust fallback integration and NSIS uninstaller extraction.
+- Corrected the preload product allow-list so it matches all ten IDs accepted by the Electron main process.
+- Kept the Node-API bridge optional in generated product installers pending its separate architecture and benchmark approval.
 
 ### Still pending — not claimed as completed
 
-- Update the current shared `scripts/create-app-repository-seeds.js` generator with the 35-file product test selection, the Focus Mode regression test, canonical artifact names, product-specific `desktopName` values and the product README shared-engine trade-off paragraph.
-- Regenerate all ten product folders from the updated suite generator, then run the suite and each product's tests before pushing.
-- Update the generator's product workflow only if a smoke-build runner and cost policy are approved. A per-PR hosted Linux installer build is deferred while runner allocation remains unreliable and no-cost operation is required.
-- Populate the remote Brightdesk-To-Do and Brightdesk-Workspace repositories from their verified generated source exports. Their GitHub repositories existed but had empty `main` branches during the 4 November 2026 check.
-- Populate the Lists and Planner repositories from generated product folders when they are ready and verified.
+- The latest full Suite CI run must pass on the current PR head, including the generator tests, before the shared source is treated as validated.
+- Run `npm run repositories:prepare` from the merged shared Suite source to create all ten product folders. The automated test currently creates temporary folders to verify the generator; it does not populate remote repositories.
+- Run each generated product's 37-file test command and verify its installer filenames/checksum workflow before pushing any product folder.
+- Populate the remote Brightdesk-To-Do, Brightdesk-Workspace, Brightdesk-Lists and Brightdesk-Planner repositories from their generated folders. Their GitHub repositories existed but had empty `main` branches during the 4 November 2026 check.
+- Do not add per-PR Linux installer smoke builds while runner allocation remains unreliable and a no-cost workflow is required. Product installer builds remain manual.
+- Complete actual Windows, macOS and Linux builds, checksums, legal-file verification, install/upgrade/uninstall QA and the owner-approved release gate before any release is marked ready.
 
 ### Security
 
