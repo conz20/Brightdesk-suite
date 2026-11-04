@@ -1,0 +1,126 @@
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background-color: #ffffff;
+  color: #172b4d;
+}
+.wiki-container {
+  display: flex;
+  height: 100vh;
+}
+.wiki-sidebar {
+  width: 280px;
+  background: #f4f5f7;
+  border-right: 1px type #dfe1e6;
+  border-right-style: solid;
+  padding: 20px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.wiki-brand {
+  font-size: 13px;
+  font-weight: 600;
+  color: #5e6c84;
+  text-transform: uppercase;
+}
+.wiki-search-input {
+  width: 100%;
+  padding: 6px 10px;
+  border: 1px solid #dfe1e6;
+  border-radius: 4px;
+  font-size: 13px;
+  background: #fff;
+  outline: none;
+  box-sizing: border-box;
+}
+.wiki-tree {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.tree-category {
+  font-size: 11px;
+  font-weight: 700;
+  color: #6b778c;
+  text-transform: uppercase;
+  margin-top: 12px;
+  margin-bottom: 4px;
+}
+.tree-item {
+  padding: 6px 10px;
+  font-size: 13px;
+  border-radius: 4px;
+  cursor: pointer;
+  color: #253858;
+}
+.tree-item:hover {
+  background: #ebecf0;
+}
+.tree-item.active {
+  background: #deebff;
+  color: #0747a6;
+  font-weight: 500;
+}
+.wiki-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+.wiki-header {
+  padding: 16px 48px;
+  border-bottom: 1px solid #dfe1e6;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #fff;
+}
+.breadcrumb {
+  font-size: 13px;
+  color: #5e6c84;
+}
+.edit-wiki-btn {
+  background: #0052cc;
+  color: #fff;
+  border: none;
+  padding: 6px 14px;
+  border-radius: 4px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+}
+.edit-wiki-btn:hover {
+  background: #0747a6;
+}
+.wiki-article {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 48px;
+  outline: none;
+}
+.wiki-article h1 {
+  font-size: 32px;
+  font-weight: 600;
+  margin: 0 0 16px 0;
+}
+.lead-text {
+  font-size: 16px;
+  color: #42526e;
+  line-height: 1.5;
+  margin-bottom: 24px;
+}
+.wiki-article h2 {
+  font-size: 20px;
+  font-weight: 600;
+  margin-top: 32px;
+  margin-bottom: 12px;
+}
+.wiki-article ul {
+  padding-left: 20px;
+  color: #42526e;
+  line-height: 1.6;
+}

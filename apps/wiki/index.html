@@ -1,11 +1,41 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <title>Brightdesk Wiki</title>
-  </head>
-  <body>
-    <div id="app"></div>
-    <script type="module" src="./index.js"></script>
-  </body>
+<head>
+  <meta charset="UTF-8">
+  <title>Brightdesk Wiki</title>
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+  <div class="wiki-container">
+    <aside class="wiki-sidebar">
+      <div class="wiki-brand">Brightdesk Knowledge Base</div>
+      <div class="wiki-search">
+        <input type="text" placeholder="Search documentation..." class="wiki-search-input" />
+      </div>
+      <ul class="wiki-tree">
+        <li class="tree-category">Getting Started</li>
+        <li class="tree-item active">Architecture Overview</li>
+        <li class="tree-item">Monorepo Setup</li>
+        <li class="tree-category">Design System</li>
+        <li class="tree-item">Typography & Colors</li>
+        <li class="tree-item">Component Guidelines</li>
+      </ul>
+    </aside>
+    <main class="wiki-main">
+      <header class="wiki-header">
+        <div class="breadcrumb">Getting Started / Architecture</div>
+        <button class="edit-wiki-btn">Edit Page</button>
+      </header>
+      <article class="wiki-article" contenteditable="true">
+        <h1>Architecture Overview</h1>
+        <p class="lead-text">The Brightdesk Office Suite is engineered as an npm workspaces monorepo containing 10 standalone productivity applications and a shared UI design package.</p>
+        <h2>Core Principles</h2>
+        <ul>
+          <li><strong>Standalone Apps:</strong> Each application operates independently with dedicated app shells and tooling.</li>
+          <li><strong>Enterprise Polish:</strong> Styled to match Microsoft 365, Adobe, and Craft design standards.</li>
+        </ul>
+      </article>
+    </main>
+  </div>
+</body>
 </html>
