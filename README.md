@@ -1,6 +1,45 @@
+<p align="center">
+  <img src="assets/brand/brightdesk-logo.svg" alt="Brightdesk Office Suite" width="480">
+</p>
+
 # Brightdesk Office Suite
 
 Brightdesk is an independent native desktop productivity suite. It is not affiliated with Microsoft.
+
+## See Brightdesk
+
+The following artwork gives the project a visual identity and provides an early look at the planned desktop experience.
+
+<p align="center">
+  <img src="assets/previews/suite-dashboard-concept.svg" alt="Concept preview of the Brightdesk desktop dashboard showing all ten application cards" width="900">
+</p>
+
+> **Important:** This is a concept illustration, not a screenshot of a completed application build. It shows the intended dashboard direction. Actual screens and workflows must be captured from the running app as implementation and acceptance testing progress.
+
+## The ten Brightdesk applications
+
+Each application has its own icon and purpose. All ten remain part of the approved suite.
+
+| Application | Icon | Purpose |
+| --- | :---: | --- |
+| **Pages** | ![Pages](assets/icons/pages.svg) | Write and format documents. |
+| **Sheets** | ![Sheets](assets/icons/sheets.svg) | Build spreadsheets, formulas and tables. |
+| **Decks** | ![Decks](assets/icons/decks.svg) | Create slide presentations. |
+| **Notes** | ![Notes](assets/icons/notes.svg) | Keep notes and ideas together. |
+| **Database** | ![Database](assets/icons/database.svg) | Organise records, tables and structured data locally. |
+| **Forms** | ![Forms](assets/icons/forms.svg) | Create surveys, quizzes and collect responses locally. |
+| **Lists** | ![Lists](assets/icons/lists.svg) | Track projects, inventories and records locally. |
+| **Planner** | ![Planner](assets/icons/planner.svg) | Plan work, tasks and progress locally. |
+| **To Do** | ![To Do](assets/icons/to-do.svg) | Manage daily tasks, due dates and priorities. |
+| **Workspace** | ![Workspace](assets/icons/workspace.svg) | Bring project notes, tasks and resources together locally. |
+
+## How Brightdesk works
+
+1. **Install:** Choose the installer for Windows, macOS or Linux. End users do not need to install Node.js or Rust.
+2. **Open:** Launch Brightdesk from your Applications folder, Start menu or desktop environment.
+3. **Choose an app:** Select one of the ten app cards from the Brightdesk home screen.
+4. **Work locally:** Use the selected application. The first release is local-first; it does not claim cloud collaboration or Microsoft service integration.
+5. **Update when ready:** Brightdesk can check for updates when configured. It never downloads or installs an update without the customer's choice.
 
 ## First release
 
