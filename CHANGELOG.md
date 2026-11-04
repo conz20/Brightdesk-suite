@@ -11,7 +11,7 @@ All notable changes to Brightdesk are recorded here. Versions follow the project
 - Added `docs/RELEASE_GATE.md` to consolidate automated gates, artifact verification, manual QA, dependency decisions and owner sign-off.
 - Added `docs/PRODUCT_REPOSITORY_ONBOARDING.md` to define the supported process for populating the Lists and Planner product repositories.
 - Added `docs/PRODUCT-REPOSITORIES.md` to distinguish remote repository existence from whether its source is populated.
-- Restored `scripts/create-app-repository-seeds.js` in the shared Suite and added a 37-file generated product test set, with suite-only and live-network tests kept out.
+- Restored `scripts/create-app-repository-seeds.js` in the shared Suite and added a 38-file generated product test set, with suite-only and live-network tests kept out.
 - Added canonical product installer artifact names, product-specific desktop identity and shared-engine trade-off wording to generated product packages and READMEs.
 - Restored the shared download map and product artifact verifier (`src/standalone-downloads.js` and `scripts/verify-standalone-apps.js`) so generated `verify:product:*` commands resolve.
 - Added regression coverage for upgrade preservation, product launch locking, original product artwork, Rust fallback integration and NSIS uninstaller extraction.
@@ -20,17 +20,21 @@ All notable changes to Brightdesk are recorded here. Versions follow the project
 
 ### Still pending — not claimed as completed
 
-- The shared Suite quality and Rust workflows passed on commit `60f0f9661c9fb30730cd7d55af63aa8673b46687`. The Node suite reported 231 tests, 226 passed, 0 failed and 5 skipped. The permanent product-folder bundle and remote product updates remain pending.
+- The shared Suite full test suite, release preflight and high-severity audit steps passed on commit `d5da30822dcca52e404a276d52f12105376b5747`; Rust formatting, Clippy, Cargo tests, native build and native-engine tests also passed on that commit. The later `docs/DEPENDENCY_SECURITY_REVIEW.md` addition is documentation-only and has a fresh CI run pending.
+- The regenerated dependency lock resolves ExcelJS's `uuid` dependency to 11.1.1 and app-builder-lib's `minimatch` dependency to 11.0.4. A compatibility regression test covers the ExcelJS XLSX round-trip and the builder's minimatch API.
+- The permanent product-folder bundle and remote product updates remain pending.
 - Run `npm run repositories:prepare` from the merged shared Suite source to create all ten product folders. The automated test currently creates temporary folders to verify the generator; it does not populate remote repositories.
-- Run each generated product's 37-file test command and verify its installer filenames/checksum workflow before pushing any product folder.
+- Run each generated product's 38-file test command and verify its installer filenames/checksum workflow before pushing any product folder.
 - Populate the remote Brightdesk-To-Do, Brightdesk-Workspace, Brightdesk-Lists and Brightdesk-Planner repositories from their generated folders. Their GitHub repositories existed but had empty `main` branches during the 4 November 2026 check.
 - Do not add per-PR Linux installer smoke builds while runner allocation remains unreliable and a no-cost workflow is required. Product installer builds remain manual.
 - Complete actual Windows, macOS and Linux builds, checksums, legal-file verification, install/upgrade/uninstall QA and the owner-approved release gate before any release is marked ready.
 
 ### Security
 
-- The CI audit on commit `60f0f9661c9fb30730cd7d55af63aa8673b46687` reported 21 moderate advisories involving `minimatch` (GHSA-g3hv-75wg-m249) and `uuid` (GHSA-w5hq-g745-h8pq). The `npm audit --audit-level=high` step passed because no high-or-critical finding was reported; this does not clear the moderate findings.
-- No remediation or owner-approved exception is claimed. The release remains blocked until a compatible dependency fix is tested and the audit is clean, or an authorised owner records a time-limited exception with evidence and a remediation plan.
+- Scoped overrides replace ExcelJS's `uuid@8.3.2` with `uuid@11.1.1`, and app-builder-lib's `minimatch@10.2.6` with `minimatch@11.0.4`. Compatibility tests cover both uses.
+- Two older nested minimatch packages remain in the lock: `minimatch@3.1.5` through `glob` and `minimatch@5.1.9` through `readdir-glob`. The GitHub Advisory Database currently publishes a broad `<11.0.1` range, while contributors have asked for clarification about earlier releases in issue [#10811](https://github.com/github/advisory-database/issues/10811). Do not force a minimatch 11 override onto those legacy callers without evidence of API compatibility.
+- The CI `npm audit --audit-level=high` step passed on the latest code-test commit; this threshold does not prove that every moderate alert is gone. The exact remaining audit output must be inspected on the release commit.
+- No owner-approved exception is claimed. Keep release approval blocked until the remaining audit paths are formally reviewed and either cleared by authoritative advisory clarification or covered by a named, time-limited owner exception with evidence and a remediation plan.
 
 ### Known limitations
 
@@ -38,7 +42,7 @@ All notable changes to Brightdesk are recorded here. Versions follow the project
 - The Focus Mode source fix and regression test are in [PR #43](https://github.com/connormolloy12/Brightdesk-suite/pull/43). They are not yet merged into `main`.
 - The Rust core and Node-API bridge must be treated separately. Do not claim runtime performance improvements or approve shipping the bridge until its architecture is reconciled with project direction and representative CPU-heavy benchmark/parity evidence exists.
 - Product installer readiness is not established by repository exports or source-level checks. Actual platform builds, checksums, legal-file verification, installation, upgrade and uninstall QA are still required.
-- Product README shared-engine trade-off wording is pending the generator update described above.
+- Product README shared-engine trade-off wording is now in the shared generator. Generated folders still need to be created and checked against each remote repository.
 
 ## Release history
 
