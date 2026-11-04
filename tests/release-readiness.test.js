@@ -15,12 +15,13 @@ test('version comparison handles major, minor and patch versions', () => {
   assert.equal(versionAtLeast('24.0.0', '24.1.0'), false);
 });
 
-test('release preflight reports current environment blockers without pretending it is ready', () => {
+test('release preflight blocks an old runtime but accepts the verified dependency lock', () => {
   const root = path.resolve(__dirname, '..');
   const result = runPreflight({ rootDir: root, nodeVersion: '22.16.0', platform: 'linux' });
   assert.equal(result.ready, false);
   assert.ok(result.blockers.some(item => item.name === 'Node.js version'));
-  assert.ok(result.blockers.some(item => item.name === 'Dependency lockfile'));
+  assert.equal(result.blockers.some(item => item.name === 'Dependency lockfile'), false);
+  assert.ok(result.checks.some(item => item.name === 'Dependency lockfile' && item.passed), 'the committed dependency lock must pass preflight');
   assert.deepEqual(require('../src/app-catalog').map(item => item.id), APPROVED_IDS);
 });
 
