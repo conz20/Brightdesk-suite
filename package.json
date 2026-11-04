@@ -9,6 +9,7 @@
   ],
   "scripts": {
     "build": "echo 'Building all suite applications...'",
+    "typecheck": "tsc --noEmit",
     "test": "echo 'Running suite test suite...'"
   },
   "author": "Connor Molloy",
