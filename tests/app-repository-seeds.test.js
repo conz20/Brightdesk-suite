@@ -16,6 +16,8 @@ test('generated tests include required regression gates and exclude suite-only/n
 });
 test('repository bundle reuses existing remotes and blocks destructive overwrites',()=>{
  const readme=repositoryBundleReadme();
+ assert.match(readme,/## Repository folders\n\n- Brightdesk-Pages/);
+ assert.match(readme,/## Populate the matching GitHub repository/);
  assert.match(readme,/matching existing repository/);
  assert.match(readme,/Do not create a duplicate repository/);
  assert.match(readme,/never overwrite its source or force-push/);
