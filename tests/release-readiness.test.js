@@ -15,13 +15,12 @@ test('version comparison handles major, minor and patch versions', () => {
   assert.equal(versionAtLeast('24.0.0', '24.1.0'), false);
 });
 
-test('release preflight blocks an old runtime but accepts the verified dependency lock', () => {
+test('release preflight blocks an old runtime before validating the dependency lock', () => {
   const root = path.resolve(__dirname, '..');
   const result = runPreflight({ rootDir: root, nodeVersion: '22.16.0', platform: 'linux' });
   assert.equal(result.ready, false);
   assert.ok(result.blockers.some(item => item.name === 'Node.js version'));
-  assert.equal(result.blockers.some(item => item.name === 'Dependency lockfile'), false);
-  assert.ok(result.checks.some(item => item.name === 'Dependency lockfile' && item.passed), 'the committed dependency lock must pass preflight');
+  assert.ok(result.blockers.some(item => item.name === 'Dependency lockfile'), 'lock validation must not run under an unsupported Node.js version');
   assert.deepEqual(require('../src/app-catalog').map(item => item.id), APPROVED_IDS);
 });
 
@@ -31,6 +30,7 @@ test('release preflight treats all ten approved apps as release-ready implementa
   const check = result.checks.find(item => item.name === 'All ten approved apps available');
   assert.ok(check, 'preflight must include the integrated ten-app availability check');
   assert.equal(check.passed, true);
+  assert.ok(result.checks.some(item => item.name === 'Dependency lockfile' && item.passed), 'the matching lockfile passes under the pinned Node.js runtime');
   assert.match(check.detail, /pages, sheets, slides, notes, database, forms, lists, planner, todo, loop/);
 });
 
