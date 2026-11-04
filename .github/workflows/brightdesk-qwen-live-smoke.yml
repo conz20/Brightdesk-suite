@@ -1,0 +1,134 @@
+name: Brightdesk local Qwen live smoke test
+
+on:
+  push:
+    branches:
+      - feature/brightdesk-qwen-provider-contract
+
+permissions:
+  contents: read
+
+concurrency:
+  group: brightdesk-qwen-live-smoke
+  cancel-in-progress: true
+
+jobs:
+  live-qwen:
+    name: Live Qwen inference on private Mac runner
+    runs-on: [self-hosted, macOS, ARM64]
+    timeout-minutes: 30
+    steps:
+      - name: Check out the adapter branch
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+
+      - name: Set up the pinned Node.js version
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 24.22.2
+          cache: npm
+
+      - name: Verify the required Node.js version
+        run: npm run check:node
+
+      - name: Start a checksum-verified local model and exercise the real provider
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          command -v brew >/dev/null
+          MODEL_DIR="$RUNNER_TEMP/brightdesk-qwen-live"
+          MODEL_FILE="$MODEL_DIR/Qwen3-0.6B-Q8_0.gguf"
+          SERVER_LOG="$MODEL_DIR/llama-server.log"
+          MODEL_URL="https://huggingface.co/Qwen/Qwen3-0.6B-GGUF/resolve/23749fefcc72300e3a2ad315e1317431b06b590a/Qwen3-0.6B-Q8_0.gguf"
+          MODEL_SHA256="9465e63a22add5354d9bb4b99e90117043c7124007664907259bd16d043bb031"
+          MODEL_ALIAS="brightdesk-qwen3-local"
+          SERVER_PID=""
+          INSTALLED_LLAMA="false"
+
+          cleanup() {
+            if [[ -n "$SERVER_PID" ]]; then
+              kill "$SERVER_PID" 2>/dev/null || true
+              wait "$SERVER_PID" 2>/dev/null || true
+            fi
+            if [[ "$INSTALLED_LLAMA" == "true" ]]; then
+              brew uninstall llama.cpp >/dev/null 2>&1 || true
+            fi
+            rm -rf "$MODEL_DIR"
+          }
+          trap cleanup EXIT
+
+          mkdir -p "$MODEL_DIR"
+          LLAMA_SERVER="$(command -v llama-server || true)"
+          if [[ -z "$LLAMA_SERVER" ]]; then
+            if ! brew list --versions llama.cpp >/dev/null 2>&1; then
+              brew install llama.cpp
+              INSTALLED_LLAMA="true"
+            fi
+            LLAMA_SERVER="$(brew --prefix llama.cpp)/bin/llama-server"
+          fi
+
+          if [[ ! -x "$LLAMA_SERVER" ]]; then
+            echo "llama-server executable was not found after Homebrew setup." >&2
+            exit 1
+          fi
+
+          curl --fail --location --retry 3 --retry-delay 2 "$MODEL_URL" --output "$MODEL_FILE"
+          printf '%s  %s\n' "$MODEL_SHA256" "$MODEL_FILE" | shasum --algorithm 256 --check
+
+          "$LLAMA_SERVER" \
+            --model "$MODEL_FILE" \
+            --alias "$MODEL_ALIAS" \
+            --host 127.0.0.1 \
+            --port 8080 \
+            --ctx-size 4096 \
+            --threads 2 \
+            --n-gpu-layers 0 \
+            > "$SERVER_LOG" 2>&1 &
+          SERVER_PID="$!"
+
+          ready="false"
+          for attempt in $(seq 1 120); do
+            if curl --silent --fail http://127.0.0.1:8080/health >/dev/null; then
+              ready="true"
+              break
+            fi
+            if ! kill -0 "$SERVER_PID" 2>/dev/null; then
+              echo "llama-server exited before becoming ready." >&2
+              tail -n 80 "$SERVER_LOG" >&2 || true
+              exit 1
+            fi
+            sleep 2
+          done
+
+          if [[ "$ready" != "true" ]]; then
+            echo "llama-server did not become ready." >&2
+            tail -n 80 "$SERVER_LOG" >&2 || true
+            exit 1
+          fi
+
+          actual_alias="$(curl --silent --show-error --fail http://127.0.0.1:8080/v1/models | node -e 'let body="";process.stdin.setEncoding("utf8");process.stdin.on("data",chunk=>body+=chunk);process.stdin.on("end",()=>{const payload=JSON.parse(body);process.stdout.write(payload?.data?.[0]?.id ?? "");});')"
+          if [[ "$actual_alias" != "$MODEL_ALIAS" ]]; then
+            echo "The live llama.cpp model ID did not match the provider alias." >&2
+            exit 1
+          fi
+
+          node <<'NODE'
+          'use strict';
+          const assert = require('node:assert/strict');
+          const { createLocalQwenProvider } = require('./scripts/brightdesk-ai/local-qwen-provider');
+
+          (async () => {
+            const provider = createLocalQwenProvider({ enabled: true });
+            const answer = await provider.generate({
+              task: 'Give a brief acknowledgement.',
+              input: 'Return a short confirmation that the local Qwen server is responding.',
+              model: provider.model
+            });
+            assert.equal(typeof answer, 'string');
+            assert.ok(answer.trim().length > 0, 'live local Qwen response must not be empty');
+            console.log('Live local Qwen inference succeeded (%d response characters).', answer.trim().length);
+          })().catch(error => {
+            console.error(error.message);
+            process.exitCode = 1;
+          });
+          NODE
