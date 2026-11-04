@@ -13,7 +13,13 @@ const crypto = require('node:crypto');
 const { execFileSync } = require('node:child_process');
 
 const ROOT = path.resolve(__dirname, '..');
-const IGNORE = new Set(['.git', 'node_modules', 'release', 'dist', 'coverage', '.cache']);
+const IGNORE = new Set([
+  '.git', 'node_modules', 'release', 'dist', 'coverage', '.cache',
+  // These are mirrored standalone GitHub repositories, not part of the suite's executable source tree.
+  'Brightdesk-Pages', 'Brightdesk-Sheets', 'Brightdesk-Decks', 'Brightdesk-Notes',
+  'Brightdesk-Database', 'Brightdesk-Forms', 'Brightdesk-Lists', 'Brightdesk-Planner',
+  'Brightdesk-To-Do', 'Brightdesk-Workspace'
+]);
 const SOURCE_EXT = new Set(['.js', '.cjs', '.mjs', '.ts', '.tsx', '.jsx', '.json', '.html', '.css', '.md', '.yml', '.yaml', '.ps1', '.sh']);
 const MAX_FILE_BYTES = 2 * 1024 * 1024;
 const MAX_FILES = 12000;
