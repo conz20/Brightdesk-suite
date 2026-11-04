@@ -41,7 +41,7 @@ test('generated manifests use canonical platform artifact names and native hooks
    assert.equal(m.build.mac.artifactName,'Brightdesk-'+slug+'-\${version}-\${arch}.\${ext}');
    assert.equal(m.build.linux.artifactName,'brightdesk-'+slug.toLowerCase()+'-\${version}-\${arch}.\${ext}');
    assert.equal(m.build.appImage,undefined);
-   for(const p of ['win','mac','linux']) assert.ok(m.scripts['dist:product:'+p].includes('build:native'));
+   for(const p of ['win','mac','linux']) assert.ok(!m.scripts['dist:product:'+p].includes('build:native'));
    assert.equal(m.scripts['predist:product:win'],'node scripts/patch-electron-builder-nsis.js');
   }
  }finally{fs.rmSync(output,{recursive:true,force:true});}
