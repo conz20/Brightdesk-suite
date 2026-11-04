@@ -19,7 +19,7 @@ Run on the release commit in the suite and in each product repository whose inst
 - [ ] `npm run lock:verify`.
 - [ ] `npm ci --no-audit --no-fund` from a clean checkout.
 - [ ] `npm run verify:licenses`.
-- [ ] `npm test` — full suite, including upgrade-preservation, native-engine integration, NSIS-uninstaller and Focus Mode regression coverage.
+- [ ] `npm test` — full suite, including upgrade-preservation, dependency-security compatibility, native-engine integration, NSIS-uninstaller and Focus Mode regression coverage.
 - [ ] `cargo test --manifest-path rust/Cargo.toml --workspace --locked`.
 - [ ] `cargo fmt --manifest-path rust/Cargo.toml --all -- --check`.
 - [ ] `cargo clippy --manifest-path rust/Cargo.toml --workspace --all-targets --locked -- -D warnings`.
@@ -83,7 +83,7 @@ Exception record:
 - Approving owner: ______
 - Review date / expiry: ______
 
-Do not infer the current advisory count from an earlier report. Use the actual `npm audit --json` result from the release commit.
+Current scoped overrides replace ExcelJS's `uuid@8.3.2` with `uuid@11.1.1`, and app-builder-lib's `minimatch@10.2.6` with `minimatch@11.0.4`. The compatibility tests must pass on the release lockfile. Older nested `minimatch@3.1.5` and `minimatch@5.1.9` remain intentionally unforced because of their legacy CommonJS API contract. The wider GitHub Advisory Database range is under review in [issue #10811](https://github.com/github/advisory-database/issues/10811); this is not a formal advisory correction. Do not infer the current advisory count from an earlier report. Use the actual `npm audit --json` result from the release commit and record the exact remaining package paths.
 
 ## 6. Documentation consistency — BLOCKER for product releases
 
