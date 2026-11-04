@@ -17,7 +17,7 @@ test('Node.js 24.22.2 remains the single exact Brightdesk runtime', () => {
   assert.match(read('.devcontainer/Dockerfile'), /^FROM node:24\.22\.2-bookworm/m);
   assert.match(read('.devcontainer/devcontainer.json'), /npm run setup:dev/);
   assert.match(read('.github/workflows/build-release.yml'), /node-version: 24\.22\.2/);
-  assert.match(read('.github/workflows/security-audit.yml'), /node-version: 24\.22\.2/);
+  assert.match(read('.github/workflows/quality.yml'), /node-version: 24\.22\.2/);
   assert.match(read('AGENTS.md'), /exactly Node\.js \*\*24\.22\.2 LTS\*\*/);
   assert.match(read('PROJECT_MEMORY.md'), /standing project requirement/);
 });

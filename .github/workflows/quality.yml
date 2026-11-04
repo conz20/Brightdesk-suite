@@ -1,0 +1,74 @@
+name: Brightdesk quality gate
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches:
+      - main
+      - integration/brightdesk-suite
+      - feature/brightdesk-lists
+      - feature/brightdesk-todo
+  schedule:
+    - cron: '23 5 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: brightdesk-quality-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    name: Validate Brightdesk Office Suite
+    # Use the existing private Mac runner; do not consume paid GitHub-hosted minutes.
+    runs-on: self-hosted
+    timeout-minutes: 45
+    steps:
+      - name: Check out Brightdesk
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+
+      - name: Set up required Node.js version
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 24.22.2
+          cache: npm
+
+      - name: Verify Node.js runtime
+        run: npm run check:node
+
+      - name: Verify the committed dependency lock
+        run: npm run lock:verify
+
+      - name: Install the exact locked dependencies
+        run: npm ci --no-audit --no-fund
+
+      - name: Verify third-party licence notices
+        run: npm run verify:licenses
+
+      - name: Check the shared desktop renderer
+        run: node --check src/app.js
+
+      - name: Check all app modules
+        run: |
+          node --check src/todo-service.js
+          node --check src/lists-service.js
+          node --check src/forms-service.js
+          node --check src/forms-workspace.js
+          node --check src/planner-service.js
+          node --check src/planner-workspace.js
+          node --check src/database-service.js
+          node --check src/database-workspace.js
+          node --check src/workspace-service.js
+          node --check src/workspace-editor.js
+
+      - name: Run the complete automated test suite
+        run: npm test
+
+      - name: Check release readiness
+        run: npm run release:preflight
+
+      - name: Audit dependencies for high severity vulnerabilities
+        run: npm audit --audit-level=high
