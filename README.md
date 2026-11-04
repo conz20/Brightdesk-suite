@@ -1,6 +1,6 @@
 # Brightdesk Office Suite
 
-**Ten focused desktop applications. One consistent Brightdesk experience.**
+**Brightdesk is a ten-app desktop suite: ten focused applications, one consistent experience.**
 
 Brightdesk is an independent, local-first desktop productivity suite. Each application has its own original Brightdesk icon, product-specific workspace and accent colour, while sharing a consistent desktop design system.
 
