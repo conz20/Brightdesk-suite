@@ -1,2 +1,6 @@
-import { theme } from "@brightdesk/ui";
-console.log("Brightdesk Decks — Initialized with theme:", theme.colors.primary);
+import { theme, Button, Card } from "@brightdesk/ui";
+const state = {
+  slide: Card({ title: "Brightdesk Decks", content: "Presentation Builder" }),
+  presentButton: Button({ label: "Start Presentation", variant: "primary" })
+};
+console.log("Brightdesk Decks — Components loaded:", state);

@@ -1,2 +1,6 @@
-import { theme } from "@brightdesk/ui";
-console.log("Brightdesk Wiki — Initialized with theme:", theme.colors.primary);
+import { theme, Card, Input } from "@brightdesk/ui";
+const state = {
+  wikiPage: Card({ title: "Brightdesk Wiki", content: "Knowledge Base Article" }),
+  searchInput: Input({ placeholder: "Search documentation..." })
+};
+console.log("Brightdesk Wiki — Components loaded:", state);

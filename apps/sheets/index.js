@@ -1,10 +1,7 @@
-import { theme } from "@brightdesk/ui";
-
+import { theme, Button, Card, Input } from "@brightdesk/ui";
 const state = {
-  sheetName: "Untitled Sheet",
-  theme: theme.colors.primary,
-  rows: 100,
-  cols: 26
+  header: Card({ title: "Brightdesk Sheets", content: "Spreadsheet & Data Grid" }),
+  formulaBar: Input({ placeholder: "Enter formula...", value: "=SUM(A1:A10)" }),
+  exportButton: Button({ label: "Export CSV", variant: "primary" })
 };
-
-console.log("Brightdesk Sheets — Initialized with theme:", state.theme);
+console.log("Brightdesk Sheets — Components loaded:", state);
