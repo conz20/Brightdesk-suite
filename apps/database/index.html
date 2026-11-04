@@ -1,11 +1,61 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <title>Brightdesk Database</title>
-  </head>
-  <body>
-    <div id="app"></div>
-    <script type="module" src="./index.js"></script>
-  </body>
+<head>
+  <meta charset="UTF-8">
+  <title>Brightdesk Database</title>
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+  <div class="db-container">
+    <header class="db-header">
+      <div class="db-title-area">
+        <h1>Product Roadmap Database</h1>
+        <div class="view-tabs">
+          <button class="tab-btn active">Table view</button>
+          <button class="tab-btn">Kanban board</button>
+          <button class="tab-btn">Timeline</button>
+        </div>
+      </div>
+      <div class="db-actions">
+        <button class="primary-btn">+ New Record</button>
+      </div>
+    </header>
+    <main class="db-grid-area">
+      <table class="db-table">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Status</th>
+            <th>Priority</th>
+            <th>Assignee</th>
+            <th>Sprint</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td contenteditable="true">Design System Upgrades</td>
+            <td><span class="badge status-in-progress">In Progress</span></td>
+            <td><span class="badge priority-high">High</span></td>
+            <td contenteditable="true">Connor</td>
+            <td contenteditable="true">Sprint 12</td>
+          </tr>
+          <tr>
+            <td contenteditable="true">Vitest Monorepo CI/CD</td>
+            <td><span class="badge status-complete">Complete</span></td>
+            <td><span class="badge priority-urgent">Urgent</span></td>
+            <td contenteditable="true">DevOps</td>
+            <td contenteditable="true">Sprint 11</td>
+          </tr>
+          <tr>
+            <td contenteditable="true">Enterprise Suite Shells</td>
+            <td><span class="badge status-todo">Not Started</span></td>
+            <td><span class="badge priority-medium">Medium</span></td>
+            <td contenteditable="true">Design Team</td>
+            <td contenteditable="true">Sprint 13</td>
+          </tr>
+        </tbody>
+      </table>
+    </main>
+  </div>
+</body>
 </html>

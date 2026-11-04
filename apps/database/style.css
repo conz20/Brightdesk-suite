@@ -1,0 +1,86 @@
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background-color: #ffffff;
+  color: #191919;
+}
+.db-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+.db-header {
+  padding: 16px 24px;
+  border-bottom: 1px solid #e0e0e0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #fbfbfa;
+}
+.db-title-area h1 {
+  font-size: 20px;
+  font-weight: 600;
+  margin: 0 0 8px 0;
+}
+.view-tabs {
+  display: flex;
+  gap: 8px;
+}
+.tab-btn {
+  background: transparent;
+  border: none;
+  padding: 4px 8px;
+  font-size: 13px;
+  color: #666;
+  cursor: pointer;
+  border-radius: 4px;
+}
+.tab-btn.active {
+  background: #eaeae5;
+  color: #191919;
+  font-weight: 500;
+}
+.primary-btn {
+  background: #2383e2;
+  color: #fff;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+}
+.primary-btn:hover {
+  background: #1b6ec2;
+}
+.db-grid-area {
+  flex: 1;
+  overflow: auto;
+}
+.db-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+.db-table th, .db-table td {
+  padding: 10px 24px;
+  border-bottom: 1px solid #e0e0e0;
+  font-size: 13px;
+}
+.db-table th {
+  background: #fbfbfa;
+  font-weight: 500;
+  color: #787774;
+}
+.badge {
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 500;
+}
+.status-in-progress { background: #e0f2fe; color: #0369a1; }
+.status-complete { background: #dcfce7; color: #15803d; }
+.status-todo { background: #f1f5f9; color: #475569; }
+.priority-high { background: #fee2e2; color: #b91c1c; }
+.priority-urgent { background: #fef3c7; color: #b45309; }
+.priority-medium { background: #f3e8ff; color: #6b21a8; }
