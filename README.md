@@ -123,3 +123,26 @@ Automatic update checking can be turned on or off. Turning it off stops schedule
 ## Rust native engine
 
 The Electron main process loads a local Rust Node-API module for bounded source processing and provider-neutral embedding operations. Rust is used for normalization, cosine similarity, and ranking of vectors returned by an explicitly configured model provider; it does not create semantic embeddings or call external models. No external model provider, paid API, credential, or remote source upload is enabled. See [Rust Node-API integration](docs/RUST_ENGINE_INTEGRATION.md).
+
+## Professional product quality programme
+
+The suite is the visual and functional reference for every standalone Brightdesk application. This programme raises the complete ecosystem to one release-quality standard rather than polishing the launcher while leaving individual products behind.
+
+### Shared experience requirements
+
+- One coherent Brightdesk design system: typography, spacing, colour tokens, surfaces, borders, elevation, icon sizing, focus states and interaction feedback.
+- A consistent desktop application frame with clear navigation, a useful work area, predictable toolbars and contextual actions.
+- Real product-specific screens and workflows; no generic placeholder dashboards, decorative controls that do nothing, or invented feature claims.
+- Consistent empty, loading, success, validation, error and destructive-confirmation states.
+- Keyboard operation, visible focus, readable contrast, accessible names, sensible tab order and layouts that remain usable at supported window sizes.
+- Original Brightdesk artwork and product identities. Microsoft 365, Adobe and ArtCraft are quality references only; Brightdesk must not copy their logos, proprietary assets or exact interface designs.
+
+### Worked examples and screenshots
+
+Every example must match an implemented and testable workflow. Label concept artwork clearly; label captured application screenshots with the build/version used. Do not present mock data or concept screens as shipped functionality. Examples should show realistic content, useful density, clear hierarchy and the complete task outcome—not empty panels or disconnected controls.
+
+### Release acceptance
+
+A visual change is complete only after the relevant screen has been checked at practical desktop sizes, its key interactions have been exercised, keyboard/focus behaviour has been checked, and the repository's documented tests pass. Suite-level acceptance must also confirm all ten app cards, their descriptions, app identities and launch destinations remain correct. Installer, persistence, upgrade and cross-platform claims must be backed by their own successful checks.
+
+This programme does not change the approved ten-app scope or the first customer-facing version **0.1.0**. It does not mark unfinished work as complete; each application must earn its status through evidence.
