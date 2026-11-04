@@ -11,7 +11,7 @@
     "dev": "npm run --workspaces dev --if-present",
     "build": "npm run --workspaces build --if-present",
     "typecheck": "npx tsc --noEmit",
-    "test": "echo 'Running suite test suite...'"
+    "test": "vitest run"
   },
   "devDependencies": {
     "typescript": "^5.0.0",
