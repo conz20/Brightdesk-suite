@@ -49,7 +49,8 @@ test('electron-builder app-builder-lib resolves the patched minimatch package', 
   const minimatchPackage = packageAt(minimatchEntry);
   const minimatch = require(minimatchEntry);
 
-  assert.equal(minimatchPackage.version, '11.0.1');
+  const [major, minor, patch] = minimatchPackage.version.split('.').map(Number);
+  assert.ok(major > 11 || (major === 11 && (minor > 0 || (minor === 0 && patch >= 1))), 'minimatch must be at least 11.0.1');
   assert.equal(typeof minimatch.Minimatch, 'function');
   assert.equal(typeof minimatch.minimatch, 'function');
   assert.equal(minimatch.minimatch('file.js', '*.js'), true);
