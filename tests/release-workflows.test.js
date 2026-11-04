@@ -46,8 +46,8 @@ test('release workflow builds and verifies all three desktop platforms', () => {
     assert.ok(workflow.includes(command), `workflow includes ${command}`);
   }
   assert.match(workflow, /node-version: 24\\.22\\.2/);
-  assert.match(workflow, /^on:\\s*\\n\\s*workflow_dispatch:/);
-  assert.doesNotMatch(workflow, /^\\s+push:/m, 'installer builds must be manual, not automatic on push');
+  assert.match(workflow, /^on:\s*\n\s*workflow_dispatch:/);
+  assert.doesNotMatch(workflow, /^\s+push:/m, 'installer builds must be manual, not automatic on push');
   assert.match(workflow, /npm run lock:prepare/);
   assert.match(workflow, /npm run lock:verify/);
   assert.match(workflow, /brightdesk-dependency-lock/);
