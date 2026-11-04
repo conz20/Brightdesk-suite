@@ -20,7 +20,7 @@ let updateCheckTimeout = null;
 let updateCheckInterval = null;
 let automaticUpdateChecksEnabled = DEFAULT_UPDATE_SETTINGS.autoCheck;
 let dictionaryService;
-const supportedApplications = new Set(['pages', 'sheets', 'slides', 'notes']);
+const supportedApplications = new Set(['pages', 'sheets', 'slides', 'notes', 'database', 'forms', 'lists', 'planner', 'todo', 'loop']);
 const applicationId = packageConfig.brightdeskAppId || null;
 if (applicationId && !supportedApplications.has(applicationId)) {
   throw new Error(`Unsupported Brightdesk application: ${applicationId}`);
@@ -51,7 +51,7 @@ function sendUpdateState(state) { if (mainWindow && !mainWindow.isDestroyed()) m
 function createWindow({ show = true } = {}) {
   mainWindow = new BrowserWindow({
     width: 1440, height: 920, minWidth: 980, minHeight: 680, show,
-    title: applicationId ? `Brightdesk ${({ pages: 'Pages', sheets: 'Sheets', slides: 'Decks', notes: 'Notes' })[applicationId]}` : 'Brightdesk', backgroundColor: '#f5f6fa',
+    title: applicationId ? `Brightdesk ${({ pages: 'Pages', sheets: 'Sheets', slides: 'Decks', notes: 'Notes', database: 'Database', forms: 'Forms', lists: 'Lists', planner: 'Planner', todo: 'To Do', loop: 'Workspace' })[applicationId]}` : 'Brightdesk', backgroundColor: '#f5f6fa',
     webPreferences: { preload: path.join(__dirname, 'preload.js'), contextIsolation: true, nodeIntegration: false, sandbox: true, additionalArguments: applicationId ? [`--brightdesk-app=${applicationId}`] : [] }
   });
   mainWindow.webContents.setWindowOpenHandler(() => ({ action: 'deny' }));

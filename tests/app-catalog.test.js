@@ -114,6 +114,25 @@ test('all catalogue modules have independent Brightdesk metadata', () => {
   }
 });
 
+test('Electron main process accepts every approved standalone app', () => {
+  const fs = require('node:fs');
+  const path = require('node:path');
+  const main = fs.readFileSync(path.join(__dirname, '..', 'src', 'main.js'), 'utf8');
+  const declaration = main.split('\n').find(line => line.startsWith('const supportedApplications = new Set('));
+  assert.ok(declaration, 'main process must declare its supported applications');
+  const list = declaration.slice(declaration.indexOf('[') + 1, declaration.lastIndexOf(']'));
+  const ids = [...list.matchAll(/'([^']+)'/g)].map(([, id]) => id);
+  assert.deepEqual(ids, catalog.map(item => item.id));
+  for (const [id, name] of [
+    ['pages', 'Pages'], ['sheets', 'Sheets'], ['slides', 'Decks'],
+    ['notes', 'Notes'], ['database', 'Database'], ['forms', 'Forms'],
+    ['lists', 'Lists'], ['planner', 'Planner'], ['todo', 'To Do'],
+    ['loop', 'Workspace']
+  ]) {
+    assert.ok(main.includes(`${id}: '${name}'`), `missing app title for ${id}`);
+  }
+});
+
 test('all ten integrated apps are marked installable', () => {
   const available = catalog.filter(item => item.availability === 'available').map(item => item.id);
   assert.deepEqual(available, ['pages', 'sheets', 'slides', 'notes', 'database', 'forms', 'lists', 'planner', 'todo', 'loop']);
@@ -172,7 +191,7 @@ test('the standalone build scripts reject unknown app and platform identifiers',
   const build = fs.readFileSync(path.join(root, 'scripts', 'build-app.js'), 'utf8');
   assert.match(build, /Usage: node scripts\/build-app\.js/);
   assert.match(build, /'pkg'/);
-  assert.match(build, /new Set\(\['pages', 'sheets', 'slides', 'notes'\]\)/);
+  assert.match(build, /new Set\(\['pages', 'sheets', 'slides', 'notes', 'database', 'forms', 'lists', 'planner', 'todo', 'loop'\]\)/);
   const config = fs.readFileSync(path.join(root, 'electron-builder.app.config.js'), 'utf8');
   assert.match(config, /Set BRIGHTDESK_APP_ID/);
 });

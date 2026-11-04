@@ -13,7 +13,7 @@ name = "brightdesk_engine"
 crate-type = ["cdylib"]
 
 [dependencies]
-napi = { version = "=3.16.1", default-features = false, features = ["napi8"] }
+napi = { version = "=3.16.1", default-features = false, features = ["napi8", "dyn-symbols"] }
 napi-derive = "=3.7.0"
 
 [build-dependencies]

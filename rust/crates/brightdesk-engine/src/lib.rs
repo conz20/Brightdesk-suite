@@ -20,7 +20,9 @@ fn vector_norm(values: &[f64]) -> Result<f64> {
     let squared_norm = values.iter().map(|value| value * value).sum::<f64>();
     let norm = squared_norm.sqrt();
     if !norm.is_finite() || norm <= f64::EPSILON {
-        return Err(invalid("Embedding vector must have a finite, non-zero magnitude."));
+        return Err(invalid(
+            "Embedding vector must have a finite, non-zero magnitude.",
+        ));
     }
     Ok(norm)
 }
@@ -74,7 +76,11 @@ fn cosine_similarity_with_norm(left: &[f64], left_norm: f64, right: &[f64]) -> R
     if left.len() != right.len() {
         return Err(invalid("Embedding vectors must have matching dimensions."));
     }
-    let dot = left.iter().zip(right.iter()).map(|(a, b)| a * b).sum::<f64>();
+    let dot = left
+        .iter()
+        .zip(right.iter())
+        .map(|(a, b)| a * b)
+        .sum::<f64>();
     Ok((dot / (left_norm * right_norm)).clamp(-1.0, 1.0))
 }
 
@@ -96,11 +102,15 @@ pub fn rank_embeddings(
 ) -> Result<Vec<RankedEmbedding>> {
     let query_norm = vector_norm(&query)?;
     if candidates.len() > MAX_VECTOR_CANDIDATES {
-        return Err(invalid("Too many embedding candidates in one ranking request."));
+        return Err(invalid(
+            "Too many embedding candidates in one ranking request.",
+        ));
     }
     let total_values = candidates.iter().map(Vec::len).sum::<usize>() + query.len();
     if total_values > MAX_TOTAL_VECTOR_VALUES {
-        return Err(invalid("Embedding ranking request exceeds the vector-value limit."));
+        return Err(invalid(
+            "Embedding ranking request exceeds the vector-value limit.",
+        ));
     }
     let mut ranked = Vec::with_capacity(candidates.len());
     for (index, candidate) in candidates.iter().enumerate() {
@@ -116,7 +126,9 @@ pub fn rank_embeddings(
             .total_cmp(&left.score)
             .then_with(|| left.index.cmp(&right.index))
     });
-    let take = limit.unwrap_or(ranked.len() as u32).min(ranked.len() as u32) as usize;
+    let take = limit
+        .unwrap_or(ranked.len() as u32)
+        .min(ranked.len() as u32) as usize;
     ranked.truncate(take);
     Ok(ranked)
 }
@@ -203,8 +215,12 @@ mod tests {
             vec![1.0, 0.0],
             vec![vec![0.0, 1.0], vec![1.0, 0.0], vec![2.0, 0.0]],
             None,
-        ).unwrap();
-        assert_eq!(ranked.iter().map(|item| item.index).collect::<Vec<_>>(), vec![1, 2, 0]);
+        )
+        .unwrap();
+        assert_eq!(
+            ranked.iter().map(|item| item.index).collect::<Vec<_>>(),
+            vec![1, 2, 0]
+        );
     }
 
     #[test]
@@ -229,7 +245,8 @@ mod tests {
             vec![1.0, 0.0],
             vec![vec![0.0, 1.0], vec![1.0, 0.0], vec![2.0, 0.0]],
             Some(1),
-        ).unwrap();
+        )
+        .unwrap();
         assert_eq!(ranked.len(), 1);
         assert_eq!(ranked[0].index, 1);
 
