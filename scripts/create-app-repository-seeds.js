@@ -70,8 +70,6 @@ const PRODUCT_TEST_FILES = Object.freeze([
   'tests/rea-bench.test.js',
   'tests/release-readiness.test.js',
   'tests/resource-protection.test.js',
-  'tests/standalone-app-builds.test.js',
-  'tests/standalone-rust-packaging.test.js',
   'tests/startup-smoke.test.js',
   'tests/todo-service.test.js',
   'tests/todo-ui-integration.test.js',
@@ -214,7 +212,7 @@ function repositoryReadme(product) {
     '- scripts/ — build and release verification tools.',
     '- tests/ — automated product and shared-engine tests.',
     '',
-    'This product uses the shared Brightdesk desktop engine and ships the complete shared source in its installer. The renderer is locked to ' + product.name + ' at start-up (see `applicationId` in `src/main.js` and `launchAppId` in `src/preload.js`); the other nine approved products are present in the source tree but are not reachable from the UI. This keeps every product on the same tested engine and file formats, at the cost of a slightly larger installer than a single-purpose build would need.',
+    'This product uses the shared Brightdesk desktop engine and ships the complete shared source in its installer. The Rust core is checked and tested with the product source; the Node-API native module remains optional and is not built into default product installers until its separate architecture and benchmark gate is approved. The renderer is locked to ' + product.name + ' at start-up (see `applicationId` in `src/main.js` and `launchAppId` in `src/preload.js`); the other nine approved products are present in the source tree but are not reachable from the UI.',
     '',
     'The live dictionary network test is intentionally excluded from the default test run; run it separately with `BRIGHTDESK_LIVE_DICT_TESTS=1` when network testing is appropriate.',
     '',
@@ -376,11 +374,10 @@ function makePackage(product, target) {
   manifest.build.linux.artifactName = 'brightdesk-' + appSlugLower + '-${version}-${arch}.${ext}';
   if (manifest.build.appImage) delete manifest.build.appImage;
   manifest.scripts.test = 'node --test ' + PRODUCT_TEST_FILES.join(' ');
-  manifest.scripts['build:native'] = 'node scripts/build-native.js';
   manifest.scripts['predist:product:win'] = 'node scripts/patch-electron-builder-nsis.js';
-  manifest.scripts['dist:product:win'] = 'npm run build:native && node scripts/build-app.js ' + product.appId + ' win';
-  manifest.scripts['dist:product:mac'] = 'npm run build:native && node scripts/build-app.js ' + product.appId + ' mac';
-  manifest.scripts['dist:product:linux'] = 'npm run build:native && node scripts/build-app.js ' + product.appId + ' linux';
+  manifest.scripts['dist:product:win'] = 'node scripts/build-app.js ' + product.appId + ' win';
+  manifest.scripts['dist:product:mac'] = 'node scripts/build-app.js ' + product.appId + ' mac';
+  manifest.scripts['dist:product:linux'] = 'node scripts/build-app.js ' + product.appId + ' linux';
   manifest.scripts['verify:product:win'] = `node scripts/verify-standalone-apps.js win release/apps ${product.appId}`;
   manifest.scripts['verify:product:mac'] = `node scripts/verify-standalone-apps.js mac release/apps ${product.appId}`;
   manifest.scripts['verify:product:linux'] = `node scripts/verify-standalone-apps.js linux release/apps ${product.appId}`;

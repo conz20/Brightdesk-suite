@@ -11,12 +11,14 @@ test('generator includes exactly the ten approved products',()=>{
 test('generated tests include required regression gates and exclude suite-only/network tests',()=>{
  for(const f of ['tests/focus-mode.test.js','tests/app-upgrade-preservation.test.js','tests/product-launch-lock.test.js','tests/native-engine-integration.test.js','tests/nsis-uninstaller-patch.test.js']) assert.ok(PRODUCT_TEST_FILES.includes(f),f);
  for(const f of ['tests/app-catalog.test.js','tests/dictionary-service-live.test.js','tests/release-workflows.test.js']) assert.ok(!PRODUCT_TEST_FILES.includes(f),f);
- assert.equal(PRODUCT_TEST_FILES.length,38);
+ assert.equal(PRODUCT_TEST_FILES.length,36);
+ for(const suiteOnly of ['tests/standalone-app-builds.test.js','tests/standalone-rust-packaging.test.js']) assert.ok(!PRODUCT_TEST_FILES.includes(suiteOnly),suiteOnly);
 });
 test('generated README states shared source trade-off and product lock',()=>{
  const readme=repositoryReadme(PRODUCT_REPOSITORIES.find(p=>p.appId==='todo'));
  assert.match(readme,/ships the complete shared source/);
- assert.match(readme,/renderer is locked to To Do/);
+ assert.match(readme,/renderer is locked to Brightdesk To Do/);
+ assert.match(readme,/Node-API native module remains optional/);
  assert.match(readme,/launchAppId/);
 });
 test('product workflow runs Rust checks and keeps release publishing manual',()=>{
