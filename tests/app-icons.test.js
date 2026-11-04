@@ -10,6 +10,7 @@ const iconFiles = {
   database: 'database.svg', forms: 'forms.svg', lists: 'lists.svg', planner: 'planner.svg',
   todo: 'to-do.svg', loop: 'workspace.svg'
 };
+const pictograph = /\p{Extended_Pictographic}/u;
 
 test('all ten Brightdesk applications have their own bundled illustrated SVG icon', () => {
   const iconRoot = path.join(__dirname, '..', 'src', 'assets', 'icons');
@@ -23,6 +24,7 @@ test('all ten Brightdesk applications have their own bundled illustrated SVG ico
     assert.match(svg, /<svg[^>]+role="img"/);
     assert.match(svg, /<title/);
     assert.match(svg, /<linearGradient/);
+    assert.doesNotMatch(svg, pictograph, `Emoji are not permitted in application artwork: ${file}`);
   }
 });
 
@@ -33,4 +35,28 @@ test('the launcher and app navigation load the bundled icon artwork', () => {
   assert.match(app, /function appIconPath\(item\)/);
   assert.match(app, /icon\.src\s*=\s*appIconPath\(item\)/);
   assert.match(app, /app-icon-image/);
+});
+
+test('suite and active app-module README files use original icon artwork without emoji', () => {
+  const root = path.join(__dirname, '..');
+  const readmes = [
+    'README.md',
+    'apps/pages/README.md',
+    'apps/sheets/README.md',
+    'apps/decks/README.md',
+    'apps/notes/README.md',
+    'apps/database/README.md',
+    'apps/forms/README.md',
+    'apps/lists/README.md',
+    'apps/planner/README.md',
+    'apps/todo/README.md'
+  ];
+  for (const relativePath of readmes) {
+    const readme = fs.readFileSync(path.join(root, relativePath), 'utf8');
+    assert.doesNotMatch(readme, pictograph, `Remove emoji from ${relativePath}`);
+  }
+  const readme = fs.readFileSync(path.join(root, 'README.md'), 'utf8');
+  for (const file of Object.values(iconFiles)) {
+    assert.ok(readme.includes(`assets/icons/${file}`), `Main README must show the original icon ${file}`);
+  }
 });
