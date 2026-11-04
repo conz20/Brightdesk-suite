@@ -251,3 +251,84 @@ input:disabled, select:disabled, textarea:disabled, button:disabled { cursor: no
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
 }
+
+
+/* Brightdesk management and product-card finish */
+.settings-nav { margin-top: 8px; border: 1px solid transparent; }
+.settings-nav .manager-gear {
+  width: 36px; height: 36px; border: 1px solid #dce3ed; border-radius: 11px;
+  background: linear-gradient(145deg,#f8fafc,#edf1f7); color: #31425b;
+  font-size: 21px; line-height: 1;
+}
+.settings-nav.active .manager-gear { border-color: #d2dced; background: #eaf0f8; color: #294e83; }
+.settings-sidebar-meta { padding-top: 14px; border-top: 1px solid #e8edf3; }
+.settings-sidebar-meta small { color: #8390a3; font-size: 10px; }
+.settings-toolbar {
+  display: flex; align-items: center; justify-content: space-between; gap: 18px;
+  padding: 17px 19px; margin: 0 0 15px; border: 1px solid #dfe6ef;
+  border-radius: 13px; background: linear-gradient(115deg,#fff 0%,#f7f9fc 100%);
+}
+.settings-context { min-width: 220px; }
+.settings-context .eyebrow { color: #718198; font-size: 9px; }
+.settings-context p { margin: 5px 0 0; color: #64748a; font-size: 12px; line-height: 1.5; }
+.settings-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; }
+.settings-action { min-height: 36px; white-space: nowrap; font-size: 11px; }
+.app-manager { max-width: 1500px; margin-inline: auto; }
+.app-manager .manager-hero { margin-bottom: 16px; }
+.manager-grid { grid-template-columns: repeat(auto-fit,minmax(min(100%,290px),1fr)); gap: 16px; }
+.app-card {
+  --app-card-accent: #526a9b; --app-card-tint: #f1f4f9;
+  position: relative; min-width: 0; overflow: hidden; padding: 0 15px 14px;
+  border: 1px solid #e0e6ee; border-top: 3px solid var(--app-card-accent);
+  border-radius: 13px; background: #fff; box-shadow: 0 2px 8px #192d4a08;
+  transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+}
+.app-card:hover { transform: translateY(-2px); box-shadow: 0 12px 28px #1b31531a; border-color: color-mix(in srgb,var(--app-card-accent) 35%,#e0e6ee); }
+.app-card[data-app-id="pages"] { --app-card-accent:#5966c9; --app-card-tint:#f0f1fc; }
+.app-card[data-app-id="sheets"] { --app-card-accent:#27845c; --app-card-tint:#edf7f1; }
+.app-card[data-app-id="slides"] { --app-card-accent:#c47a2d; --app-card-tint:#fcf3e9; }
+.app-card[data-app-id="notes"] { --app-card-accent:#287fa5; --app-card-tint:#edf6fa; }
+.app-card[data-app-id="database"] { --app-card-accent:#8058b3; --app-card-tint:#f4effa; }
+.app-card[data-app-id="forms"] { --app-card-accent:#c35d68; --app-card-tint:#fbf0f1; }
+.app-card[data-app-id="lists"] { --app-card-accent:#287f8c; --app-card-tint:#edf6f7; }
+.app-card[data-app-id="planner"] { --app-card-accent:#4667bf; --app-card-tint:#eef2fc; }
+.app-card[data-app-id="todo"] { --app-card-accent:#27834f; --app-card-tint:#edf7f0; }
+.app-card[data-app-id="loop"] { --app-card-accent:#4b68a8; --app-card-tint:#eff2f9; }
+.app-card .app-preview {
+  display: block; width: calc(100% + 30px); height: 142px; max-height: 142px;
+  margin: 0 -15px 13px; border: 0; border-bottom: 1px solid #e6ebf2;
+  border-radius: 0; object-fit: cover; object-position: top center; background: var(--app-card-tint);
+}
+.app-card-header { display: flex; align-items: center; gap: 11px; min-width: 0; }
+.app-card-header .app-icon-image { flex: 0 0 42px; width: 42px; height: 42px; padding: 5px; border-radius: 12px; background: var(--app-card-tint); }
+.app-card-heading { min-width: 0; flex: 1; }
+.app-card-heading b { display: block; color: #1f2d43; font-size: 13px; letter-spacing: -.015em; }
+.app-card-heading small { display: block; margin-top: 3px; color: #738198; font-size: 10px; line-height: 1.4; }
+.app-status-chip {
+  display: inline-flex; align-items: center; gap: 5px; width: max-content;
+  margin-top: 7px; padding: 4px 7px; border: 1px solid #dce4ed;
+  border-radius: 999px; background: #f6f8fb; color: #64748a;
+  font-size: 9px; font-weight: 700; letter-spacing: .01em;
+}
+.app-status-chip::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+.app-status-chip.installed { border-color: #cfe7d9; background: #eff8f2; color: #28764b; }
+.app-status-chip.available { border-color: #d9e3f3; background: #f0f5fc; color: #47618b; }
+.app-status-chip.development { border-color: #eadfc9; background: #fbf6ec; color: #8b6b36; }
+.app-card > p { margin: 11px 0 13px; color: #68778d; font-size: 11px; line-height: 1.55; min-height: 35px; }
+.app-card-footer { display: flex; align-items: center; justify-content: space-between; gap: 9px; margin-top: auto; padding-top: 11px; border-top: 1px solid #edf0f4; }
+.app-card-footer .module-version { color: #8b97a8; font-size: 9px; }
+.app-install-action { min-width: 92px; }
+.app-card .small-action { border-radius: 7px; }
+.app-card .primary { background: var(--app-card-accent); border-color: var(--app-card-accent); }
+.app-card .primary:hover { filter: brightness(.92); }
+@media (max-width: 900px) {
+  .settings-toolbar { align-items: flex-start; flex-direction: column; }
+  .settings-actions { width: 100%; justify-content: flex-start; }
+}
+@media (max-width: 700px) {
+  .settings-toolbar { padding: 14px; }
+  .settings-actions { display: grid; grid-template-columns: 1fr; }
+  .settings-actions button { width: 100%; }
+  .app-card .app-preview { height: 132px; max-height: 132px; }
+  .app-card > p { min-height: 0; }
+}
