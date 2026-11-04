@@ -16,6 +16,11 @@ The following concept shows the intended Brightdesk app centre: app discovery, u
 
 > **Important:** This is a concept illustration, not a screenshot of a completed application build. It shows a proposed visual direction. The per-app menu, app downloads and update controls are design targets; they must be implemented and acceptance-tested before being described as available functionality.
 
+
+## Visual design standard
+
+All ten applications follow the shared [Brightdesk visual and interaction standard](docs/BRIGHTDESK_VISUAL_STANDARD.md), including original product icons, consistent workspace layouts, app-centre actions, responsive behaviour and accessible controls. App screenshots in this README are labelled concepts until captured from running, acceptance-tested screens.
+
 ## The ten Brightdesk applications
 
 Each application has its own original, purpose-designed icon. The matching artwork is used in the launcher and app navigation, so you can recognise each app by its symbol as well as its name. All ten remain part of the approved suite.
