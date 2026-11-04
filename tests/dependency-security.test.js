@@ -104,5 +104,5 @@ test('root overrides are explicitly scoped to ExcelJS and app-builder-lib', () =
   assert.equal(manifest.overrides.exceljs.uuid, '^11.1.1');
   assert.equal(manifest.overrides['app-builder-lib'].minimatch, '^11.0.1');
   assert.equal(manifest.overrides['archiver@5.3.2']['readdir-glob@^1.1.2'].minimatch, '^11.0.1');
-  assert.equal(manifest.overrides['archiver@5.3.2']['readdir-glob@3.0.0']['.'], '^3.0.0');
+  assert.equal(manifest.overrides['archiver@5.3.2']['readdir-glob@^1.1.2']['.'], '^3.0.0');
 });
