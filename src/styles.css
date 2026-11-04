@@ -341,3 +341,5 @@ input:disabled, select:disabled, textarea:disabled, button:disabled { cursor: no
   .app-card-footer { flex-wrap: wrap; }
   .app-card-footer .app-install-action { min-width: 84px; }
 }
+
+.app-card-actions .module-version { margin-right: auto; }
