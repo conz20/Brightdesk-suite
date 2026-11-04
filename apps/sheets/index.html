@@ -1,11 +1,67 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <title>Brightdesk Sheets</title>
-  </head>
-  <body>
-    <div id="app"></div>
-    <script type="module" src="./index.js"></script>
-  </body>
+<head>
+  <meta charset="UTF-8">
+  <title>Brightdesk Sheets</title>
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+  <div class="sheets-container">
+    <header class="sheets-ribbon">
+      <div class="ribbon-row">
+        <button class="ribbon-btn">File</button>
+        <button class="ribbon-btn">Edit</button>
+        <button class="ribbon-btn">View</button>
+        <button class="ribbon-btn">Insert</button>
+        <button class="ribbon-btn">Format</button>
+        <button class="ribbon-btn">Data</button>
+      </div>
+      <div class="formula-bar">
+        <span class="cell-indicator">A1</span>
+        <span class="fx-icon">ƒx</span>
+        <input type="text" class="formula-input" value="Enter value or formula..." />
+      </div>
+    </header>
+    <div class="grid-container">
+      <table class="spreadsheet-grid">
+        <thead>
+          <tr>
+            <th class="corner-header"></th>
+            <th>A</th>
+            <th>B</th>
+            <th>C</th>
+            <th>D</th>
+            <th>E</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="row-header">1</td>
+            <td contenteditable="true">Project Name</td>
+            <td contenteditable="true">Status</td>
+            <td contenteditable="true">Due Date</td>
+            <td contenteditable="true">Assigned</td>
+            <td contenteditable="true">Budget</td>
+          </tr>
+          <tr>
+            <td class="row-header">2</td>
+            <td contenteditable="true">Q3 Strategy</td>
+            <td contenteditable="true">In Progress</td>
+            <td contenteditable="true">10/15/2026</td>
+            <td contenteditable="true">Connor</td>
+            <td contenteditable="true">$50,000</td>
+          </tr>
+          <tr>
+            <td class="row-header">3</td>
+            <td contenteditable="true">Design System</td>
+            <td contenteditable="true">Complete</td>
+            <td contenteditable="true">11/01/2026</td>
+            <td contenteditable="true">Team</td>
+            <td contenteditable="true">$25,000</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</body>
 </html>
