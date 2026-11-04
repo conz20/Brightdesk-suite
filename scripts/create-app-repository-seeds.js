@@ -48,6 +48,7 @@ const PRODUCT_TEST_FILES = Object.freeze([
   'tests/brand-assets.test.js',
   'tests/database-service.test.js',
   'tests/database-ui-integration.test.js',
+  'tests/dependency-security.test.js',
   'tests/dictionary-service.test.js',
   'tests/file-service.test.js',
   'tests/focus-mode.test.js',
