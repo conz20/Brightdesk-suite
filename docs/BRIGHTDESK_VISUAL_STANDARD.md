@@ -31,15 +31,16 @@ The product-specific accents should help recognition, not create ten unrelated d
 
 The suite home should make each product immediately recognisable and manageable:
 
-- Show all ten approved products in a responsive app grid.
-- Every card contains the app icon, product name, a concise purpose line and a truthful state such as Installed, Update available or Not installed.
-- The primary action follows the real state: Open, Update, Install or Download.
-- Keep a three-dot menu on each card for secondary actions such as Check for updates, App settings, Help and Uninstall.
-- Offer Update all only when at least one verified update is available.
+- Use one clear Settings cog as the entry point for local app, language and update management.
+- Show all ten approved products in a responsive app grid with strong, product-specific preview artwork.
+- Every card contains the app icon, product name, a concise purpose line, a truthful Installed or Available state, and an obvious Install or Uninstall action.
+- Keep installation state and primary actions visible; do not hide them in overflow menus.
+- Confirm uninstall and make clear that removing an app from the suite does not delete its local documents.
+- Put language packs, spelling dictionaries and update preferences in the Settings area.
 - Show progress and clear success/failure feedback for downloads and updates.
-- Confirm uninstall and explain that removing an app must not silently remove its user documents.
-- Keep suite-wide Settings, Downloads and Updates easy to find.
 - Never show fabricated update states, availability or version numbers. If an action is only a design target, label it as such in documentation.
+
+The suite is local-first desktop software. Do not add account creation, sign-in, cloud storage, online workspace or cloud-sync imagery or language. Settings must describe controls and resources on this device. Local save states should be explicit and truthful.
 
 ## Application workspaces
 
