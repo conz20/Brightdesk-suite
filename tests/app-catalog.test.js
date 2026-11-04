@@ -16,7 +16,8 @@ test('every app has a unique id, release version and user-facing details', () =>
   assert.equal(new Set(ids).size, ids.length);
   for (const app of catalog) {
     assert.match(app.moduleVersion, /^\d+\.\d+\.\d+$/);
-    assert.ok(app.name && app.subtitle && app.description && app.icon);
+    assert.ok(app.name && app.subtitle && app.description && app.iconAsset);
+    assert.equal(Object.hasOwn(app, 'icon'), false, 'Text glyph icon placeholders are not permitted');
   }
 });
 
@@ -105,6 +106,23 @@ test('the canonical product scope lock matches the executable catalogue', () => 
   for (const name of catalog.map(item => item.name)) assert.ok(scope.includes(name), `scope lock missing ${name}`);
   for (const excluded of ['Outlook', 'OneDrive', 'Teams']) assert.match(scope, new RegExp(`\\b${excluded}\\b`));
   assert.match(scope, /scope can change only when the user explicitly instructs/i);
+});
+
+test('each catalogue app references its own original SVG icon artwork', () => {
+  const fs = require('node:fs');
+  const path = require('node:path');
+  const root = path.join(__dirname, '..');
+  const expectedIcons = {
+    pages: 'pages.svg', sheets: 'sheets.svg', slides: 'decks.svg', notes: 'notes.svg',
+    database: 'database.svg', forms: 'forms.svg', lists: 'lists.svg', planner: 'planner.svg',
+    todo: 'to-do.svg', loop: 'workspace.svg'
+  };
+  for (const app of catalog) {
+    assert.equal(app.iconAsset, expectedIcons[app.id], `Unexpected icon asset for ${app.id}`);
+    assert.ok(fs.existsSync(path.join(root, 'src', 'assets', 'icons', app.iconAsset)));
+  }
+  const source = fs.readFileSync(path.join(root, 'src', 'app.js'), 'utf8');
+  assert.match(source, /return `assets\\/icons\\/\$\{item\.iconAsset\}`/);
 });
 
 test('all catalogue modules have independent Brightdesk metadata', () => {
