@@ -2,7 +2,9 @@ name: Generate dependency lockfile
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
+      - maintenance/dependency-security-2026-11-04
     paths:
       - 'package.json'
       - '.github/workflows/generate-lockfile.yml'
