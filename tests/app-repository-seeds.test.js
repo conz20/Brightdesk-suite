@@ -52,8 +52,8 @@ test('generated manifests use canonical platform artifact names and native hooks
    assert.equal(m.build.appImage,undefined);
    assert.equal(m.overrides.exceljs.uuid,'^11.1.1');
    assert.equal(m.overrides['app-builder-lib'].minimatch,'^11.0.1');
-   assert.equal(m.overrides.archiver['readdir-glob']['.'],'^3.0.0');
-   assert.equal(m.overrides.archiver['readdir-glob'].minimatch,'^11.0.1');
+   assert.equal(m.overrides['archiver@5.3.2']['readdir-glob@3.0.0']['.'],'^3.0.0');
+   assert.equal(m.overrides['archiver@5.3.2']['readdir-glob@3.0.0'].minimatch,'^11.0.1');
    for(const p of ['win','mac','linux']) assert.ok(!m.scripts['dist:product:'+p].includes('build:native'));
    assert.equal(m.scripts['predist:product:win'],'node scripts/patch-electron-builder-nsis.js');
   }
