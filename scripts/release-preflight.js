@@ -54,7 +54,8 @@ function runPreflight({ rootDir, nodeVersion = process.versions.node, platform =
   try {
     const sourceResult = verifyProductSourceLock({ root });
     sourceParityValid = true;
-    sourceParityDetail = `Verified ${sourceResult.verifiedCount} pinned product source module(s).`;
+    const moduleLabel = sourceResult.verifiedCount === 1 ? 'module' : 'modules';
+    sourceParityDetail = `Verified ${sourceResult.verifiedCount} pinned product source ${moduleLabel}.`;
   } catch (error) {
     sourceParityDetail = error.message;
   }
@@ -92,7 +93,7 @@ function writeReport(result, rootDir = path.resolve(__dirname, '..')) {
     '',
     '| Check | Result | Detail |',
     '|---|---|---|',
-    ...result.checks.map(check => `| ${check.name} | ${check.passed ? 'PASS' : check.blocking ? 'BLOCK' : 'WARN'} | ${check.detail.replace(/\|/g, '\\|')} |`),
+    ...result.checks.map(check => `| ${check.name} | ${check.passed ? 'PASS' : check.blocking ? 'BLOCK' : 'WARN'} | ${check.detail.replace(/\|/g, '\\\\|')} |`),
     '',
     result.ready ? 'All release preflight checks passed.' : `Blocking issues: ${result.blockers.length}. No installer should be produced from this environment.`
   ];
