@@ -93,7 +93,7 @@ function writeReport(result, rootDir = path.resolve(__dirname, '..')) {
     '',
     '| Check | Result | Detail |',
     '|---|---|---|',
-    ...result.checks.map(check => `| ${check.name} | ${check.passed ? 'PASS' : check.blocking ? 'BLOCK' : 'WARN'} | ${check.detail.replace(/\|/g, '\\\\|')} |`),
+    ...result.checks.map(check => `| ${check.name} | ${check.passed ? 'PASS' : check.blocking ? 'BLOCK' : 'WARN'} | ${check.detail.replace(/\|/g, '\\|')} |`),
     '',
     result.ready ? 'All release preflight checks passed.' : `Blocking issues: ${result.blockers.length}. No installer should be produced from this environment.`
   ];
