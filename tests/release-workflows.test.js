@@ -53,7 +53,6 @@ test('installer workflow builds suite and all ten standalone apps on native host
   }
   for (const command of [
     'npm run check:node',
-    'npm run lock:prepare',
     'npm run lock:verify',
     'npm ci --no-audit --no-fund',
     'npm run verify:licenses',
@@ -76,6 +75,24 @@ test('installer workflow builds suite and all ten standalone apps on native host
   ]) {
     assert.ok(workflow.includes(command), 'workflow includes ' + command);
   }
+
+  const prepare = workflow.split('  build:')[0];
+  const requiredPrepareOrder = [
+    'npm ci --no-audit --no-fund',
+    'npm run lock:verify',
+    'npm run verify:licenses',
+    'npm test',
+    'npm run release:preflight',
+    'npm audit --audit-level=high'
+  ];
+  let previousPrepareIndex = -1;
+  for (const command of requiredPrepareOrder) {
+    const currentIndex = prepare.indexOf(command);
+    assert.ok(currentIndex > previousPrepareIndex, 'prepare job runs ' + command + ' in the required order');
+    previousPrepareIndex = currentIndex;
+  }
+  assert.equal(prepare.includes('npm run lock:prepare'), false, 'release validation must never regenerate the committed lockfile');
+
   assert.ok(workflow.includes('node scripts/collect-platform-build.js win'));
   assert.ok(workflow.includes('node scripts/collect-platform-build.js linux'));
   assert.ok(workflow.includes('node scripts/collect-platform-build.js mac'));
