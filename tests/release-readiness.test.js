@@ -34,6 +34,16 @@ test('release preflight treats all ten approved apps as release-ready implementa
   assert.match(check.detail, /pages, sheets, slides, notes, database, forms, lists, planner, todo, loop/);
 });
 
+
+test('release preflight verifies pinned individual product source parity', () => {
+  const root = path.resolve(__dirname, '..');
+  const result = runPreflight({ rootDir: root, nodeVersion: '24.22.2', platform: 'linux' });
+  const check = result.checks.find(item => item.name === 'Product source parity');
+  assert.ok(check, 'preflight must verify the pinned individual-product source copies');
+  assert.equal(check.passed, true);
+  assert.match(check.detail, /1 pinned product source module/);
+});
+
 test('artifact verification requires all expected installer formats and writes SHA-256 sums', () => {
   const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'brightdesk-release-'));
   try {
