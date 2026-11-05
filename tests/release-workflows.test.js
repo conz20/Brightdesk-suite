@@ -139,6 +139,11 @@ test('local release verification runs tests and builds only for the current nati
   assert.doesNotMatch(script, /publish always|gh release create/i);
 });
 
+test('README freshness check uses the existing self-hosted runner', () => {
+  assert.match(read('.github/workflows/readme-freshness.yml'), /runs-on: self-hosted/);
+  assert.doesNotMatch(read('.github/workflows/readme-freshness.yml'), /ubuntu-latest|windows-latest|macos-latest/);
+});
+
 test('dependency-maintenance workflows use the existing self-hosted runner', () => {
   for (const file of ['.github/workflows/generate-lockfile.yml', '.github/workflows/generate-third-party-notices.yml']) {
     assert.match(read(file), /runs-on: self-hosted/, `${file} must not consume hosted-runner minutes`);
