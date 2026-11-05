@@ -38,7 +38,7 @@ See the [Office Suite capability benchmark](docs/OFFICE-SUITE-CAPABILITY-BENCHMA
 
 > **Concept artwork — not a screenshot.** This image communicates the intended Brightdesk visual direction. It is not a capture from the running desktop build.
 
-The app-centre concept uses a Settings cogwheel in the top-right corner instead of an account/avatar badge. In the integrated desktop suite, that control opens the existing Settings area. The bell immediately to its left is Notifications: it opens a clearly labelled panel with an honest empty state. The Save control also has a recognisable save icon and a visible label.
+The integrated desktop suite opens to a first-class Home app centre. All ten approved products are displayed together with original preview artwork, product icons, descriptions and a direct **Open** action. The sidebar keeps all ten product destinations available, and the **All apps** return control takes users back to the suite home from a product workspace. Settings is separate and contains device-local language, dictionary and update preferences. The navigation and app-discovery flow take inspiration from the clear Apps / All apps organisation used by Adobe Creative Cloud, while Brightdesk keeps its own original visual identity and implementation. All ten products are included in the suite package; separate downloadable product installers are not published yet, so the app centre does not pretend that its Open action downloads another installer. The bell opens Notifications, and the Save control has a recognisable icon and visible label.
 
 ## Cross-platform consistency
 
