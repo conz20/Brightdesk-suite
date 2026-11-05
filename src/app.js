@@ -804,6 +804,8 @@ function render() {
   });
   $('manage-apps').hidden = Boolean(launchAppId);
   $('open-settings').hidden = Boolean(launchAppId);
+  $('open-notifications').hidden = Boolean(launchAppId);
+  if (launchAppId) $('notification-panel').hidden = true;
   $('manage-apps').classList.toggle('active', manager || languages);
   $('manage-languages').classList.toggle('active', languages);
 }
@@ -856,6 +858,8 @@ function setApp(app){if((launchAppId && app !== launchAppId) || !(configs[app] |
 document.querySelectorAll('.nav[data-app]').forEach(btn=>btn.addEventListener('click',()=>setApp(btn.dataset.app)));
 $('manage-apps').addEventListener('click',()=>{if (launchAppId) return; state.view='manager';render();});
 $('open-settings').addEventListener('click',()=> $('manage-apps').click());
+$('open-notifications').addEventListener('click',()=>{const panel=$('notification-panel');panel.hidden=!panel.hidden;$('open-notifications').setAttribute('aria-expanded',String(!panel.hidden));});
+document.addEventListener('keydown',event=>{if(event.key==='Escape'&&!$('notification-panel').hidden){$('notification-panel').hidden=true;$('open-notifications').setAttribute('aria-expanded','false');}});
 $('manage-languages').addEventListener('click',openLanguageManager);
 $('display-language').addEventListener('change',event=>changeDisplayLanguage(event.target.value));
 $('proofing-language').addEventListener('change',event=>changeProofingLanguage(event.target.value));
