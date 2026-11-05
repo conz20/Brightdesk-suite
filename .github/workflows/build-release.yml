@@ -106,7 +106,7 @@ jobs:
           components: rustfmt, clippy
 
       - name: Restore the exact dependency lock
-        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           name: brightdesk-dependency-lock
           path: .
@@ -175,25 +175,25 @@ jobs:
       version: ${{ steps.release-version.outputs.version }}
     steps:
       - name: Download verified Linux build
-        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           name: brightdesk-Linux
           path: release/Linux
 
       - name: Download verified Windows build
-        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           name: brightdesk-Windows
           path: release/Windows
 
       - name: Download verified macOS build
-        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           name: brightdesk-macOS
           path: release/macOS
 
       - name: Download the exact dependency lock used for this release
-        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           name: brightdesk-dependency-lock
           path: release/build-metadata
@@ -221,7 +221,7 @@ jobs:
       contents: write
     steps:
       - name: Download complete verified installer bundle
-        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           name: Brightdesk-${{ needs.collect.outputs.version }}-Installers
           path: release
