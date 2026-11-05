@@ -38,10 +38,10 @@ test('the source parity check rejects upstream paths outside the repository', ()
   }
 });
 
-test('the product source lock records all eleven pinned modules across eight product repositories', () => {
+test('the product source lock records all thirteen pinned modules across ten product repositories', () => {
   const lock = loadProductSourceLock();
   assert.equal(lock.schemaVersion, 1);
-  assert.equal(lock.products.length, 11);
+  assert.equal(lock.products.length, 13);
   const actualProducts = lock.products.map(product => ({
     id: product.id,
     name: product.name,
@@ -52,6 +52,24 @@ test('the product source lock records all eleven pinned modules across eight pro
     sourceBlobSha: product.sourceBlobSha
   })).sort((a, b) => a.id.localeCompare(b.id));
   const expectedProducts = [
+      {
+        id: 'decks-slides-service',
+        name: 'Brightdesk Decks slide service',
+        repository: 'connormolloy12/Brightdesk-Decks',
+        sourceRef: 'a0e049a5402d8a53f0be3454ae87440f81619889',
+        sourcePath: 'src/slides-service.js',
+        suitePath: 'src/slides-service.js',
+        sourceBlobSha: 'ef50442552e62fd8dda4452718e9f72650850287'
+      },
+      {
+        id: 'notes-content-service',
+        name: 'Brightdesk Notes content service',
+        repository: 'connormolloy12/Brightdesk-Notes',
+        sourceRef: '733adb51adcd9586ee8b71dd4154d16da661f1b9',
+        sourcePath: 'src/notes-service.js',
+        suitePath: 'src/notes-service.js',
+        sourceBlobSha: '12cc34e772bb751eb49804e645f97fed348e477f'
+      },
       {
         id: 'database-service',
         name: 'Brightdesk Database service',
@@ -156,12 +174,12 @@ test('the product source lock records all eleven pinned modules across eight pro
   assert.deepEqual(actualProducts, expectedProducts);
 });
 
-test('the eleven vendored product feature modules match their pinned upstream Git blobs', () => {
+test('the thirteen vendored product feature modules match their pinned upstream Git blobs', () => {
   const result = verifyProductSourceLock();
-  assert.equal(result.verifiedCount, 11);
+  assert.equal(result.verifiedCount, 13);
   assert.deepEqual(
     result.products.map(product => product.id).sort(),
-    ['database-service', 'database-workspace', 'forms-service', 'forms-workspace', 'lists', 'pages-layout', 'planner-service', 'sheets-formula', 'todo', 'workspace-editor', 'workspace-service']
+    ['database-service', 'database-workspace', 'decks-slides-service', 'forms-service', 'forms-workspace', 'lists', 'notes-content-service', 'pages-layout', 'planner-service', 'sheets-formula', 'todo', 'workspace-editor', 'workspace-service']
   );
   assert.ok(result.products.every(product => product.verified));
   assert.equal(
