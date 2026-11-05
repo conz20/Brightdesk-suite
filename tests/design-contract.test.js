@@ -35,3 +35,12 @@ test("shared UI theme matches the approved light canvas and navy navigation", as
   }
   assert.match(css, /\.sidebar\s*\{[^}]*background:var\(--bd-nav-gradient\)/s);
 });
+
+
+test("suite home is the default app centre with persistent return navigation and truthful download status", () => {
+  assert.equal(contract.sharedDesign.homeExperience.defaultView, "app-centre");
+  assert.equal(contract.sharedDesign.homeExperience.allApprovedProductsVisible, true);
+  assert.match(contract.sharedDesign.homeExperience.persistentReturnNavigation, /All apps/);
+  assert.match(contract.sharedDesign.homeExperience.appCardActions, /Open/);
+  assert.match(contract.sharedDesign.homeExperience.downloadPolicy, /verified published installer URL/);
+});
