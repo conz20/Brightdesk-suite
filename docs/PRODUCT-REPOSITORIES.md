@@ -1,51 +1,59 @@
 # Brightdesk product repositories
 
-Brightdesk keeps one complete desktop suite and gives each approved product its own intended repository.
+Brightdesk has one complete desktop Suite and a separate GitHub repository for each approved product.
 
-- Brightdesk-suite remains the main repository and the complete ten-product desktop suite.
-- Each product repository contains the named product's desktop edition, README, original artwork and its own desktop-installer workflow.
-- Each product repository is generated from the same tested Brightdesk source so its features stay aligned with the suite.
+- `Brightdesk-suite` is the main repository and the integrated ten-product desktop Suite.
+- Each product repository is the product-specific home for its source, documentation, tests and release preparation.
+- Product repository existence is separate from verified source parity, passing CI, runtime acceptance and installer release.
 
-## The ten intended product repositories
+## The ten product repositories
 
 | Product | GitHub repository | Product ID | Repository status |
 |---|---|---|---|
-| Brightdesk Pages | Brightdesk-Pages | pages | Created and populated |
-| Brightdesk Sheets | Brightdesk-Sheets | sheets | Created and populated |
-| Brightdesk Decks | Brightdesk-Decks | slides | Created and populated |
-| Brightdesk Notes | Brightdesk-Notes | notes | Created and populated |
-| Brightdesk Database | Brightdesk-Database | database | Created and populated |
-| Brightdesk Forms | Brightdesk-Forms | forms | Created and populated |
-| Brightdesk Lists | Brightdesk-Lists | lists | Not created |
-| Brightdesk Planner | Brightdesk-Planner | planner | Not created |
-| Brightdesk To Do | Brightdesk-To-Do | todo | Not created |
-| Brightdesk Workspace | Brightdesk-Workspace | loop | Not created |
+| Brightdesk Pages | [Brightdesk-Pages](https://github.com/connormolloy12/Brightdesk-Pages) | `pages` | Exists; `main` and `package.json` verified |
+| Brightdesk Sheets | [Brightdesk-Sheets](https://github.com/connormolloy12/Brightdesk-Sheets) | `sheets` | Exists; `main` and `package.json` verified |
+| Brightdesk Decks | [Brightdesk-Decks](https://github.com/connormolloy12/Brightdesk-Decks) | `slides` | Exists; `main` and `package.json` verified |
+| Brightdesk Notes | [Brightdesk-Notes](https://github.com/connormolloy12/Brightdesk-Notes) | `notes` | Exists; `main` and `package.json` verified |
+| Brightdesk Database | [Brightdesk-Database](https://github.com/connormolloy12/Brightdesk-Database) | `database` | Exists; `main` and `package.json` verified |
+| Brightdesk Forms | [Brightdesk-Forms](https://github.com/connormolloy12/Brightdesk-Forms) | `forms` | Exists; `main` and `package.json` verified |
+| Brightdesk Lists | [Brightdesk-Lists](https://github.com/connormolloy12/Brightdesk-Lists) | `lists` | Exists; `main` and `package.json` verified |
+| Brightdesk Planner | [Brightdesk-Planner](https://github.com/connormolloy12/Brightdesk-Planner) | `planner` | Exists; `main` and `package.json` verified |
+| Brightdesk To Do | [Brightdesk-To-Do](https://github.com/connormolloy12/Brightdesk-To-Do) | `todo` | Exists; `main` and `package.json` verified |
+| Brightdesk Workspace | [Brightdesk-Workspace](https://github.com/connormolloy12/Brightdesk-Workspace) | `loop` | Exists; `main` and `package.json` verified |
 
-Repository status was checked against GitHub on 3 November 2026. Brightdesk-Pages, Brightdesk-Sheets, Brightdesk-Decks, Brightdesk-Notes, Brightdesk-Database and Brightdesk-Forms exist and contain product-specific source packages, artwork, package manifests and installer workflows. Brightdesk-Lists, Brightdesk-Planner, Brightdesk-To-Do and Brightdesk-Workspace do not exist yet.
+The repository inventory was checked directly against GitHub on **5 November 2026**. All ten repositories exist, use `main` as their default branch and expose a readable `package.json`. This check does not establish that their source is complete, that current CI has passed, or that an installer has been built. Those require separate evidence on the exact current commit.
 
-## Prepare the product folders
+## Prepare product repository folders
 
-From a checkout of Brightdesk-suite using Node.js 24.22.2, run:
+From a checkout of `Brightdesk-suite` using Node.js 24.22.2, run:
 
     npm ci
     npm run repositories:prepare
 
-The generator creates ten complete folders in release/product-repository-folders/. Each folder contains the product source, a locked product package manifest, original product artwork, a product README and a GitHub Actions desktop-installer workflow.
+The generator prepares ten product folders in `release/product-repository-folders/`. Each generated folder is intended to contain the product source, locked package manifest, original product artwork, product README and GitHub Actions desktop-installer workflow.
 
-The generator does not create GitHub repositories or push code. After a repository exists, its matching folder can be pushed to that repository. The suite build workflow is configured to upload the generated ten-folder bundle as a GitHub Actions artifact, including hidden GitHub workflow files. After a successful updated build, download that artifact from the Actions run and use the matching folder to populate each repository.
+The generator does not create remote GitHub repositories or push code. Because all ten remote repositories now exist, the generated folders are a source-preparation/export step for reviewing and synchronising product content. Review differences against each repository's current branch and open work before updating it; do not overwrite in-flight product work blindly. The Suite workflow can upload the generated ten-folder bundle as a GitHub Actions artifact, including hidden workflow files.
 
 ## Product repository checks and releases
 
-Each generated product repository runs its complete test suite, validates its dependency lock and third-party licences, checks release preflight and audits high-severity dependency vulnerabilities on each pull request and push. A daily scheduled check repeats those quality checks.
+The repository workflows define product checks, dependency-lock verification, third-party licence verification, release preflight and dependency audits. A workflow file or a queued job does not count as a passing check. Verify the current head SHA and require a completed successful run with actual job steps before describing a product check as passed.
 
-A product installer build is started manually after the test job passes. It builds Windows, macOS and Linux desktop installers and verifies the expected files and SHA-256 checksums. Publishing a GitHub Release is a separate manual option and is off by default.
+A product installer build must complete on the native Windows, macOS or Linux runner for the relevant operating system and produce the expected artifacts and SHA-256 checksums. Publishing a GitHub Release is a separate manual action and must remain off until the build and release gates pass.
 
-The integrated suite also builds and verifies the ten product installers. The Product Centre in Brightdesk-suite opens the correct installer for the computer's operating system after the suite release has been published.
+The integrated Suite build is intended to produce the Suite and all ten individual product installers. The complete build matrix must be verified on one coherent candidate commit before any package is described as a current release.
+
+## Automatic update status
+
+Automatic update delivery is **not configured yet** in the installer branch. The Suite's `build.publish` list and the individual-product builder's `publish` list are empty. The current updater code therefore reports that automatic updates are unavailable. Interface controls, an updater dependency, or a build workflow do not prove that a release can be discovered or installed.
+
+Before claiming update parity, configure and test a reachable publishing provider and a versioned update channel for Suite and individual-product installations. Test older installations discovering the release, downloading it, validating its integrity and installing it only with the user's approval on Windows, macOS and Linux. Test Linux AppImage and DEB/package-manager update behaviour separately. Keep the update gate blocked until the evidence exists.
 
 ## Current CI runner limitation
 
-The Brightdesk Pages repository has a successful product quality run. The private Sheets, Decks, Notes, Database and Forms repositories currently fail before job steps because GitHub does not allocate a hosted runner; their failed jobs expose no runner name, steps or downloadable logs. The self-hosted Mac runner registered to Brightdesk-suite is not automatically shared with those separate repositories. The integrated Brightdesk-suite gate therefore remains the authoritative place to execute all ten product tests and installer builds until a shared runner group or suitable per-repository runner is available. Do not treat the private product repository checks as passed.
+Runner-allocation evidence is tracked in [Suite issue #23](https://github.com/connormolloy12/Brightdesk-suite/issues/23). Some individual product repository jobs have failed before executing any steps because GitHub did not assign a runner (for example, `runner_id: 0`, no runner name and an empty step list). That is an infrastructure block, not a source-code test failure and not a passing check.
+
+The Suite's self-hosted runner is not automatically shared with the ten product repositories. Use the latest job metadata and logs for each repository before reporting status. Do not repeatedly rerun jobs that have no runner assigned, and do not enable paid overage or change repository visibility as a workaround.
 
 ## Product scope
 
-The approved products remain exactly Pages, Sheets, Decks, Notes, Database, Forms, Lists, Planner, To Do and Workspace. Outlook, OneDrive and Teams are excluded. Brightdesk remains an independent product and uses original names, code, artwork and interface design.
+The approved products remain exactly Pages, Sheets, Decks, Notes, Database, Forms, Lists, Planner, To Do and Workspace. Outlook, OneDrive, Teams and any additional products are excluded. Brightdesk remains independent and uses original product names, source code, artwork and interface design.
