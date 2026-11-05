@@ -8,16 +8,19 @@ const root = path.join(__dirname, '..');
 const css = fs.readFileSync(path.join(root, 'src', 'styles.css'), 'utf8');
 const standard = fs.readFileSync(path.join(root, 'docs', 'BRIGHTDESK_VISUAL_STANDARD.md'), 'utf8');
 
-test('suite navigation follows the approved deep-navy Brightdesk visual standard', () => {
-  assert.match(standard, /deep navy navigation/i);
-  assert.match(css, /\.sidebar\s*\{[^}]*background:\s*linear-gradient\(180deg,\s*#14233f\s+0%,\s*#0d1930\s+100%\)/i);
-  assert.match(css, /\.sidebar \.nav\s*\{[^}]*color:\s*#bcc8df/i);
-  assert.match(css, /\.sidebar \.nav\.active,\s*\.sidebar \.manager-nav\.active\s*\{\s*background:\s*#293b60;\s*color:\s*#ffffff;/i);
-  assert.doesNotMatch(css, /\.sidebar\s*\{\s*background:\s*#17243e/i);
-  assert.doesNotMatch(css, /\.sidebar \.nav\.active\s*\{\s*background:\s*#e9e7ff/i);
+test('suite navigation follows the canonical Brightdesk navy design contract', () => {
+  assert.match(standard, /Canonical design contract/i);
+  assert.match(css, /--bd-nav-gradient:\s*linear-gradient\(180deg,#14233F 0%,#0D1930 100%\)/i);
+  assert.match(css, /\.sidebar\s*\{[^}]*background:var\(--bd-nav-gradient\)/s);
+  assert.match(css, /\.nav\.active\s*\{background:var\(--bd-nav-active\);color:#fff;box-shadow:inset 3px 0 0 var\(--bd-accent\)\}/);
+  assert.doesNotMatch(css, /\.sidebar \.nav\.active[^}]*#e9e7ff/i);
+  assert.doesNotMatch(css, /\.sidebar \.nav\.active[^}]*#293b60/i);
 });
 
-test('sidebar text and its divider retain contrast on the dark navigation surface', () => {
-  assert.match(css, /\.sidebar \.brand b\s*\{[^}]*color:\s*#ffffff/i);
-  assert.match(css, /\.sidebar \.sidebar-divider\s*\{[^}]*background:\s*#344766/i);
+test('shared navigation keeps readable light labels and accessible focus', () => {
+  assert.match(css, /--bd-nav-text:#EEF3FB/);
+  assert.match(css, /--bd-nav-muted:#A8B6D0/);
+  assert.match(css, /--bd-nav-active:rgba\(255,255,255,\.12\)/);
+  assert.match(css, /--bd-accent:#526FE0/);
+  assert.match(css, /\.top-notifications-button:focus-visible[^}]*outline:2px solid #526FE0/);
 });
