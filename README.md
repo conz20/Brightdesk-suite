@@ -91,9 +91,12 @@ Use Node.js **24.22.2** for development, tests and release builds.
 ```sh
 npm ci
 npm run check:node
+npm run verify:product-sources
 npm test
 npm run build
 ```
+
+The first source-parity pilot is Brightdesk Lists. Its individual repository owns `src/lists-service.js`; the Suite verifies its vendored copy against the pinned Git blob in [PRODUCT_SOURCE_LOCK.json](docs/PRODUCT_SOURCE_LOCK.json). The same check runs in CI and release preflight. This is a one-product pilot, not yet a ten-product parity claim.
 
 Run `npm run release:preflight` before preparing an installer. Build and verify installers on their matching native platforms; a build script existing in the repository does not mean that a verified installer has been published.
 
