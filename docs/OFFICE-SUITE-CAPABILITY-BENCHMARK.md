@@ -204,8 +204,8 @@ A direct blob comparison between the individual product repositories' documented
 | Pages | `src/page-layout.js` | Identical blob |
 | Sheets | `src/formula.js` | Identical blob |
 | Forms | `src/forms-service.js` | Identical blob |
-| Database | `src/database-service.js` | Matches the immutable Database source commit `8a1e8a50329b90a68e2062b85a34ae052c831dc3` |
-| Database | `src/database-workspace.js` | Matches the immutable Database source commit `8a1e8a50329b90a68e2062b85a34ae052c831dc3` |
+| Database | `src/database-service.js` | Matches the immutable Database PR #15 commit `46d0feeb9e7110c2025857b6a2d145eeed06d40a` |
+| Database | `src/database-workspace.js` | Matches the immutable Database PR #15 commit `46d0feeb9e7110c2025857b6a2d145eeed06d40a` |
 | Lists | `src/lists-service.js` | Identical blob |
 | To Do | `src/todo-service.js` | Identical blob |
 | Planner | `src/planner-service.js` | Identical blob on product `main` and the Suite branch |
@@ -231,7 +231,7 @@ The Suite now has pinned, automated parity checks for ten feature modules across
 | Workspace | [Brightdesk-Workspace](https://github.com/connormolloy12/Brightdesk-Workspace) | `src/workspace-editor.js` | `src/workspace-editor.js` | `2cd96b879c7b90da1df66dee7fc2a2c319b53781` |
 | Workspace | [Brightdesk-Workspace](https://github.com/connormolloy12/Brightdesk-Workspace) | `src/workspace-service.js` | `src/workspace-service.js` | `a5a73ac3b727064f43fde0a14320fe2f594a5ba7` |
 
-The eight Pages, Sheets, Forms, Lists, To Do, Planner and Workspace entries are pinned to their product repositories' `main` branches. The two Database entries are pinned to immutable product-source commit `8a1e8a50329b90a68e2062b85a34ae052c831dc3`; these modules are not yet present on Database `main`. The lock record is [docs/PRODUCT_SOURCE_LOCK.json](PRODUCT_SOURCE_LOCK.json), and the verification command is `npm run verify:product-sources`.
+The eight Pages, Sheets, Forms, Lists, To Do, Planner and Workspace entries are pinned to their product repositories' `main` branches. The two Database entries are pinned to immutable Database PR #15 commit `46d0feeb9e7110c2025857b6a2d145eeed06d40a`; these modules are not yet present on Database `main`. The lock record is [docs/PRODUCT_SOURCE_LOCK.json](PRODUCT_SOURCE_LOCK.json), and the verification command is `npm run verify:product-sources`.
 
 The verifier calculates Git's blob SHA-1 from the actual vendored file bytes and compares it with each reviewed upstream blob. It rejects missing or modified vendor copies and repository paths that escape the project. The check is included in Suite CI and release preflight.
 
