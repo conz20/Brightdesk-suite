@@ -368,3 +368,40 @@ input:disabled, select:disabled, textarea:disabled, button:disabled { cursor: no
 .notification-popover p{margin:14px 0 5px;color:#34445d;font-size:12px;font-weight:650}
 .notification-popover small{display:block;color:#7b879a;font-size:11px;line-height:1.5}
 @media(max-width:700px){.top-actions{width:100%;justify-content:flex-start}.notification-popover{right:0}}
+
+
+/* Brightdesk approved design contract v1.0.0 — shared suite shell. */
+:root{
+  --bd-accent:#526FE0;
+  --bd-accent-dark:#344FBC;
+  --bd-canvas:#F3F6FA;
+  --bd-nav-gradient:linear-gradient(180deg,#14233F 0%,#0D1930 100%);
+  --bd-nav-text:#EEF3FB;
+  --bd-nav-muted:#A8B6D0;
+  --bd-nav-hover:rgba(255,255,255,.08);
+  --bd-nav-active:rgba(255,255,255,.12);
+  --bd-nav-divider:rgba(255,255,255,.15);
+}
+body,.main{background:var(--bd-canvas)}
+.sidebar{
+  color:var(--bd-nav-text);
+  background:var(--bd-nav-gradient);
+  border-right:1px solid rgba(255,255,255,.09);
+  box-shadow:none;
+}
+.brand b{color:#fff}
+.brand small,.nav small,.sidebar-bottom small{color:var(--bd-nav-muted)}
+.section-label{color:var(--bd-nav-muted)}
+.nav{color:var(--bd-nav-text)}
+.nav:hover{background:var(--bd-nav-hover);color:#fff}
+.nav.active{background:var(--bd-nav-active);color:#fff;box-shadow:inset 3px 0 0 var(--bd-accent)}
+.nav.active small{color:#DCE7FA}
+.sidebar-divider{background:var(--bd-nav-divider)}
+.manager-icon{background:rgba(255,255,255,.12);color:#fff}
+.free-pill{background:rgba(255,255,255,.10);color:#E3EBFC}
+.text-button{color:#DCE7FA}
+.welcome{background:linear-gradient(105deg,#E8F0FF 0%,#F7F9FD 70%,#F0ECFF 100%);border-color:#E0E8F5}
+.welcome h2{color:#20324E}
+.welcome p{color:#64748A}
+.primary{background:#526FE0;border-color:#526FE0}
+.primary:hover{background:#344FBC;border-color:#344FBC}
