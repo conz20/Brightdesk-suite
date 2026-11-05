@@ -1,44 +1,66 @@
 # Brightdesk Office Suite
 
-**Brightdesk is a ten-app desktop suite: ten focused applications, one consistent experience.**
+<p align="center"><img src="assets/brand/brightdesk-logo.svg" alt="Brightdesk" width="340"></p>
 
-Brightdesk is an independent, local-first desktop productivity suite. Each application has its own original Brightdesk icon, product-specific workspace and accent colour, while sharing a consistent desktop design system.
+<p align="center"><strong>Ten focused desktop products. One consistent Brightdesk experience.</strong></p>
 
-## The ten applications
+Brightdesk is an independent, local-first desktop productivity suite. It uses original product names, code, interface design and artwork. It is not affiliated with Microsoft, Adobe or ArtCraft.
 
-| Application | Icon | Purpose |
+## The ten approved products
+
+| Product | Original icon | Purpose |
 | --- | :---: | --- |
-| **Pages** | <img src="assets/icons/pages.svg" alt="Brightdesk Pages application icon" width="64" height="64"> | Create and format documents, letters and reports. |
-| **Sheets** | <img src="assets/icons/sheets.svg" alt="Brightdesk Sheets application icon" width="64" height="64"> | Work with spreadsheets, formulas, calculations and data. |
-| **Decks** | <img src="assets/icons/decks.svg" alt="Brightdesk Decks application icon" width="64" height="64"> | Design slide presentations and deliver presentations. |
-| **Notes** | <img src="assets/icons/notes.svg" alt="Brightdesk Notes application icon" width="64" height="64"> | Capture and organise notes, pages, sections and ideas. |
-| **Database** | <img src="assets/icons/database.svg" alt="Brightdesk Database application icon" width="64" height="64"> | Build local tables, define fields and manage records. |
-| **Forms** | <img src="assets/icons/forms.svg" alt="Brightdesk Forms application icon" width="64" height="64"> | Create forms, surveys and collect responses locally. |
-| **Lists** | <img src="assets/icons/lists.svg" alt="Brightdesk Lists application icon" width="64" height="64"> | Organise inventories, projects and structured records. |
-| **Planner** | <img src="assets/icons/planner.svg" alt="Brightdesk Planner application icon" width="64" height="64"> | Plan projects, schedules, tasks and progress. |
-| **To Do** | <img src="assets/icons/to-do.svg" alt="Brightdesk To Do application icon" width="64" height="64"> | Manage daily tasks, due dates and priorities. |
-| **Workspace** | <img src="assets/icons/workspace.svg" alt="Brightdesk Workspace application icon" width="64" height="64"> | Bring project pages, notes, tasks and resources together. |
+| **Pages** | <img src="assets/icons/pages.svg" alt="Pages icon" width="52"> | Create and format documents, letters and reports. |
+| **Sheets** | <img src="assets/icons/sheets.svg" alt="Sheets icon" width="52"> | Work with spreadsheets, formulas, calculations and data. |
+| **Decks** | <img src="assets/icons/decks.svg" alt="Decks icon" width="52"> | Create, edit and present slide presentations. |
+| **Notes** | <img src="assets/icons/notes.svg" alt="Notes icon" width="52"> | Capture and organise quick notes and ideas. |
+| **Database** | <img src="assets/icons/database.svg" alt="Database icon" width="52"> | Build local tables, define fields and manage records. |
+| **Forms** | <img src="assets/icons/forms.svg" alt="Forms icon" width="52"> | Create forms, preview questions and collect responses locally. |
+| **Lists** | <img src="assets/icons/lists.svg" alt="Lists icon" width="52"> | Organise records with custom columns, search, filters and sorting. |
+| **Planner** | <img src="assets/icons/planner.svg" alt="Planner icon" width="52"> | Organise plans, buckets, tasks, priorities and progress. |
+| **To Do** | <img src="assets/icons/to-do.svg" alt="To Do icon" width="52"> | Manage personal tasks, due dates and daily priorities. |
+| **Workspace** | <img src="assets/icons/workspace.svg" alt="Workspace icon" width="52"> | Bring project pages, notes, checklists and information together. |
 
-Every icon above is original, bundled SVG artwork—not a text character, emoji or placeholder. The same product identity should be used in the launcher, application navigation, window/app metadata and product documentation.
+These are the only products in the approved suite. Outlook, OneDrive, Teams and any other unapproved products are excluded.
 
-## Visual identity
+## Suite design preview
 
-Brightdesk uses a shared desktop design language with:
-- Original, product-specific application icons.
-- Distinct accent colours for all ten products.
-- Consistent typography, navigation, controls, spacing and focus states.
-- Clear local-save and device-management language.
-- Product-specific workspaces designed around each application's purpose.
+<p align="center"><img src="assets/previews/suite-dashboard-concept.svg" alt="Brightdesk suite dashboard design concept, not a running application screenshot" width="100%"></p>
 
-Read the [Brightdesk visual and interaction standard](docs/BRIGHTDESK_VISUAL_STANDARD.md) for the complete design contract.
+> **Concept artwork — not a screenshot.** This image communicates the intended Brightdesk visual direction. It is not a capture from the running desktop build.
+
+## What is implemented
+
+All ten approved product areas are integrated into the main suite source and have dedicated workspace or service modules. The current first-use scope includes:
+
+| Product | First-use workflows represented in the suite |
+| --- | --- |
+| **Pages** | Document editing, basic text formatting, lists and tables, page size, orientation and margin settings. |
+| **Sheets** | Cell editing, basic arithmetic and range formulas, row/column editing and column sorting. |
+| **Decks** | Create, edit, duplicate and delete slides; choose basic themes and present. |
+| **Notes** | Write and edit quick notes with on-device saving and text/Markdown export. |
+| **Database** | Create tables and typed fields; add, edit, search, sort and export records as CSV. |
+| **Forms** | Create forms and supported question types; preview, validate, collect and review local responses. |
+| **Lists** | Create lists, custom columns and records; search, filter and sort data. |
+| **Planner** | Create plans, buckets and tasks; track priority, progress and due dates; filter tasks. |
+| **To Do** | Create and update tasks; use My Day, Important, Planned, Tasks and Completed views; search tasks. |
+| **Workspace** | Create workspaces and pages; add and organise text, heading, bullet, callout, divider and checklist blocks. |
+
+This table describes the first-use scope represented in source code. It is not a claim of complete feature parity with other office suites, final accessibility sign-off or release acceptance. Each product has explicit boundaries and acceptance checks in its documentation.
+
+## Genuine screenshots and verification
+
+The concept previews in the product repositories are not genuine screenshots. No verified screenshot set from the current running desktop build is published yet. Do not treat concept artwork, prototype package screens or the older v0.1.0 source archive as proof of current desktop behaviour.
+
+A genuine screenshot should be captured directly from the current Electron build after launching the product and checking its primary workflow. The capture must show the real interface without composited controls or fabricated UI. Use non-sensitive sample data, retain the full product window, and label the image with the tested build or commit. See the [visual standard](docs/BRIGHTDESK_VISUAL_STANDARD.md).
 
 ## Local-first desktop software
 
-Brightdesk is designed to run as installed desktop software and keep user work on the device. It does not require an account or cloud workspace.
+Brightdesk is designed to keep product data on the current device. The first-use features described above do not require an account, cloud workspace or online collaboration. Some tasks such as downloads and update checks may use network access when explicitly requested.
 
 ## Product repositories
 
-Each application has its own repository and product documentation:
+Each approved product has its own repository and product documentation:
 
 - [Brightdesk Pages](https://github.com/connormolloy12/Brightdesk-Pages)
 - [Brightdesk Sheets](https://github.com/connormolloy12/Brightdesk-Sheets)
@@ -53,22 +75,20 @@ Each application has its own repository and product documentation:
 
 ## Development
 
-Use Node.js **24.22.2 LTS** for all development, testing and release work.
-
-From the repository root:
+Use Node.js **24.22.2** for development, tests and release builds.
 
 ```sh
+npm ci
 npm run check:node
-npm ci --no-audit --no-fund
 npm test
 npm run build
 ```
 
-The test command runs the Node.js service, interface, packaging and release tests first, followed by the Vitest workspace tests. Network-backed dictionary tests are skipped unless explicitly enabled. Run `npm run release:preflight` before preparing any installer.
+Run `npm run release:preflight` before preparing an installer. Build and verify installers on their matching native platforms; a build script existing in the repository does not mean that a verified installer has been published.
 
-See [installation guidance](docs/INSTALLATION.md), [local release verification](docs/LOCAL-RELEASE-VERIFICATION.md) and [versioning](docs/VERSIONING.md) before preparing a release.
-## Scope and identity
+See [installation guidance](docs/INSTALLATION.md), [local release verification](docs/LOCAL-RELEASE-VERIFICATION.md), [versioning](docs/VERSIONING.md), [Rust integration](docs/RUST_ENGINE_INTEGRATION.md), [PRODUCT_SCOPE_LOCK.md](PRODUCT_SCOPE_LOCK.md), [LICENSE](LICENSE) and [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
 
-The approved suite contains exactly the ten applications listed above. Outlook, OneDrive and Teams are excluded. Brightdesk is independent and is not affiliated with Microsoft, Adobe or ArtCraft. Those products are quality references only; Brightdesk uses its own names, code, interface design and artwork.
+## Integration and release status
 
-See [PRODUCT_SCOPE_LOCK.md](PRODUCT_SCOPE_LOCK.md), [LICENSE](LICENSE) and [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
+Product integration, automated tests, live desktop acceptance and installer release are separate checkpoints. The integrated source still requires current-build workflow verification, accessibility review, local persistence/recovery checks, upgrade and uninstall checks, legal packaging checks, and native installer verification before a public release is described as complete.
+
