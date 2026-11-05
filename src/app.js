@@ -28,7 +28,7 @@ const genericConfigs = Object.fromEntries((window.BrightdeskAppCatalog || []).fi
 const fullCatalog = window.BrightdeskAppCatalog || [];
 const launchAppId = window.brightdesk.launchAppId || null;
 const catalog = fullCatalog;
-const { resolveAppSetup } = require('./app-setup-policy');
+const { resolveAppSetup } = window.BrightdeskAppSetupPolicy;
 const installableCatalog = catalog.filter(item => item.availability === 'available');
 const state = {
   app: launchAppId || 'pages', view: 'workspace', docs: structuredClone(defaults),
