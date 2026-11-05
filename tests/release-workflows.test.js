@@ -138,3 +138,13 @@ test('dependency-maintenance workflows use the existing self-hosted runner', () 
   }
 });
 
+test('pull-request CI protects the private self-hosted runner from forked contributions', () => {
+  const workflow = read('.github/workflows/ci.yml');
+  assert.match(workflow, /pull_request:\s*\n\s*branches: \[main\]/);
+  assert.match(
+    workflow,
+    /if:\s*github\.event_name != 'pull_request' \|\| github\.event\.pull_request\.head\.repo\.full_name == github\.repository/,
+    'forked pull requests must not execute jobs on the private self-hosted runner'
+  );
+  assert.match(workflow, /runs-on: self-hosted/);
+});
