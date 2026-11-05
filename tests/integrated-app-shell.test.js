@@ -23,7 +23,7 @@ test('all ten integrated products stay directly reachable from the sidebar and h
   assert.match(app,/const visible = launchAppId \? btn\.dataset\.app === launchAppId : true/);
   assert.match(app,/open\.textContent = 'Open'/);
   assert.match(app,/Included in Brightdesk Office Suite/);
-  assert.match(app,/function setApp\(app\).*catalog\.some/);
+  assert.match(app,/function setApp\(app\).*catalog\.find/);
 });
 
 test('the app shell routes each app away from the generic editor',()=>{for(const id of ['todo','lists','forms','planner','database','loop'])assert.ok(app.includes("state.app === '"+id+"'")||app.includes("state.app==='")+id+"'",id+' routing');});
