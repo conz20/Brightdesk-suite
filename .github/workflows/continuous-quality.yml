@@ -43,14 +43,11 @@ jobs:
           node-version: 24.22.2
           cache: npm
 
-      - name: Prepare the exact dependency lock
-        run: npm run lock:prepare
+      - name: Install locked dependencies
+        run: npm ci --no-audit --no-fund
 
       - name: Verify the dependency lock
         run: npm run lock:verify
-
-      - name: Install locked dependencies
-        run: npm ci --no-audit --no-fund
 
       - name: Verify third-party licences
         run: npm run verify:licenses
