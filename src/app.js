@@ -28,6 +28,7 @@ const genericConfigs = Object.fromEntries((window.BrightdeskAppCatalog || []).fi
 const fullCatalog = window.BrightdeskAppCatalog || [];
 const launchAppId = window.brightdesk.launchAppId || null;
 const catalog = fullCatalog;
+const { resolveAppSetup } = require('./app-setup-policy');
 const installableCatalog = catalog.filter(item => item.availability === 'available');
 const state = {
   app: launchAppId || 'pages', view: 'workspace', docs: structuredClone(defaults),
@@ -54,16 +55,10 @@ function loadLocal() {
     const stored = JSON.parse(localStorage.getItem('brightdesk-docs-v3') || localStorage.getItem('brightdesk-docs-v2') || 'null');
     if (stored && typeof stored === 'object') state.docs = { ...clone(defaults), ...stored };
     const appSetup = JSON.parse(localStorage.getItem('brightdesk-app-setup-v1') || 'null');
-    if (appSetup && Array.isArray(appSetup.installedApps)) {
-      state.installedApps = launchAppId ? [launchAppId] : appSetup.installedApps.filter(id => installableCatalog.some(item => item.id === id));
-      state.setupComplete = launchAppId ? true : appSetup.setupComplete === true && state.installedApps.length > 0;
-    } else {
-      // Fresh installs start with every app that is already bundled in Brightdesk.
-      // Users should not have to complete a second app-selection wizard after setup.
-      state.installedApps = launchAppId ? [launchAppId] : installableCatalog.map(item => item.id);
-      state.setupComplete = state.installedApps.length > 0;
-      if (!launchAppId) saveAppSetup();
-    }
+    const resolvedSetup = resolveAppSetup(appSetup, launchAppId, installableCatalog.map(item => item.id));
+    state.installedApps = resolvedSetup.installedApps;
+    state.setupComplete = resolvedSetup.setupComplete;
+    if (!launchAppId && appSetup?.schemaVersion !== resolvedSetup.schemaVersion) saveAppSetup();
     if (launchAppId) { state.app = launchAppId; state.view = 'workspace'; }
     else if (!state.setupComplete) state.view = 'manager';
     else if (!installedApp(state.app)) state.app = state.installedApps[0] || 'pages';
@@ -72,9 +67,9 @@ function loadLocal() {
   } catch (error) { console.warn('Local project or app settings could not be read.', error); state.view = 'manager'; }
 }
 function saveAppSetup() {
-  localStorage.setItem('brightdesk-app-setup-v1', JSON.stringify({ installedApps: state.installedApps, setupComplete: state.setupComplete }));
+  localStorage.setItem('brightdesk-app-setup-v1', JSON.stringify({ schemaVersion: 2, installedApps: state.installedApps, setupComplete: state.setupComplete }));
 }
-function installedApp(id) { return state.installedApps.includes(id) || ['todo','lists','forms','planner','database','loop'].includes(id); }
+function installedApp(id) { return state.installedApps.includes(id); }
 function appLabel(id) { return catalog.find(item => item.id === id)?.name || id; }
 function appIconPath(item) {
   return `assets/icons/${item.iconAsset}`;
