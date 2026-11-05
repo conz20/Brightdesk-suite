@@ -167,3 +167,54 @@ The first source inspection found an integration problem that must be resolved b
 **Required correction:** establish one authoritative implementation for each product, expose it as a real workspace package or shared module, and have the suite shell consume those same modules. The ten individual repositories must build their own product entry point from that same source without carrying ten divergent copies of the entire suite shell. Remove or replace the demo-only workspace entry points only after their intended consumers and tests have been identified. Preserve the current working root suite modules and local user changes during this migration.
 
 This is a confirmed architecture gap from source inspection. It is not evidence that every current integrated workflow is broken; the existing root suite tests and feature services remain valuable and must be preserved.
+
+## Repository-level source evidence — 5 November 2026
+
+This snapshot was taken from the ten product repositories' `main` branches and the suite integration branch. It is a source comparison, not a runtime acceptance test.
+
+### Product repository shell duplication
+
+All ten product repositories contain a `src/app.js` between 76,108 and 76,405 characters. Each inspected copy contains the broad suite shell, including shared product defaults and app-manager/workspace rendering. The four newest product repositories (Lists, Planner, To Do and Workspace) have the exact same `src/app.js` blob SHA, `0f8464b3521411c912329175f7a140c061c38db6`. The earlier six have similarly sized but non-identical copies. This confirms that product repositories currently carry duplicated suite-shell source rather than only their own product entry point.
+
+| Individual repository | `src/app.js` characters | Git blob SHA on `main` |
+| --- | ---: | --- |
+| [Pages](https://github.com/connormolloy12/Brightdesk-Pages) | 76,405 | `ded949374730fd4fe7e48b5921e3c9d69bdf83b6` |
+| [Sheets](https://github.com/connormolloy12/Brightdesk-Sheets) | 76,313 | `6aea12add1369402470f014ef6d97ed4e39b5dae` |
+| [Decks](https://github.com/connormolloy12/Brightdesk-Decks) | 76,314 | `8378fd281531f722d9531e1ae5c0b8b21fa7ce3fd` |
+| [Notes](https://github.com/connormolloy12/Brightdesk-Notes) | 76,313 | `b499505408da6c5f80e5dc178a73c4c5b5346995` |
+| [Database](https://github.com/connormolloy12/Brightdesk-Database) | 76,319 | `720f2f33370e4dc6204394015f63036e2ac1d63d` |
+| [Forms](https://github.com/connormolloy12/Brightdesk-Forms) | 76,313 | `a1fdb181787fc2b4161c65479f14810ee8724c96` |
+| [Lists](https://github.com/connormolloy12/Brightdesk-Lists) | 76,108 | `0f8464b3521411c912329175f7a140c061c38db6` |
+| [Planner](https://github.com/connormolloy12/Brightdesk-Planner) | 76,108 | `0f8464b3521411c912329175f7a140c061c38db6` |
+| [To Do](https://github.com/connormolloy12/Brightdesk-To-Do) | 76,108 | `0f8464b3521411c912329175f7a140c061c38db6` |
+| [Workspace](https://github.com/connormolloy12/Brightdesk-Workspace) | 76,108 | `0f8464b3521411c912329175f7a140c061c38db6` |
+
+### Workspace package placeholders
+
+The suite currently declares nine `apps/*` workspaces: `pages`, `sheets`, `decks`, `notes`, `database`, `forms`, `lists`, `planner` and `todo`. There is no `apps/loop` workspace, even though the suite's internal product ID for Workspace is `loop`.
+
+The inspected workspace `index.js` files are short demonstration screens (roughly 843–2,228 characters). Several buttons only display an alert, and they do not import the corresponding product repository feature module. These files are not the ten production product implementations and must not replace the tested product workspaces.
+
+### Feature-module parity checks
+
+A direct blob comparison between the individual product repositories' documented feature modules and the suite integration branch found:
+
+| Product | Individual module | Comparison with suite branch |
+| --- | --- | --- |
+| Lists | `src/lists-service.js` | Identical blob |
+| To Do | `src/todo-service.js` | Identical blob |
+| Workspace | `src/workspace-editor.js` | Identical blob |
+| Planner | `src/planner-workspace.js` | One local-storage error-handling difference |
+
+The Planner difference was that the suite caught local storage write errors and displayed a clear failure status, while the individual repository did not. The individual repository now has a focused regression-test and fix proposal in [Brightdesk Planner PR #3](https://github.com/connormolloy12/Brightdesk-Planner/pull/3). Its proposed feature module matches the suite branch blob. This PR remains separate and must pass its own checks before the product repository's `main` branch changes.
+
+### Migration implications
+
+1. Keep the ten product names, individual repositories and original app identities.
+2. Remove suite-shell duplication from the product repositories only after each product's own entry point and tests are independently verified.
+3. Replace the nine demonstration workspace packages with actual product modules; add the missing Workspace package.
+4. Choose and document one canonical source and a repeatable sync/version strategy before moving source files. Do not create another manually maintained copy.
+5. Prove parity with automated checks that compare the individual product module version with the suite's bundled module.
+6. Migrate one product at a time. Require its focused tests, full repository tests, suite tests and packaged desktop workflow before migrating the next product.
+
+No bulk source move or repository-wide rewrite is authorised by this audit. The immediate next migration should be the smallest product with a clear module boundary and repeatable parity verification.
