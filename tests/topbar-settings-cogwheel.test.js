@@ -1,11 +1,13 @@
-import test from 'node:test';
-import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
+const test = require('node:test');
+const assert = require('node:assert/strict');
+const { readFileSync } = require('node:fs');
+const path = require('node:path');
 
-const html = readFileSync(new URL('../src/index.html', import.meta.url), 'utf8');
-const app = readFileSync(new URL('../src/app.js', import.meta.url), 'utf8');
-const styles = readFileSync(new URL('../src/styles.css', import.meta.url), 'utf8');
-const concept = readFileSync(new URL('../assets/previews/suite-dashboard-concept.svg', import.meta.url), 'utf8');
+const read = (file) => readFileSync(path.join(__dirname, '..', file), 'utf8');
+const html = read('src/index.html');
+const app = read('src/app.js');
+const styles = read('src/styles.css');
+const concept = read('assets/previews/suite-dashboard-concept.svg');
 
 test('top-right Settings control uses the shared cogwheel and opens suite Settings', () => {
   assert.match(html, /id="open-settings"[^>]*aria-label="Open Brightdesk settings"/);
