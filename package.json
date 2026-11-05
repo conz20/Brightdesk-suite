@@ -137,6 +137,7 @@
         "pkg",
         "zip"
       ],
+      "mergeASARs": false,
       "category": "public.app-category.productivity",
       "artifactName": "Brightdesk-Office-Suite-${version}-${arch}.${ext}"
     },
