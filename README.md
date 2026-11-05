@@ -58,7 +58,7 @@ A genuine screenshot should be captured directly from the current Electron build
 
 ## Local-first desktop software
 
-Brightdesk is designed to keep product data on the current device. The first-use features described above do not require an account, cloud workspace or online collaboration. Some tasks such as downloads and update checks may use network access when explicitly requested.
+Brightdesk remains local-first. The current first-use features do not require an account or cloud workspace, and online collaboration is not yet implemented. The proposed opt-in collaboration architecture is documented in [Collaboration Architecture and Ten-Product Rust Rollout](docs/COLLABORATION_ARCHITECTURE.md).
 
 ## Product repositories
 
@@ -88,7 +88,7 @@ npm run build
 
 Run `npm run release:preflight` before preparing an installer. Build and verify installers on their matching native platforms; a build script existing in the repository does not mean that a verified installer has been published.
 
-See [installation guidance](docs/INSTALLATION.md), [local release verification](docs/LOCAL-RELEASE-VERIFICATION.md), [versioning](docs/VERSIONING.md), [Rust integration](docs/RUST_ENGINE_INTEGRATION.md), [PRODUCT_SCOPE_LOCK.md](PRODUCT_SCOPE_LOCK.md), [LICENSE](LICENSE) and [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
+See [installation guidance](docs/INSTALLATION.md), [local release verification](docs/LOCAL-RELEASE-VERIFICATION.md), [versioning](docs/VERSIONING.md), [Rust integration](docs/RUST_ENGINE_INTEGRATION.md), [collaboration architecture](docs/COLLABORATION_ARCHITECTURE.md), [PRODUCT_SCOPE_LOCK.md](PRODUCT_SCOPE_LOCK.md), [LICENSE](LICENSE) and [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
 
 ## Integration and release status
 
