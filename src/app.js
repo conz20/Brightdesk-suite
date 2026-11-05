@@ -467,7 +467,7 @@ function renderAppManager() {
     : t('manager.chooseDesc'));
   $('manager-note').textContent = home ? 'Open any product below. Your work stays on this device.' : t('manager.note');
   $('finish-app-setup').textContent = state.setupComplete ? t('manager.done') : t('manager.installSelected');
-  const query = $('app-centre-search')?.value.trim().toLowerCase() || '';
+  const query = home ? ($('app-centre-search')?.value.trim().toLowerCase() || '') : '';
   catalog.filter(item => !query || `${item.name} ${item.subtitle} ${item.description}`.toLowerCase().includes(query)).forEach(item => {
     const canInstall = item.availability === 'available';
     const selected = state.firstRunSelection.has(item.id);
