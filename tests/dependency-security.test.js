@@ -113,3 +113,8 @@ test('root overrides stay scoped to their compatible dependency parents', () => 
   assert.equal(manifest.overrides['archiver@5.3.2']['readdir-glob@^1.1.2'].minimatch, '^11.0.1');
   assert.equal(manifest.overrides['archiver@5.3.2']['readdir-glob@^1.1.2']['.'], '^3.0.0');
 });
+
+test('Vitest keeps the previous mock-history default after the major upgrade', () => {
+  const config = fs.readFileSync(path.join(__dirname, '..', 'vitest.config.js'), 'utf8');
+  assert.match(config, /clearMocks:\s*false/);
+});
