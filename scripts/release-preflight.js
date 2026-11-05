@@ -3,6 +3,7 @@
 
 const fs = require('node:fs');
 const path = require('node:path');
+const { verifyProductSourceLock } = require('./product-source-lock');
 
 const APPROVED_IDS = ['pages', 'sheets', 'slides', 'notes', 'database', 'forms', 'lists', 'planner', 'todo', 'loop'];
 const AVAILABLE_IDS = [...APPROVED_IDS];
@@ -48,6 +49,16 @@ function runPreflight({ rootDir, nodeVersion = process.versions.node, platform =
   add('Electron', fs.existsSync(path.join(root, 'node_modules', 'electron', 'package.json')), 'Electron must be installed from the locked dependency tree.');
   add('electron-builder', fs.existsSync(path.join(root, 'node_modules', 'electron-builder', 'package.json')), 'electron-builder must be installed from the locked dependency tree.');
   add('Exact ten-app scope', JSON.stringify(catalog.map(item => item.id)) === JSON.stringify(APPROVED_IDS), `Catalogue IDs: ${catalog.map(item => item.id).join(', ')}.`);
+  let sourceParityValid = false;
+  let sourceParityDetail = 'The pinned individual-product source lock could not be verified.';
+  try {
+    const sourceResult = verifyProductSourceLock({ root });
+    sourceParityValid = true;
+    sourceParityDetail = `Verified ${sourceResult.verifiedCount} pinned product source module(s).`;
+  } catch (error) {
+    sourceParityDetail = error.message;
+  }
+  add('Product source parity', sourceParityValid, sourceParityDetail);
   const availableIds = catalog.filter(item => item.availability === 'available').map(item => item.id);
   add('All ten approved apps available', JSON.stringify(availableIds) === JSON.stringify(AVAILABLE_IDS), `Available: ${availableIds.join(', ')}; ${APPROVED_IDS.filter(id => !availableIds.includes(id)).length} approved apps remain planned.`);
   add('Excluded apps absent', EXCLUDED_NAMES.every(name => !catalog.some(item => item.name.toLowerCase().includes(name.toLowerCase()))), `Excluded from the catalogue: ${EXCLUDED_NAMES.join(', ')}.`);
