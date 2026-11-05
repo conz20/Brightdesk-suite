@@ -61,7 +61,7 @@ function loadLocal() {
     if (!launchAppId && appSetup?.schemaVersion !== resolvedSetup.schemaVersion) saveAppSetup();
     if (launchAppId) { state.app = launchAppId; state.view = 'workspace'; }
     else if (!state.setupComplete) state.view = 'manager';
-    else if (!installedApp(state.app)) state.app = state.installedApps[0] || 'pages';
+    else { state.view = resolvedSetup.initialView; if (!installedApp(state.app)) state.app = state.installedApps[0] || 'pages'; }
     state.displayLanguage = localStorage.getItem('brightdesk-display-language') || 'en-AU';
     state.proofingLanguage = localStorage.getItem('brightdesk-proofing-language') || state.displayLanguage;
   } catch (error) { console.warn('Local project or app settings could not be read.', error); state.view = 'manager'; }
@@ -458,11 +458,14 @@ function renderGenericWorkspace() {
 
 function renderAppManager() {
   const grid = $('app-manager-grid'); grid.innerHTML = '';
-  $('manager-title').textContent = state.setupComplete ? t('manager.manageTitle') : t('manager.chooseTitle');
-  $('manager-description').textContent = state.setupComplete
+  const home = state.view === 'home';
+  $('.settings-toolbar').hidden = home;
+  $('manager-bottom').hidden = home;
+  $('manager-title').textContent = home ? 'Your apps' : (state.setupComplete ? t('manager.manageTitle') : t('manager.chooseTitle'));
+  $('manager-description').textContent = home ? 'Everything you need, all in one place.' : (state.setupComplete
     ? t('manager.manageDesc')
-    : t('manager.chooseDesc');
-  $('manager-note').textContent = t('manager.note');
+    : t('manager.chooseDesc'));
+  $('manager-note').textContent = home ? 'Open any product below. Your work stays on this device.' : t('manager.note');
   $('finish-app-setup').textContent = state.setupComplete ? t('manager.done') : t('manager.installSelected');
   catalog.forEach(item => {
     const canInstall = item.availability === 'available';
@@ -517,7 +520,7 @@ function toggleAppInstall(id) {
 function completeAppSetup() {
   const selected = [...state.firstRunSelection].filter(id => installableCatalog.some(item => item.id === id));
   if (!selected.length) { alert('Choose at least one app to install.'); return; }
-  state.installedApps = selected; state.setupComplete = true; state.app = selected[0]; state.view = 'workspace';
+  state.installedApps = selected; state.setupComplete = true; state.app = selected[0]; state.view = 'home';
   saveAppSetup(); render();
 }
 
@@ -758,12 +761,15 @@ function render() {
     const name = btn.querySelector('b'); if (name) name.textContent = t(`apps.${appId}`);
   });
   const manager = state.view === 'manager';
+  const home = state.view === 'home';
   const languages = state.view === 'languages';
-  $('app-manager').hidden = !manager; $('language-manager').hidden = !languages;
-  $('workspace').hidden = manager || languages; $('welcome').hidden = manager || languages || ['todo','lists','forms','planner','database','loop'].includes(state.app);
-  $('app-title').textContent = manager ? 'Settings' : (languages ? t('language.title') : (catalog.find(item => item.id === state.app)?.name || state.app));
-  $('top-actions').hidden = manager || languages;
-  if (manager) {
+  $('app-manager').hidden = !manager && !home; $('language-manager').hidden = !languages;
+  $('workspace').hidden = manager || home || languages; $('welcome').hidden = manager || home || languages || ['todo','lists','forms','planner','database','loop'].includes(state.app);
+  $('app-title').textContent = home ? 'Your apps' : (manager ? 'Settings' : (languages ? t('language.title') : (catalog.find(item => item.id === state.app)?.name || state.app)));
+  $('top-actions').hidden = manager || home || languages;
+  if (home) {
+    $('save-status').textContent = '10 products'; renderAppManager();
+  } else if (manager) {
     $('save-status').textContent = t('manager.manageTitle'); renderAppManager();
   } else if (languages) {
     $('save-status').textContent = t('language.title'); renderLanguageManager();
@@ -800,8 +806,9 @@ function render() {
   }
   syncAppNavigation();
   document.querySelectorAll('.nav[data-app]').forEach(btn => {
-    const visible = launchAppId ? btn.dataset.app === launchAppId : installedApp(btn.dataset.app); btn.hidden = !visible; btn.classList.toggle('active', !manager && !languages && btn.dataset.app === state.app);
+    const visible = launchAppId ? btn.dataset.app === launchAppId : installedApp(btn.dataset.app); btn.hidden = !visible; btn.classList.toggle('active', !manager && !home && !languages && btn.dataset.app === state.app);
   });
+  $('open-home').classList.toggle('active', home);
   $('manage-apps').hidden = Boolean(launchAppId);
   $('open-settings').hidden = Boolean(launchAppId);
   $('open-notifications').hidden = Boolean(launchAppId);
@@ -856,6 +863,7 @@ async function saveProject(){try{const result=await window.brightdesk.saveProjec
 function setApp(app){if((launchAppId && app !== launchAppId) || !(configs[app] || genericConfigs[app]) || !installedApp(app))return;state.app=app;state.view='workspace';state.ribbonTab='home';render();persist();}
 
 document.querySelectorAll('.nav[data-app]').forEach(btn=>btn.addEventListener('click',()=>setApp(btn.dataset.app)));
+$('open-home').addEventListener('click',()=>{if (launchAppId) return; state.view='home';render();});
 $('manage-apps').addEventListener('click',()=>{if (launchAppId) return; state.view='manager';render();});
 $('open-settings').addEventListener('click',()=> $('manage-apps').click());
 $('open-notifications').addEventListener('click',()=>{const panel=$('notification-panel');panel.hidden=!panel.hidden;$('open-notifications').setAttribute('aria-expanded',String(!panel.hidden));});
@@ -866,8 +874,8 @@ $('proofing-language').addEventListener('change',event=>changeProofingLanguage(e
 $('dictionary-search').addEventListener('input',renderAvailableDictionaryCatalogue);
 $('proofing-dictionary').addEventListener('change',event=>{state.selectedDictionary=event.target.value;localStorage.setItem('brightdesk-selected-dictionary',state.selectedDictionary);renderToolbar();});
 $('check-current-document').addEventListener('click',checkCurrentDocumentSpelling);
-$('back-to-apps').addEventListener('click',()=>{state.view=state.setupComplete?'workspace':'manager';render();});
-$('finish-app-setup').addEventListener('click',()=>{if(state.setupComplete){state.view='workspace';render();}else completeAppSetup();});
+$('back-to-apps').addEventListener('click',()=>{state.view=state.setupComplete?'home':'manager';render();});
+$('finish-app-setup').addEventListener('click',()=>{if(state.setupComplete){state.view='home';render();}else completeAppSetup();});
 $('doc-title').addEventListener('change',()=>{activeDoc().title=$('doc-title').value;persist();});
 editor.addEventListener('input',()=>{activeDoc().html=editor.innerHTML;persist();});
 $('notes-editor').addEventListener('input',()=>{activeDoc().text=$('notes-editor').value;persist();});
