@@ -56,19 +56,26 @@ test('release workflow builds and verifies all three desktop platforms', () => {
   assert.match(workflow, /npm audit --audit-level=high/);
 });
 
-test('pull-request builds never receive code-signing or notarisation secrets', () => {
+test('signing and notarisation secrets are limited to main and the matching platform', () => {
   const workflow = read('.github/workflows/build-release.yml');
   const buildStep = workflow.split('- name: Build suite installer')[1];
   assert.ok(buildStep, 'build installer step exists');
   for (const secret of ['CSC_LINK', 'CSC_KEY_PASSWORD', 'CSC_INSTALLER_LINK', 'CSC_INSTALLER_KEY_PASSWORD', 'APPLE_ID', 'APPLE_APP_SPECIFIC_PASSWORD', 'APPLE_TEAM_ID']) {
     const line = buildStep.split('\n').find((item) => item.trimStart().startsWith(`${secret}:`));
     assert.ok(line, `${secret} is configured for the build step`);
-    assert.match(line, /github\.event_name != 'pull_request'/, `${secret} is blank for pull requests`);
+    assert.match(line, /github\.ref == 'refs\\/heads\\/main'/, `${secret} is available only on main`);
+    assert.doesNotMatch(line, /github\.event_name != 'pull_request'/);
   }
   const installerCert = buildStep.split('\n').find((item) => item.trimStart().startsWith('CSC_INSTALLER_LINK:'));
   const appleId = buildStep.split('\n').find((item) => item.trimStart().startsWith('APPLE_ID:'));
   assert.match(installerCert, /matrix\.platform == 'macOS'/, 'macOS installer certificate is macOS-only');
   assert.match(appleId, /matrix\.platform == 'macOS'/, 'Apple notarisation identity is macOS-only');
+});
+
+test('release publishing is manual, disabled by default, and main-only', () => {
+  const workflow = read('.github/workflows/build-release.yml');
+  assert.match(workflow, /publish_release:\\s*[\\s\\S]*?default: false/);
+  assert.ok(workflow.includes("if: github.event_name == 'workflow_dispatch' && inputs.publish_release == true && github.ref == 'refs/heads/main'"));
 });
 
 test('Linux builds do not receive Windows or macOS signing credentials', () => {
