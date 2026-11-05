@@ -44,7 +44,11 @@ test('top-right controls clearly identify notifications, saving and Settings', (
   assert.match(concept, /id="notifications-bell"/);
   assert.ok(readme.includes('suite-dashboard-concept-single-settings.svg'), 'README must display the refreshed single-Settings preview');
   assert.match(concept, /id="settings-cogwheel"/);
-  const appCentreSidebar = concept.match(/<g id="sidebar-app-centre">([\\s\\S]*?)<\\/g>/)?.[1] || '';
+  const sidebarStart = concept.indexOf('<g id="sidebar-app-centre">');
+  const sidebarEnd = concept.indexOf('</g>', sidebarStart);
+  const appCentreSidebar = sidebarStart >= 0 && sidebarEnd > sidebarStart
+    ? concept.slice(sidebarStart, sidebarEnd + 4)
+    : '';
   assert.ok(appCentreSidebar, 'the App Centre preview must have its dedicated sidebar entry');
   assert.match(appCentreSidebar, />App Centre</);
   assert.doesNotMatch(appCentreSidebar, /Settings|Pages|Sheets|Decks|Notes|Database|Forms|Lists|Planner|To Do|Workspace/,
