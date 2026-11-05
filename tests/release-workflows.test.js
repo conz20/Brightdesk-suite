@@ -138,3 +138,16 @@ test('dependency-maintenance workflows use the existing self-hosted runner', () 
   }
 });
 
+test('every self-hosted workflow protects its private runner from forked pull requests', () => {
+  const guard = /if:\s*github\.event_name != 'pull_request' \|\| github\.event\.pull_request\.head\.repo\.full_name == github\.repository/;
+  for (const file of [
+    '.github/workflows/ci.yml',
+    '.github/workflows/quality.yml',
+    '.github/workflows/rust-engine.yml'
+  ]) {
+    const workflow = read(file);
+    assert.match(workflow, /pull_request:/, file + ' is triggered by pull requests');
+    assert.match(workflow, /runs-on:\s*self-hosted/, file + ' uses the private runner');
+    assert.match(workflow, guard, file + ' must skip fork-controlled pull-request code');
+  }
+});
