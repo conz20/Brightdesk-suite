@@ -111,6 +111,26 @@
       "suitePath": "src/database-workspace.js",
       "sourceBlobSha": "f7ba29971887321b931bdc013291d90c502a5e0b",
       "status": "verified-source-match"
+    },
+    {
+      "id": "decks-slides-service",
+      "name": "Brightdesk Decks slide service",
+      "repository": "connormolloy12/Brightdesk-Decks",
+      "sourceRef": "a0e049a5402d8a53f0be3454ae87440f81619889",
+      "sourcePath": "src/slides-service.js",
+      "suitePath": "src/slides-service.js",
+      "sourceBlobSha": "ef50442552e62fd8dda4452718e9f72650850287",
+      "status": "verified-source-match"
+    },
+    {
+      "id": "notes-content-service",
+      "name": "Brightdesk Notes content service",
+      "repository": "connormolloy12/Brightdesk-Notes",
+      "sourceRef": "733adb51adcd9586ee8b71dd4154d16da661f1b9",
+      "sourcePath": "src/notes-service.js",
+      "suitePath": "src/notes-service.js",
+      "sourceBlobSha": "12cc34e772bb751eb49804e645f97fed348e477f",
+      "status": "verified-source-match"
     }
   ]
 }
