@@ -28,7 +28,7 @@ if (standaloneAppId && !supportedStandaloneApps.has(standaloneAppId)) {
 
 function sendUpdateState(state) { if (mainWindow && !mainWindow.isDestroyed()) mainWindow.webContents.send('updates:state', state); }
 const updateSettingsPath = path.join(app.getPath('userData'), 'update-settings.json');
-const defaultUpdateSettings = { autoCheck: true, autoDownload: true, autoInstall: false };
+const defaultUpdateSettings = { autoCheck: true, autoDownload: false, autoInstall: false };
 
 async function readUpdateSettings() {
   try {
