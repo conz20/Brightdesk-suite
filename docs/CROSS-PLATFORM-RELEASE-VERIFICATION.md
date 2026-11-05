@@ -23,6 +23,7 @@ For each platform, the workflow must:
 3. Build each of the ten product installers using the product-specific Electron identity and launch restriction.
 4. Verify each expected product filename and non-empty file.
 5. Generate and re-read a SHA-256 manifest for every product output folder.
+7. Preserve the same Terms and Conditions agreement in every Windows NSIS installer and macOS DMG/PKG installer; the Linux packages use the shared first-launch agreement in the product shell.
 6. Collect Suite output files and the ten product folders into the platform-specific bundle.
 7. Upload the platform bundle only when all preceding commands succeed.
 
