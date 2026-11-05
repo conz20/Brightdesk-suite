@@ -167,3 +167,17 @@ test('README freshness workflow protects the private runner from forked pull req
   assert.match(workflow, /runs-on:\s*self-hosted/);
   assert.match(workflow, guard);
 });
+
+
+test('all third-party workflow actions are pinned to full commit SHAs', () => {
+  const workflowDirectory = path.join(root, '.github', 'workflows');
+  const workflowFiles = fs.readdirSync(workflowDirectory).filter(file => file.endsWith('.yml'));
+  for (const file of workflowFiles) {
+    const workflow = read('.github/workflows/' + file);
+    for (const line of workflow.split(/\r?\n/)) {
+      const match = /^\s*uses:\s*([^\s#]+)/.exec(line);
+      if (!match || match[1].startsWith('./')) continue;
+      assert.match(match[1], /@[0-9a-f]{40}$/, file + ' must pin ' + match[1] + ' to a full commit SHA');
+    }
+  }
+});
