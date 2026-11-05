@@ -120,3 +120,17 @@ Use these labels consistently:
 - **Not in scope:** excluded by the approved ten-product or local-first rules.
 
 Do not claim "Microsoft 365 feature parity", "complete", "fully functional" or "release ready" without a feature-by-feature acceptance record. The target is a polished, coherent Brightdesk suite with strong comparable workflows—not a copy of Microsoft's products.
+
+
+## Initial repository audit findings — 5 November 2026
+
+The first source inspection found an integration problem that must be resolved before claiming that the ten independent repositories have been turned into one maintainable suite:
+
+- The Electron suite's actual first-use workflows are currently implemented in the root `src/` shell and its feature/service modules.
+- The ten separate GitHub repositories contain near-identical copies of the broad suite `src/app.js` shell, with product launch restrictions. This duplicates suite code instead of cleanly sharing each product's own implementation.
+- The root npm workspace folders under `apps/` are not yet reliable product source packages. Their current `index.js` files are thin demonstration screens; several buttons only show alert messages, and there is no `apps/workspace` package (the suite's internal product ID is `loop`). They must not be mistaken for the actual ten integrated feature implementations.
+- The documented product feature modules and service layers in the root suite do have tests, but the source-of-truth relationship between each individual repository and the integrated suite is not sufficiently clear.
+
+**Required correction:** establish one authoritative implementation for each product, expose it as a real workspace package or shared module, and have the suite shell consume those same modules. The ten individual repositories must build their own product entry point from that same source without carrying ten divergent copies of the entire suite shell. Remove or replace the demo-only workspace entry points only after their intended consumers and tests have been identified. Preserve the current working root suite modules and local user changes during this migration.
+
+This is a confirmed architecture gap from source inspection. It is not evidence that every current integrated workflow is broken; the existing root suite tests and feature services remain valuable and must be preserved.
