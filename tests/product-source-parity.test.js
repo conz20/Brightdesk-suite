@@ -38,10 +38,10 @@ test('the source parity check rejects upstream paths outside the repository', ()
   }
 });
 
-test('the product source lock records all four pinned modules across three product repositories', () => {
+test('the product source lock records all five pinned modules across four product repositories', () => {
   const lock = loadProductSourceLock();
   assert.equal(lock.schemaVersion, 1);
-  assert.equal(lock.products.length, 4);
+  assert.equal(lock.products.length, 5);
   assert.deepEqual(
     lock.products.map(product => ({
       id: product.id,
@@ -72,6 +72,15 @@ test('the product source lock records all four pinned modules across three produ
         sourceBlobSha: '34e048b651dfdd50cb8b3292c660e1dbd57fe7f8'
       },
       {
+        id: 'planner-service',
+        name: 'Brightdesk Planner service',
+        repository: 'connormolloy12/Brightdesk-Planner',
+        sourceRef: 'main',
+        sourcePath: 'src/planner-service.js',
+        suitePath: 'src/planner-service.js',
+        sourceBlobSha: '6b05218a71f0f0d63beebdf20decae5ea112f7fc'
+      },
+      {
         id: 'workspace-editor',
         name: 'Brightdesk Workspace editor',
         repository: 'connormolloy12/Brightdesk-Workspace',
@@ -93,11 +102,11 @@ test('the product source lock records all four pinned modules across three produ
   );
 });
 
-test('the vendored Lists, To Do and Workspace modules match their pinned upstream Git blobs', () => {
+test('the vendored Lists, To Do, Planner and Workspace modules match their pinned upstream Git blobs', () => {
   const result = verifyProductSourceLock();
-  assert.equal(result.verifiedCount, 4);
+  assert.equal(result.verifiedCount, 5);
   assert.equal(result.products[0].id, 'lists');
-  assert.deepEqual(result.products.map(product => product.id), ['lists', 'todo', 'workspace-editor', 'workspace-service']);
+  assert.deepEqual(result.products.map(product => product.id), ['lists', 'todo', 'planner-service', 'workspace-editor', 'workspace-service']);
   assert.ok(result.products.every(product => product.verified));
   assert.equal(
     calculateGitBlobSha(Buffer.from('hello\n', 'utf8')),
