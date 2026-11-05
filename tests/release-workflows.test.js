@@ -54,6 +54,11 @@ test('release workflow builds and verifies all three desktop platforms', () => {
   assert.match(workflow, /npm run release:preflight/);
   assert.match(workflow, /npm test/);
   assert.match(workflow, /npm audit --audit-level=high/);
+  assert.match(workflow, /runner: \[\"self-hosted\", \"Linux\", \"X64\"\]/);
+  assert.match(workflow, /runner: \[\"self-hosted\", \"Windows\", \"X64\"\]/);
+  assert.match(workflow, /runner: \[\"self-hosted\", \"macOS\", \"ARM64\"\]/);
+  assert.match(workflow, /runs-on: self-hosted/);
+  assert.doesNotMatch(workflow, /ubuntu-latest|windows-latest|macos-latest/);
 });
 
 test('pull-request builds never receive code-signing or notarisation secrets', () => {
@@ -90,6 +95,8 @@ test('platform release artifacts remain in separate folders and release lock met
   }
   assert.match(workflow, /name: Download the exact dependency lock used for this release[\s\S]*?path: release\/build-metadata/);
   assert.match(workflow, /files: release\/\*\*\/\*/);
+  assert.match(workflow, /name: Collect verified installers[\s\S]*?runs-on: self-hosted/);
+  assert.match(workflow, /name: Publish GitHub Release \(manual approval only\)[\s\S]*?runs-on: self-hosted/);
   assert.doesNotMatch(workflow, /merge-multiple: true/);
   const prepare = read('scripts/prepare-release-assets.js');
   assert.match(prepare, /Brightdesk-\$\{label\}-LICENSE\.txt/);
