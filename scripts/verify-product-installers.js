@@ -52,6 +52,34 @@ function expectedProductFiles(productId, platform, version) {
   ];
 }
 
+function resolveProductFiles(directory, productId, platform, version) {
+  const expected = expectedProductFiles(productId, platform, version);
+  if (platform !== 'linux') return expected;
+
+  const slug = PRODUCTS[productId].toLowerCase();
+  const choices = [
+    [
+      `brightdesk-${slug}-${version}-x86_64.AppImage`,
+      `brightdesk-${slug}-${version}-x64.AppImage`
+    ],
+    [
+      `brightdesk-${slug}-${version}-amd64.deb`,
+      `brightdesk-${slug}-${version}-x64.deb`
+    ]
+  ];
+
+  return choices.map((candidates, index) => {
+    const matches = candidates.filter(filename => {
+      try { return fs.lstatSync(path.join(directory, filename)).isFile(); } catch { return false; }
+    });
+    if (matches.length !== 1) {
+      const kind = index === 0 ? 'AppImage' : 'Debian package';
+      throw new Error(`Expected exactly one Brightdesk ${PRODUCTS[productId]} Linux ${kind} for ${version}; found ${matches.length}: ${matches.join(', ') || 'none'}.`);
+    }
+    return matches[0];
+  });
+}
+
 function sha256File(file) {
   const hash = crypto.createHash('sha256');
   const fd = fs.openSync(file, 'r');
@@ -132,7 +160,7 @@ function verifyProductInstallers({ directory = path.resolve(__dirname, '..', 're
     try { stat = fs.lstatSync(appDirectory); } catch { throw new Error(`Missing product output folder for Brightdesk ${name}: ${appDirectory}`); }
     if (!stat.isDirectory() || stat.isSymbolicLink()) throw new Error(`Product output must be a real directory: ${appDirectory}`);
 
-    const files = expectedProductFiles(id, platform, version);
+    const files = resolveProductFiles(appDirectory, id, platform, version);
     const rows = files.map(filename => {
       const file = requireNonEmptyFile(appDirectory, filename, `Brightdesk ${name} installer`);
       return { filename, bytes: fs.statSync(file).size, sha256: sha256File(file) };
@@ -177,6 +205,7 @@ module.exports = {
   PRODUCTS,
   PLATFORMS,
   expectedProductFiles,
+  resolveProductFiles,
   sha256File,
   requireNonEmptyFile,
   verifyChecksumManifest,
