@@ -56,6 +56,11 @@ test('release workflow has working install and release permissions', () => {
   assert.match(workflow, /MAC_INSTALLER_CSC_LINK/);
   assert.match(workflow, /APPLE_APP_SPECIFIC_PASSWORD/);
   assert.match(workflow, /npm run release:verify:linux/);
+  assert.match(workflow, /dtolnay\\/rust-toolchain@683b588c487a69d01f6c6ddf40f036ff682cc2c8/);
+  assert.match(workflow, /toolchain: 1\\.99\\.1/);
+  assert.match(workflow, /cargo fmt --manifest-path rust\\/Cargo\\.toml/);
+  assert.match(workflow, /cargo clippy --manifest-path rust\\/Cargo\\.toml/);
+  assert.match(workflow, /cargo test --manifest-path rust\\/Cargo\\.toml/);
   assert.doesNotMatch(workflow, /dist:apps:/);
   assert.match(workflow, /publish-release:[\s\S]*?permissions:\s*contents: write/);
 });
