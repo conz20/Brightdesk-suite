@@ -11,6 +11,10 @@
 <body>
   <aside class="sidebar">
     <div class="brand"><img class="brand-mark-image" src="assets/brand/brightdesk-mark.svg" alt="" aria-hidden="true" width="38" height="38" /><div><b>brightdesk</b><small data-i18n="sidebar.workspace">YOUR WORKSPACE</small></div></div>
+    <button class="nav home-nav" id="open-home" type="button" aria-label="Open Brightdesk Home">
+      <svg class="sidebar-line-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m3.5 10 8.5-7 8.5 7v10a1 1 0 0 1-1 1h-5.2v-6.5H9.7V21H4.5a1 1 0 0 1-1-1z"/></svg>
+      <span><b>Home</b><small>Your apps and workspace</small></span>
+    </button>
     <div class="section-label" data-i18n="sidebar.yourApps">YOUR APPS</div>
     <button class="nav active" data-app="pages"><img class="app-icon-image" src="assets/icons/pages.svg" alt="" aria-hidden="true" /><span><b>Brightdesk Pages</b><small data-i18n="sidebar.documents">Documents</small></span></button>
     <button class="nav" data-app="sheets"><img class="app-icon-image" src="assets/icons/sheets.svg" alt="" aria-hidden="true" /><span><b>Brightdesk Sheets</b><small data-i18n="sidebar.spreadsheets">Spreadsheets</small></span></button>
@@ -349,7 +353,7 @@
       </div>
       <div class="manager-hero"><div><div class="eyebrow" data-i18n="manager.eyebrow">BRIGHTDESK APP CENTRE</div><h2 id="manager-title">Choose the apps you need</h2><p id="manager-description">Set up your Brightdesk workspace.</p></div></div>
       <div class="manager-grid" id="app-manager-grid"></div>
-      <div class="manager-bottom"><p id="manager-note">Choose one or more apps. Your documents stay on this device, even if you remove an app from your workspace.</p><button class="primary" id="finish-app-setup" data-i18n="manager.done">Done</button></div>
+      <div class="manager-bottom" id="manager-bottom"><p id="manager-note">Choose one or more apps. Your documents stay on this device, even if you remove an app from your workspace.</p><button class="primary" id="finish-app-setup" data-i18n="manager.done">Done</button></div>
     </section>
     <section class="language-manager" id="language-manager" hidden>
       <div class="manager-hero"><div><div class="eyebrow" data-i18n="language.eyebrow">BRIGHTDESK LANGUAGE CENTRE</div><h2 data-i18n="language.title">Language settings</h2><p data-i18n="language.description">Choose how Brightdesk displays and checks language.</p></div></div>
