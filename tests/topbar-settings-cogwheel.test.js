@@ -45,7 +45,7 @@ test('top-right controls clearly identify notifications, saving and Settings', (
   assert.match(readme, /suite-dashboard-concept-single-settings\\.svg/);
   assert.match(concept, /id="settings-cogwheel"/);
   assert.match(concept, /no Settings label or second Settings gear in the left sidebar/);
-  assert.doesNotMatch(concept, /<text[^>]*>Settings<\\/text>/);
+  assert.equal(concept.includes('>Settings</text>'), false, 'the sidebar must not show a second Settings label');
   assert.match(concept, /one suite-wide Settings cogwheel in the top-right/i);
   assert.match(concept, /no Settings item in the sidebar/i);
   assert.doesNotMatch(concept, /<text[^>]*>C<\/text>/, 'the concept must not show the account initial');
