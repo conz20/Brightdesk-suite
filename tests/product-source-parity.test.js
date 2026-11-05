@@ -57,7 +57,7 @@ test('the product source lock records all thirteen pinned modules across ten pro
         id: 'decks-slides-service',
         name: 'Brightdesk Decks slide service',
         repository: 'connormolloy12/Brightdesk-Decks',
-        sourceRef: 'a0e049a5402d8a53f0be3454ae87440f81619889',
+        sourceRef: '69ce10e2d9ebf10d0968c0808b9f2928660af653',
         sourcePath: 'src/slides-service.js',
         suitePath: 'src/slides-service.js',
         sourceBlobSha: 'ef50442552e62fd8dda4452718e9f72650850287'
@@ -66,7 +66,7 @@ test('the product source lock records all thirteen pinned modules across ten pro
         id: 'notes-content-service',
         name: 'Brightdesk Notes content service',
         repository: 'connormolloy12/Brightdesk-Notes',
-        sourceRef: '733adb51adcd9586ee8b71dd4154d16da661f1b9',
+        sourceRef: 'c6e279974d3bde5df7ab024fc7805b984a2cb919',
         sourcePath: 'src/notes-service.js',
         suitePath: 'src/notes-service.js',
         sourceBlobSha: '12cc34e772bb751eb49804e645f97fed348e477f'
