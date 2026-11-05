@@ -45,7 +45,7 @@ test('top-right controls clearly identify notifications, saving and Settings', (
   assert.ok(readme.includes('suite-dashboard-concept-single-settings.svg'), 'README must display the refreshed single-Settings preview');
   assert.match(concept, /id="settings-cogwheel"/);
   const sidebarStart = concept.indexOf('<g id="sidebar-app-centre">');
-  const sidebarEnd = concept.indexOf('</g>', sidebarStart);
+  const sidebarEnd = concept.indexOf('</g>\n<path d="M24 1112', sidebarStart);
   const appCentreSidebar = sidebarStart >= 0 && sidebarEnd > sidebarStart
     ? concept.slice(sidebarStart, sidebarEnd + 4)
     : '';
