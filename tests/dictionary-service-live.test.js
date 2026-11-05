@@ -33,7 +33,7 @@ test('a real catalogue dictionary installs from the pinned upstream and spells c
     assert.ok(installed.some(entry => entry.locale === 'en-AU'), 'installed() must list the freshly installed dictionary');
     const entry = installed.find(item => item.locale === 'en-AU');
     assert.equal(entry.protected, true);
-    assert.match(entry.sourceUrl, /^https:\/\/github\.com\/wooorm\/dictionaries\/8cfea406b505e4d7df52d5a19bce525df98c54ab\/dictionaries\/en-AU$/);
+    assert.match(entry.sourceUrl, /^https:\/\/github\.com\/wooorm\/dictionaries\/tree\/8cfea406b505e4d7df52d5a19bce525df98c54ab\/dictionaries\/en-AU$/);
 
     const spelling = await service.checkText('en-AU', 'The quick brown xyzzyplugh jumps over the lazy dog.');
     assert.ok(
