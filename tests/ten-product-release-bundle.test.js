@@ -13,7 +13,7 @@ const {
   verifyProductInstallers
 } = require('../scripts/verify-product-installers');
 const { collectPlatformBuild } = require('../scripts/collect-platform-build');
-const { verifyCompleteReleaseBundle } = require('../scripts/verify-complete-release-bundle');
+const { expectedSuiteFiles, verifyCompleteReleaseBundle } = require('../scripts/verify-complete-release-bundle');
 
 const VERSION = '0.1.0';
 const SUITE_MANIFEST = {
@@ -170,6 +170,22 @@ test('platform collector moves only the current suite files and product folders 
     assert.ok(fs.existsSync(path.join(release, 'apps', 'Windows', 'pages', 'Brightdesk-Pages-0.1.0-x64.exe')));
     assert.ok(fs.existsSync(path.join(release, 'apps', 'Windows', 'sheets', 'Brightdesk-Sheets-0.1.0-x64.exe')));
     assert.ok(fs.existsSync(path.join(release, 'build-metadata', 'package-lock.json')));
+  } finally {
+    fs.rmSync(root, { recursive: true, force: true });
+  }
+});
+
+test('Linux Suite verifier accepts the configured lower-case AppImage artifact name', () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'brightdesk-suite-linux-name-'));
+  try {
+    const files = suiteFiles('linux');
+    const uppercase = `Brightdesk-Office-Suite-${VERSION}-x64.AppImage`;
+    const lowercase = `brightdesk-office-suite-${VERSION}-x64.AppImage`;
+    for (const filename of files) writeFile(root, filename);
+    fs.renameSync(path.join(root, uppercase), path.join(root, lowercase));
+    const result = expectedSuiteFiles({ directory: root, platform: 'linux', version: VERSION });
+    assert.ok(result.includes(lowercase));
+    assert.equal(result.includes(uppercase), false);
   } finally {
     fs.rmSync(root, { recursive: true, force: true });
   }
