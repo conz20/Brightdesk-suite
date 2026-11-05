@@ -65,7 +65,7 @@ test('daily quality workflow uses hosted Ubuntu and never publishes a release', 
 
 test('third-party notices workflow installs from and verifies the committed dependency lock', () => {
   const workflow = read('.github/workflows/generate-third-party-notices.yml');
-  assert.match(workflow, /node-version: 24\\.22\\.2/);
+  assert.match(workflow, /node-version: 24\.22\.2/);
   assert.doesNotMatch(workflow, /npm run lock:prepare/);
   const requiredOrder = [
     'npm ci --ignore-scripts --no-audit --no-fund',
