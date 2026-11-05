@@ -359,3 +359,9 @@ input:disabled, select:disabled, textarea:disabled, button:disabled { cursor: no
 .notification-popover p{margin:14px 0 5px;color:#34445d;font-size:12px;font-weight:650}
 .notification-popover small{display:block;color:#7b879a;font-size:11px;line-height:1.5}
 @media(max-width:700px){.top-actions{width:100%;justify-content:flex-start}.notification-popover{right:0}}
+
+
+/* Keep the App Centre rail distinct from product switching; hidden wins at every width. */
+#dynamic-app-nav[hidden]{display:none!important}
+.manager-nav{cursor:default}
+.manager-nav .app-icon-image{filter:none}

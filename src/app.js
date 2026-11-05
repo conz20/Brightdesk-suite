@@ -532,10 +532,10 @@ function updateDocumentLanguage() {
 function syncAppNavigation() {
   const host = $('dynamic-app-nav'); if (!host) return;
   host.innerHTML = '';
-  catalog.filter(item => !['pages','sheets','slides','notes'].includes(item.id) && installedApp(item.id)).forEach(item => {
-    const button=document.createElement('button'); button.className='nav'; button.dataset.app=item.id;
+  catalog.filter(item => installedApp(item.id)).forEach(item => {
+    const button=document.createElement('button'); button.type='button'; button.className='nav'; button.dataset.app=item.id;
     const icon=document.createElement('img'); icon.className='app-icon-image'; icon.src=appIconPath(item); icon.alt=''; icon.setAttribute('aria-hidden','true');
-    const label=document.createElement('span'); const name=document.createElement('b'); name.textContent=item.name; const sub=document.createElement('small'); sub.textContent=item.subtitle;
+    const label=document.createElement('span'); const name=document.createElement('b'); name.textContent=t(`apps.${item.id}`); const sub=document.createElement('small'); sub.textContent=item.subtitle;
     label.append(name,sub); button.append(icon,label);
     button.addEventListener('click',()=>setApp(item.id)); host.append(button);
   });
@@ -759,9 +759,12 @@ function render() {
   });
   const manager = state.view === 'manager';
   const languages = state.view === 'languages';
+  $('sidebar-section-label').textContent = manager ? t('sidebar.suite') : (languages ? t('sidebar.settings') : t('sidebar.yourApps'));
+  $('dynamic-app-nav').hidden = manager || languages;
+  $('app-centre-nav').hidden = !manager || Boolean(launchAppId);
   $('app-manager').hidden = !manager; $('language-manager').hidden = !languages;
   $('workspace').hidden = manager || languages; $('welcome').hidden = manager || languages || ['todo','lists','forms','planner','database','loop'].includes(state.app);
-  $('app-title').textContent = manager ? 'Settings' : (languages ? t('language.title') : (catalog.find(item => item.id === state.app)?.name || state.app));
+  $('app-title').textContent = manager ? t('sidebar.appCentre') : (languages ? t('language.title') : (catalog.find(item => item.id === state.app)?.name || state.app));
   $('top-actions').hidden = manager || languages;
   if (manager) {
     $('save-status').textContent = t('manager.manageTitle'); renderAppManager();

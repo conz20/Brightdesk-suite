@@ -44,9 +44,10 @@ test('top-right controls clearly identify notifications, saving and Settings', (
   assert.match(concept, /id="notifications-bell"/);
   assert.ok(readme.includes('suite-dashboard-concept-single-settings.svg'), 'README must display the refreshed single-Settings preview');
   assert.match(concept, /id="settings-cogwheel"/);
-  assert.match(concept, /no Settings label or second Settings gear in the left sidebar/);
-  assert.equal(concept.includes('>Settings</text>'), false, 'the sidebar must not show a second Settings label');
-  assert.match(concept, /one suite-wide Settings cogwheel in the top-right/i);
-  assert.match(concept, /no Settings item in the sidebar/i);
+  assert.match(concept, /one suite-level App Centre entry in the left sidebar/i);
+  assert.match(concept, /Product shortcuts are not repeated beside the App Centre grid/i);
+  assert.match(concept, /id="sidebar-app-centre"/);
+  assert.doesNotMatch(concept, /id="sidebar-(?:pages|sheets|decks|notes|database|forms|lists|planner|todo|workspace)-/);
+  assert.match(concept, /one Settings cogwheel appears in the top-right beside Notifications/i);
   assert.doesNotMatch(concept, /<text[^>]*>C<\/text>/, 'the concept must not show the account initial');
 });

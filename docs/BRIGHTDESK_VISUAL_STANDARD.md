@@ -34,6 +34,8 @@ The product-specific accents should help recognition, not create ten unrelated d
 The suite home should make each product immediately recognisable and manageable:
 
 - Use one clear Settings cog in the top-right as the suite-wide entry point for local app, language and update management; do not repeat it as a sidebar item.
+- On the App Centre screen, show one suite-level **App Centre** entry in the sidebar and keep the ten product choices in the main product grid. Do not repeat the same ten products as sidebar shortcuts beside that grid.
+- Inside an active product workspace, show only installed products in a **Switch product** sidebar group for quick navigation. Hide that group on the App Centre and language/settings screens; the sidebar should reflect the current context rather than duplicate the page content.
 - Label genuinely product-specific options in a product card's three-dot menu **Product settings** so they are clearly distinct from suite-wide Settings.
 - Show all ten approved products in a responsive app grid with strong, product-specific preview artwork.
 - Every card contains the app icon, product name, a concise purpose line, a truthful Installed or Available state, and obvious Open plus Uninstall actions when installed, or Install when available.
