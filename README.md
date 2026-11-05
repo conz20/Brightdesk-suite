@@ -35,7 +35,7 @@ The workflow defines these expected native package formats for the Suite and eac
 - **macOS:** universal `.dmg`, `.pkg` and `.zip`
 - **Linux:** x64 AppImage and Debian `.deb`
 
-That is a planned set of 66 installer/archive outputs across eleven targets (the Suite plus ten products) and three operating systems. A workflow definition is not proof of a successful build. Release readiness requires real artifacts from the same candidate commit, correct versions and architectures, legal files, SHA-256 checksums, and successful install/runtime checks on native Windows, macOS and Linux runners. The current installer PR remains a draft until those checks are evidenced.
+That is a planned set of 66 installer/archive outputs across eleven targets (the Suite plus ten products) and three operating systems. A workflow definition is not proof of a successful build. Release readiness requires real artifacts from the same candidate commit, correct versions and architectures, legal files, SHA-256 checksums, and successful install/runtime checks on native Windows, macOS and Linux runners. The current installer PR remains a draft until those checks are evidenced. After the three platform bundles are downloaded by the collector, a second verifier re-reads all three Suite checksum manifests and all thirty product checksum manifests, validates the actual transferred bytes, checks the exact ten-product directory set and confirms the complete 66-output matrix before the combined artifact is uploaded.
 
 ## Update availability
 
