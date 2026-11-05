@@ -154,9 +154,9 @@ test('native release matrix builds and collects all ten product installers befor
   assert.match(matrixBuild, /npm run release:verify:products:\$\{\{ matrix\.script \}\}/);
   assert.match(matrixBuild, /node scripts\/collect-platform-build\.js \$\{\{ matrix\.script \}\}/);
   assert.match(matrixBuild, /release\/apps\/\$\{\{ matrix\.platform \}\}\/\*\*/);
-  assert.match(matrixBuild, /path: release\\/\\*\\*/);
+  assert.match(matrixBuild, /path: release\/\*\*/);
   for (const platform of ['Linux', 'Windows', 'macOS']) {
-    const download = collect.split(`name: brightdesk-${platform}`)[1].split('\\n      - name:')[0];
+    const download = collect.split(`name: brightdesk-${platform}`)[1].split('\n      - name:')[0];
     assert.match(download, /path: release/);
   }
 
