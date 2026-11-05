@@ -17,4 +17,10 @@ test('top-right Settings control uses the shared cogwheel and opens suite Settin
   assert.match(styles, /\.top-settings-button/);
   assert.doesNotMatch(concept, /<text[^>]*>C<\/text>/, 'the concept must not show the account initial');
   assert.match(concept, /settings-cogwheel/);
+  const icon = read('src/assets/icons/settings.svg');
+  assert.match(icon, /viewBox="0 0 24 24"/);
+  assert.match(icon, /stroke-width="1\.8"/);
+  assert.match(icon, /M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8/);
+  assert.match(icon, /M19\.4 15a1\.65/);
+  assert.match(concept, /M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8/);
 });
