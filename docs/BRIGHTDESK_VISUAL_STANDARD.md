@@ -69,11 +69,24 @@ Product-specific controls must use the same visual language:
 - At narrow sizes, navigation and grids must adapt without clipping controls or hiding essential actions.
 - Keep touch/click targets comfortable and avoid tiny three-dot menus.
 
-## README and example artwork
+## README, concept artwork and genuine screenshots
 
-Each product README should show the Brightdesk brand, its own original application icon, a product-specific workspace preview, a short explanation and accurate install/build status. Concept art must be labelled as a concept. Replace it with screenshots captured from the running application after that screen has been implemented and acceptance-tested. Do not describe a concept as a working screenshot.
+Each product README should show the Brightdesk brand, its own original product icon, a product-specific preview, a short explanation, accurate first-use scope and truthful build/release status.
 
-All application icons shown in Markdown must be embedded image assets with meaningful alt text. Do not place emoji or Unicode pictographs in headings, tables, navigation labels or application names.
+Concept artwork is allowed as a design reference, but it must be labelled **Concept artwork — not a screenshot**. Never describe a concept image, rendered mockup, HTML prototype or composited illustration as a capture from the running desktop software.
+
+Genuine screenshots must:
+- Be captured directly from the current Electron build running on its target desktop platform.
+- Show the real product window and actual controls, not a mockup or composite.
+- Demonstrate a real first-use workflow with clearly fictitious sample content.
+- Avoid personal data, secrets, developer tools, debug overlays and unrelated desktop clutter.
+- Retain the full application frame at a readable resolution; do not crop away errors or incomplete controls.
+- Be labelled with the product name and the tested version or commit.
+- Be captured only after the visible workflow has been checked against the product's acceptance criteria.
+
+Use `assets/screenshots/<product>-workspace.png` for verified captures. Keep original design concepts under `assets/previews/` and label them as concepts. Do not replace a concept preview with a screenshot until the screenshot has passed the checks above. Do not imply that screenshots exist when the repository contains only concept artwork.
+
+All product icons shown in Markdown must be embedded image assets with meaningful alt text. Do not use emoji, Unicode pictographs, initials or text characters as product icon substitutes.
 
 ## Completion criteria
 
