@@ -26,10 +26,14 @@ test('dictionary centre clearly describes immutable dictionary and licence recor
 });
 
 
-test('fresh suite installs activate only implemented apps; standalone installs lock to one app', () => {
+test('suite setup uses the versioned migration policy; individual builds lock to one product', () => {
+  const html = read('src/index.html');
   const app = read('src/app.js');
-  assert.match(app, /installableCatalog\.map\(item => item\.id\)/);
-  assert.match(app, /state\.setupComplete = state\.installedApps\.length > 0/);
+  assert.match(html, /app-setup-policy\.js/);
+  assert.match(app, /const \{ resolveAppSetup \} = window\.BrightdeskAppSetupPolicy/);
+  assert.match(app, /resolveAppSetup\(appSetup, launchAppId, installableCatalog\.map\(item => item\.id\)\)/);
+  assert.match(app, /state\.installedApps = resolvedSetup\.installedApps/);
+  assert.match(app, /state\.setupComplete = resolvedSetup\.setupComplete/);
   assert.match(app, /if \(launchAppId\) \{ state\.app = launchAppId; state\.view = 'workspace'; \}/);
   assert.match(app, /launchAppId && app !== launchAppId/);
 });
