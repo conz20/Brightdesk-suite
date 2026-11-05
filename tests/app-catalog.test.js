@@ -171,7 +171,7 @@ test('standalone app packaging has independent product IDs and all three platfor
   const path = require('node:path');
   const root = path.join(__dirname, '..');
   const pkg = JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8'));
-  for (const app of ['pages', 'sheets', 'decks', 'notes']) {
+  for (const app of ['pages', 'sheets', 'decks', 'notes', 'database', 'forms', 'lists', 'planner', 'todo', 'workspace']) {
     for (const platform of ['win', 'mac', 'linux']) assert.ok(pkg.scripts[`dist:${app}:${platform}`]);
   }
   const builder = fs.readFileSync(path.join(root, 'electron-builder.app.config.js'), 'utf8');
@@ -182,16 +182,18 @@ test('standalone app packaging has independent product IDs and all three platfor
   const previousAppId = process.env.BRIGHTDESK_APP_ID;
   const products = [];
   try {
-    for (const [id, name] of [['pages','Pages'],['sheets','Sheets'],['slides','Decks'],['notes','Notes']]) {
+    for (const [id, name, slug] of [['pages','Pages','Pages'],['sheets','Sheets','Sheets'],['slides','Decks','Decks'],['notes','Notes','Notes'],['database','Database','Database'],['forms','Forms','Forms'],['lists','Lists','Lists'],['planner','Planner','Planner'],['todo','To Do','To-Do'],['loop','Workspace','Workspace']]) {
       process.env.BRIGHTDESK_APP_ID = id;
       delete require.cache[require.resolve(configPath)];
       const config = require(configPath);
       assert.equal(config.appId, `org.brightdesk.${id}`);
       assert.equal(config.extraMetadata.brightdeskAppId, id);
       assert.equal(config.extraMetadata.productName, `Brightdesk ${name}`);
-      assert.ok(config.win.artifactName.includes(name));
+      assert.ok(config.win.artifactName.includes(slug));
       assert.equal(config.directories.output, path.join('release', 'apps', id));
+      assert.equal(config.nsis.license, 'TERMS_AND_CONDITIONS.txt');
       assert.equal(config.dmg.license, 'TERMS_AND_CONDITIONS.txt');
+      assert.equal(config.pkg.license, 'TERMS_AND_CONDITIONS.txt');
       assert.ok(config.mac.target.includes('pkg'), `${name} mac build must include pkg for installer licence`);
       assert.ok(config.mac.target.includes('dmg'), `${name} mac build must include dmg`);
       assert.ok(config.mac.target.includes('zip'), `${name} mac build must include zip`);
@@ -202,7 +204,7 @@ test('standalone app packaging has independent product IDs and all three platfor
     else process.env.BRIGHTDESK_APP_ID = previousAppId;
     delete require.cache[require.resolve(configPath)];
   }
-  assert.equal(new Set(products).size, 4);
+  assert.equal(new Set(products).size, 10);
   const main = fs.readFileSync(path.join(root, 'src', 'main.js'), 'utf8');
   assert.match(main, /--brightdesk-app=/);
   const preload = fs.readFileSync(path.join(root, 'src', 'preload.js'), 'utf8');
