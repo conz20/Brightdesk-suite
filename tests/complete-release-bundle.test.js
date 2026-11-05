@@ -121,10 +121,10 @@ test('complete bundle verification rejects a checksum mismatch after artifact co
 test('complete bundle verification rejects a missing product directory', () => {
   const fixture = createCompleteBundle();
   try {
-    fs.rmSync(path.join(fixture.release, 'apps', 'Linux', 'workspace'), { recursive: true, force: true });
+    fs.rmSync(path.join(fixture.release, 'apps', 'Linux', 'loop'), { recursive: true, force: true });
     assert.throws(
       () => verifyCompleteReleaseBundle({ releaseDir: fixture.release, version: VERSION }),
-      /missing approved product directories/i
+      /missing or unexpected approved product directories/i
     );
   } finally {
     fs.rmSync(fixture.root, { recursive: true, force: true });
