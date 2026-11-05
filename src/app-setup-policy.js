@@ -8,7 +8,12 @@
   function resolveAppSetup(savedSetup, launchAppId, availableIds) {
     const available = [...new Set(availableIds)];
     if (launchAppId) {
-      return { installedApps: available.includes(launchAppId) ? [launchAppId] : [], setupComplete: true, schemaVersion: 3 };
+      return {
+        installedApps: available.includes(launchAppId) ? [launchAppId] : [],
+        setupComplete: true,
+        schemaVersion: 3,
+        initialView: 'workspace'
+      };
     }
 
     if (savedSetup?.schemaVersion === 3 && Array.isArray(savedSetup.installedApps)) {
@@ -16,13 +21,20 @@
       return {
         installedApps: installedApps.length ? installedApps : available,
         setupComplete: true,
-        schemaVersion: 3
+        schemaVersion: 3,
+        initialView: 'home'
       };
     }
 
     // Version 2 could store the original four-product default selection. The
-    // integrated suite now migrates every earlier setup to all ten products.
-    return { installedApps: available, setupComplete: true, schemaVersion: 3 };
+    // integrated suite migrates every earlier setup to all ten products and
+    // opens the app centre instead of dropping users into Pages.
+    return {
+      installedApps: available,
+      setupComplete: true,
+      schemaVersion: 3,
+      initialView: 'home'
+    };
   }
 
   return { resolveAppSetup };
