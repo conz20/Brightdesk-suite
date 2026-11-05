@@ -1,0 +1,150 @@
+{
+  "contractVersion": "1.0.0",
+  "status": "approved",
+  "approvedOn": "2026-11-05",
+  "sourceOfTruth": "docs/BRIGHTDESK_VISUAL_STANDARD.md",
+  "sharedDesign": {
+    "direction": "Original Brightdesk productivity workspace: restrained light canvas, deep navy navigation, white work surfaces, precise spacing, subtle borders and shadows.",
+    "colors": {
+      "canvas": "#F3F6FA",
+      "surface": "#FFFFFF",
+      "surfaceMuted": "#F8F9FB",
+      "navStart": "#14233F",
+      "navEnd": "#0D1930",
+      "navText": "#EEF3FB",
+      "navMuted": "#A8B6D0",
+      "ink": "#202B3C",
+      "text": "#354256",
+      "muted": "#68778C",
+      "line": "#DFE4EC",
+      "lineSoft": "#EBEFF4",
+      "positive": "#16845B",
+      "suiteAccent": "#526FE0",
+      "focus": "#315FCE"
+    },
+    "typography": {
+      "fontFamily": "Inter, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+      "hierarchy": "Clear page title, section title, body text and metadata; body copy remains readable at normal desktop scaling."
+    },
+    "shell": {
+      "navigation": "Deep navy vertical navigation using the approved geometric Brightdesk mark and readable white/muted text.",
+      "content": "Pale #F3F6FA workspace canvas with white working surfaces, subtle #DFE4EC borders and restrained shadows.",
+      "productAccents": "Use the product-specific accent for active states, primary actions, focus indicators and product identity; do not recolour shared surfaces.",
+      "icons": "Use original product SVG artwork. Never substitute emoji, Unicode symbols, initials or generic placeholders.",
+      "controls": "Consistent button heights, spacing, radii, hover/pressed states and visible keyboard focus."
+    },
+    "accessibility": [
+      "All actionable controls must be keyboard reachable and have visible focus.",
+      "Use semantic labels, accessible names and a logical reading order.",
+      "Maintain sufficient text contrast; never communicate state by colour alone.",
+      "Respect reduced-motion preferences and adapt layouts without clipping essential actions."
+    ],
+    "evidence": {
+      "conceptArtwork": "Concept artwork is a design reference, not a running-app screenshot.",
+      "screenshots": "Only publish screenshots captured from the current running desktop build after its workflow has been checked. Keep them separate from concept previews."
+    }
+  },
+  "applications": [
+    {
+      "name": "Pages",
+      "repository": "Brightdesk-Pages",
+      "accent": "#5966C9",
+      "accentStrong": "#414DA9",
+      "accentSoft": "#EEF0FC",
+      "iconPath": "src/assets/icons/pages.svg",
+      "previewPath": "assets/previews/pages-workspace.svg"
+    },
+    {
+      "name": "Sheets",
+      "repository": "Brightdesk-Sheets",
+      "accent": "#27845C",
+      "accentStrong": "#1E6847",
+      "accentSoft": "#EDF7F1",
+      "iconPath": "src/assets/icons/sheets.svg",
+      "previewPath": "assets/previews/sheets-workspace.svg"
+    },
+    {
+      "name": "Decks",
+      "repository": "Brightdesk-Decks",
+      "accent": "#C47A2D",
+      "accentStrong": "#9A5E20",
+      "accentSoft": "#FCF3E9",
+      "iconPath": "src/branding/icons/decks.svg",
+      "previewPath": "src/branding/previews/slides.svg"
+    },
+    {
+      "name": "Notes",
+      "repository": "Brightdesk-Notes",
+      "accent": "#287FA5",
+      "accentStrong": "#1E6688",
+      "accentSoft": "#EDF6FA",
+      "iconPath": "src/branding/icons/notes.svg",
+      "previewPath": "src/branding/previews/notes.svg"
+    },
+    {
+      "name": "Database",
+      "repository": "Brightdesk-Database",
+      "accent": "#8058B3",
+      "accentStrong": "#63418F",
+      "accentSoft": "#F4EFFA",
+      "iconPath": "src/branding/icons/database.svg",
+      "previewPath": "src/branding/previews/database.svg"
+    },
+    {
+      "name": "Forms",
+      "repository": "Brightdesk-Forms",
+      "accent": "#C35D68",
+      "accentStrong": "#9E4651",
+      "accentSoft": "#FBF0F1",
+      "iconPath": "src/branding/icons/forms.svg",
+      "previewPath": "src/branding/previews/forms.svg"
+    },
+    {
+      "name": "Lists",
+      "repository": "Brightdesk-Lists",
+      "accent": "#287F8C",
+      "accentStrong": "#1F626B",
+      "accentSoft": "#EDF6F7",
+      "iconPath": "assets/branding/icons/lists.svg",
+      "previewPath": "assets/previews/lists.svg"
+    },
+    {
+      "name": "Planner",
+      "repository": "Brightdesk-Planner",
+      "accent": "#4667BF",
+      "accentStrong": "#34529D",
+      "accentSoft": "#EEF2FC",
+      "iconPath": "assets/branding/icons/planner.svg",
+      "previewPath": "assets/previews/planner.svg"
+    },
+    {
+      "name": "To Do",
+      "repository": "Brightdesk-To-Do",
+      "accent": "#27834F",
+      "accentStrong": "#1D653C",
+      "accentSoft": "#EDF7F0",
+      "iconPath": "assets/branding/icons/to-do.svg",
+      "previewPath": "assets/previews/to-do.svg"
+    },
+    {
+      "name": "Workspace",
+      "repository": "Brightdesk-Workspace",
+      "accent": "#4B68A8",
+      "accentStrong": "#395287",
+      "accentSoft": "#EFF2F9",
+      "iconPath": "assets/branding/icons/workspace.svg",
+      "previewPath": "assets/previews/workspace.svg"
+    }
+  ],
+  "portfolioBoundaries": {
+    "exactApplicationCount": 10,
+    "excludedProducts": [
+      "Outlook",
+      "OneDrive",
+      "Teams"
+    ],
+    "suiteRepository": "Brightdesk-suite",
+    "privateControlPlane": "Brightdesk-AI",
+    "controlPlaneIsCustomerProduct": false
+  }
+}
