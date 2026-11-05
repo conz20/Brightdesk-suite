@@ -51,6 +51,36 @@
       "suitePath": "src/workspace-service.js",
       "sourceBlobSha": "a5a73ac3b727064f43fde0a14320fe2f594a5ba7",
       "status": "verified-source-match"
+    },
+    {
+      "id": "pages-layout",
+      "name": "Brightdesk Pages page layout",
+      "repository": "connormolloy12/Brightdesk-Pages",
+      "sourceRef": "main",
+      "sourcePath": "src/page-layout.js",
+      "suitePath": "src/page-layout.js",
+      "sourceBlobSha": "9777090bbbd01fee1b2789c703619dc8faa87859",
+      "status": "verified-source-match"
+    },
+    {
+      "id": "sheets-formula",
+      "name": "Brightdesk Sheets formula engine",
+      "repository": "connormolloy12/Brightdesk-Sheets",
+      "sourceRef": "main",
+      "sourcePath": "src/formula.js",
+      "suitePath": "src/formula.js",
+      "sourceBlobSha": "4b75569239c9834308f77815392b98d7371ea459",
+      "status": "verified-source-match"
+    },
+    {
+      "id": "forms-service",
+      "name": "Brightdesk Forms service",
+      "repository": "connormolloy12/Brightdesk-Forms",
+      "sourceRef": "main",
+      "sourcePath": "src/forms-service.js",
+      "suitePath": "src/forms-service.js",
+      "sourceBlobSha": "d925764977a79ec6b7d79af5e1a0d6e08ab9d8e4",
+      "status": "verified-source-match"
     }
   ]
 }
