@@ -20,10 +20,20 @@ test('scheduled dependency audit uses hosted Ubuntu and blocks high severity vul
   assert.match(workflow, /cron:/);
   assert.match(workflow, /runs-on: ubuntu-latest/);
   assert.match(workflow, /node-version: 24\.22\.2/);
-  assert.match(workflow, /npm run lock:prepare/);
-  assert.match(workflow, /npm run lock:verify/);
-  assert.match(workflow, /npm ci --no-audit --no-fund/);
-  assert.match(workflow, /npm audit --audit-level=high/);
+  assert.doesNotMatch(workflow, /npm run lock:prepare/);
+  const requiredOrder = [
+    'npm ci --no-audit --no-fund',
+    'npm run lock:verify',
+    'npm run verify:licenses',
+    'npm test',
+    'npm audit --audit-level=high'
+  ];
+  let previousIndex = -1;
+  for (const command of requiredOrder) {
+    const currentIndex = workflow.indexOf(command);
+    assert.ok(currentIndex > previousIndex, 'security workflow runs ' + command + ' in order');
+    previousIndex = currentIndex;
+  }
   assert.equal(workflow.includes('self-hosted'), false);
 });
 
@@ -32,13 +42,21 @@ test('daily quality workflow uses hosted Ubuntu and never publishes a release', 
   assert.ok(workflow.includes("cron: '15 4 * * *'"));
   assert.match(workflow, /runs-on: ubuntu-latest/);
   assert.ok(workflow.includes('node-version: 24.22.2'));
-  assert.match(workflow, /npm run lock:prepare/);
-  assert.match(workflow, /npm run lock:verify/);
-  assert.match(workflow, /npm ci --no-audit --no-fund/);
-  assert.match(workflow, /npm run verify:licenses/);
-  assert.match(workflow, /npm test/);
-  assert.match(workflow, /npm run release:preflight/);
-  assert.match(workflow, /npm audit --audit-level=high/);
+  assert.doesNotMatch(workflow, /npm run lock:prepare/);
+  const requiredOrder = [
+    'npm ci --no-audit --no-fund',
+    'npm run lock:verify',
+    'npm run verify:licenses',
+    'npm test',
+    'npm run release:preflight',
+    'npm audit --audit-level=high'
+  ];
+  let previousIndex = -1;
+  for (const command of requiredOrder) {
+    const currentIndex = workflow.indexOf(command);
+    assert.ok(currentIndex > previousIndex, 'quality workflow runs ' + command + ' in order');
+    previousIndex = currentIndex;
+  }
   assert.equal(workflow.includes('pull_request:'), false);
   assert.equal(workflow.includes('softprops/action-gh-release'), false);
   assert.equal(workflow.includes('contents: write'), false);
@@ -93,6 +111,8 @@ test('installer workflow builds suite and all ten standalone apps on native host
   }
   assert.equal(prepare.includes('npm run lock:prepare'), false, 'release validation must never regenerate the committed lockfile');
 
+  const platformBuild = workflow.split('  build:')[1].split('  collect:')[0];
+  assert.ok(platformBuild.indexOf('npm ci --no-audit --no-fund') < platformBuild.indexOf('npm run lock:verify'), 'platform jobs install from the committed lock before verifying it');
   assert.ok(workflow.includes('node scripts/collect-platform-build.js win'));
   assert.ok(workflow.includes('node scripts/collect-platform-build.js linux'));
   assert.ok(workflow.includes('node scripts/collect-platform-build.js mac'));
