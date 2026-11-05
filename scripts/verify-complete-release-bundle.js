@@ -25,7 +25,14 @@ const SUITE_LEGAL_FILES = Object.freeze({
 });
 
 function escapeRegExp(value) {
-  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const specialCharacters = '.*+?^${}()|[]';
+  const backslash = String.fromCharCode(92);
+  let escaped = '';
+  for (const character of value) {
+    if (specialCharacters.includes(character) || character === backslash) escaped += backslash;
+    escaped += character;
+  }
+  return escaped;
 }
 
 function requireExactlyOneMatch(directory, pattern, label) {
