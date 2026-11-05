@@ -182,3 +182,25 @@ test('every npm script invoked by the installer workflow exists in the package m
   const missing = uniqueCommands.filter(command => !manifest.scripts?.[command]);
   assert.deepEqual(missing, [], 'installer workflow must not call undefined npm scripts');
 });
+
+
+test('collected release bundle rechecks all platform artifacts and transferred checksums', () => {
+  const workflow = read('.github/workflows/build-release.yml');
+  const collect = workflow.split('  collect:')[1].split('  publish-release:')[0];
+  assert.match(collect, /actions\/checkout@/);
+  assert.match(collect, /node-version: 24\.22\.2/);
+  assert.match(collect, /name: Download verified Linux installer bundle/);
+  assert.match(collect, /name: Download verified Windows installer bundle/);
+  assert.match(collect, /name: Download verified macOS installer bundle/);
+  assert.match(collect, /npm run release:verify:complete -- release/);
+  assert.ok(
+    collect.indexOf('npm run release:verify:complete -- release') <
+      collect.indexOf('Upload complete verified Brightdesk installer bundle'),
+    'the combined bundle is uploaded only after all transferred artifacts pass checksum verification'
+  );
+  const manifest = JSON.parse(read('package.json'));
+  assert.equal(
+    manifest.scripts['release:verify:complete'],
+    'node scripts/verify-complete-release-bundle.js'
+  );
+});
