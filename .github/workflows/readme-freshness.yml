@@ -13,7 +13,7 @@ permissions:
 jobs:
   readme-freshness:
     name: Require README updates for product changes
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, macOS, ARM64]
     steps:
       - name: Check out the change
         uses: actions/checkout@v4
@@ -46,20 +46,24 @@ jobs:
             exit 1
           fi
 
-          mapfile -t changed_files < <(git diff --name-only "$DIFF_RANGE")
+          changed_files="$(git diff --name-only "$DIFF_RANGE")"
 
-          if (( ${#changed_files[@]} == 0 )); then
+          if [[ -z "$changed_files" ]]; then
             echo "No changed files were found. README freshness check passed."
             exit 0
           fi
 
-          printf 'Changed files:\n'
-          printf '  %s\n' "${changed_files[@]}"
+          printf 'Changed files:\\n'
+          while IFS= read -r file; do
+            printf '  %s\\n' "$file"
+          done <<< "$changed_files"
 
           readme_changed=false
           non_markdown_changed=false
 
-          for file in "${changed_files[@]}"; do
+          while IFS= read -r file; do
+            [[ -z "$file" ]] && continue
+
             if [[ "$file" == "README.md" ]]; then
               readme_changed=true
             fi
@@ -71,7 +75,7 @@ jobs:
                 non_markdown_changed=true
                 ;;
             esac
-          done
+          done <<< "$changed_files"
 
           if [[ "$non_markdown_changed" == "true" && "$readme_changed" != "true" ]]; then
             echo "::error::This change includes code, tests, UI, assets, icons, configuration, dependencies, or build/release files but does not update the repository root README.md."
