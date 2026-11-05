@@ -41,34 +41,46 @@ test('the source parity check rejects upstream paths outside the repository', ()
 test('the product source lock records Lists against its individual repository source', () => {
   const lock = loadProductSourceLock();
   assert.equal(lock.schemaVersion, 1);
-  assert.equal(lock.products.length, 1);
+  assert.equal(lock.products.length, 2);
   assert.deepEqual(
-    {
-      id: lock.products[0].id,
-      name: lock.products[0].name,
-      repository: lock.products[0].repository,
-      sourceRef: lock.products[0].sourceRef,
-      sourcePath: lock.products[0].sourcePath,
-      suitePath: lock.products[0].suitePath,
-      sourceBlobSha: lock.products[0].sourceBlobSha
-    },
-    {
-      id: 'lists',
-      name: 'Brightdesk Lists',
-      repository: 'connormolloy12/Brightdesk-Lists',
-      sourceRef: 'main',
-      sourcePath: 'src/lists-service.js',
-      suitePath: 'src/lists-service.js',
-      sourceBlobSha: 'ae3aebadd3194af4846c80fe58a2f1c98c88c57f'
-    }
+    lock.products.map(product => ({
+      id: product.id,
+      name: product.name,
+      repository: product.repository,
+      sourceRef: product.sourceRef,
+      sourcePath: product.sourcePath,
+      suitePath: product.suitePath,
+      sourceBlobSha: product.sourceBlobSha
+    })),
+    [
+      {
+        id: 'lists',
+        name: 'Brightdesk Lists',
+        repository: 'connormolloy12/Brightdesk-Lists',
+        sourceRef: 'main',
+        sourcePath: 'src/lists-service.js',
+        suitePath: 'src/lists-service.js',
+        sourceBlobSha: 'ae3aebadd3194af4846c80fe58a2f1c98c88c57f'
+      },
+      {
+        id: 'todo',
+        name: 'Brightdesk To Do',
+        repository: 'connormolloy12/Brightdesk-To-Do',
+        sourceRef: 'main',
+        sourcePath: 'src/todo-service.js',
+        suitePath: 'src/todo-service.js',
+        sourceBlobSha: '34e048b651dfdd50cb8b3292c660e1dbd57fe7f8'
+      }
+    ]
   );
 });
 
 test('the vendored Lists service exactly matches the pinned upstream Git blob', () => {
   const result = verifyProductSourceLock();
-  assert.equal(result.verifiedCount, 1);
+  assert.equal(result.verifiedCount, 2);
   assert.equal(result.products[0].id, 'lists');
-  assert.equal(result.products[0].verified, true);
+  assert.deepEqual(result.products.map(product => product.id), ['lists', 'todo']);
+  assert.ok(result.products.every(product => product.verified));
   assert.equal(
     calculateGitBlobSha(Buffer.from('hello\n', 'utf8')),
     'ce013625030ba8dba906f756967f9e9ca394464a'
