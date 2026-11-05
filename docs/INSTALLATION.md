@@ -18,6 +18,14 @@ Use only the installer built for your operating system:
 
 Download the installer from the official Brightdesk release page. Open it and follow the installation steps shown by your operating system.
 
+## Terms and Conditions
+
+The Windows installer (.exe), macOS disk image (.dmg) and macOS package installer (.pkg) present the Brightdesk Terms and Conditions before installation can continue. On macOS, the DMG displays the agreement when it is opened; the PKG displays it in Apple's Installer.
+
+Choose **Accept** or **Agree** to continue. Choose **Decline** or **Disagree** to cancel. Declining must not install Brightdesk. A normal packaged Windows or macOS installation will not ask you to accept the same Terms again when Brightdesk first opens.
+
+For a first-time Mac installation, use the DMG or PKG installer. The ZIP output is retained for update and automation workflows, not as the recommended first-time installer.
+
 ## Important
 
 - Do not install Node.js just to run Brightdesk.

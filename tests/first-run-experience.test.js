@@ -4,13 +4,14 @@ const assert = require('node:assert/strict');
 const { shouldRequireFirstLaunchTerms } = require('../src/installer-terms-policy');
 const { resolveAppSetup } = require('../src/app-setup-policy');
 
-test('packaged Windows installs rely on the installer terms agreement', () => {
+test('packaged Windows and macOS installs rely on the installer terms agreement', () => {
   assert.equal(shouldRequireFirstLaunchTerms({ platform: 'win32', isPackaged: true }), false);
+  assert.equal(shouldRequireFirstLaunchTerms({ platform: 'darwin', isPackaged: true }), false);
 });
 
-test('development and non-Windows builds retain the first-launch terms agreement', () => {
+test('development and Linux builds retain the first-launch agreement where no graphical installer gate exists', () => {
   assert.equal(shouldRequireFirstLaunchTerms({ platform: 'win32', isPackaged: false }), true);
-  assert.equal(shouldRequireFirstLaunchTerms({ platform: 'darwin', isPackaged: true }), true);
+  assert.equal(shouldRequireFirstLaunchTerms({ platform: 'darwin', isPackaged: false }), true);
   assert.equal(shouldRequireFirstLaunchTerms({ platform: 'linux', isPackaged: true }), true);
 });
 
