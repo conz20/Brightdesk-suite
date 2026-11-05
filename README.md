@@ -35,11 +35,11 @@ The app-centre concept uses a Settings cogwheel in the top-right corner instead 
 
 Brightdesk uses one approved visual system and the same ten-product feature scope on Windows, macOS and Linux. All products share the Brightdesk navigation, typography, spacing, component states, layout rules and original icon artwork. Each product keeps its approved accent colour and icon on every platform. Only operating-system integrations such as window chrome, keyboard conventions, native file dialogs, permissions, installation and removal surfaces may adapt to native conventions. The authoritative rules are in the [Brightdesk visual and interaction standard](docs/BRIGHTDESK_VISUAL_STANDARD.md).
 
-| Operating system | Configured suite package targets |
+| Operating system | Configured Suite and individual product targets |
 | --- | --- |
-| Windows | x64 NSIS installer (.exe) |
-| macOS | Universal disk image (.dmg), package installer (.pkg) and archive (.zip) |
-| Linux | x64 AppImage (.AppImage) and Debian package (.deb) |
+| Windows | Suite plus ten x64 NSIS installers (.exe) |
+| macOS | Suite plus ten universal DMG, PKG and ZIP sets |
+| Linux | Suite plus ten AppImage and Debian package (.deb) sets |
 
 These are configured targets, not proof that current installers are published or verified. A complete cross-platform release requires successful native build, install, first launch, upgrade and removal checks for every supported operating system, using the same approved suite version and source commit.
 
