@@ -2,6 +2,23 @@
 
 This is the shared design contract for Brightdesk Office Suite and all ten approved applications. It draws on familiar productivity and creative-software conventions while keeping Brightdesk's own brand, layout, icon artwork and interaction language. It must not copy proprietary Microsoft, Adobe or ArtCraft code, logos, screenshots or distinctive trade dress.
 
+
+## Canonical design contract
+
+The machine-readable source of truth is [BRIGHTDESK_DESIGN_CONTRACT.json](BRIGHTDESK_DESIGN_CONTRACT.json). It is part of this repository and defines the approved shared tokens and the ten product accent/icon identities. Keep it in sync with this document and the application stylesheets. Brightdesk-AI mirrors this file for offline guidance and checks its copy against this canonical suite version.
+
+## Approved shared shell tokens
+
+- **Canvas:** `#F3F6FA`
+- **Working surfaces:** `#FFFFFF`; muted surfaces `#F8F9FB`
+- **Navigation:** vertical deep-navy gradient from `#14233F` to `#0D1930`, with white primary labels and muted `#A8B6D0` secondary labels.
+- **Text:** ink `#202B3C`, body `#354256`, muted `#68778C`
+- **Borders:** `#DFE4EC` and soft separator `#EBEFF4`
+- **Suite accent:** `#526FE0`
+- **Typography:** Inter with system sans-serif fallbacks.
+
+Every product shares the same shell and surface language but retains the exact product accent recorded in the JSON contract. Accents identify product actions and focus states; they do not turn the suite into ten unrelated themes. Product-specific work surfaces must remain calm and readable.
+
 ## Brand foundation
 
 - Use the Brightdesk four-panel mark and lowercase wordmark consistently.
