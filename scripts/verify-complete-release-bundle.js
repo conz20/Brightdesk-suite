@@ -172,7 +172,7 @@ function verifySuitePlatform({ releaseDir, platform, version }) {
   return { suiteInstallerCount: platform === 'win' ? 1 : platform === 'mac' ? 3 : 2, checksumFileCount: checksum.fileCount };
 }
 
-function verifyProductPlatform({ releaseDir, platform }) {
+function verifyProductPlatform({ releaseDir, platform, version }) {
   const config = PLATFORMS[platform];
   const platformLabel = config.directory;
   const directory = path.join(releaseDir, 'apps', platformLabel);
@@ -192,7 +192,7 @@ function verifyProductPlatform({ releaseDir, platform }) {
   let productInstallerCount = 0;
   for (const appId of expectedIds) {
     const appDirectory = path.join(directory, appId);
-    const installerFiles = expectedFilename(appId, platform, require('../package.json').version);
+    const installerFiles = expectedFilename(appId, platform, version);
     for (const filename of installerFiles) requireNonEmptyFile(appDirectory, filename, `Brightdesk ${APP_SLUGS[appId]} installer`);
     verifyChecksumManifest({
       directory: appDirectory,
@@ -224,7 +224,7 @@ function verifyCompleteReleaseBundle({ releaseDir = path.resolve(__dirname, '..'
   let installerCount = 0;
   for (const platform of Object.keys(PLATFORMS)) {
     const suite = verifySuitePlatform({ releaseDir, platform, version });
-    const products = verifyProductPlatform({ releaseDir, platform });
+    const products = verifyProductPlatform({ releaseDir, platform, version });
     platforms[platform] = { ...suite, ...products };
     installerCount += suite.suiteInstallerCount + products.productInstallerCount;
   }
