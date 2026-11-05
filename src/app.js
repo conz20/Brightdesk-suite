@@ -467,7 +467,8 @@ function renderAppManager() {
     : t('manager.chooseDesc'));
   $('manager-note').textContent = home ? 'Open any product below. Your work stays on this device.' : t('manager.note');
   $('finish-app-setup').textContent = state.setupComplete ? t('manager.done') : t('manager.installSelected');
-  catalog.forEach(item => {
+  const query = $('app-centre-search')?.value.trim().toLowerCase() || '';
+  catalog.filter(item => !query || `${item.name} ${item.subtitle} ${item.description}`.toLowerCase().includes(query)).forEach(item => {
     const canInstall = item.availability === 'available';
     const selected = state.firstRunSelection.has(item.id);
     const isInstalled = installedApp(item.id);
@@ -507,6 +508,10 @@ function renderAppManager() {
     }
     card.append(preview, header, description, footer); grid.append(card);
   });
+  if (!grid.children.length) {
+    const empty = document.createElement('p'); empty.className = 'app-centre-empty';
+    empty.textContent = 'No products match that search.'; grid.append(empty);
+  }
 }
 function toggleAppInstall(id) {
   if (!installableCatalog.some(item => item.id === id) || launchAppId) return;
@@ -766,11 +771,14 @@ function render() {
   $('app-manager').hidden = !manager && !home; $('language-manager').hidden = !languages;
   $('workspace').hidden = manager || home || languages; $('welcome').hidden = manager || home || languages || ['todo','lists','forms','planner','database','loop'].includes(state.app);
   $('app-title').textContent = home ? 'Your apps' : (manager ? 'Settings' : (languages ? t('language.title') : (catalog.find(item => item.id === state.app)?.name || state.app)));
+  const contextEyebrow = document.querySelector('.topbar .eyebrow');
+  if (contextEyebrow) contextEyebrow.textContent = home ? 'BRIGHTDESK APP CENTRE' : (manager ? 'LOCAL APPLICATION SETTINGS' : 'YOUR WORKSPACE');
+  $('app-centre-search').hidden = !home;
   $('top-actions').hidden = manager || languages;
   if (home) {
     $('open-button').hidden = true; $('save-project').hidden = true; $('export-button').hidden = true;
     $('open-notifications').hidden = false; $('open-settings').hidden = false;
-    $('save-status').textContent = '10 products'; renderAppManager();
+    $('save-status').textContent = `${state.installedApps.length} of ${catalog.length} products`; renderAppManager();
   } else if (manager) {
     $('save-status').textContent = t('manager.manageTitle'); renderAppManager();
   } else if (languages) {
@@ -867,6 +875,7 @@ function setApp(app){if((launchAppId && app !== launchAppId) || !(configs[app] |
 
 document.querySelectorAll('.nav[data-app]').forEach(btn=>btn.addEventListener('click',()=>setApp(btn.dataset.app)));
 $('open-home').addEventListener('click',()=>{if (launchAppId) return; state.view='home';render();});
+$('app-centre-search').addEventListener('input',()=>{if(state.view==='home')renderAppManager();});
 $('manage-apps').addEventListener('click',()=>{if (launchAppId) return; state.view='manager';render();});
 $('open-settings').addEventListener('click',()=> $('manage-apps').click());
 $('open-notifications').addEventListener('click',()=>{const panel=$('notification-panel');panel.hidden=!panel.hidden;$('open-notifications').setAttribute('aria-expanded',String(!panel.hidden));});
