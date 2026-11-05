@@ -98,3 +98,6 @@ See [installation guidance](docs/INSTALLATION.md), [local release verification](
 
 Product integration, automated tests, live desktop acceptance and installer release are separate checkpoints. The integrated source still requires current-build workflow verification, accessibility review, local persistence/recovery checks, upgrade and uninstall checks, legal packaging checks, and native installer verification before a public release is described as complete.
 
+## Documentation freshness
+
+The root README is maintained alongside the product, not as an end-of-project task. Every pull request that changes application code, tests, UI, design assets, screenshots, icons, configuration, dependencies, packaging, or build/release workflows must also update this README in the same pull request. Keep feature status, screenshots and visual references, application icons, setup/build instructions, platform compatibility, and repository links aligned with the latest verified implementation. Describe planned or untested functionality as planned, never as completed. The **README freshness** GitHub Actions check requires a root `README.md` update whenever a pull request changes a non-Markdown file; a passing check confirms inclusion, while reviewers remain responsible for checking factual accuracy and current visuals.
