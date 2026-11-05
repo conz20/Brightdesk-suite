@@ -2,6 +2,7 @@ import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
   test: {
+    clearMocks: false,
     environment: 'jsdom',
     include: [
       'packages/**/*.{test,spec}.js',

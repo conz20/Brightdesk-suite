@@ -233,7 +233,7 @@ test('README presents all ten apps as the integrated first-release lineup', () =
   const fs = require('node:fs');
   const readme = fs.readFileSync(require('node:path').join(__dirname, '..', 'README.md'), 'utf8');
   for (const app of catalog) assert.ok(readme.includes(app.name), `README missing ${app.name}`);
-  assert.match(readme, /ten-app desktop suite/i);
-  assert.match(readme, /ten-app desktop suite/i);
+  assert.match(readme, /ten focused desktop products/i);
+  assert.match(readme, /These are the only products in the approved suite/i);
   assert.doesNotMatch(readme, /other six.*not yet working apps/i);
 });

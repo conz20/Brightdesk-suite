@@ -2,7 +2,7 @@ name: Generate dependency lockfile
 
 on:
   push:
-    branches: [main]
+    branches: [main, security/vitest-5-vite-6-upgrade-2026-11-05]
     paths:
       - 'package.json'
       - '.github/workflows/generate-lockfile.yml'
@@ -24,6 +24,9 @@ jobs:
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: '24.22.2'
+
+      - name: Verify the required Node.js runtime
+        run: npm run check:node
 
       - name: Generate package-lock.json
         run: npm install --package-lock-only --ignore-scripts --no-audit --no-fund
