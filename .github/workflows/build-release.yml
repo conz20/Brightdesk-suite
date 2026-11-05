@@ -20,7 +20,9 @@ concurrency:
 jobs:
   prepare:
     name: Test and lock dependencies
-    runs-on: ubuntu-latest
+    # Run on an already registered private runner; no hosted minutes are consumed.
+    runs-on: self-hosted
+    timeout-minutes: 60
     steps:
       - name: Check out Brightdesk
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
@@ -80,13 +82,13 @@ jobs:
       matrix:
         include:
           - platform: Linux
-            runner: ubuntu-latest
+            runner: ["self-hosted", "Linux", "X64"]
             script: linux
           - platform: Windows
-            runner: windows-latest
+            runner: ["self-hosted", "Windows", "X64"]
             script: win
           - platform: macOS
-            runner: macos-latest
+            runner: ["self-hosted", "macOS", "ARM64"]
             script: mac
     runs-on: ${{ matrix.runner }}
     steps:
@@ -170,7 +172,9 @@ jobs:
   collect:
     name: Collect verified installers
     needs: [prepare, build]
-    runs-on: ubuntu-latest
+    # Collect on the existing private runner to avoid hosted-runner billing.
+    runs-on: self-hosted
+    timeout-minutes: 30
     outputs:
       version: ${{ steps.release-version.outputs.version }}
     steps:
@@ -200,6 +204,7 @@ jobs:
 
       - name: Read the official product version
         id: release-version
+        shell: bash
         run: |
           VERSION="$(node -p "require('./package.json').version")"
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
@@ -216,7 +221,9 @@ jobs:
     name: Publish GitHub Release (manual approval only)
     needs: collect
     if: github.event_name == 'workflow_dispatch' && inputs.publish_release == true
-    runs-on: ubuntu-latest
+    # Publishing remains manual and uses the private runner too.
+    runs-on: self-hosted
+    timeout-minutes: 15
     permissions:
       contents: write
     steps:
