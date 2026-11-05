@@ -172,3 +172,13 @@ test('release publishing is manual, main-only and version-matched', () => {
   assert.match(workflow, /fail_on_unmatched_files: true/);
   assert.match(workflow, /contents: write/);
 });
+
+
+test('every npm script invoked by the installer workflow exists in the package manifest', () => {
+  const workflow = read('.github/workflows/build-release.yml');
+  const manifest = JSON.parse(read('package.json'));
+  const commands = [...workflow.matchAll(/npm run ([A-Za-z0-9:_-]+)/g)].map(match => match[1]);
+  const uniqueCommands = [...new Set(commands)];
+  const missing = uniqueCommands.filter(command => !manifest.scripts?.[command]);
+  assert.deepEqual(missing, [], 'installer workflow must not call undefined npm scripts');
+});
