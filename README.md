@@ -96,7 +96,7 @@ npm test
 npm run build
 ```
 
-The source-parity pilot now covers five feature modules across four individual product repositories: Lists (`src/lists-service.js`), To Do (`src/todo-service.js`), Planner (`src/planner-service.js`), and Workspace (`src/workspace-editor.js` plus `src/workspace-service.js`). The Suite verifies each vendored copy against the pinned Git blob from its product repository's `main` branch in [PRODUCT_SOURCE_LOCK.json](docs/PRODUCT_SOURCE_LOCK.json). The same check runs in CI and release preflight. This is verified source parity for these five modules only, not a ten-product or complete UI-shell parity claim.
+The source-parity pilot now covers eight feature modules across seven individual product repositories: Lists (`src/lists-service.js`), To Do (`src/todo-service.js`), Planner (`src/planner-service.js`), Pages (`src/page-layout.js`), Sheets (`src/formula.js`), Forms (`src/forms-service.js`), and Workspace (`src/workspace-editor.js` plus `src/workspace-service.js`). The Suite verifies each vendored copy against the pinned Git blob from its product repository's `main` branch in [PRODUCT_SOURCE_LOCK.json](docs/PRODUCT_SOURCE_LOCK.json). The same check runs in CI and release preflight. This is verified source parity for these eight modules only, not a ten-product or complete UI-shell parity claim.
 
 Run `npm run release:preflight` before preparing an installer. Build and verify installers on their matching native platforms; a build script existing in the repository does not mean that a verified installer has been published.
 
