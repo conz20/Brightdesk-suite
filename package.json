@@ -74,7 +74,8 @@
     "dist:products:linux": "node scripts/build-apps.js linux",
     "release:verify:products:win": "node scripts/verify-standalone-apps.js win",
     "release:verify:products:mac": "node scripts/verify-standalone-apps.js mac",
-    "release:verify:products:linux": "node scripts/verify-standalone-apps.js linux"
+    "release:verify:products:linux": "node scripts/verify-standalone-apps.js linux",
+    "release:verify:complete": "node scripts/verify-complete-release-bundle.js"
   },
   "dependencies": {
     "docx": "9.15.1",
