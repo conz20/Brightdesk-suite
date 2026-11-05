@@ -1,9 +1,6 @@
 name: Build and verify Brightdesk installers
 
 on:
-  push:
-    branches:
-      - build/installer-verification-2026-11-05
   workflow_dispatch:
     inputs:
       publish_release:
