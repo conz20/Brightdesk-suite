@@ -142,7 +142,8 @@
       "artifactName": "Brightdesk-Office-Suite-${version}-${arch}.${ext}"
     },
     "dmg": {
-      "sign": false
+      "sign": false,
+      "license": "TERMS_AND_CONDITIONS.txt"
     },
     "pkg": {
       "license": "TERMS_AND_CONDITIONS.txt",

@@ -18,6 +18,17 @@ Use only the installer built for your operating system:
 
 Download the installer from the official Brightdesk release page. Open it and follow the installation steps shown by your operating system.
 
+## Terms and Conditions
+
+The Brightdesk Terms and Conditions must be accepted before the product workspace can be used.
+
+- **Windows:** the NSIS installer (.exe) presents the agreement before installation continues.
+- **macOS:** the DMG and PKG present the agreement before installation continues. For a first-time Mac installation, use the DMG or PKG rather than the ZIP archive.
+- **Linux:** AppImage has no separate installer agreement page. The packaged application therefore displays the same blocking agreement on first launch, before the workspace opens.
+
+Choose **Accept** or **Agree** to continue. Choose **Decline** or **Disagree** to cancel. Declining, or closing the blocking first-launch agreement without accepting, prevents the product workspace from opening. The application records acceptance against the current Terms text; changed terms require a fresh acceptance.
+
+The agreement step is designed to produce the same consent outcome on all three operating systems, but its presentation differs where the operating system's package format requires it.
 ## Important
 
 - Do not install Node.js just to run Brightdesk.
