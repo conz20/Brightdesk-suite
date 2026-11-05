@@ -55,7 +55,9 @@ function runPreflight({ rootDir, nodeVersion = process.versions.node, platform =
   add('Terms and Conditions', fs.existsSync(path.join(root, 'TERMS_AND_CONDITIONS.txt')), 'A readable Terms and Conditions document must ship with every installer.');
   add('Open-source licence bundle', manifest.license === 'MIT' && fs.existsSync(path.join(root, 'LICENSE')) && fs.existsSync(path.join(root, 'THIRD_PARTY_NOTICES.md')), 'MIT source licence and dependency notices must ship with each installer.');
   add('Windows installer agreement', manifest.build?.nsis?.license === 'TERMS_AND_CONDITIONS.txt', 'NSIS must show the Terms and Conditions and require agreement.');
-  add('macOS installer agreement', manifest.build?.pkg?.license === 'TERMS_AND_CONDITIONS.txt' && manifest.build?.mac?.target?.includes('pkg'), 'macOS PKG must show the Terms and Conditions and require agreement.');
+  add('macOS DMG agreement', manifest.build?.dmg?.license === 'TERMS_AND_CONDITIONS.txt', 'The DMG must show the Terms and Conditions before the user opens the installed product.');
+  add('macOS DMG agreement labels', fs.existsSync(path.join(root, 'build', 'licenseButtons_en.json')), 'The DMG agreement must use the explicit Accept and Decline labels.');
+  add('macOS PKG agreement', manifest.build?.pkg?.license === 'TERMS_AND_CONDITIONS.txt' && manifest.build?.mac?.target?.includes('pkg'), 'The PKG must show the Terms and Conditions and require agreement.');
   add('Linux consent installer', fs.existsSync(path.join(root, 'installer', 'install-linux.sh')), 'Linux must include the yes/no agreement installer alongside the package formats.');
   add('First-launch agreement gate', fs.existsSync(path.join(root, 'src', 'terms.html')) && fs.existsSync(path.join(root, 'src', 'terms-preload.js')) && fs.existsSync(path.join(root, 'src', 'terms.js')), 'The application must request agreement on first launch and when Terms change.');
 
