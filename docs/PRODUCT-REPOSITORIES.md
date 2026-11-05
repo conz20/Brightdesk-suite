@@ -23,6 +23,21 @@ Brightdesk has one complete desktop Suite and a separate GitHub repository for e
 
 The repository inventory was checked directly against GitHub on **5 November 2026**. All ten repositories exist, use `main` as their default branch and expose a readable `package.json`. This check does not establish that their source is complete, that current CI has passed, or that an installer has been built. Those require separate evidence on the exact current commit.
 
+## Cross-repository manifest alignment — checked 5 November 2026
+
+The root Suite manifest and all ten product manifests were compared directly from GitHub. All eleven declare the same baseline:
+
+| Manifest field | Suite and ten products |
+|---|---|
+| Product version | `0.1.0` |
+| Node.js engine | `24.22.2` |
+| Electron | `45.2.1` |
+| electron-builder | `26.18.0` |
+| electron-updater | `6.8.11` |
+
+This confirms the declared package-manifest versions only. It does not prove the installed dependency trees are identical, that every lockfile has passed its current CI verification, or that packages build and run identically on Windows, macOS and Linux. Those are separate release gates.
+
+
 ## Prepare product repository folders
 
 From a checkout of `Brightdesk-suite` using Node.js 24.22.2, run:
