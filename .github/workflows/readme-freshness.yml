@@ -13,7 +13,8 @@ permissions:
 jobs:
   readme-freshness:
     name: Require README updates for product changes
-    runs-on: ubuntu-latest
+    # Reuse the private runner; keep this required check outside paid hosted billing.
+    runs-on: self-hosted
     steps:
       - name: Check out the change
         uses: actions/checkout@v4
