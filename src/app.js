@@ -802,11 +802,10 @@ function render() {
   document.querySelectorAll('.nav[data-app]').forEach(btn => {
     const visible = launchAppId ? btn.dataset.app === launchAppId : installedApp(btn.dataset.app); btn.hidden = !visible; btn.classList.toggle('active', !manager && !languages && btn.dataset.app === state.app);
   });
-  $('manage-apps').hidden = Boolean(launchAppId);
   $('open-settings').hidden = Boolean(launchAppId);
   $('open-notifications').hidden = Boolean(launchAppId);
   if (launchAppId) $('notification-panel').hidden = true;
-  $('manage-apps').classList.toggle('active', manager || languages);
+  $('open-settings').setAttribute('aria-expanded', String(manager || languages));
   $('manage-languages').classList.toggle('active', languages);
 }
 function collectDocxBlocks() {
@@ -856,8 +855,14 @@ async function saveProject(){try{const result=await window.brightdesk.saveProjec
 function setApp(app){if((launchAppId && app !== launchAppId) || !(configs[app] || genericConfigs[app]) || !installedApp(app))return;state.app=app;state.view='workspace';state.ribbonTab='home';render();persist();}
 
 document.querySelectorAll('.nav[data-app]').forEach(btn=>btn.addEventListener('click',()=>setApp(btn.dataset.app)));
-$('manage-apps').addEventListener('click',()=>{if (launchAppId) return; state.view='manager';render();});
-$('open-settings').addEventListener('click',()=> $('manage-apps').click());
+function openSuiteSettings() {
+  if (launchAppId) return;
+  $('notification-panel').hidden = true;
+  $('open-notifications').setAttribute('aria-expanded', 'false');
+  state.view = 'manager';
+  render();
+}
+$('open-settings').addEventListener('click', openSuiteSettings);
 $('open-notifications').addEventListener('click',()=>{const panel=$('notification-panel');panel.hidden=!panel.hidden;$('open-notifications').setAttribute('aria-expanded',String(!panel.hidden));});
 document.addEventListener('keydown',event=>{if(event.key==='Escape'&&!$('notification-panel').hidden){$('notification-panel').hidden=true;$('open-notifications').setAttribute('aria-expanded','false');}});
 $('manage-languages').addEventListener('click',openLanguageManager);
