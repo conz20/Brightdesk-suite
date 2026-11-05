@@ -38,10 +38,10 @@ test('the source parity check rejects upstream paths outside the repository', ()
   }
 });
 
-test('the product source lock records Lists against its individual repository source', () => {
+test('the product source lock records all four pinned modules across three product repositories', () => {
   const lock = loadProductSourceLock();
   assert.equal(lock.schemaVersion, 1);
-  assert.equal(lock.products.length, 2);
+  assert.equal(lock.products.length, 4);
   assert.deepEqual(
     lock.products.map(product => ({
       id: product.id,
@@ -70,16 +70,34 @@ test('the product source lock records Lists against its individual repository so
         sourcePath: 'src/todo-service.js',
         suitePath: 'src/todo-service.js',
         sourceBlobSha: '34e048b651dfdd50cb8b3292c660e1dbd57fe7f8'
+      },
+      {
+        id: 'workspace-editor',
+        name: 'Brightdesk Workspace editor',
+        repository: 'connormolloy12/Brightdesk-Workspace',
+        sourceRef: 'main',
+        sourcePath: 'src/workspace-editor.js',
+        suitePath: 'src/workspace-editor.js',
+        sourceBlobSha: '2cd96b879c7b90da1df66dee7fc2a2c319b53781'
+      },
+      {
+        id: 'workspace-service',
+        name: 'Brightdesk Workspace service',
+        repository: 'connormolloy12/Brightdesk-Workspace',
+        sourceRef: 'main',
+        sourcePath: 'src/workspace-service.js',
+        suitePath: 'src/workspace-service.js',
+        sourceBlobSha: 'a5a73ac3b727064f43fde0a14320fe2f594a5ba7'
       }
     ]
   );
 });
 
-test('the vendored Lists service exactly matches the pinned upstream Git blob', () => {
+test('the vendored Lists, To Do and Workspace modules match their pinned upstream Git blobs', () => {
   const result = verifyProductSourceLock();
-  assert.equal(result.verifiedCount, 2);
+  assert.equal(result.verifiedCount, 4);
   assert.equal(result.products[0].id, 'lists');
-  assert.deepEqual(result.products.map(product => product.id), ['lists', 'todo']);
+  assert.deepEqual(result.products.map(product => product.id), ['lists', 'todo', 'workspace-editor', 'workspace-service']);
   assert.ok(result.products.every(product => product.verified));
   assert.equal(
     calculateGitBlobSha(Buffer.from('hello\n', 'utf8')),
