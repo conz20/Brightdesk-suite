@@ -458,19 +458,18 @@ function renderGenericWorkspace() {
 function renderAppManager() {
   const grid = $('app-manager-grid'); grid.innerHTML = '';
   const home = state.view === 'home';
+  grid.hidden = !home;
   document.querySelector('.settings-toolbar').hidden = home;
   $('manager-bottom').hidden = home;
-  $('manager-title').textContent = home ? 'Your apps' : (state.setupComplete ? t('manager.manageTitle') : t('manager.chooseTitle'));
-  $('manager-description').textContent = home ? 'Everything you need, all in one place.' : (state.setupComplete
-    ? t('manager.manageDesc')
-    : t('manager.chooseDesc'));
-  $('manager-note').textContent = home ? 'Open any product below. Your work stays on this device.' : t('manager.note');
-  $('finish-app-setup').textContent = state.setupComplete ? t('manager.done') : t('manager.installSelected');
-  const query = home ? ($('app-centre-search')?.value.trim().toLowerCase() || '') : '';
-  catalog.filter(item => !query || `${item.name} ${item.subtitle} ${item.description}`.toLowerCase().includes(query)).forEach(item => {
-    const canInstall = item.availability === 'available';
-    const selected = state.firstRunSelection.has(item.id);
-    const isInstalled = installedApp(item.id);
+  $('manager-title').textContent = home ? 'Your apps' : 'Settings';
+  $('manager-description').textContent = home
+    ? 'All ten Brightdesk products, ready to open from one place.'
+    : 'Manage language resources and update preferences on this device.';
+  $('manager-note').textContent = 'All ten products are included in Brightdesk Office Suite. Separate product downloads are not published yet.';
+  $('finish-app-setup').textContent = 'Back to Home';
+  if (!home) return;
+  const query = $('app-centre-search')?.value.trim().toLowerCase() || '';
+  catalog.filter(item => item.availability === 'available' && (!query || `${item.name} ${item.subtitle} ${item.description}`.toLowerCase().includes(query))).forEach(item => {
     const card = document.createElement('article'); card.className = 'app-card'; card.dataset.appId = item.id;
     const preview = document.createElement('img'); preview.className = 'app-preview'; preview.src = `assets/apps/${item.id}.svg`; preview.alt = `${item.name} example screen`;
     const header = document.createElement('div'); header.className = 'app-card-header';
@@ -478,33 +477,16 @@ function renderAppManager() {
     const heading = document.createElement('div'); heading.className = 'app-card-heading';
     const name = document.createElement('b'); name.textContent = item.name;
     const subtitle = document.createElement('small'); subtitle.textContent = item.subtitle;
-    const stateChip = document.createElement('span'); stateChip.className = `app-status-chip ${!canInstall ? 'development' : (isInstalled ? 'installed' : 'available')}`;
-    stateChip.textContent = !canInstall ? 'In development' : (isInstalled ? 'Installed' : 'Available to install');
+    const stateChip = document.createElement('span'); stateChip.className = 'app-status-chip included';
+    stateChip.textContent = 'Included in Brightdesk Office Suite';
     heading.append(name, subtitle, stateChip); header.append(icon, heading);
     const description = document.createElement('p'); description.textContent = item.description;
     const footer = document.createElement('div'); footer.className = 'app-card-footer app-card-actions';
-    const version = document.createElement('span'); version.className = 'module-version'; version.textContent = `Module ${item.moduleVersion}`;
-    footer.append(version);
-    if (!canInstall) {
-      const comingSoon = document.createElement('span'); comingSoon.className = 'app-state'; comingSoon.textContent = 'In development'; footer.append(comingSoon);
-    } else if (!state.setupComplete) {
-      const label = document.createElement('label'); label.className = 'app-select-label';
-      const check = document.createElement('input'); check.type = 'checkbox'; check.checked = selected; check.addEventListener('change', () => {
-        if (check.checked) state.firstRunSelection.add(item.id); else state.firstRunSelection.delete(item.id);
-        renderAppManager();
-      });
-      label.append(check, document.createTextNode(` ${t('manager.includeApp')}`)); footer.append(label);
-    } else {
-      if (isInstalled) {
-        const open = document.createElement('button'); open.className = 'primary small-action app-install-action';
-        open.textContent = 'Open'; open.setAttribute('aria-label', `Open ${item.name}`);
-        open.addEventListener('click', () => setApp(item.id)); footer.append(open);
-      }
-      const action = document.createElement('button'); action.className = isInstalled ? 'secondary small-action app-install-action' : 'primary small-action app-install-action';
-      action.textContent = isInstalled ? 'Uninstall' : 'Install';
-      action.setAttribute('aria-label', `${isInstalled ? 'Uninstall' : 'Install'} ${item.name}`);
-      action.addEventListener('click', () => toggleAppInstall(item.id)); footer.append(action);
-    }
+    const availability = document.createElement('span'); availability.className = 'module-version'; availability.textContent = 'Ready to open';
+    const open = document.createElement('button'); open.className = 'primary small-action app-install-action';
+    open.textContent = 'Open'; open.setAttribute('aria-label', `Open ${item.name}`);
+    open.addEventListener('click', () => setApp(item.id));
+    footer.append(availability, open);
     card.append(preview, header, description, footer); grid.append(card);
   });
   if (!grid.children.length) {
@@ -539,7 +521,7 @@ function updateDocumentLanguage() {
 function syncAppNavigation() {
   const host = $('dynamic-app-nav'); if (!host) return;
   host.innerHTML = '';
-  catalog.filter(item => !['pages','sheets','slides','notes'].includes(item.id) && installedApp(item.id)).forEach(item => {
+  catalog.filter(item => !['pages','sheets','slides','notes'].includes(item.id)).forEach(item => {
     const button=document.createElement('button'); button.className='nav'; button.dataset.app=item.id;
     const icon=document.createElement('img'); icon.className='app-icon-image'; icon.src=appIconPath(item); icon.alt=''; icon.setAttribute('aria-hidden','true');
     const label=document.createElement('span'); const name=document.createElement('b'); name.textContent=item.name; const sub=document.createElement('small'); sub.textContent=item.subtitle;
@@ -815,9 +797,10 @@ function render() {
   }
   syncAppNavigation();
   document.querySelectorAll('.nav[data-app]').forEach(btn => {
-    const visible = launchAppId ? btn.dataset.app === launchAppId : installedApp(btn.dataset.app); btn.hidden = !visible; btn.classList.toggle('active', !manager && !home && !languages && btn.dataset.app === state.app);
+    const visible = launchAppId ? btn.dataset.app === launchAppId : true; btn.hidden = !visible; btn.classList.toggle('active', !manager && !home && !languages && btn.dataset.app === state.app);
   });
   $('open-home').classList.toggle('active', home);
+  $('back-to-home').hidden = Boolean(launchAppId) || home;
   $('open-home').hidden = Boolean(launchAppId);
   $('manage-apps').hidden = Boolean(launchAppId);
   $('open-settings').hidden = Boolean(launchAppId);
@@ -870,10 +853,11 @@ function importProject(data){
 function escapeHtml(value){return String(value).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));}
 async function openFile(){try{const data=await window.brightdesk.openFile();if(!data)return;importProject(data);persist();render();setStatus('File opened');}catch(error){alert(`Could not open file: ${error.message}`);}}
 async function saveProject(){try{const result=await window.brightdesk.saveProject({title:$('doc-title').value,docs:state.docs});if(!result?.canceled)setStatus('Project saved');}catch(error){alert(`Could not save project: ${error.message}`);}}
-function setApp(app){if((launchAppId && app !== launchAppId) || !(configs[app] || genericConfigs[app]) || !installedApp(app))return;state.app=app;state.view='workspace';state.ribbonTab='home';render();persist();}
+function setApp(app){const item=catalog.find(entry=>entry.id===app&&entry.availability==='available');if((launchAppId&&app!==launchAppId)||!item)return;state.app=app;state.view='workspace';state.ribbonTab='home';render();persist();}
 
 document.querySelectorAll('.nav[data-app]').forEach(btn=>btn.addEventListener('click',()=>setApp(btn.dataset.app)));
 $('open-home').addEventListener('click',()=>{if (launchAppId) return; state.view='home';render();});
+$('back-to-home').addEventListener('click',()=>{if (launchAppId) return; state.view='home';render();});
 $('app-centre-search').addEventListener('input',()=>{if(state.view==='home')renderAppManager();});
 $('manage-apps').addEventListener('click',()=>{if (launchAppId) return; state.view='manager';render();});
 $('open-settings').addEventListener('click',()=> $('manage-apps').click());
