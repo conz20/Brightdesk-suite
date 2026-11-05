@@ -74,14 +74,11 @@ jobs:
       - name: Verify exact Node.js runtime
         run: npm run check:node
 
-      - name: Prepare exact dependency lock
-        run: npm run lock:prepare
+      - name: Install locked dependencies
+        run: npm ci --no-audit --no-fund
 
       - name: Verify dependency lock
         run: npm run lock:verify
-
-      - name: Install locked dependencies
-        run: npm ci --no-audit --no-fund
 
       - name: Verify third-party licence notices
         run: npm run verify:licenses
@@ -151,11 +148,11 @@ jobs:
           name: brightdesk-dependency-lock
           path: .
 
-      - name: Verify dependency lock
-        run: npm run lock:verify
-
       - name: Install locked dependencies
         run: npm ci --no-audit --no-fund
+
+      - name: Verify dependency lock
+        run: npm run lock:verify
 
       - name: Verify third-party licence notices
         run: npm run verify:licenses
