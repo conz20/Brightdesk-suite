@@ -23,6 +23,16 @@
       "status": "verified-source-match"
     },
     {
+      "id": "planner-service",
+      "name": "Brightdesk Planner service",
+      "repository": "connormolloy12/Brightdesk-Planner",
+      "sourceRef": "main",
+      "sourcePath": "src/planner-service.js",
+      "suitePath": "src/planner-service.js",
+      "sourceBlobSha": "6b05218a71f0f0d63beebdf20decae5ea112f7fc",
+      "status": "verified-source-match"
+    },
+    {
       "id": "workspace-editor",
       "name": "Brightdesk Workspace editor",
       "repository": "connormolloy12/Brightdesk-Workspace",
