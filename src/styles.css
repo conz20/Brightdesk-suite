@@ -405,3 +405,20 @@ body,.main{background:var(--bd-canvas)}
 .welcome p{color:#64748A}
 .primary{background:#526FE0;border-color:#526FE0}
 .primary:hover{background:#344FBC;border-color:#344FBC}
+
+/* Final token alignment for the suite header and all shared surfaces. */
+:root{
+  --bd-ink:#202B3C;
+  --bd-text:#354256;
+  --bd-muted:#68778C;
+  --bd-surface:#FFFFFF;
+  --bd-surface-muted:#F8F9FB;
+  --bd-line:#DFE4EC;
+  --bd-line-soft:#EBEFF4;
+  --bd-positive:#16845B;
+}
+.top-save-button{background:#526FE0;border-color:#526FE0}
+.top-save-button:hover{background:#344FBC;border-color:#344FBC}
+.top-settings-button:hover,.top-notifications-button:hover{background:#EFF3FA;border-color:#CBD8EC;color:#344FBC}
+.top-notifications-button[aria-expanded="true"]{background:#EAF0FF;border-color:#C9D8FA;color:#344FBC;box-shadow:inset 0 0 0 1px #DCE7FF}
+.top-notifications-button:focus-visible,.top-settings-button:focus-visible,.top-save-button:focus-visible{outline:2px solid #526FE0;outline-offset:2px}
