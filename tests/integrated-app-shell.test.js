@@ -20,7 +20,7 @@ test('the suite opens on a visible app centre and provides a direct return from 
   assert.ok(app.includes("$('back-to-home').addEventListener('click'"));
 });
 test('all ten integrated products stay directly reachable from the sidebar and home cards',()=>{
-  assert.match(app,/btn\.hidden = launchAppId \? btn\.dataset\.app === launchAppId : false/);
+  assert.match(app,/const visible = launchAppId \? btn\.dataset\.app === launchAppId : true/);
   assert.match(app,/open\.textContent = 'Open'/);
   assert.match(app,/Included in Brightdesk Office Suite/);
   assert.match(app,/function setApp\(app\).*catalog\.some/);
