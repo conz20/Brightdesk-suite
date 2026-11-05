@@ -33,8 +33,8 @@ test('README freshness retains read-only repository access and full history', ()
 test('README freshness pins its checkout action to a full commit SHA', () => {
   assert.match(
     workflow,
-    /uses:\\s*actions\\/checkout@[0-9a-f]{40}\\b/,
+    /uses:\s*actions\/checkout@[0-9a-f]{40}\b/,
     'checkout must be pinned to an immutable full-length commit SHA'
   );
-  assert.doesNotMatch(workflow, /uses:\\s*actions\\/checkout@v[0-9]/);
+  assert.doesNotMatch(workflow, /uses:\s*actions\/checkout@v[0-9]/);
 });
