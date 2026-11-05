@@ -350,3 +350,21 @@ input:disabled, select:disabled, textarea:disabled, button:disabled { cursor: no
 .top-settings-button img{width:18px;height:18px;display:block}
 .top-settings-button:hover{background:#f4f3ff;border-color:#d8d5fb}
 .top-settings-button:focus-visible{outline:2px solid #7771e6;outline-offset:2px}
+
+
+/* Refined topbar actions: unmistakable save, notifications and Settings controls. */
+.top-actions{position:relative;gap:8px}
+.top-save-button{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:36px;padding:8px 13px;border:1px solid #4d49c5;border-radius:8px;background:#514dc9;color:#fff;font-size:12px;font-weight:650;letter-spacing:.005em}
+.top-save-button img{width:15px;height:15px;display:block;filter:brightness(0) invert(1)}
+.top-save-button:hover{background:#433fae}
+.top-notifications-button,.top-settings-button{width:38px;height:38px;display:inline-grid;place-items:center;flex:0 0 38px;padding:0;border:1px solid #dfe4ed;border-radius:10px;background:#fff;color:#53627b;cursor:pointer;transition:background .16s ease,border-color .16s ease,color .16s ease,box-shadow .16s ease}
+.top-notifications-button img,.top-settings-button img{width:19px;height:19px;display:block}
+.top-notifications-button:hover,.top-settings-button:hover{background:#f3f2ff;border-color:#d5d2fb;color:#4e49bd}
+.top-notifications-button:focus-visible,.top-settings-button:focus-visible,.top-save-button:focus-visible{outline:3px solid #b8b4ff;outline-offset:2px}
+.top-notifications-button[aria-expanded="true"]{background:#efeeff;border-color:#c9c5f7;color:#4944b8;box-shadow:inset 0 0 0 1px #dedbff}
+.notification-popover{position:absolute;z-index:20;top:calc(100% + 10px);right:46px;width:min(320px,calc(100vw - 32px));padding:17px 18px;border:1px solid #dfe4ed;border-radius:12px;background:#fff;box-shadow:0 14px 36px #1e2d481c;color:#29364d}
+.notification-popover[hidden]{display:none}
+.notification-popover b{display:block;font-size:13px;font-weight:700;letter-spacing:-.01em}
+.notification-popover p{margin:14px 0 5px;color:#34445d;font-size:12px;font-weight:650}
+.notification-popover small{display:block;color:#7b879a;font-size:11px;line-height:1.5}
+@media(max-width:700px){.top-actions{width:100%;justify-content:flex-start}.notification-popover{right:0}}
