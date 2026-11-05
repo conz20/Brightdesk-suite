@@ -21,6 +21,7 @@ test('legacy single-product selection migrates to all ten integrated products', 
   assert.deepEqual(setup.installedApps, suiteIds);
   assert.equal(setup.setupComplete, true);
   assert.equal(setup.schemaVersion, 3);
+  assert.equal(setup.initialView, 'home');
 });
 
 test('older version-2 suite selections migrate to all ten products', () => {
@@ -32,6 +33,7 @@ test('older version-2 suite selections migrate to all ten products', () => {
   assert.deepEqual(setup.installedApps, suiteIds);
   assert.equal(setup.setupComplete, true);
   assert.equal(setup.schemaVersion, 3);
+  assert.equal(setup.initialView, 'home');
 });
 
 test('version-3 suite preferences are retained after migration', () => {
@@ -43,6 +45,7 @@ test('version-3 suite preferences are retained after migration', () => {
   assert.deepEqual(setup.installedApps, ['pages','sheets']);
   assert.equal(setup.setupComplete, true);
   assert.equal(setup.schemaVersion, 3);
+  assert.equal(setup.initialView, 'home');
 });
 
 test('single-product builds remain restricted to their selected product', () => {
@@ -50,4 +53,5 @@ test('single-product builds remain restricted to their selected product', () => 
   assert.deepEqual(setup.installedApps, ['sheets']);
   assert.equal(setup.setupComplete, true);
   assert.equal(setup.schemaVersion, 3);
+  assert.equal(setup.initialView, 'workspace');
 });
