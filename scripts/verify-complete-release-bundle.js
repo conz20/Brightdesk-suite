@@ -3,7 +3,7 @@
 
 const fs = require('node:fs');
 const path = require('node:path');
-const { PRODUCTS, PLATFORMS, expectedProductFiles, requireNonEmptyFile, verifyChecksumManifest } = require('./verify-product-installers');
+const { PRODUCTS, PLATFORMS, resolveProductFiles, requireNonEmptyFile, verifyChecksumManifest } = require('./verify-product-installers');
 
 const SUITE_LEGAL_FILES = Object.freeze({
   win: [
@@ -110,7 +110,7 @@ function verifyProductPlatform({ releaseDir, platform, version }) {
   let productInstallerCount = 0;
   for (const productId of expectedIds) {
     const productDirectory = path.join(directory, productId);
-    const files = expectedProductFiles(productId, platform, version);
+    const files = resolveProductFiles(productDirectory, productId, platform, version);
     const manifestName = `Brightdesk-${productId}-SHA256SUMS-${platform.toUpperCase()}.txt`;
     verifyChecksumManifest({
       directory: productDirectory,
