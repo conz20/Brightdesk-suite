@@ -57,7 +57,66 @@ function expectedSuiteFiles({ directory, platform, version }) {
     required.unshift(
       requireExactlyOneMatch(
         directory,
-        new RegExp(`^Brightdesk-Office-Suite-${escaped}-(?:x64|x86_64)\\.AppImage$`),
+        new RegExp(`^(?:Brightdesk-Office-Suite|brightdesk-office-suite)-${escaped}-(?:x64|x86_64)\\.AppImage#!/usr/bin/env node
+'use strict';
+
+const fs = require('node:fs');
+const path = require('node:path');
+const { PRODUCTS, PLATFORMS, resolveProductFiles, requireNonEmptyFile, verifyChecksumManifest } = require('./verify-product-installers');
+
+const SUITE_LEGAL_FILES = Object.freeze({
+  win: [
+    'Brightdesk-Windows-TERMS_AND_CONDITIONS.txt',
+    'Brightdesk-Windows-LICENSE.txt',
+    'Brightdesk-Windows-THIRD_PARTY_NOTICES.md'
+  ],
+  mac: [
+    'Brightdesk-macOS-TERMS_AND_CONDITIONS.txt',
+    'Brightdesk-macOS-LICENSE.txt',
+    'Brightdesk-macOS-THIRD_PARTY_NOTICES.md'
+  ],
+  linux: [
+    'Brightdesk-Linux-TERMS_AND_CONDITIONS.txt',
+    'Brightdesk-Linux-LICENSE.txt',
+    'Brightdesk-Linux-THIRD_PARTY_NOTICES.md',
+    'Brightdesk-Install-Linux.sh'
+  ]
+});
+
+function escapeRegExp(value) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+function requireExactlyOneMatch(directory, pattern, label) {
+  const matches = fs.readdirSync(directory, { withFileTypes: true })
+    .filter(entry => entry.isFile() && pattern.test(entry.name))
+    .map(entry => entry.name);
+  if (matches.length !== 1) {
+    throw new Error(`Expected exactly one ${label}; found ${matches.length}: ${matches.join(', ') || 'none'}.`);
+  }
+  return matches[0];
+}
+
+function expectedSuiteFiles({ directory, platform, version }) {
+  const escaped = escapeRegExp(version);
+  const required = [...SUITE_LEGAL_FILES[platform]];
+  if (platform === 'win') {
+    required.unshift(requireExactlyOneMatch(
+      directory,
+      new RegExp(`^Brightdesk-Office-Suite-${escaped}-x64\\.exe$`),
+      'Windows Brightdesk Office Suite x64 installer'
+    ));
+  } else if (platform === 'mac') {
+    required.unshift(
+      `Brightdesk-Office-Suite-${version}-universal.dmg`,
+      `Brightdesk-Office-Suite-${version}-universal.pkg`,
+      `Brightdesk-Office-Suite-${version}-universal.zip`
+    );
+  } else {
+    required.unshift(
+      requireExactlyOneMatch(
+        directory,
+        ),
         'Linux Brightdesk Office Suite AppImage'
       ),
       requireExactlyOneMatch(
