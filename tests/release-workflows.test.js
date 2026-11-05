@@ -63,6 +63,23 @@ test('daily quality workflow uses hosted Ubuntu and never publishes a release', 
   assert.equal(workflow.includes('self-hosted'), false);
 });
 
+test('third-party notices workflow installs from and verifies the committed dependency lock', () => {
+  const workflow = read('.github/workflows/generate-third-party-notices.yml');
+  assert.match(workflow, /node-version: 24\\.22\\.2/);
+  assert.doesNotMatch(workflow, /npm run lock:prepare/);
+  const requiredOrder = [
+    'npm ci --ignore-scripts --no-audit --no-fund',
+    'npm run lock:verify',
+    'npm run verify:licenses'
+  ];
+  let previousIndex = -1;
+  for (const command of requiredOrder) {
+    const currentIndex = workflow.indexOf(command);
+    assert.ok(currentIndex > previousIndex, 'notices workflow runs ' + command + ' in order');
+    previousIndex = currentIndex;
+  }
+});
+
 test('installer workflow builds suite and all ten standalone apps on native hosted runners', () => {
   const workflow = read('.github/workflows/build-release.yml');
   assert.ok(workflow.includes('runs-on: ${{ matrix.runner }}'));
