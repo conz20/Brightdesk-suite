@@ -155,7 +155,7 @@ test('complete bundle verification rejects unsafe checksum paths', () => {
     const directory = path.join(fixture.release, 'Linux');
     const manifest = path.join(directory, SUITE_MANIFESTS.linux);
     const original = fs.readFileSync(manifest, 'utf8');
-    fs.writeFileSync(manifest, original.replace(/  [^\\n]+/, '  ../outside.AppImage'));
+    fs.writeFileSync(manifest, original.replace(/  [^\n]+/, '  ../outside.AppImage'));
     assert.throws(
       () => verifyCompleteReleaseBundle({ releaseDir: fixture.release, version: VERSION }),
       /invalid|unsafe.*checksum|manifest row/i
