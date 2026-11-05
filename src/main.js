@@ -9,6 +9,7 @@ const { openOfficeFile, exportOfficeFile, cleanFileName, ensureExtension } = req
 const { BUILTIN_LANGUAGES, validateLanguagePack, getBuiltinLanguage } = require('./language-service');
 const { DictionaryService } = require('./dictionary-service');
 const { DEFAULT_UPDATE_SETTINGS, normalizeUpdateSettings, getUpdaterPreferences } = require('./update-policy');
+const { shouldRequireFirstLaunchTerms } = require('./installer-terms-policy');
 let mainWindow;
 let agreementWindow;
 let termsAccepted = false;
@@ -417,7 +418,8 @@ app.whenReady().then(async () => {
     await runPackagedStartupSmokeTest();
     return;
   }
-  termsAccepted = await hasCurrentTermsAcceptance();
+  const requireFirstLaunchTerms = shouldRequireFirstLaunchTerms({ platform: process.platform, isPackaged: app.isPackaged });
+  termsAccepted = requireFirstLaunchTerms ? await hasCurrentTermsAcceptance() : true;
   if (termsAccepted) { createWindow(); initUpdater(); } else { createAgreementWindow(); }
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) {
