@@ -21,6 +21,26 @@
       "suitePath": "src/todo-service.js",
       "sourceBlobSha": "34e048b651dfdd50cb8b3292c660e1dbd57fe7f8",
       "status": "verified-source-match"
+    },
+    {
+      "id": "workspace-editor",
+      "name": "Brightdesk Workspace editor",
+      "repository": "connormolloy12/Brightdesk-Workspace",
+      "sourceRef": "main",
+      "sourcePath": "src/workspace-editor.js",
+      "suitePath": "src/workspace-editor.js",
+      "sourceBlobSha": "2cd96b879c7b90da1df66dee7fc2a2c319b53781",
+      "status": "verified-source-match"
+    },
+    {
+      "id": "workspace-service",
+      "name": "Brightdesk Workspace service",
+      "repository": "connormolloy12/Brightdesk-Workspace",
+      "sourceRef": "main",
+      "sourcePath": "src/workspace-service.js",
+      "suitePath": "src/workspace-service.js",
+      "sourceBlobSha": "a5a73ac3b727064f43fde0a14320fe2f594a5ba7",
+      "status": "verified-source-match"
     }
   ]
 }
