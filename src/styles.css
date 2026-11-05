@@ -343,3 +343,10 @@ input:disabled, select:disabled, textarea:disabled, button:disabled { cursor: no
 }
 
 .app-card-actions .module-version { margin-right: auto; }
+
+
+/* Accessible top-right shortcut to the existing suite Settings area. */
+.top-settings-button{width:34px;height:34px;display:inline-grid;place-items:center;padding:0;border:1px solid #e5e6ee;border-radius:7px;background:#fff;cursor:pointer;flex:0 0 auto}
+.top-settings-button img{width:18px;height:18px;display:block}
+.top-settings-button:hover{background:#f4f3ff;border-color:#d8d5fb}
+.top-settings-button:focus-visible{outline:2px solid #7771e6;outline-offset:2px}
