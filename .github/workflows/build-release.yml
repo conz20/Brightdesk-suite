@@ -104,16 +104,16 @@ jobs:
 
       - name: Build suite installer
         env:
-          WIN_CSC_LINK: ${{ github.event_name != 'pull_request' && matrix.platform == 'Windows' && secrets.WIN_CSC_LINK || '' }}
-          MAC_APP_CSC_LINK: ${{ github.event_name != 'pull_request' && matrix.platform == 'macOS' && secrets.MAC_APP_CSC_LINK || '' }}
-          MAC_INSTALLER_CSC_LINK: ${{ github.event_name != 'pull_request' && matrix.platform == 'macOS' && secrets.MAC_INSTALLER_CSC_LINK || '' }}
-          CSC_LINK: ${{ github.event_name != 'pull_request' && matrix.platform == 'Windows' && secrets.WIN_CSC_LINK || github.event_name != 'pull_request' && matrix.platform == 'macOS' && secrets.MAC_APP_CSC_LINK || '' }}
-          CSC_KEY_PASSWORD: ${{ github.event_name != 'pull_request' && matrix.platform == 'Windows' && secrets.WIN_CSC_KEY_PASSWORD || github.event_name != 'pull_request' && matrix.platform == 'macOS' && secrets.MAC_APP_CSC_KEY_PASSWORD || '' }}
-          CSC_INSTALLER_LINK: ${{ github.event_name != 'pull_request' && matrix.platform == 'macOS' && secrets.MAC_INSTALLER_CSC_LINK || '' }}
-          CSC_INSTALLER_KEY_PASSWORD: ${{ github.event_name != 'pull_request' && matrix.platform == 'macOS' && secrets.MAC_INSTALLER_CSC_KEY_PASSWORD || '' }}
-          APPLE_ID: ${{ github.event_name != 'pull_request' && matrix.platform == 'macOS' && secrets.APPLE_ID || '' }}
-          APPLE_APP_SPECIFIC_PASSWORD: ${{ github.event_name != 'pull_request' && matrix.platform == 'macOS' && secrets.APPLE_APP_SPECIFIC_PASSWORD || '' }}
-          APPLE_TEAM_ID: ${{ github.event_name != 'pull_request' && matrix.platform == 'macOS' && secrets.APPLE_TEAM_ID || '' }}
+          WIN_CSC_LINK: ${{ github.ref == 'refs/heads/main' && matrix.platform == 'Windows' && secrets.WIN_CSC_LINK || '' }}
+          MAC_APP_CSC_LINK: ${{ github.ref == 'refs/heads/main' && matrix.platform == 'macOS' && secrets.MAC_APP_CSC_LINK || '' }}
+          MAC_INSTALLER_CSC_LINK: ${{ github.ref == 'refs/heads/main' && matrix.platform == 'macOS' && secrets.MAC_INSTALLER_CSC_LINK || '' }}
+          CSC_LINK: ${{ github.ref == 'refs/heads/main' && matrix.platform == 'Windows' && secrets.WIN_CSC_LINK || github.ref == 'refs/heads/main' && matrix.platform == 'macOS' && secrets.MAC_APP_CSC_LINK || '' }}
+          CSC_KEY_PASSWORD: ${{ github.ref == 'refs/heads/main' && matrix.platform == 'Windows' && secrets.WIN_CSC_KEY_PASSWORD || github.ref == 'refs/heads/main' && matrix.platform == 'macOS' && secrets.MAC_APP_CSC_KEY_PASSWORD || '' }}
+          CSC_INSTALLER_LINK: ${{ github.ref == 'refs/heads/main' && matrix.platform == 'macOS' && secrets.MAC_INSTALLER_CSC_LINK || '' }}
+          CSC_INSTALLER_KEY_PASSWORD: ${{ github.ref == 'refs/heads/main' && matrix.platform == 'macOS' && secrets.MAC_INSTALLER_CSC_KEY_PASSWORD || '' }}
+          APPLE_ID: ${{ github.ref == 'refs/heads/main' && matrix.platform == 'macOS' && secrets.APPLE_ID || '' }}
+          APPLE_APP_SPECIFIC_PASSWORD: ${{ github.ref == 'refs/heads/main' && matrix.platform == 'macOS' && secrets.APPLE_APP_SPECIFIC_PASSWORD || '' }}
+          APPLE_TEAM_ID: ${{ github.ref == 'refs/heads/main' && matrix.platform == 'macOS' && secrets.APPLE_TEAM_ID || '' }}
         shell: bash
         run: |
           if [ -z "${CSC_LINK:-}" ]; then unset CSC_LINK CSC_KEY_PASSWORD; fi
@@ -212,7 +212,7 @@ jobs:
   publish-release:
     name: Publish GitHub Release (manual approval only)
     needs: collect
-    if: github.event_name == 'workflow_dispatch' && inputs.publish_release == true
+    if: github.event_name == 'workflow_dispatch' && inputs.publish_release == true && github.ref == 'refs/heads/main'
     # Publishing remains manual and uses the private runner too.
     runs-on: self-hosted
     timeout-minutes: 15
