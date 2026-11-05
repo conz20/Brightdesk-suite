@@ -15,18 +15,26 @@ jobs:
       - name: Check out pull request
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.pull_request.head.sha }}
           fetch-depth: 0
 
       - name: Require a root README update for non-Markdown changes
         shell: bash
         env:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
-          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
         run: |
           set -euo pipefail
 
-          mapfile -t changed_files < <(git diff --name-only "${BASE_SHA}...${HEAD_SHA}")
+          if [[ -z "${BASE_SHA:-}" ]]; then
+            echo "::error::The pull request base SHA is unavailable."
+            exit 1
+          fi
+
+          if [[ ! -f README.md ]]; then
+            echo "::error::The repository root README.md is missing."
+            exit 1
+          fi
+
+          mapfile -t changed_files < <(git diff --name-only "${BASE_SHA}...HEAD")
 
           if (( ${#changed_files[@]} == 0 )); then
             echo "No changed files were found. README freshness check passed."
