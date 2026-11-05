@@ -41,3 +41,11 @@ This is module-level source parity only. It does not establish complete UI-shell
 ## Branch synchronization blocker — 5 November 2026
 
 Suite PR #60 branch `fix/all-ten-products-after-upgrade` is 108 commits ahead and 9 commits behind the current `main` branch in the latest GitHub comparison. GitHub reports the PR as not mergeable. The branch needs a non-destructive update/rebase and conflict resolution, followed by current-head Node.js 24.22.2 validation. Do not force-push, force-merge or discard existing changes. The connected GitHub actions available in this session do not expose a safe branch-update/rebase operation; perform this reconciliation in the existing local worktree after checking its status and preserving all uncommitted changes.
+
+## macOS universal packaging compatibility — 5 November 2026
+
+The user ran `npm run dist:mac` in `Brightdesk-suite-pr60-verification` on macOS. The Rust Node-API addon compiled for x64 and arm64, and licence verification passed for 511 installed packages. Both architecture-specific Electron packaging steps completed. The universal merge then failed in `@electron/asar` 3.4.1 with `(0, minimatch_1.default) is not a function`. The lockfile shows the security-patched `minimatch` 11 override intended for `app-builder-lib` is also reaching the older ASAR dependency during universal ASAR merge. Do not downgrade to the vulnerable older minimatch line as a workaround.
+
+A regression test was added to require `build.mac.mergeASARs === false`, keep ASAR enabled, and keep `native/brightdesk_engine.node` in `asarUnpack`. The macOS build configuration now disables ASAR merging while retaining the universal x64+arm64 target. The shared JavaScript/resources stay packaged in ASAR; the Rust native addon remains outside it. Root README and cross-platform release contract document this platform-specific packaging choice.
+
+This is a mitigation awaiting local proof, not a completed build fix. The user must pull the updated PR #60 branch, run the focused/full tests, rerun `npm run dist:mac`, and then `npm run release:verify:mac`. Do not call the macOS installer verified until the DMG, PKG, ZIP, terms, MIT licence and third-party notices are all produced and accepted by the artifact verifier. Then launch-test the universal app. PR #60 remains draft and unmerged.
