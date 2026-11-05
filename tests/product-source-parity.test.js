@@ -38,10 +38,10 @@ test('the source parity check rejects upstream paths outside the repository', ()
   }
 });
 
-test('the product source lock records all eight pinned modules across seven product repositories', () => {
+test('the product source lock records all ten pinned modules across eight product repositories', () => {
   const lock = loadProductSourceLock();
   assert.equal(lock.schemaVersion, 1);
-  assert.equal(lock.products.length, 8);
+  assert.equal(lock.products.length, 10);
   const actualProducts = lock.products.map(product => ({
     id: product.id,
     name: product.name,
@@ -52,6 +52,24 @@ test('the product source lock records all eight pinned modules across seven prod
     sourceBlobSha: product.sourceBlobSha
   })).sort((a, b) => a.id.localeCompare(b.id));
   const expectedProducts = [
+      {
+        id: 'database-service',
+        name: 'Brightdesk Database service',
+        repository: 'connormolloy12/Brightdesk-Database',
+        sourceRef: '8a1e8a50329b90a68e2062b85a34ae052c831dc3',
+        sourcePath: 'src/database-service.js',
+        suitePath: 'src/database-service.js',
+        sourceBlobSha: 'd879ab20878c3ed838cf6cf56020fd3c4695834b'
+      },
+      {
+        id: 'database-workspace',
+        name: 'Brightdesk Database workspace',
+        repository: 'connormolloy12/Brightdesk-Database',
+        sourceRef: '8a1e8a50329b90a68e2062b85a34ae052c831dc3',
+        sourcePath: 'src/database-workspace.js',
+        suitePath: 'src/database-workspace.js',
+        sourceBlobSha: 'f7ba29971887321b931bdc013291d90c502a5e0b'
+      },
       {
         id: 'lists',
         name: 'Brightdesk Lists',
@@ -128,12 +146,12 @@ test('the product source lock records all eight pinned modules across seven prod
   assert.deepEqual(actualProducts, expectedProducts);
 });
 
-test('the vendored Pages, Sheets, Forms, Lists, To Do, Planner and Workspace modules match their pinned upstream Git blobs', () => {
+test('the vendored Database, Pages, Sheets, Forms, Lists, To Do, Planner and Workspace modules match their pinned upstream Git blobs', () => {
   const result = verifyProductSourceLock();
-  assert.equal(result.verifiedCount, 8);
+  assert.equal(result.verifiedCount, 10);
   assert.deepEqual(
     result.products.map(product => product.id).sort(),
-    ['forms-service', 'lists', 'pages-layout', 'planner-service', 'sheets-formula', 'todo', 'workspace-editor', 'workspace-service']
+    ['database-service', 'database-workspace', 'forms-service', 'lists', 'pages-layout', 'planner-service', 'sheets-formula', 'todo', 'workspace-editor', 'workspace-service']
   );
   assert.ok(result.products.every(product => product.verified));
   assert.equal(
