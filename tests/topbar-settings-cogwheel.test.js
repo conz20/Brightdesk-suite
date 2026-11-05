@@ -17,9 +17,13 @@ test('top-right controls clearly identify notifications, saving and Settings', (
   assert.match(html, /id="open-notifications"[\s\S]*?assets\/icons\/notifications\.svg/);
   assert.match(html, /id="notification-panel"[\s\S]*?No new notifications/);
   assert.match(html, /id="save-project"[\s\S]*?assets\/icons\/save\.svg[\s\S]*?Save/);
-  const saveButton = html.match(/<button[^>]*id="save-project"[^>]*>[\\s\\S]*?<\\/button>/)?.[0] || '';
-  assert.doesNotMatch(saveButton, /<button[^>]*data-i18n=/, 'translation must not replace the entire button and remove its icon');
-  assert.match(saveButton, /<span data-i18n="top\\.saveProject">Save project<\\/span>/);
+  const saveButtonStart = html.indexOf('<button class="primary top-save-button" id="save-project"');
+  const saveButtonEnd = html.indexOf('</button>', saveButtonStart);
+  const saveButton = html.slice(saveButtonStart, saveButtonEnd + 9);
+  const saveButtonOpenTag = saveButton.slice(0, saveButton.indexOf('>'));
+  assert.ok(saveButtonStart >= 0 && saveButtonEnd > saveButtonStart, 'Save button markup must exist');
+  assert.ok(!saveButtonOpenTag.includes('data-i18n='), 'translation must not replace the entire button and remove its icon');
+  assert.ok(saveButton.includes('<span data-i18n="top.saveProject">Save project</span>'));
   assert.match(html, /id="open-settings"[^>]*aria-label="Open Brightdesk settings"/);
   assert.match(html, /id="open-settings"[\s\S]*?assets\/icons\/settings\.svg/);
   assert.match(app, /\$\('open-notifications'\)\.addEventListener\('click'/);
