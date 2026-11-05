@@ -63,7 +63,7 @@ test('signing and notarisation secrets are limited to main and the matching plat
   for (const secret of ['CSC_LINK', 'CSC_KEY_PASSWORD', 'CSC_INSTALLER_LINK', 'CSC_INSTALLER_KEY_PASSWORD', 'APPLE_ID', 'APPLE_APP_SPECIFIC_PASSWORD', 'APPLE_TEAM_ID']) {
     const line = buildStep.split('\n').find((item) => item.trimStart().startsWith(`${secret}:`));
     assert.ok(line, `${secret} is configured for the build step`);
-    assert.match(line, /github\.ref == 'refs\\/heads\\/main'/, `${secret} is available only on main`);
+    assert.match(line, /github\.ref == 'refs\/heads\/main'/, `${secret} is available only on main`);
     assert.doesNotMatch(line, /github\.event_name != 'pull_request'/);
   }
   const installerCert = buildStep.split('\n').find((item) => item.trimStart().startsWith('CSC_INSTALLER_LINK:'));
@@ -74,7 +74,7 @@ test('signing and notarisation secrets are limited to main and the matching plat
 
 test('release publishing is manual, disabled by default, and main-only', () => {
   const workflow = read('.github/workflows/build-release.yml');
-  assert.match(workflow, /publish_release:\\s*[\\s\\S]*?default: false/);
+  assert.match(workflow, /publish_release:\s*[\s\S]*?default: false/);
   assert.ok(workflow.includes("if: github.event_name == 'workflow_dispatch' && inputs.publish_release == true && github.ref == 'refs/heads/main'"));
 });
 
