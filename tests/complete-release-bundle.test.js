@@ -30,7 +30,7 @@ function writeManifest(directory, filename, files) {
     const bytes = fs.readFileSync(path.join(directory, file));
     return `${crypto.createHash('sha256').update(bytes).digest('hex')}  ${file}`;
   });
-  writeFile(directory, filename, `${rows.join('\\n')}\\n`);
+  writeFile(directory, filename, `${rows.join('\n')}\n`);
 }
 
 function createCompleteBundle() {
