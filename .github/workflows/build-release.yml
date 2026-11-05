@@ -151,19 +151,22 @@ jobs:
         if: matrix.platform == 'macOS'
         run: npm run release:verify:mac
 
-      - name: Place verified files in platform folder
-        shell: bash
-        env:
-          BRIGHTDESK_PLATFORM: ${{ matrix.platform }}
-        run: |
-          mkdir -p "release/$BRIGHTDESK_PLATFORM"
-          node -e "const fs=require('node:fs');const p=require('node:path');const root='release';const dest=p.join(root,process.env.BRIGHTDESK_PLATFORM);for(const name of fs.readdirSync(root)){if(name===process.env.BRIGHTDESK_PLATFORM)continue;const source=p.join(root,name);if(fs.statSync(source).isFile())fs.renameSync(source,p.join(dest,name));}"
+      - name: Build all ten product installers on this native platform
+        run: npm run dist:products:${{ matrix.script }}
+
+      - name: Verify all ten product installers and their SHA-256 manifests
+        run: npm run release:verify:products:${{ matrix.script }}
+
+      - name: Collect Suite and product outputs into the native platform bundle
+        run: node scripts/collect-platform-build.js ${{ matrix.script }}
 
       - name: Upload verified platform build
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: brightdesk-${{ matrix.platform }}
-          path: release/${{ matrix.platform }}/**
+          path: |
+            release/${{ matrix.platform }}/**
+            release/apps/${{ matrix.platform }}/**
           if-no-files-found: error
           retention-days: 14
 
@@ -174,6 +177,14 @@ jobs:
     outputs:
       version: ${{ steps.release-version.outputs.version }}
     steps:
+      - name: Check out the exact release candidate
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+
+      - name: Set up Node.js for final bundle verification
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 24.22.2
+
       - name: Download verified Linux build
         uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
         with:
@@ -204,11 +215,14 @@ jobs:
           VERSION="$(node -p "require('./package.json').version")"
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
 
+      - name: Verify all 66 Suite and product installer/archive files and transferred checksums
+        run: npm run release:verify:complete -- release
+
       - name: Upload complete Brightdesk installer bundle
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: Brightdesk-${{ steps.release-version.outputs.version }}-Installers
-          path: release/**/**
+          path: release/**
           if-no-files-found: error
           retention-days: 30
 
