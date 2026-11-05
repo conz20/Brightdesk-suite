@@ -11,6 +11,33 @@ const {
   verifyProductSourceLock
 } = require('../scripts/product-source-lock');
 
+
+test('the source parity check rejects upstream paths outside the repository', () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'brightdesk-upstream-path-'));
+  try {
+    fs.mkdirSync(path.join(root, 'docs'), { recursive: true });
+    fs.mkdirSync(path.join(root, 'src'), { recursive: true });
+    fs.writeFileSync(
+      path.join(root, 'docs', 'PRODUCT_SOURCE_LOCK.json'),
+      JSON.stringify({
+        schemaVersion: 1,
+        products: [{
+          id: 'lists',
+          name: 'Brightdesk Lists',
+          repository: 'connormolloy12/Brightdesk-Lists',
+          sourceRef: 'main',
+          sourcePath: '../private.js',
+          suitePath: 'src/lists-service.js',
+          sourceBlobSha: 'ae3aebadd3194af4846c80fe58a2f1c98c88c57f'
+        }]
+      })
+    );
+    assert.throws(() => verifyProductSourceLock({ root }), /repository-relative/i);
+  } finally {
+    fs.rmSync(root, { recursive: true, force: true });
+  }
+});
+
 test('the product source lock records Lists against its individual repository source', () => {
   const lock = loadProductSourceLock();
   assert.equal(lock.schemaVersion, 1);
