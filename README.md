@@ -63,7 +63,7 @@ This table describes the first-use scope represented in source code. It is not a
 
 The concept previews in the product repositories are not genuine screenshots. The older `assets/hero-showcase.png` file is a composed promotional collage, not a capture of the current running suite; it is intentionally not used as evidence of working screens. No verified screenshot set from the current running desktop build is published yet. Do not treat concept artwork, prototype package screens or the older v0.1.0 source archive as proof of current desktop behaviour.
 
-A genuine screenshot should be captured directly from the current Electron build after launching the product and checking its primary workflow. The capture must show the real interface without composited controls or fabricated UI. Use non-sensitive sample data, retain the full product window, and label the image with the tested build or commit. See the [visual standard](docs/BRIGHTDESK_VISUAL_STANDARD.md).
+A genuine screenshot should be captured directly from the current Electron build after launching the product and checking its primary workflow. The capture must show the real interface without composited controls or fabricated UI. Use non-sensitive sample data, retain the full product window, and label the image with the tested build or commit. See the [visual and interaction standard](docs/BRIGHTDESK_VISUAL_STANDARD.md) and its [machine-readable approved design contract](docs/BRIGHTDESK_DESIGN_CONTRACT.json), which locks the shared Brightdesk shell tokens and all ten original product icon/accent identities.
 
 ## Local-first desktop software
 
