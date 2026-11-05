@@ -47,20 +47,19 @@ jobs:
             exit 1
           fi
 
-          mapfile -t changed_files < <(git diff --name-only "$DIFF_RANGE")
+          changed_files="$(git diff --name-only "$DIFF_RANGE")"
 
-          if (( ${#changed_files[@]} == 0 )); then
+          if [[ -z "$changed_files" ]]; then
             echo "No changed files were found. README freshness check passed."
             exit 0
           fi
 
-          printf 'Changed files:\n'
-          printf '  %s\n' "${changed_files[@]}"
+          printf 'Changed files:\n%s\n' "$changed_files"
 
           readme_changed=false
           non_markdown_changed=false
 
-          for file in "${changed_files[@]}"; do
+          while IFS= read -r file; do
             if [[ "$file" == "README.md" ]]; then
               readme_changed=true
             fi
@@ -72,7 +71,9 @@ jobs:
                 non_markdown_changed=true
                 ;;
             esac
-          done
+          done <<EOF
+          $changed_files
+          EOF
 
           if [[ "$non_markdown_changed" == "true" && "$readme_changed" != "true" ]]; then
             echo "::error::This change includes code, tests, UI, assets, icons, configuration, dependencies, or build/release files but does not update the repository root README.md."
