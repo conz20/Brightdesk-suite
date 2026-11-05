@@ -22,6 +22,15 @@ test('every app has a unique id, release version and user-facing details', () =>
 });
 
 
+test('Electron package entry points to the real integrated main process', () => {
+  const fs = require('node:fs');
+  const path = require('node:path');
+  const root = path.join(__dirname, '..');
+  const pkg = JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8'));
+  assert.equal(pkg.main, 'src/main.js');
+  assert.ok(fs.existsSync(path.join(root, pkg.main)), 'Electron main entry must exist inside the packaged source tree');
+});
+
 test('first release version is consistently 0.1.0 across package, available apps and shell', () => {
   const fs = require('node:fs');
   const path = require('node:path');
