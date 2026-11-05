@@ -208,20 +208,22 @@ A direct blob comparison between the individual product repositories' documented
 
 The Planner difference in the original `main` snapshot was that the Suite caught local-storage write errors and displayed a clear failure status, while the individual repository did not. [Brightdesk Planner PR #3](https://github.com/connormolloy12/Brightdesk-Planner/pull/3) now proposes the same error handling and adds a focused failure regression test. The current draft Planner branch and Suite integration branch both resolve `src/planner-workspace.js` to blob SHA `88b9f66e3a04d952f2958fd2a0075fad11dfc30d`. This is source parity evidence, not a claim that PR #3 has merged or passed its full CI and packaged-app checks.
 
-### First source-parity pilot — Lists and To Do
+### Source-parity pilot — Lists, To Do and Workspace
 
-The Suite now has pinned, automated parity checks for two individual-product service modules:
+The Suite now has pinned, automated parity checks for four feature modules across three individual product repositories:
 
 | Product | Canonical repository | Source file | Suite vendor file | Pinned upstream Git blob |
 | --- | --- | --- | --- | --- |
 | Lists | [Brightdesk-Lists](https://github.com/connormolloy12/Brightdesk-Lists) | `src/lists-service.js` | `src/lists-service.js` | `ae3aebadd3194af4846c80fe58a2f1c98c88c57f` |
 | To Do | [Brightdesk-To-Do](https://github.com/connormolloy12/Brightdesk-To-Do) | `src/todo-service.js` | `src/todo-service.js` | `34e048b651dfdd50cb8b3292c660e1dbd57fe7f8` |
+| Workspace | [Brightdesk-Workspace](https://github.com/connormolloy12/Brightdesk-Workspace) | `src/workspace-editor.js` | `src/workspace-editor.js` | `2cd96b879c7b90da1df66dee7fc2a2c319b53781` |
+| Workspace | [Brightdesk-Workspace](https://github.com/connormolloy12/Brightdesk-Workspace) | `src/workspace-service.js` | `src/workspace-service.js` | `a5a73ac3b727064f43fde0a14320fe2f594a5ba7` |
 
-Both canonical source references are their product repositories' `main` branches. The lock record is [docs/PRODUCT_SOURCE_LOCK.json](PRODUCT_SOURCE_LOCK.json), and the verification command is `npm run verify:product-sources`.
+All four canonical source references are pinned to their product repositories' `main` branches. The lock record is [docs/PRODUCT_SOURCE_LOCK.json](PRODUCT_SOURCE_LOCK.json), and the verification command is `npm run verify:product-sources`.
 
 The verifier calculates Git's blob SHA-1 from the actual vendored file bytes and compares it with each reviewed upstream blob. It rejects missing or modified vendor copies and repository paths that escape the project. The check is included in Suite CI and release preflight.
 
-This establishes a repeatable source-integrity gate for two product service modules. It does **not** automatically fetch upstream changes, prove parity for their embedded UI renderer code, or establish source parity for the other eight products. When a canonical product file changes, review the product change first, update the Suite vendor copy and pinned blob deliberately, then require the parity check and product/Suite tests to pass.
+This establishes a repeatable source-integrity gate for four feature modules across three products. It does **not** automatically fetch upstream changes, verify every UI/shell file or shared asset, or establish source parity for the other seven products. When a canonical product file changes, review the product change first, update the Suite vendor copy and pinned blob deliberately, then require the parity check and product/Suite tests to pass.
 
 ### Migration implications
 
