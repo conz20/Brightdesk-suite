@@ -23,6 +23,15 @@ Brightdesk is an independent, local-first desktop productivity suite. It uses or
 
 These are the only products in the approved suite. Outlook, OneDrive, Teams and any other unapproved products are excluded.
 
+## Our own approach to office productivity
+
+Brightdesk uses familiar productivity workflows as capability references, then builds its own product experience around the approved ten applications. The goal is a coherent Brightdesk suite—not a copy of another company's software.
+
+Our product names, four-panel brand mark, icons, artwork, interface styling, source code and implementation decisions remain original. Microsoft product references are used only to describe comparable task capabilities; they do not imply affiliation, identical feature availability or permission to reuse proprietary material.
+
+See the [Office Suite capability benchmark](docs/OFFICE-SUITE-CAPABILITY-BENCHMARK.md) for the researched feature areas, current first-use boundaries, local-first adaptations and staged implementation direction. Planned capabilities are not represented as finished features.
+
+
 ## Suite design preview
 
 <p align="center"><img src="assets/previews/suite-dashboard-concept.svg" alt="Brightdesk suite dashboard design concept, not a running application screenshot" width="100%"></p>
