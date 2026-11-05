@@ -157,5 +157,22 @@
     "appImage": {
       "artifactName": "Brightdesk-Office-Suite-${version}-${arch}.${ext}"
     }
+  },
+  "overrides": {
+    "pptxgenjs": {
+      "image-size": "2.0.4"
+    },
+    "app-builder-lib": {
+      "minimatch": "^11.0.1"
+    },
+    "exceljs": {
+      "uuid": "^11.1.1"
+    },
+    "archiver@5.3.2": {
+      "readdir-glob@^1.1.2": {
+        ".": "^3.0.0",
+        "minimatch": "^11.0.1"
+      }
+    }
   }
 }
