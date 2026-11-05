@@ -25,11 +25,11 @@ These are the only products in the approved suite. Outlook, OneDrive, Teams and 
 
 ## Suite design preview
 
-<p align="center"><img src="assets/previews/suite-dashboard-concept.svg" alt="Brightdesk suite dashboard design concept, not a running application screenshot" width="100%"></p>
+<p align="center"><img src="assets/previews/suite-dashboard-concept-single-settings.svg" alt="Brightdesk Suite design preview showing one Settings cogwheel at the top-right, with no Settings item or gear in the left sidebar" width="100%"></p>
 
 > **Concept artwork — not a screenshot.** This image communicates the intended Brightdesk visual direction. It is not a capture from the running desktop build.
 
-Brightdesk uses exactly one suite-wide Settings entry point: the cogwheel in the top-right corner. The four-panel mark beside the Brightdesk wordmark is the Suite logo; it is not a product icon. Each approved product has its own original icon, shown beside its name in the preview sidebar and on its product card. The concept displays all ten icons for reference; a running workspace sidebar lists only the products installed in that workspace. The bell beside the Settings cogwheel is Notifications.
+The preview above shows the corrected layout: one suite-wide Settings cogwheel in the top-right, with Notifications beside it. There is no Settings button or second gear in the left sidebar; that sidebar is for product navigation. The four-panel mark beside the Brightdesk wordmark is the Suite logo, not a product icon. Each approved product has its own original icon, shown beside its name in the preview sidebar and on its product card. The concept displays all ten icons for reference; a running workspace sidebar lists only the products installed in that workspace.
 
 **What the card actions mean:** **Install** adds an available product to the current Brightdesk workspace. It does not download a separate desktop installer. Installed products show **Open** and **Uninstall**; removing a product from the workspace does not delete its local documents. **Update** is different: it applies to the Brightdesk Suite release, not an individual product card. Update checks and preferences are managed in Settings. Automatic checking is optional, and downloading and installing updates require separate confirmation. The current suite has no configured GitHub update publishing provider, so automatic release delivery is not active or verified.
 
