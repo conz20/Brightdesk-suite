@@ -112,7 +112,9 @@ test('installer workflow builds suite and all ten standalone apps on native host
   assert.equal(prepare.includes('npm run lock:prepare'), false, 'release validation must never regenerate the committed lockfile');
 
   const platformBuild = workflow.split('  build:')[1].split('  collect:')[0];
-  assert.ok(platformBuild.indexOf('npm ci --no-audit --no-fund') < platformBuild.indexOf('npm run lock:verify'), 'platform jobs install from the committed lock before verifying it');
+  const platformInstallIndex = platformBuild.indexOf('npm ci --no-audit --no-fund');
+  const platformLockIndex = platformBuild.indexOf('npm run lock:verify');
+  assert.ok(platformInstallIndex >= 0 && platformLockIndex > platformInstallIndex, 'platform jobs install from the committed lock before verifying it');
   assert.ok(workflow.includes('node scripts/collect-platform-build.js win'));
   assert.ok(workflow.includes('node scripts/collect-platform-build.js linux'));
   assert.ok(workflow.includes('node scripts/collect-platform-build.js mac'));
