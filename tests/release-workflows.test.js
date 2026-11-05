@@ -120,6 +120,8 @@ test('all customer installer build commands explicitly disable implicit publishi
 });
 
 test('local release verification runs tests and builds only for the current native platform', () => {
+  const manifest = JSON.parse(read('package.json'));
+  assert.equal(manifest.scripts['verify:local-release'], 'node scripts/verify-local-release.js');
   const script = read('scripts/verify-local-release.js');
   for (const step of ['check:node', 'lock:verify', 'ci', '--no-audit', '--no-fund', 'verify:licenses', 'test', 'rea:inspect', 'release:preflight', 'audit', '--audit-level=high', 'dist:', 'release:prepare', 'release:verify:']) {
     assert.ok(script.includes(step), `local release script includes ${step}`);

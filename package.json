@@ -71,7 +71,8 @@
     "dist:workspace:linux": "npm run native:build && node scripts/build-app.js loop linux",
     "dist:apps:win": "npm run native:build && node scripts/build-apps.js win",
     "dist:apps:mac": "npm run native:build && node scripts/build-apps.js mac",
-    "dist:apps:linux": "npm run native:build && node scripts/build-apps.js linux"
+    "dist:apps:linux": "npm run native:build && node scripts/build-apps.js linux",
+    "verify:local-release": "node scripts/verify-local-release.js"
   },
   "devDependencies": {
     "jsdom": "^30.1.3",
