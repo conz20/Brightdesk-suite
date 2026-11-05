@@ -51,3 +51,11 @@ The user ran `npm run dist:mac` in `Brightdesk-suite-pr60-verification` on macOS
 A regression test was added to require `build.mac.mergeASARs === false`, keep ASAR enabled, and keep `native/brightdesk_engine.node` in `asarUnpack`. The macOS build configuration now disables ASAR merging while retaining the universal x64+arm64 target. The shared JavaScript/resources stay packaged in ASAR; the Rust native addon remains outside it. Root README and cross-platform release contract document this platform-specific packaging choice.
 
 This is a mitigation awaiting local proof, not a completed build fix. The user must pull the updated PR #60 branch, run the focused/full tests, rerun `npm run dist:mac`, and then `npm run release:verify:mac`. Do not call the macOS installer verified until the DMG, PKG, ZIP, terms, MIT licence and third-party notices are all produced and accepted by the artifact verifier. Then launch-test the universal app. PR #60 remains draft and unmerged.
+
+## Suite home and app navigation correction — 5 November 2026
+
+The integrated desktop suite now treats Home as the first-class app centre: it displays all ten approved products with their original preview art, icons, descriptions and direct Open actions. The sidebar keeps all ten product destinations visible in the suite build, and a persistent All apps control returns users to Home from each workspace. Settings is separate for device-local language, dictionaries and update preferences. App discovery is no longer hidden inside Settings.
+
+The suite package already bundles all ten product modules. The app centre explicitly states that separate downloadable product installers are not published yet; do not represent a local module navigation action as a download or installation. Only show Download when a real verified installer URL is configured.
+
+The README and BRIGHTDESK_VISUAL_STANDARD.md were updated with the approved UX and Adobe Creative Cloud Apps / All apps as a high-level navigation reference only. Brightdesk keeps its original visual identity and assets. The UI change has been committed to the open draft PR #60; local test and packaged runtime verification are still pending.
