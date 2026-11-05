@@ -83,6 +83,16 @@
       "status": "verified-source-match"
     },
     {
+      "id": "forms-workspace",
+      "name": "Brightdesk Forms workspace",
+      "repository": "connormolloy12/Brightdesk-Forms",
+      "sourceRef": "0960d0ceee9e00bc7f0f78a053289c3d4d3699ce",
+      "sourcePath": "src/forms-workspace.js",
+      "suitePath": "src/forms-workspace.js",
+      "sourceBlobSha": "642b39a353016b575a8f7b9ed624a00bb060ceb2",
+      "status": "verified-source-match"
+    },
+    {
       "id": "database-service",
       "name": "Brightdesk Database service",
       "repository": "connormolloy12/Brightdesk-Database",
