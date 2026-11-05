@@ -50,13 +50,12 @@ The product-specific accents should help recognition, not create ten unrelated d
 
 The suite home should make each product immediately recognisable and manageable:
 
-- Use one clear Settings cog as the entry point for local app, language and update management.
-- Show all ten approved products in a responsive app grid with strong, product-specific preview artwork.
-- Every card contains the app icon, product name, a concise purpose line, a truthful Installed or Available state, and obvious Open plus Uninstall actions when installed, or Install when available.
-- Keep installation state and primary actions visible; do not hide them in overflow menus.
-- Confirm uninstall and make clear that removing an app from the suite does not delete its local documents.
-- Put language packs, spelling dictionaries and update preferences in the Settings area.
-- Show progress and clear success/failure feedback for downloads and updates.
+- Make Home the default first viewport for the integrated suite and show all ten approved products together in a responsive app-centre grid with strong, product-specific preview artwork.
+- Keep a persistent **All apps** destination in the suite sidebar and a clear return-to-home control in every product workspace. All ten product destinations remain directly reachable from the sidebar; switching products must never strand the user inside a workspace.
+- Every home card contains the original app icon, product name, concise purpose line, truthful **Included in Brightdesk Office Suite** state and an obvious **Open** action.
+- Keep Settings separate from app discovery. Settings contains device-local language packs, spelling dictionaries and update preferences; it is not the place users must visit to find or open products.
+- Brightdesk currently bundles all ten products in one suite package. Do not label a local navigation preference as an install or uninstall, and do not show a Download action until a real, verified product installer URL is published. Separate downloadable product installers are not currently published.
+- Show progress and clear success/failure feedback for any future downloads and updates.
 - Never show fabricated update states, availability or version numbers. If an action is only a design target, label it as such in documentation.
 
 The suite is local-first desktop software. Do not add account creation, sign-in, cloud storage, online workspace or cloud-sync imagery or language. Settings must describe controls and resources on this device. Local save states should be explicit and truthful.
