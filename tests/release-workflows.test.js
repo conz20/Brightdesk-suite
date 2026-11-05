@@ -123,12 +123,19 @@ test('local release verification runs tests and builds only for the current nati
   const manifest = JSON.parse(read('package.json'));
   assert.equal(manifest.scripts['verify:local-release'], 'node scripts/verify-local-release.js');
   const script = read('scripts/verify-local-release.js');
-  for (const step of ['check:node', 'lock:verify', 'ci', '--no-audit', '--no-fund', 'verify:licenses', 'test', 'rea:inspect', 'release:preflight', 'audit', '--audit-level=high', 'dist:', 'release:prepare', 'release:verify:']) {
+  for (const step of ['check:node', 'lock:verify', 'ci', '--no-audit', '--no-fund', 'verify:licenses', 'test', 'rea:inspect', 'release:preflight', 'audit', '--audit-level=high', 'dist:', 'release:prepare', 'release:verify:', 'dist:products:', 'release:verify:products:', 'release:collect:']) {
     assert.ok(script.includes(step), `local release script includes ${step}`);
   }
   assert.match(script, /process\.versions\.node/);
   assert.match(script, /process\.platform/);
   assert.match(script, /CSC_IDENTITY_AUTO_DISCOVERY/);
+  for (const platform of ['win', 'mac', 'linux']) {
+    assert.ok(manifest.scripts[`dist:products:${platform}`]);
+    assert.ok(manifest.scripts[`release:verify:products:${platform}`]);
+    assert.ok(manifest.scripts[`release:collect:${platform}`]);
+  }
+  assert.match(script, /release:verify:products/);
+  assert.match(script, /release:collect/);
   assert.doesNotMatch(script, /publish always|gh release create/i);
 });
 
