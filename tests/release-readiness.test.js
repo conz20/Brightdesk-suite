@@ -41,7 +41,7 @@ test('release preflight verifies pinned individual product source parity', () =>
   const check = result.checks.find(item => item.name === 'Product source parity');
   assert.ok(check, 'preflight must verify the pinned individual-product source copies');
   assert.equal(check.passed, true);
-  assert.match(check.detail, /1 pinned product source module/);
+  assert.match(check.detail, /2 pinned product source modules/);
 });
 
 test('artifact verification requires all expected installer formats and writes SHA-256 sums', () => {
