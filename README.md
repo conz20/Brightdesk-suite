@@ -1,42 +1,54 @@
 # Brightdesk Office Suite
 
-Brightdesk is an independent native desktop productivity suite. It is not affiliated with Microsoft.
+Brightdesk is an independent desktop productivity suite. It is not affiliated with Microsoft.
 
-## First release
+## First release scope
 
-Version 0.1.0 is the integrated ten-product desktop suite. The complete first-release lineup is shown below:
+Version 0.1.0 is the planned integrated ten-product release. The approved product lineup is fixed:
 
-| Product | What it does | Status |
-| --- | --- | --- |
-| Brightdesk Pages | Write and format documents. | Available |
-| Brightdesk Sheets | Build spreadsheets, formulas and tables. | Available |
-| Brightdesk Decks | Create slide presentations. | Available |
-| Brightdesk Notes | Keep notes and ideas together. | Available |
-| Brightdesk Database | Organise records, tables and structured data locally. | Available |
-| Brightdesk Forms | Create surveys, quizzes and collect responses locally. | Available |
-| Brightdesk Lists | Track projects, inventories and records locally. | Available |
-| Brightdesk Planner | Plan work, tasks and progress locally. | Available |
-| Brightdesk To Do | Manage daily tasks and reminders. | Available |
-| Brightdesk Workspace | Bring project notes, tasks and resources together locally. | Available |
+| Product | First-use scope represented in the source |
+| --- | --- |
+| Brightdesk Pages | Write and format documents. |
+| Brightdesk Sheets | Build spreadsheets, formulas and tables. |
+| Brightdesk Decks | Create slide presentations. |
+| Brightdesk Notes | Keep notes and ideas together. |
+| Brightdesk Database | Organise records, tables and structured data locally. |
+| Brightdesk Forms | Create surveys, quizzes and collect responses locally. |
+| Brightdesk Lists | Track projects, inventories and records locally. |
+| Brightdesk Planner | Plan work, tasks and progress locally. |
+| Brightdesk To Do | Manage daily tasks and reminders. |
+| Brightdesk Workspace | Bring project notes, tasks and resources together locally. |
 
-All ten products are integrated in the 0.1.0 codebase and have dedicated workspaces, service/UI tests and native desktop installer targets. The first integrated release remains local-first; these products do not claim cloud collaboration or Microsoft service integration.
+These are first-use capabilities represented in the integrated source. They are not a claim of complete Microsoft 365 or Adobe capability parity, final accessibility sign-off, or completed runtime acceptance. The first release is local-first and does not claim cloud collaboration or Microsoft service integration.
 
-## Download the complete suite or an individual product
+## Suite and individual product downloads
 
-The main Brightdesk installer contains all ten approved products. The Brightdesk Product Centre also provides an individual desktop installer for each product, so you can install only the product you need without installing the complete suite.
+The planned release bundle contains the complete Suite and a separately installable build for each of the ten approved products. The individual product builds use the same Brightdesk product identities and shared design rules.
 
-The product installers are built from the same tested source as the suite and are checked as part of each release build. The product repository folders provide separate homes for each product's code, documentation and artwork. As verified on 3 November 2026, six product repositories exist and all six contain product-specific source packages: Brightdesk-Pages, Brightdesk-Sheets, Brightdesk-Decks, Brightdesk-Notes, Brightdesk-Database and Brightdesk-Forms. Brightdesk-Lists, Brightdesk-Planner, Brightdesk-To-Do and Brightdesk-Workspace still need their GitHub repositories created and populated. See docs/PRODUCT-REPOSITORIES.md for the repository map.
+All ten individual GitHub repositories now exist. On 5 November 2026, the repository check confirmed that each has a `main` default branch and a readable `package.json`. This confirms repository and manifest presence only; it does not prove that every product has complete feature parity, passing current-head CI, or a verified installer. See [the product repository map](docs/PRODUCT-REPOSITORIES.md).
 
 ## Supported installer targets
 
-The release workflow builds macOS universal DMG and PKG installers, Windows x64 EXE installers, and Linux x64 AppImage and DEB packages for the complete suite and each product. A build is only considered ready after the platform artifacts, legal documents and SHA-256 checksums have been verified.
+The workflow defines these expected native package formats for the Suite and each individual product:
+
+- **Windows:** x64 NSIS `.exe`
+- **macOS:** universal `.dmg`, `.pkg` and `.zip`
+- **Linux:** x64 AppImage and Debian `.deb`
+
+That is a planned set of 66 installer/archive outputs across eleven targets (the Suite plus ten products) and three operating systems. A workflow definition is not proof of a successful build. Release readiness requires real artifacts from the same candidate commit, correct versions and architectures, legal files, SHA-256 checksums, and successful install/runtime checks on native Windows, macOS and Linux runners. The current installer PR remains a draft until those checks are evidenced.
+
+## Update availability
+
+**Automatic update publishing is not configured yet.** In the current installer branch, the Suite's `build.publish` list and the individual-product builder's `publish` list are empty. The packaged updater checks this configuration and reports that automatic updates are unavailable.
+
+The update controls in the interface are not evidence that updates can be delivered. Before enabling update claims, configure a real publishing provider and release channel, then verify discovery, download, signature/checksum validation and user-approved installation from older Suite and individual-product installations on all three operating systems. Linux DEB updates also need a documented, tested package-manager or replacement-package path. Do not describe any of these update paths as verified until those tests pass.
 
 ## Installing Brightdesk
 
-End users do not need to download or install Node.js. The native desktop program is packaged with the Electron runtime it needs. Install Brightdesk using the installer for your operating system and open it like any other desktop program. See INSTALLATION.md in docs for instructions.
+End users do not need to download or install Node.js. The desktop build packages the Electron runtime it needs. Use only a verified installer for the computer's operating system. If a verified package is not listed on the official release page, it has not been published.
 
 ## Development
 
-Building and testing Brightdesk requires exactly Node.js 24.22.2. This is a developer/CI requirement only; it is not a customer installation requirement. Run npm run setup:dev after activating that runtime. The project uses its checked-in package lock and automated Node.js tests.
+Building and testing Brightdesk requires exactly Node.js 24.22.2. This is a developer/CI requirement only; it is not a customer installation requirement. Run `npm run setup:dev` after activating that runtime. The project uses its checked-in package lock and automated tests.
 
-Brightdesk uses original product names, code, artwork and interface design. Microsoft product names are used only as internal workflow comparisons.
+Brightdesk uses original product names, code, artwork and interface design. Microsoft and Adobe are capability references only; their proprietary code, logos, artwork and distinctive trade dress are not used.
