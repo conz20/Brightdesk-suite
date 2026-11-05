@@ -142,7 +142,7 @@ test('complete bundle verification rejects a wrong-version Suite installer', () 
     writeManifest(directory, SUITE_MANIFESTS.win, fixture.suiteFiles.win);
     assert.throws(
       () => verifyCompleteReleaseBundle({ releaseDir: fixture.release, version: VERSION }),
-      /expected Suite installer/i
+      /exactly one Windows Suite x64 installer/i
     );
   } finally {
     fs.rmSync(fixture.root, { recursive: true, force: true });
