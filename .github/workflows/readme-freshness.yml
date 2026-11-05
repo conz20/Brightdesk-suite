@@ -13,6 +13,8 @@ permissions:
 jobs:
   readme-freshness:
     name: Require README updates for product changes
+    # Never execute fork-controlled pull-request code on the private self-hosted machine.
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
     # Reuse the private runner; keep this required check outside paid hosted billing.
     runs-on: self-hosted
     steps:

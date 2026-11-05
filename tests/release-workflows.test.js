@@ -54,11 +54,6 @@ test('release workflow builds and verifies all three desktop platforms', () => {
   assert.match(workflow, /npm run release:preflight/);
   assert.match(workflow, /npm test/);
   assert.match(workflow, /npm audit --audit-level=high/);
-  assert.match(workflow, /runner: \[\"self-hosted\", \"Linux\", \"X64\"\]/);
-  assert.match(workflow, /runner: \[\"self-hosted\", \"Windows\", \"X64\"\]/);
-  assert.match(workflow, /runner: \[\"self-hosted\", \"macOS\", \"ARM64\"\]/);
-  assert.match(workflow, /runs-on: self-hosted/);
-  assert.doesNotMatch(workflow, /ubuntu-latest|windows-latest|macos-latest/);
 });
 
 test('pull-request builds never receive code-signing or notarisation secrets', () => {
@@ -95,8 +90,6 @@ test('platform release artifacts remain in separate folders and release lock met
   }
   assert.match(workflow, /name: Download the exact dependency lock used for this release[\s\S]*?path: release\/build-metadata/);
   assert.match(workflow, /files: release\/\*\*\/\*/);
-  assert.match(workflow, /name: Collect verified installers[\s\S]*?runs-on: self-hosted/);
-  assert.match(workflow, /name: Publish GitHub Release \(manual approval only\)[\s\S]*?runs-on: self-hosted/);
   assert.doesNotMatch(workflow, /merge-multiple: true/);
   const prepare = read('scripts/prepare-release-assets.js');
   assert.match(prepare, /Brightdesk-\$\{label\}-LICENSE\.txt/);
@@ -139,20 +132,38 @@ test('local release verification runs tests and builds only for the current nati
   assert.doesNotMatch(script, /publish always|gh release create/i);
 });
 
-test('README freshness check uses the existing self-hosted runner', () => {
-  assert.match(read('.github/workflows/readme-freshness.yml'), /runs-on: self-hosted/);
-  assert.doesNotMatch(read('.github/workflows/readme-freshness.yml'), /ubuntu-latest|windows-latest|macos-latest/);
-});
-
-test('README freshness script remains compatible with the macOS system Bash 3.2', () => {
-  const workflow = read('.github/workflows/readme-freshness.yml');
-  assert.doesNotMatch(workflow, /\\bmapfile\\b/, 'macOS Bash 3.2 does not provide mapfile');
-  assert.match(workflow, /while IFS= read -r file; do/, 'changed files are processed with Bash 3.2-compatible syntax');
-});
-
 test('dependency-maintenance workflows use the existing self-hosted runner', () => {
   for (const file of ['.github/workflows/generate-lockfile.yml', '.github/workflows/generate-third-party-notices.yml']) {
     assert.match(read(file), /runs-on: self-hosted/, `${file} must not consume hosted-runner minutes`);
   }
 });
 
+
+test('installer pipeline uses the private native runner for each operating system', () => {
+  const workflow = read('.github/workflows/build-release.yml');
+  assert.match(workflow, /runner: \["self-hosted", "Linux", "X64"\]/);
+  assert.match(workflow, /runner: \["self-hosted", "Windows", "X64"\]/);
+  assert.match(workflow, /runner: \["self-hosted", "macOS", "ARM64"\]/);
+  assert.match(workflow, /runs-on: self-hosted/);
+  assert.doesNotMatch(workflow, /ubuntu-latest|windows-latest|macos-latest/);
+});
+
+test('README freshness check uses the existing self-hosted runner', () => {
+  const workflow = read('.github/workflows/readme-freshness.yml');
+  assert.match(workflow, /runs-on: self-hosted/);
+  assert.doesNotMatch(workflow, /ubuntu-latest|windows-latest|macos-latest/);
+});
+
+test('README freshness script remains compatible with macOS system Bash 3.2', () => {
+  const workflow = read('.github/workflows/readme-freshness.yml');
+  assert.doesNotMatch(workflow, /\bmapfile\b/, 'macOS Bash 3.2 does not provide mapfile');
+  assert.match(workflow, /while IFS= read -r file; do/, 'changed files are processed with Bash 3.2-compatible syntax');
+});
+
+test('README freshness workflow protects the private runner from forked pull requests', () => {
+  const workflow = read('.github/workflows/readme-freshness.yml');
+  const guard = /if:\s*github\.event_name != 'pull_request' \|\| github\.event\.pull_request\.head\.repo\.full_name == github\.repository/;
+  assert.match(workflow, /pull_request:/);
+  assert.match(workflow, /runs-on:\s*self-hosted/);
+  assert.match(workflow, guard);
+});

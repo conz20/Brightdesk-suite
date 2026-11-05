@@ -254,15 +254,8 @@ input:disabled, select:disabled, textarea:disabled, button:disabled { cursor: no
 
 
 /* Brightdesk management and product-card finish */
-.settings-nav { margin-top: 8px; border: 1px solid transparent; }
-.settings-nav .manager-gear {
-  width: 36px; height: 36px; border: 1px solid #dce3ed; border-radius: 11px;
-  background: linear-gradient(145deg,#f8fafc,#edf1f7); color: #31425b;
-  font-size: 21px; line-height: 1;
-}
-.settings-nav.active .manager-gear { border-color: #d2dced; background: #eaf0f8; color: #294e83; }
-.settings-sidebar-meta { padding-top: 14px; border-top: 1px solid #e8edf3; }
-.settings-sidebar-meta small { color: #8390a3; font-size: 10px; }
+.sidebar-meta { padding-top: 14px; border-top: 1px solid #e8edf3; }
+.sidebar-meta small { color: #8390a3; font-size: 10px; }
 .settings-toolbar {
   display: flex; align-items: center; justify-content: space-between; gap: 18px;
   padding: 17px 19px; margin: 0 0 15px; border: 1px solid #dfe6ef;
@@ -333,8 +326,6 @@ input:disabled, select:disabled, textarea:disabled, button:disabled { cursor: no
   .app-card > p { min-height: 0; }
 }
 
-.settings-gear-icon { display: block; width: 19px; height: 19px; object-fit: contain; }
-.settings-nav .manager-gear { display: grid; place-items: center; }
 .app-card-actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 7px; }
 .app-card-footer .app-install-action { min-width: 78px; }
 @media (max-width: 700px) {
@@ -368,3 +359,9 @@ input:disabled, select:disabled, textarea:disabled, button:disabled { cursor: no
 .notification-popover p{margin:14px 0 5px;color:#34445d;font-size:12px;font-weight:650}
 .notification-popover small{display:block;color:#7b879a;font-size:11px;line-height:1.5}
 @media(max-width:700px){.top-actions{width:100%;justify-content:flex-start}.notification-popover{right:0}}
+
+
+/* Keep the App Centre rail distinct from product switching; hidden wins at every width. */
+#dynamic-app-nav[hidden]{display:none!important}
+.manager-nav{cursor:default}
+.manager-nav .app-icon-image{filter:none}
