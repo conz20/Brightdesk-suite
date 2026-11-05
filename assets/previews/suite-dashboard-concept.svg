@@ -1,26 +1,151 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1210" viewBox="0 0 1600 1210" role="img" aria-labelledby="title desc">
 <title id="title">Brightdesk Office Suite app centre concept</title>
-<desc id="desc">Proposed Brightdesk app centre with ten product cards, one suite-wide Settings cogwheel in the top-right, no Settings item in the sidebar, Notifications, and a separate Product settings option in an example app-card menu. This is concept artwork rather than a running application screenshot.</desc>
+<desc id="desc">Brightdesk Office Suite App Centre concept. The four-panel mark at the top is the Suite logo; each sidebar row has its own original product icon. All ten products are shown for icon reference. Card states are illustrative, not a live account. Install adds a product to the Suite workspace; Update applies to the Suite release. This is concept artwork, not a running application screenshot.</desc>
 <defs><linearGradient id="side" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#14233F"/><stop offset="1" stop-color="#0D1930"/></linearGradient><linearGradient id="banner" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#E8F0FF"/><stop offset="1" stop-color="#F0ECFF"/></linearGradient><filter id="shadow" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="7" stdDeviation="14" flood-color="#1A2B4B" flood-opacity=".09"/></filter></defs>
 <rect width="1600" height="1210" fill="#F2F5FA"/>
 <rect width="238" height="1210" fill="url(#side)"/>
 <rect x="27" y="27" width="45" height="45" rx="13" fill="#526FE0"/><rect x="39" y="39" width="9" height="9" rx="2" fill="#fff"/><rect x="51" y="39" width="9" height="9" rx="2" fill="#C7D5FF"/><rect x="39" y="51" width="9" height="9" rx="2" fill="#AFC1FF"/><rect x="51" y="51" width="9" height="9" rx="2" fill="#fff"/>
-<text x="83" y="57" font-family="Arial, sans-serif" font-size="25" font-weight="700" fill="#FFFFFF">brightdesk</text><text x="29" y="114" font-family="Arial, sans-serif" font-size="10" letter-spacing="2" font-weight="700" fill="#8292B2">WORKSPACE</text>
-<rect x="16" y="138" width="206" height="45" rx="10" fill="#293B60"/><text x="49" y="166" font-family="Arial, sans-serif" font-size="14" font-weight="700" fill="#FFFFFF">Home</text>
-<text x="49" y="224" font-family="Arial, sans-serif" font-size="14" fill="#BCC8DF">All apps</text><text x="49" y="276" font-family="Arial, sans-serif" font-size="14" fill="#BCC8DF">Installed</text><text x="49" y="328" font-family="Arial, sans-serif" font-size="14" fill="#FFFFFF">Updates</text><rect x="178" y="309" width="27" height="24" rx="12" fill="#536FE0"/><text x="191.5" y="326" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">2</text>
-<text x="49" y="380" font-family="Arial, sans-serif" font-size="14" fill="#BCC8DF">Downloads</text>
-<g fill="none" stroke="#8FA0BF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity=".9"><path d="M29 154h8v8h-8zM31 156h4m-4 3h4"/><path d="M29 212h11m-11 4h11m-11 4h8"/><rect x="29" y="261" width="11" height="11" rx="3"/><path d="M29 314h10m-10 4h6"/><path d="M29 366h11v11H29z"/></g>
+<text x="83" y="57" font-family="Arial, sans-serif" font-size="25" font-weight="700" fill="#FFFFFF">brightdesk</text><text x="29" y="114" font-family="Arial, sans-serif" font-size="10" letter-spacing="2" font-weight="700" fill="#8292B2">YOUR APPS</text>
+<rect x="16" y="136" width="206" height="56" rx="10" fill="#293B60"/><svg x="25" y="145" width="38" height="38" viewBox="0 0 256 256" aria-hidden="true"><defs>
+<linearGradient id="sidebar-pages-pages-bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2B76D8"/><stop offset="1" stop-color="#174A9D"/></linearGradient>
+<radialGradient id="sidebar-pages-pages-light" cx="24%" cy="12%" r="90%"><stop offset="0" stop-color="#8BC5FF" stop-opacity=".65"/><stop offset="1" stop-color="#8BC5FF" stop-opacity="0"/></radialGradient>
+<linearGradient id="sidebar-pages-pages-glass" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".21"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>
+<filter id="sidebar-pages-pages-shadow" x="-30%" y="-30%" width="160%" height="180%"><feDropShadow dx="0" dy="10" stdDeviation="9" flood-color="#10234A" flood-opacity=".24"/></filter>
+</defs>
+<rect x="8" y="8" width="240" height="240" rx="58" fill="url(#sidebar-pages-pages-bg)"/>
+<rect x="8" y="8" width="240" height="240" rx="58" fill="url(#sidebar-pages-pages-light)"/>
+<path d="M66 9h124a58 58 0 0 1 58 58v14C173 52 93 43 9 100V67A58 58 0 0 1 66 9z" fill="url(#sidebar-pages-pages-glass)"/>
+<rect x="9.5" y="9.5" width="237" height="237" rx="56.5" fill="none" stroke="#fff" stroke-opacity=".26" stroke-width="3"/>
+<ellipse cx="128" cy="219" rx="73" ry="10" fill="#10234A" opacity=".15"/>
+<g filter="url(#sidebar-pages-pages-shadow)"><path d="M78 46h75l33 34v126a13 13 0 0 1-13 13H78a13 13 0 0 1-13-13V59a13 13 0 0 1 13-13z" fill="#F9FCFF"/><path d="M153 46v28a7 7 0 0 0 7 7h26z" fill="#D9E9FB"/><path d="M153 46v28a7 7 0 0 0 7 7h26" fill="none" stroke="#B7D2F2" stroke-width="3"/><rect x="86" y="101" width="69" height="8" rx="4" fill="#4D8FE2"/><rect x="86" y="121" width="86" height="6" rx="3" fill="#CBD9EA"/><rect x="86" y="139" width="80" height="6" rx="3" fill="#CBD9EA"/><rect x="86" y="157" width="70" height="6" rx="3" fill="#CBD9EA"/><rect x="86" y="175" width="55" height="6" rx="3" fill="#CBD9EA"/><g transform="rotate(37 171 171)"><rect x="158" y="130" width="24" height="78" rx="9" fill="#1C4E9C"/><rect x="161" y="137" width="18" height="53" rx="4" fill="#6BA9F3"/><path d="M158 197h24l-12 22z" fill="#D7E8FA"/><path d="M169 213h4l-2 6z" fill="#243D65"/></g></g>
+</svg><text x="73" y="161" font-family="Arial, sans-serif" font-size="13.5" font-weight="700" fill="#FFFFFF">Pages</text><text x="73" y="178" font-family="Arial, sans-serif" font-size="9.5" fill="#C1D0E8">Documents</text>
+<svg x="25" y="212" width="38" height="38" viewBox="0 0 256 256" aria-hidden="true"><defs>
+<linearGradient id="sidebar-sheets-sheets-bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#21AD78"/><stop offset="1" stop-color="#08724E"/></linearGradient>
+<radialGradient id="sidebar-sheets-sheets-light" cx="24%" cy="12%" r="90%"><stop offset="0" stop-color="#83F0BF" stop-opacity=".65"/><stop offset="1" stop-color="#83F0BF" stop-opacity="0"/></radialGradient>
+<linearGradient id="sidebar-sheets-sheets-glass" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".21"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>
+<filter id="sidebar-sheets-sheets-shadow" x="-30%" y="-30%" width="160%" height="180%"><feDropShadow dx="0" dy="10" stdDeviation="9" flood-color="#10234A" flood-opacity=".24"/></filter>
+</defs>
+<rect x="8" y="8" width="240" height="240" rx="58" fill="url(#sidebar-sheets-sheets-bg)"/>
+<rect x="8" y="8" width="240" height="240" rx="58" fill="url(#sidebar-sheets-sheets-light)"/>
+<path d="M66 9h124a58 58 0 0 1 58 58v14C173 52 93 43 9 100V67A58 58 0 0 1 66 9z" fill="url(#sidebar-sheets-sheets-glass)"/>
+<rect x="9.5" y="9.5" width="237" height="237" rx="56.5" fill="none" stroke="#fff" stroke-opacity=".26" stroke-width="3"/>
+<ellipse cx="128" cy="219" rx="73" ry="10" fill="#10234A" opacity=".15"/>
+<g filter="url(#sidebar-sheets-sheets-shadow)"><rect x="54" y="58" width="151" height="145" rx="17" fill="#F7FFFA"/><rect x="54" y="58" width="151" height="29" rx="17" fill="#D5F5E5"/><path d="M54 75v12h151V75" fill="#D5F5E5"/><rect x="68" y="101" width="121" height="85" rx="7" fill="#EAF8F0"/><path d="M98 101v85M128 101v85M158 101v85M68 129h121M68 157h121" stroke="#A9DCC1" stroke-width="3"/><rect x="101" y="132" width="24" height="22" rx="4" fill="#5ACB91"/><rect x="131" y="160" width="24" height="23" rx="4" fill="#A6EAC5"/><path d="M74 176l24-14 24 2 25-26 29-10" fill="none" stroke="#08724E" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="176" cy="128" r="6" fill="#08724E"/></g>
+</svg><text x="73" y="228" font-family="Arial, sans-serif" font-size="13.5" font-weight="700" fill="#E7EDF7">Sheets</text><text x="73" y="245" font-family="Arial, sans-serif" font-size="9.5" fill="#91A2BF">Spreadsheets</text>
+<svg x="25" y="279" width="38" height="38" viewBox="0 0 256 256" aria-hidden="true"><defs>
+<linearGradient id="sidebar-decks-decks-bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F17A62"/><stop offset="1" stop-color="#B9413F"/></linearGradient>
+<radialGradient id="sidebar-decks-decks-light" cx="24%" cy="12%" r="90%"><stop offset="0" stop-color="#FFC1A6" stop-opacity=".65"/><stop offset="1" stop-color="#FFC1A6" stop-opacity="0"/></radialGradient>
+<linearGradient id="sidebar-decks-decks-glass" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".21"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>
+<filter id="sidebar-decks-decks-shadow" x="-30%" y="-30%" width="160%" height="180%"><feDropShadow dx="0" dy="10" stdDeviation="9" flood-color="#10234A" flood-opacity=".24"/></filter>
+</defs>
+<rect x="8" y="8" width="240" height="240" rx="58" fill="url(#sidebar-decks-decks-bg)"/>
+<rect x="8" y="8" width="240" height="240" rx="58" fill="url(#sidebar-decks-decks-light)"/>
+<path d="M66 9h124a58 58 0 0 1 58 58v14C173 52 93 43 9 100V67A58 58 0 0 1 66 9z" fill="url(#sidebar-decks-decks-glass)"/>
+<rect x="9.5" y="9.5" width="237" height="237" rx="56.5" fill="none" stroke="#fff" stroke-opacity=".26" stroke-width="3"/>
+<ellipse cx="128" cy="219" rx="73" ry="10" fill="#10234A" opacity=".15"/>
+<g filter="url(#sidebar-decks-decks-shadow)"><rect x="48" y="66" width="126" height="93" rx="12" fill="#FFE8DD" transform="rotate(-8 48 66)"/><rect x="79" y="61" width="128" height="102" rx="12" fill="#FFF9F4"/><rect x="79" y="61" width="128" height="22" rx="12" fill="#FFD7C8"/><path d="M79 72h128v11H79z" fill="#FFD7C8"/><rect x="93" y="97" width="52" height="7" rx="3.5" fill="#EB967D"/><rect x="93" y="111" width="38" height="5" rx="2.5" fill="#E8C6BA"/><path d="M159 143v-31l27 15.5z" fill="#E96B52"/><rect x="93" y="125" width="9" height="24" rx="3" fill="#F3B49F"/><rect x="107" y="117" width="9" height="32" rx="3" fill="#EE8A6C"/><rect x="121" y="106" width="9" height="43" rx="3" fill="#D95748"/><rect x="135" y="99" width="9" height="50" rx="3" fill="#B9413F"/></g>
+</svg><text x="73" y="295" font-family="Arial, sans-serif" font-size="13.5" font-weight="700" fill="#E7EDF7">Decks</text><text x="73" y="312" font-family="Arial, sans-serif" font-size="9.5" fill="#91A2BF">Presentations</text>
+<svg x="25" y="346" width="38" height="38" viewBox="0 0 256 256" aria-hidden="true"><defs>
+<linearGradient id="sidebar-notes-notes-bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#EAB34F"/><stop offset="1" stop-color="#A96719"/></linearGradient>
+<radialGradient id="sidebar-notes-notes-light" cx="24%" cy="12%" r="90%"><stop offset="0" stop-color="#FFE2A0" stop-opacity=".65"/><stop offset="1" stop-color="#FFE2A0" stop-opacity="0"/></radialGradient>
+<linearGradient id="sidebar-notes-notes-glass" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".21"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>
+<filter id="sidebar-notes-notes-shadow" x="-30%" y="-30%" width="160%" height="180%"><feDropShadow dx="0" dy="10" stdDeviation="9" flood-color="#10234A" flood-opacity=".24"/></filter>
+</defs>
+<rect x="8" y="8" width="240" height="240" rx="58" fill="url(#sidebar-notes-notes-bg)"/>
+<rect x="8" y="8" width="240" height="240" rx="58" fill="url(#sidebar-notes-notes-light)"/>
+<path d="M66 9h124a58 58 0 0 1 58 58v14C173 52 93 43 9 100V67A58 58 0 0 1 66 9z" fill="url(#sidebar-notes-notes-glass)"/>
+<rect x="9.5" y="9.5" width="237" height="237" rx="56.5" fill="none" stroke="#fff" stroke-opacity=".26" stroke-width="3"/>
+<ellipse cx="128" cy="219" rx="73" ry="10" fill="#10234A" opacity=".15"/>
+<g filter="url(#sidebar-notes-notes-shadow)"><path d="M55 72q0-15 15-15h55q26 0 48 18l26 20v91q0 13-13 13H69q-14 0-14-14z" fill="#FFF8E6"/><path d="M126 57v117q-22-17-42-17H55V72q0-15 15-15z" fill="#FFFDF3"/><path d="M126 57v117q22-17 42-17h31V95l-26-20q-22-18-47-18z" fill="#F8EBC9"/><path d="M126 57v117" stroke="#E5C47A" stroke-width="5"/><path d="M73 91h39M73 110h39M73 129h35M142 91h39M142 110h39M142 129h27" stroke="#D8C28D" stroke-width="5" stroke-linecap="round"/><path d="M172 57h20a9 9 0 0 1 9 9v44l-29-18z" fill="#DB8B36"/><path d="M172 57v31a8 8 0 0 0 8 8h21" fill="#F5BD58"/></g>
+</svg><text x="73" y="362" font-family="Arial, sans-serif" font-size="13.5" font-weight="700" fill="#E7EDF7">Notes</text><text x="73" y="379" font-family="Arial, sans-serif" font-size="9.5" fill="#91A2BF">Quick notes</text>
+<svg x="25" y="413" width="38" height="38" viewBox="0 0 256 256" aria-hidden="true"><defs>
+<linearGradient id="sidebar-database-database-bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8666E9"/><stop offset="1" stop-color="#4C35A9"/></linearGradient>
+<radialGradient id="sidebar-database-database-light" cx="24%" cy="12%" r="90%"><stop offset="0" stop-color="#C0B2FF" stop-opacity=".65"/><stop offset="1" stop-color="#C0B2FF" stop-opacity="0"/></radialGradient>
+<linearGradient id="sidebar-database-database-glass" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".21"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>
+<filter id="sidebar-database-database-shadow" x="-30%" y="-30%" width="160%" height="180%"><feDropShadow dx="0" dy="10" stdDeviation="9" flood-color="#10234A" flood-opacity=".24"/></filter>
+</defs>
+<rect x="8" y="8" width="240" height="240" rx="58" fill="url(#sidebar-database-database-bg)"/>
+<rect x="8" y="8" width="240" height="240" rx="58" fill="url(#sidebar-database-database-light)"/>
+<path d="M66 9h124a58 58 0 0 1 58 58v14C173 52 93 43 9 100V67A58 58 0 0 1 66 9z" fill="url(#sidebar-database-database-glass)"/>
+<rect x="9.5" y="9.5" width="237" height="237" rx="56.5" fill="none" stroke="#fff" stroke-opacity=".26" stroke-width="3"/>
+<ellipse cx="128" cy="219" rx="73" ry="10" fill="#10234A" opacity=".15"/>
+<g filter="url(#sidebar-database-database-shadow)"><path d="M62 82c0-17 30-30 66-30s66 13 66 30v99c0 18-30 31-66 31s-66-13-66-31z" fill="#EDE9FF"/><path d="M62 82c0 17 30 30 66 30s66-13 66-30v25c0 17-30 30-66 30s-66-13-66-30z" fill="#B9A8F9"/><path d="M62 132c0 17 30 30 66 30s66-13 66-30v25c0 17-30 30-66 30s-66-13-66-30z" fill="#9B83EE"/><ellipse cx="128" cy="82" rx="66" ry="30" fill="#F8F6FF"/><ellipse cx="128" cy="82" rx="49" ry="18" fill="#C9BCFF"/><path d="M80 92v7m30-2v7m35-7v7m-65 41v7m31-2v8m35-10v8" stroke="#7058D0" stroke-width="5" stroke-linecap="round"/><path d="M82 126h92" stroke="#7158CF" stroke-width="4" stroke-linecap="round" opacity=".7"/></g>
+</svg><text x="73" y="429" font-family="Arial, sans-serif" font-size="13.5" font-weight="700" fill="#E7EDF7">Database</text><text x="73" y="446" font-family="Arial, sans-serif" font-size="9.5" fill="#91A2BF">Tables and records</text>
+<svg x="25" y="480" width="38" height="38" viewBox="0 0 256 256" aria-hidden="true"><defs>
+<linearGradient id="sidebar-forms-forms-bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#E65FA5"/><stop offset="1" stop-color="#9D367F"/></linearGradient>
+<radialGradient id="sidebar-forms-forms-light" cx="24%" cy="12%" r="90%"><stop offset="0" stop-color="#FFB6DA" stop-opacity=".65"/><stop offset="1" stop-color="#FFB6DA" stop-opacity="0"/></radialGradient>
+<linearGradient id="sidebar-forms-forms-glass" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".21"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>
+<filter id="sidebar-forms-forms-shadow" x="-30%" y="-30%" width="160%" height="180%"><feDropShadow dx="0" dy="10" stdDeviation="9" flood-color="#10234A" flood-opacity=".24"/></filter>
+</defs>
+<rect x="8" y="8" width="240" height="240" rx="58" fill="url(#sidebar-forms-forms-bg)"/>
+<rect x="8" y="8" width="240" height="240" rx="58" fill="url(#sidebar-forms-forms-light)"/>
+<path d="M66 9h124a58 58 0 0 1 58 58v14C173 52 93 43 9 100V67A58 58 0 0 1 66 9z" fill="url(#sidebar-forms-forms-glass)"/>
+<rect x="9.5" y="9.5" width="237" height="237" rx="56.5" fill="none" stroke="#fff" stroke-opacity=".26" stroke-width="3"/>
+<ellipse cx="128" cy="219" rx="73" ry="10" fill="#10234A" opacity=".15"/>
+<g filter="url(#sidebar-forms-forms-shadow)"><path d="M76 49h84l30 30v128a12 12 0 0 1-12 12H76a12 12 0 0 1-12-12V61a12 12 0 0 1 12-12z" fill="#FFF8FC"/><path d="M160 49v25a7 7 0 0 0 7 7h23" fill="#F8D8EB"/><rect x="84" y="96" width="89" height="8" rx="4" fill="#E77CB6"/><rect x="84" y="114" width="64" height="5" rx="2.5" fill="#E9C3D8"/><g><rect x="84" y="133" width="18" height="18" rx="5" fill="#E66AA9"/><path d="m88 142 4 4 7-9" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><rect x="111" y="138" width="66" height="7" rx="3.5" fill="#D7C4D1"/><rect x="84" y="161" width="18" height="18" rx="5" fill="#E66AA9"/><path d="m88 170 4 4 7-9" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><rect x="111" y="166" width="54" height="7" rx="3.5" fill="#D7C4D1"/></g><rect x="84" y="188" width="62" height="7" rx="3.5" fill="#F1D5E5"/></g>
+</svg><text x="73" y="496" font-family="Arial, sans-serif" font-size="13.5" font-weight="700" fill="#E7EDF7">Forms</text><text x="73" y="513" font-family="Arial, sans-serif" font-size="9.5" fill="#91A2BF">Forms and responses</text>
+<svg x="25" y="547" width="38" height="38" viewBox="0 0 256 256" aria-hidden="true"><defs>
+<linearGradient id="sidebar-lists-lists-bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#21AFAF"/><stop offset="1" stop-color="#087476"/></linearGradient>
+<radialGradient id="sidebar-lists-lists-light" cx="24%" cy="12%" r="90%"><stop offset="0" stop-color="#8CE7E2" stop-opacity=".65"/><stop offset="1" stop-color="#8CE7E2" stop-opacity="0"/></radialGradient>
+<linearGradient id="sidebar-lists-lists-glass" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".21"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>
+<filter id="sidebar-lists-lists-shadow" x="-30%" y="-30%" width="160%" height="180%"><feDropShadow dx="0" dy="10" stdDeviation="9" flood-color="#10234A" flood-opacity=".24"/></filter>
+</defs>
+<rect x="8" y="8" width="240" height="240" rx="58" fill="url(#sidebar-lists-lists-bg)"/>
+<rect x="8" y="8" width="240" height="240" rx="58" fill="url(#sidebar-lists-lists-light)"/>
+<path d="M66 9h124a58 58 0 0 1 58 58v14C173 52 93 43 9 100V67A58 58 0 0 1 66 9z" fill="url(#sidebar-lists-lists-glass)"/>
+<rect x="9.5" y="9.5" width="237" height="237" rx="56.5" fill="none" stroke="#fff" stroke-opacity=".26" stroke-width="3"/>
+<ellipse cx="128" cy="219" rx="73" ry="10" fill="#10234A" opacity=".15"/>
+<g filter="url(#sidebar-lists-lists-shadow)"><rect x="59" y="51" width="138" height="157" rx="19" fill="#F4FFFE"/><rect x="59" y="51" width="138" height="31" rx="19" fill="#D8F7F4"/><path d="M59 70h138v12H59z" fill="#D8F7F4"/><g fill="none" stroke="#20A5A3" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"><path d="m77 105 7 7 13-15m-20 46 7 7 13-15m-20 46 7 7 13-15"/></g><g fill="#B6D9D8"><rect x="110" y="102" width="65" height="7" rx="3.5"/><rect x="110" y="116" width="47" height="5" rx="2.5"/><rect x="110" y="143" width="72" height="7" rx="3.5"/><rect x="110" y="157" width="49" height="5" rx="2.5"/><rect x="110" y="184" width="62" height="7" rx="3.5"/></g><rect x="72" y="95" width="111" height="34" rx="9" fill="none" stroke="#8FE0DA" stroke-width="2"/></g>
+</svg><text x="73" y="563" font-family="Arial, sans-serif" font-size="13.5" font-weight="700" fill="#E7EDF7">Lists</text><text x="73" y="580" font-family="Arial, sans-serif" font-size="9.5" fill="#91A2BF">Lists and tracking</text>
+<svg x="25" y="614" width="38" height="38" viewBox="0 0 256 256" aria-hidden="true"><defs>
+<linearGradient id="sidebar-planner-planner-bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#567FE5"/><stop offset="1" stop-color="#314BA8"/></linearGradient>
+<radialGradient id="sidebar-planner-planner-light" cx="24%" cy="12%" r="90%"><stop offset="0" stop-color="#A7C0FF" stop-opacity=".65"/><stop offset="1" stop-color="#A7C0FF" stop-opacity="0"/></radialGradient>
+<linearGradient id="sidebar-planner-planner-glass" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".21"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>
+<filter id="sidebar-planner-planner-shadow" x="-30%" y="-30%" width="160%" height="180%"><feDropShadow dx="0" dy="10" stdDeviation="9" flood-color="#10234A" flood-opacity=".24"/></filter>
+</defs>
+<rect x="8" y="8" width="240" height="240" rx="58" fill="url(#sidebar-planner-planner-bg)"/>
+<rect x="8" y="8" width="240" height="240" rx="58" fill="url(#sidebar-planner-planner-light)"/>
+<path d="M66 9h124a58 58 0 0 1 58 58v14C173 52 93 43 9 100V67A58 58 0 0 1 66 9z" fill="url(#sidebar-planner-planner-glass)"/>
+<rect x="9.5" y="9.5" width="237" height="237" rx="56.5" fill="none" stroke="#fff" stroke-opacity=".26" stroke-width="3"/>
+<ellipse cx="128" cy="219" rx="73" ry="10" fill="#10234A" opacity=".15"/>
+<g filter="url(#sidebar-planner-planner-shadow)"><rect x="58" y="60" width="140" height="146" rx="17" fill="#F7FAFF"/><rect x="58" y="60" width="140" height="39" rx="17" fill="#DCE7FF"/><path d="M58 82h140v17H58z" fill="#DCE7FF"/><path d="M92 53v22m72-22v22" stroke="#314BA8" stroke-width="9" stroke-linecap="round"/><g fill="#B6C8F2"><rect x="77" y="116" width="17" height="15" rx="4"/><rect x="105" y="116" width="17" height="15" rx="4"/><rect x="133" y="116" width="17" height="15" rx="4"/><rect x="161" y="116" width="17" height="15" rx="4"/><rect x="77" y="143" width="17" height="15" rx="4"/><rect x="105" y="143" width="17" height="15" rx="4"/><rect x="161" y="143" width="17" height="15" rx="4"/></g><rect x="131" y="140" width="22" height="21" rx="5" fill="#537EE7"/><rect x="77" y="170" width="101" height="8" rx="4" fill="#D6E0F5"/><rect x="77" y="185" width="69" height="6" rx="3" fill="#B6C8F2"/><path d="M138 174h28" stroke="#537EE7" stroke-width="5" stroke-linecap="round"/></g>
+</svg><text x="73" y="630" font-family="Arial, sans-serif" font-size="13.5" font-weight="700" fill="#E7EDF7">Planner</text><text x="73" y="647" font-family="Arial, sans-serif" font-size="9.5" fill="#91A2BF">Plans and tasks</text>
+<svg x="25" y="681" width="38" height="38" viewBox="0 0 256 256" aria-hidden="true"><defs>
+<linearGradient id="sidebar-todo-to-do-bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#32B981"/><stop offset="1" stop-color="#10744F"/></linearGradient>
+<radialGradient id="sidebar-todo-to-do-light" cx="24%" cy="12%" r="90%"><stop offset="0" stop-color="#9CF0C7" stop-opacity=".65"/><stop offset="1" stop-color="#9CF0C7" stop-opacity="0"/></radialGradient>
+<linearGradient id="sidebar-todo-to-do-glass" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".21"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>
+<filter id="sidebar-todo-to-do-shadow" x="-30%" y="-30%" width="160%" height="180%"><feDropShadow dx="0" dy="10" stdDeviation="9" flood-color="#10234A" flood-opacity=".24"/></filter>
+</defs>
+<rect x="8" y="8" width="240" height="240" rx="58" fill="url(#sidebar-todo-to-do-bg)"/>
+<rect x="8" y="8" width="240" height="240" rx="58" fill="url(#sidebar-todo-to-do-light)"/>
+<path d="M66 9h124a58 58 0 0 1 58 58v14C173 52 93 43 9 100V67A58 58 0 0 1 66 9z" fill="url(#sidebar-todo-to-do-glass)"/>
+<rect x="9.5" y="9.5" width="237" height="237" rx="56.5" fill="none" stroke="#fff" stroke-opacity=".26" stroke-width="3"/>
+<ellipse cx="128" cy="219" rx="73" ry="10" fill="#10234A" opacity=".15"/>
+<g filter="url(#sidebar-todo-to-do-shadow)"><rect x="54" y="59" width="148" height="145" rx="19" fill="#F7FFFA"/><rect x="74" y="82" width="108" height="33" rx="9" fill="#E1F8EB"/><circle cx="92" cy="98" r="10" fill="#29B67A"/><path d="m87 98 4 4 7-8" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><rect x="111" y="94" width="57" height="7" rx="3.5" fill="#88CDB0"/><rect x="74" y="126" width="108" height="27" rx="8" fill="#F0F8F3"/><circle cx="92" cy="139" r="8" fill="none" stroke="#A9CCB9" stroke-width="3"/><rect x="111" y="136" width="53" height="6" rx="3" fill="#C4DCD0"/><rect x="74" y="162" width="108" height="27" rx="8" fill="#F0F8F3"/><circle cx="92" cy="175" r="8" fill="none" stroke="#A9CCB9" stroke-width="3"/><rect x="111" y="172" width="42" height="6" rx="3" fill="#C4DCD0"/><circle cx="174" cy="72" r="27" fill="#19A86C" stroke="#E9FFF2" stroke-width="5"/><path d="m160 72 9 9 19-22" fill="none" stroke="#fff" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/></g>
+</svg><text x="73" y="697" font-family="Arial, sans-serif" font-size="13.5" font-weight="700" fill="#E7EDF7">To Do</text><text x="73" y="714" font-family="Arial, sans-serif" font-size="9.5" fill="#91A2BF">Personal tasks</text>
+<svg x="25" y="748" width="38" height="38" viewBox="0 0 256 256" aria-hidden="true"><defs>
+<linearGradient id="sidebar-workspace-workspace-bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6778DF"/><stop offset="1" stop-color="#3B459F"/></linearGradient>
+<radialGradient id="sidebar-workspace-workspace-light" cx="24%" cy="12%" r="90%"><stop offset="0" stop-color="#B7C4FF" stop-opacity=".65"/><stop offset="1" stop-color="#B7C4FF" stop-opacity="0"/></radialGradient>
+<linearGradient id="sidebar-workspace-workspace-glass" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".21"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>
+<filter id="sidebar-workspace-workspace-shadow" x="-30%" y="-30%" width="160%" height="180%"><feDropShadow dx="0" dy="10" stdDeviation="9" flood-color="#10234A" flood-opacity=".24"/></filter>
+</defs>
+<rect x="8" y="8" width="240" height="240" rx="58" fill="url(#sidebar-workspace-workspace-bg)"/>
+<rect x="8" y="8" width="240" height="240" rx="58" fill="url(#sidebar-workspace-workspace-light)"/>
+<path d="M66 9h124a58 58 0 0 1 58 58v14C173 52 93 43 9 100V67A58 58 0 0 1 66 9z" fill="url(#sidebar-workspace-workspace-glass)"/>
+<rect x="9.5" y="9.5" width="237" height="237" rx="56.5" fill="none" stroke="#fff" stroke-opacity=".26" stroke-width="3"/>
+<ellipse cx="128" cy="219" rx="73" ry="10" fill="#10234A" opacity=".15"/>
+<g filter="url(#sidebar-workspace-workspace-shadow)"><path d="M55 83q0-12 12-12h54v107H67q-12 0-12-12z" fill="#E7EBFF"/><rect x="82" y="47" width="112" height="101" rx="15" fill="#F8FAFF"/><rect x="82" y="47" width="112" height="25" rx="15" fill="#DCE2FF"/><path d="M82 60h112v12H82z" fill="#DCE2FF"/><rect x="96" y="85" width="38" height="43" rx="7" fill="#B6C2FF"/><rect x="143" y="85" width="37" height="7" rx="3.5" fill="#8797E9"/><rect x="143" y="99" width="28" height="6" rx="3" fill="#C4CCF1"/><rect x="143" y="112" width="34" height="6" rx="3" fill="#C4CCF1"/><rect x="103" y="156" width="105" height="57" rx="12" fill="#F5F7FF"/><rect x="115" y="169" width="20" height="20" rx="5" fill="#6678DE"/><rect x="144" y="170" width="49" height="6" rx="3" fill="#AAB5EE"/><rect x="144" y="183" width="38" height="5" rx="2.5" fill="#D1D8F5"/><path d="M67 108h15m-7-7 7 7-7 7M138 148v8" stroke="#5A6ACC" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></g>
+</svg><text x="73" y="764" font-family="Arial, sans-serif" font-size="13.5" font-weight="700" fill="#E7EDF7">Workspace</text><text x="73" y="781" font-family="Arial, sans-serif" font-size="9.5" fill="#91A2BF">Project workspaces</text>
 <path d="M24 1112h190" stroke="#344766"/><text x="28" y="1145" font-family="Arial, sans-serif" font-size="12" fill="#A8B6D0">Brightdesk Office Suite</text><text x="28" y="1170" font-family="Arial, sans-serif" font-size="11" fill="#7184A7">Version 0.1.0 · Local-first</text>
 <text x="270" y="65" font-family="Arial, sans-serif" font-size="12" font-weight="700" letter-spacing="2" fill="#7786A0">BRIGHTDESK APP CENTRE</text>
 <text x="270" y="111" font-family="Arial, sans-serif" font-size="34" font-weight="700" fill="#1B2941">Your apps</text>
 <text x="270" y="141" font-family="Arial, sans-serif" font-size="15" fill="#68778F">Everything you need, all in one place.</text>
-<rect x="1060" y="54" width="330" height="44" rx="11" fill="#FFFFFF" stroke="#E0E6EF"/><circle cx="1084" cy="76" r="7" fill="none" stroke="#8B98AC" stroke-width="2"/><path d="m1089 81 6 6" stroke="#8B98AC" stroke-width="2" stroke-linecap="round"/><text x="1105" y="81" font-family="Arial, sans-serif" font-size="13" fill="#9AA5B6">Search apps</text>
+
 <circle cx="1440" cy="76" r="19" fill="#FFFFFF" stroke="#DCE3ED"/><g id="notifications-bell" transform="translate(1429 65)" fill="none" stroke="#53627B" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9Z"/><path d="M10 21h4"/></g><circle cx="1490" cy="76" r="19" fill="#FFFFFF" stroke="#DCE3ED"/><g id="settings-cogwheel" transform="translate(1478 64)" fill="none" stroke="#53627B" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8.25a3.75 3.75 0 1 0 0 7.5 3.75 3.75 0 0 0 0-7.5Z"/><path d="M19.4 13.5a7.7 7.7 0 0 0 0-3l1.45-1.12-1.8-3.12-1.72.7a7.7 7.7 0 0 0-2.6-1.5L14.45 3h-4.9l-.28 2.46a7.7 7.7 0 0 0-2.6 1.5l-1.72-.7-1.8 3.12L4.6 10.5a7.7 7.7 0 0 0 0 3l-1.45 1.12 1.8 3.12 1.72-.7a7.7 7.7 0 0 0 2.6 1.5L9.55 21h4.9l.28-2.46a7.7 7.7 0 0 0 2.6-1.5l1.72.7 1.8-3.12L19.4 13.5Z"/></g>
-<rect x="270" y="169" width="1264" height="94" rx="17" fill="url(#banner)" stroke="#DCE5F7"/>
-<circle cx="316" cy="216" r="22" fill="#D6E2FF"/><path d="M316 202v14m0 0 8-8m-8 8-8-8m-4 17h24" fill="none" stroke="#4669CA" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-<text x="354" y="210" font-family="Arial, sans-serif" font-size="18" font-weight="700" fill="#23375C">2 updates available</text><text x="354" y="234" font-family="Arial, sans-serif" font-size="13" fill="#63738F">Keep your Brightdesk apps up to date.</text>
-<rect x="1371" y="190" width="137" height="48" rx="10" fill="#314E9C"/><text x="1439.5" y="220" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" font-weight="700" fill="#FFFFFF">Update all</text>
+<rect x="270" y="169" width="1264" height="94" rx="17" fill="#FFFFFF" stroke="#DCE5F7"/>
+<circle cx="316" cy="216" r="22" fill="#E9F0FF"/><path d="M316 205v22m-11-11h22" fill="none" stroke="#4669CA" stroke-width="2.6" stroke-linecap="round"/>
+<text x="354" y="209" font-family="Arial, sans-serif" font-size="18" font-weight="700" fill="#23375C">Install adds a product to your Brightdesk workspace</text><text x="354" y="234" font-family="Arial, sans-serif" font-size="13" fill="#63738F">It does not download a separate desktop installer. Suite updates are managed separately in Settings.</text>
 <g><rect x="270" y="295" width="240" height="240" rx="18" fill="#14233F" opacity=".05"/><rect x="270" y="292" width="240" height="240" rx="18" fill="#FFFFFF" stroke="#E2E8F1"/>
 <svg x="287" y="309" width="70" height="70" viewBox="0 0 256 256"><defs>
 <linearGradient id="pages-bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2B76D8"/><stop offset="1" stop-color="#174A9D"/></linearGradient>
@@ -37,9 +162,9 @@
 </svg>
 <circle cx="480" cy="322" r="16" fill="#F4F6FA"/><circle cx="472" cy="322" r="2.1" fill="#707D92"/><circle cx="480" cy="322" r="2.1" fill="#707D92"/><circle cx="488" cy="322" r="2.1" fill="#707D92"/>
 <text x="288" y="404" font-family="Arial, sans-serif" font-size="19" font-weight="700" fill="#1B2941">Pages</text><text x="288" y="431" font-family="Arial, sans-serif" font-size="13.5" fill="#64728A">Documents &amp; writing</text>
-<rect x="287" y="446" width="156" height="22" rx="11" fill="#E9F7F0"/><circle cx="299" cy="457" r="3.4" fill="#258D68"/><text x="309" y="461.5" font-family="Arial, sans-serif" font-size="10.5" font-weight="700" fill="#258D68">INSTALLED · v0.1.0</text>
-<rect x="287" y="482" width="145" height="34" rx="9" fill="#233B67"/><text x="359" y="504" text-anchor="middle" font-family="Arial, sans-serif" font-size="13.5" font-weight="700" fill="#FFFFFF">Open</text>
-<text x="452" y="503" font-family="Arial, sans-serif" font-size="11" fill="#8A95A8">Manage</text></g>
+<rect x="287" y="446" width="156" height="22" rx="11" fill="#E9F7F0"/><circle cx="299" cy="457" r="3.4" fill="#258D68"/><text x="309" y="461.5" font-family="Arial, sans-serif" font-size="10.5" font-weight="700" fill="#258D68">INSTALLED</text>
+<rect x="287" y="482" width="92" height="34" rx="9" fill="#233B67"/><text x="333" y="504" text-anchor="middle" font-family="Arial, sans-serif" font-size="12.5" font-weight="700" fill="#FFFFFF">Open</text>
+<rect x="387" y="482" width="106" height="34" rx="9" fill="#FFFFFF" stroke="#DCE3ED"/><text x="440" y="504" text-anchor="middle" font-family="Arial, sans-serif" font-size="10.5" font-weight="700" fill="#52627A">Uninstall</text></g>
 <g><rect x="526" y="295" width="240" height="240" rx="18" fill="#14233F" opacity=".05"/><rect x="526" y="292" width="240" height="240" rx="18" fill="#FFFFFF" stroke="#E2E8F1"/>
 <svg x="543" y="309" width="70" height="70" viewBox="0 0 256 256"><defs>
 <linearGradient id="sheets-bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#21AD78"/><stop offset="1" stop-color="#08724E"/></linearGradient>
@@ -56,9 +181,9 @@
 </svg>
 <circle cx="736" cy="322" r="16" fill="#F4F6FA"/><circle cx="728" cy="322" r="2.1" fill="#707D92"/><circle cx="736" cy="322" r="2.1" fill="#707D92"/><circle cx="744" cy="322" r="2.1" fill="#707D92"/>
 <text x="544" y="404" font-family="Arial, sans-serif" font-size="19" font-weight="700" fill="#1B2941">Sheets</text><text x="544" y="431" font-family="Arial, sans-serif" font-size="13.5" fill="#64728A">Spreadsheets &amp; formulas</text>
-<rect x="543" y="446" width="143" height="22" rx="11" fill="#FFF5E9"/><circle cx="555" cy="457" r="3.4" fill="#B66A20"/><text x="565" y="461.5" font-family="Arial, sans-serif" font-size="10.5" font-weight="700" fill="#B66A20">UPDATE AVAILABLE</text>
-<rect x="543" y="482" width="145" height="34" rx="9" fill="#B86C2B"/><text x="615" y="504" text-anchor="middle" font-family="Arial, sans-serif" font-size="13.5" font-weight="700" fill="#FFFFFF">Update</text>
-<text x="708" y="503" font-family="Arial, sans-serif" font-size="11" fill="#8A95A8">Manage</text></g>
+<rect x="543" y="446" width="176" height="22" rx="11" fill="#EEF1FF"/><circle cx="555" cy="457" r="3.4" fill="#536DD2"/><text x="565" y="461.5" font-family="Arial, sans-serif" font-size="9.5" font-weight="700" fill="#B66A20">AVAILABLE TO INSTALL</text>
+<rect x="543" y="482" width="145" height="34" rx="9" fill="#536DD2"/><text x="615" y="504" text-anchor="middle" font-family="Arial, sans-serif" font-size="13.5" font-weight="700" fill="#FFFFFF">Install</text>
+</g>
 <g><rect x="782" y="295" width="240" height="240" rx="18" fill="#14233F" opacity=".05"/><rect x="782" y="292" width="240" height="240" rx="18" fill="#FFFFFF" stroke="#E2E8F1"/>
 <svg x="799" y="309" width="70" height="70" viewBox="0 0 256 256"><defs>
 <linearGradient id="decks-bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F17A62"/><stop offset="1" stop-color="#B9413F"/></linearGradient>
@@ -75,9 +200,9 @@
 </svg>
 <circle cx="992" cy="322" r="16" fill="#F4F6FA"/><circle cx="984" cy="322" r="2.1" fill="#707D92"/><circle cx="992" cy="322" r="2.1" fill="#707D92"/><circle cx="1000" cy="322" r="2.1" fill="#707D92"/>
 <text x="800" y="404" font-family="Arial, sans-serif" font-size="19" font-weight="700" fill="#1B2941">Decks</text><text x="800" y="431" font-family="Arial, sans-serif" font-size="13.5" fill="#64728A">Presentations &amp; slides</text>
-<rect x="799" y="446" width="156" height="22" rx="11" fill="#E9F7F0"/><circle cx="811" cy="457" r="3.4" fill="#258D68"/><text x="821" y="461.5" font-family="Arial, sans-serif" font-size="10.5" font-weight="700" fill="#258D68">INSTALLED · v0.1.0</text>
-<rect x="799" y="482" width="145" height="34" rx="9" fill="#233B67"/><text x="871" y="504" text-anchor="middle" font-family="Arial, sans-serif" font-size="13.5" font-weight="700" fill="#FFFFFF">Open</text>
-<text x="964" y="503" font-family="Arial, sans-serif" font-size="11" fill="#8A95A8">Manage</text></g>
+<rect x="799" y="446" width="156" height="22" rx="11" fill="#E9F7F0"/><circle cx="811" cy="457" r="3.4" fill="#258D68"/><text x="821" y="461.5" font-family="Arial, sans-serif" font-size="10.5" font-weight="700" fill="#258D68">INSTALLED</text>
+<rect x="799" y="482" width="92" height="34" rx="9" fill="#233B67"/><text x="845" y="504" text-anchor="middle" font-family="Arial, sans-serif" font-size="12.5" font-weight="700" fill="#FFFFFF">Open</text>
+<rect x="899" y="482" width="106" height="34" rx="9" fill="#FFFFFF" stroke="#DCE3ED"/><text x="952" y="504" text-anchor="middle" font-family="Arial, sans-serif" font-size="10.5" font-weight="700" fill="#52627A">Uninstall</text></g>
 <g><rect x="1038" y="295" width="240" height="240" rx="18" fill="#14233F" opacity=".05"/><rect x="1038" y="292" width="240" height="240" rx="18" fill="#FFFFFF" stroke="#E2E8F1"/>
 <svg x="1055" y="309" width="70" height="70" viewBox="0 0 256 256"><defs>
 <linearGradient id="notes-bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#EAB34F"/><stop offset="1" stop-color="#A96719"/></linearGradient>
@@ -94,9 +219,9 @@
 </svg>
 <circle cx="1248" cy="322" r="16" fill="#F4F6FA"/><circle cx="1240" cy="322" r="2.1" fill="#707D92"/><circle cx="1248" cy="322" r="2.1" fill="#707D92"/><circle cx="1256" cy="322" r="2.1" fill="#707D92"/>
 <text x="1056" y="404" font-family="Arial, sans-serif" font-size="19" font-weight="700" fill="#1B2941">Notes</text><text x="1056" y="431" font-family="Arial, sans-serif" font-size="13.5" fill="#64728A">Notes &amp; ideas</text>
-<rect x="1055" y="446" width="156" height="22" rx="11" fill="#E9F7F0"/><circle cx="1067" cy="457" r="3.4" fill="#258D68"/><text x="1077" y="461.5" font-family="Arial, sans-serif" font-size="10.5" font-weight="700" fill="#258D68">INSTALLED · v0.1.0</text>
-<rect x="1055" y="482" width="145" height="34" rx="9" fill="#233B67"/><text x="1127" y="504" text-anchor="middle" font-family="Arial, sans-serif" font-size="13.5" font-weight="700" fill="#FFFFFF">Open</text>
-<text x="1220" y="503" font-family="Arial, sans-serif" font-size="11" fill="#8A95A8">Manage</text></g>
+<rect x="1055" y="446" width="156" height="22" rx="11" fill="#E9F7F0"/><circle cx="1067" cy="457" r="3.4" fill="#258D68"/><text x="1077" y="461.5" font-family="Arial, sans-serif" font-size="10.5" font-weight="700" fill="#258D68">INSTALLED</text>
+<rect x="1055" y="482" width="92" height="34" rx="9" fill="#233B67"/><text x="1101" y="504" text-anchor="middle" font-family="Arial, sans-serif" font-size="12.5" font-weight="700" fill="#FFFFFF">Open</text>
+<rect x="1155" y="482" width="106" height="34" rx="9" fill="#FFFFFF" stroke="#DCE3ED"/><text x="1208" y="504" text-anchor="middle" font-family="Arial, sans-serif" font-size="10.5" font-weight="700" fill="#52627A">Uninstall</text></g>
 <g><rect x="1294" y="295" width="240" height="240" rx="18" fill="#14233F" opacity=".05"/><rect x="1294" y="292" width="240" height="240" rx="18" fill="#FFFFFF" stroke="#E2E8F1"/>
 <svg x="1311" y="309" width="70" height="70" viewBox="0 0 256 256"><defs>
 <linearGradient id="database-bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8666E9"/><stop offset="1" stop-color="#4C35A9"/></linearGradient>
@@ -113,9 +238,9 @@
 </svg>
 <circle cx="1504" cy="322" r="16" fill="#F4F6FA"/><circle cx="1496" cy="322" r="2.1" fill="#707D92"/><circle cx="1504" cy="322" r="2.1" fill="#707D92"/><circle cx="1512" cy="322" r="2.1" fill="#707D92"/>
 <text x="1312" y="404" font-family="Arial, sans-serif" font-size="19" font-weight="700" fill="#1B2941">Database</text><text x="1312" y="431" font-family="Arial, sans-serif" font-size="13.5" fill="#64728A">Tables &amp; structured records</text>
-<rect x="1311" y="446" width="156" height="22" rx="11" fill="#EEF1FF"/><circle cx="1323" cy="457" r="3.4" fill="#536DD2"/><text x="1333" y="461.5" font-family="Arial, sans-serif" font-size="10.5" font-weight="700" fill="#536DD2">NOT INSTALLED</text>
-<rect x="1311" y="482" width="145" height="34" rx="9" fill="#536DD2"/><text x="1383" y="504" text-anchor="middle" font-family="Arial, sans-serif" font-size="13.5" font-weight="700" fill="#FFFFFF">Download</text>
-<text x="1476" y="503" font-family="Arial, sans-serif" font-size="11" fill="#8A95A8">Manage</text></g>
+<rect x="1311" y="446" width="176" height="22" rx="11" fill="#EEF1FF"/><circle cx="1323" cy="457" r="3.4" fill="#536DD2"/><text x="1333" y="461.5" font-family="Arial, sans-serif" font-size="9.5" font-weight="700" fill="#536DD2">AVAILABLE TO INSTALL</text>
+<rect x="1311" y="482" width="145" height="34" rx="9" fill="#536DD2"/><text x="1383" y="504" text-anchor="middle" font-family="Arial, sans-serif" font-size="13.5" font-weight="700" fill="#FFFFFF">Install</text>
+</g>
 <g><rect x="270" y="553" width="240" height="240" rx="18" fill="#14233F" opacity=".05"/><rect x="270" y="550" width="240" height="240" rx="18" fill="#FFFFFF" stroke="#E2E8F1"/>
 <svg x="287" y="567" width="70" height="70" viewBox="0 0 256 256"><defs>
 <linearGradient id="forms-bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#E65FA5"/><stop offset="1" stop-color="#9D367F"/></linearGradient>
@@ -132,9 +257,9 @@
 </svg>
 <circle cx="480" cy="580" r="16" fill="#F4F6FA"/><circle cx="472" cy="580" r="2.1" fill="#707D92"/><circle cx="480" cy="580" r="2.1" fill="#707D92"/><circle cx="488" cy="580" r="2.1" fill="#707D92"/>
 <text x="288" y="662" font-family="Arial, sans-serif" font-size="19" font-weight="700" fill="#1B2941">Forms</text><text x="288" y="689" font-family="Arial, sans-serif" font-size="13.5" fill="#64728A">Forms, surveys &amp; quizzes</text>
-<rect x="287" y="704" width="156" height="22" rx="11" fill="#E9F7F0"/><circle cx="299" cy="715" r="3.4" fill="#258D68"/><text x="309" y="719.5" font-family="Arial, sans-serif" font-size="10.5" font-weight="700" fill="#258D68">INSTALLED · v0.1.0</text>
-<rect x="287" y="740" width="145" height="34" rx="9" fill="#233B67"/><text x="359" y="762" text-anchor="middle" font-family="Arial, sans-serif" font-size="13.5" font-weight="700" fill="#FFFFFF">Open</text>
-<text x="452" y="761" font-family="Arial, sans-serif" font-size="11" fill="#8A95A8">Manage</text></g>
+<rect x="287" y="704" width="156" height="22" rx="11" fill="#E9F7F0"/><circle cx="299" cy="715" r="3.4" fill="#258D68"/><text x="309" y="719.5" font-family="Arial, sans-serif" font-size="10.5" font-weight="700" fill="#258D68">INSTALLED</text>
+<rect x="287" y="740" width="92" height="34" rx="9" fill="#233B67"/><text x="333" y="762" text-anchor="middle" font-family="Arial, sans-serif" font-size="12.5" font-weight="700" fill="#FFFFFF">Open</text>
+<rect x="387" y="740" width="106" height="34" rx="9" fill="#FFFFFF" stroke="#DCE3ED"/><text x="440" y="762" text-anchor="middle" font-family="Arial, sans-serif" font-size="10.5" font-weight="700" fill="#52627A">Uninstall</text></g>
 <g><rect x="526" y="553" width="240" height="240" rx="18" fill="#14233F" opacity=".05"/><rect x="526" y="550" width="240" height="240" rx="18" fill="#FFFFFF" stroke="#E2E8F1"/>
 <svg x="543" y="567" width="70" height="70" viewBox="0 0 256 256"><defs>
 <linearGradient id="lists-bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#21AFAF"/><stop offset="1" stop-color="#087476"/></linearGradient>
@@ -151,9 +276,9 @@
 </svg>
 <circle cx="736" cy="580" r="16" fill="#F4F6FA"/><circle cx="728" cy="580" r="2.1" fill="#707D92"/><circle cx="736" cy="580" r="2.1" fill="#707D92"/><circle cx="744" cy="580" r="2.1" fill="#707D92"/>
 <text x="544" y="662" font-family="Arial, sans-serif" font-size="19" font-weight="700" fill="#1B2941">Lists</text><text x="544" y="689" font-family="Arial, sans-serif" font-size="13.5" fill="#64728A">Lists &amp; tracking</text>
-<rect x="543" y="704" width="143" height="22" rx="11" fill="#FFF5E9"/><circle cx="555" cy="715" r="3.4" fill="#B66A20"/><text x="565" y="719.5" font-family="Arial, sans-serif" font-size="10.5" font-weight="700" fill="#B66A20">UPDATE AVAILABLE</text>
-<rect x="543" y="740" width="145" height="34" rx="9" fill="#B86C2B"/><text x="615" y="762" text-anchor="middle" font-family="Arial, sans-serif" font-size="13.5" font-weight="700" fill="#FFFFFF">Update</text>
-<text x="708" y="761" font-family="Arial, sans-serif" font-size="11" fill="#8A95A8">Manage</text></g>
+<rect x="543" y="704" width="176" height="22" rx="11" fill="#EEF1FF"/><circle cx="555" cy="715" r="3.4" fill="#536DD2"/><text x="565" y="719.5" font-family="Arial, sans-serif" font-size="9.5" font-weight="700" fill="#B66A20">AVAILABLE TO INSTALL</text>
+<rect x="543" y="740" width="145" height="34" rx="9" fill="#536DD2"/><text x="615" y="762" text-anchor="middle" font-family="Arial, sans-serif" font-size="13.5" font-weight="700" fill="#FFFFFF">Install</text>
+</g>
 <g><rect x="782" y="553" width="240" height="240" rx="18" fill="#14233F" opacity=".05"/><rect x="782" y="550" width="240" height="240" rx="18" fill="#FFFFFF" stroke="#E2E8F1"/>
 <svg x="799" y="567" width="70" height="70" viewBox="0 0 256 256"><defs>
 <linearGradient id="planner-bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#567FE5"/><stop offset="1" stop-color="#314BA8"/></linearGradient>
@@ -170,9 +295,9 @@
 </svg>
 <circle cx="992" cy="580" r="16" fill="#F4F6FA"/><circle cx="984" cy="580" r="2.1" fill="#707D92"/><circle cx="992" cy="580" r="2.1" fill="#707D92"/><circle cx="1000" cy="580" r="2.1" fill="#707D92"/>
 <text x="800" y="662" font-family="Arial, sans-serif" font-size="19" font-weight="700" fill="#1B2941">Planner</text><text x="800" y="689" font-family="Arial, sans-serif" font-size="13.5" fill="#64728A">Projects &amp; planning</text>
-<rect x="799" y="704" width="156" height="22" rx="11" fill="#EEF1FF"/><circle cx="811" cy="715" r="3.4" fill="#536DD2"/><text x="821" y="719.5" font-family="Arial, sans-serif" font-size="10.5" font-weight="700" fill="#536DD2">NOT INSTALLED</text>
-<rect x="799" y="740" width="145" height="34" rx="9" fill="#536DD2"/><text x="871" y="762" text-anchor="middle" font-family="Arial, sans-serif" font-size="13.5" font-weight="700" fill="#FFFFFF">Download</text>
-<text x="964" y="761" font-family="Arial, sans-serif" font-size="11" fill="#8A95A8">Manage</text></g>
+<rect x="799" y="704" width="176" height="22" rx="11" fill="#EEF1FF"/><circle cx="811" cy="715" r="3.4" fill="#536DD2"/><text x="821" y="719.5" font-family="Arial, sans-serif" font-size="9.5" font-weight="700" fill="#536DD2">AVAILABLE TO INSTALL</text>
+<rect x="799" y="740" width="145" height="34" rx="9" fill="#536DD2"/><text x="871" y="762" text-anchor="middle" font-family="Arial, sans-serif" font-size="13.5" font-weight="700" fill="#FFFFFF">Install</text>
+</g>
 <g><rect x="1038" y="553" width="240" height="240" rx="18" fill="#14233F" opacity=".05"/><rect x="1038" y="550" width="240" height="240" rx="18" fill="#FFFFFF" stroke="#E2E8F1"/>
 <svg x="1055" y="567" width="70" height="70" viewBox="0 0 256 256"><defs>
 <linearGradient id="to-do-bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#32B981"/><stop offset="1" stop-color="#10744F"/></linearGradient>
@@ -189,9 +314,9 @@
 </svg>
 <circle cx="1248" cy="580" r="16" fill="#F4F6FA"/><circle cx="1240" cy="580" r="2.1" fill="#707D92"/><circle cx="1248" cy="580" r="2.1" fill="#707D92"/><circle cx="1256" cy="580" r="2.1" fill="#707D92"/>
 <text x="1056" y="662" font-family="Arial, sans-serif" font-size="19" font-weight="700" fill="#1B2941">To Do</text><text x="1056" y="689" font-family="Arial, sans-serif" font-size="13.5" fill="#64728A">Daily tasks &amp; reminders</text>
-<rect x="1055" y="704" width="156" height="22" rx="11" fill="#E9F7F0"/><circle cx="1067" cy="715" r="3.4" fill="#258D68"/><text x="1077" y="719.5" font-family="Arial, sans-serif" font-size="10.5" font-weight="700" fill="#258D68">INSTALLED · v0.1.0</text>
-<rect x="1055" y="740" width="145" height="34" rx="9" fill="#233B67"/><text x="1127" y="762" text-anchor="middle" font-family="Arial, sans-serif" font-size="13.5" font-weight="700" fill="#FFFFFF">Open</text>
-<text x="1220" y="761" font-family="Arial, sans-serif" font-size="11" fill="#8A95A8">Manage</text></g>
+<rect x="1055" y="704" width="156" height="22" rx="11" fill="#E9F7F0"/><circle cx="1067" cy="715" r="3.4" fill="#258D68"/><text x="1077" y="719.5" font-family="Arial, sans-serif" font-size="10.5" font-weight="700" fill="#258D68">INSTALLED</text>
+<rect x="1055" y="740" width="92" height="34" rx="9" fill="#233B67"/><text x="1101" y="762" text-anchor="middle" font-family="Arial, sans-serif" font-size="12.5" font-weight="700" fill="#FFFFFF">Open</text>
+<rect x="1155" y="740" width="106" height="34" rx="9" fill="#FFFFFF" stroke="#DCE3ED"/><text x="1208" y="762" text-anchor="middle" font-family="Arial, sans-serif" font-size="10.5" font-weight="700" fill="#52627A">Uninstall</text></g>
 <g><rect x="1294" y="553" width="240" height="240" rx="18" fill="#14233F" opacity=".05"/><rect x="1294" y="550" width="240" height="240" rx="18" fill="#FFFFFF" stroke="#E2E8F1"/>
 <svg x="1311" y="567" width="70" height="70" viewBox="0 0 256 256"><defs>
 <linearGradient id="workspace-bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6778DF"/><stop offset="1" stop-color="#3B459F"/></linearGradient>
@@ -208,15 +333,24 @@
 </svg>
 <circle cx="1504" cy="580" r="16" fill="#F4F6FA"/><circle cx="1496" cy="580" r="2.1" fill="#707D92"/><circle cx="1504" cy="580" r="2.1" fill="#707D92"/><circle cx="1512" cy="580" r="2.1" fill="#707D92"/>
 <text x="1312" y="662" font-family="Arial, sans-serif" font-size="19" font-weight="700" fill="#1B2941">Workspace</text><text x="1312" y="689" font-family="Arial, sans-serif" font-size="13.5" fill="#64728A">Your connected workspace</text>
-<rect x="1311" y="704" width="156" height="22" rx="11" fill="#E9F7F0"/><circle cx="1323" cy="715" r="3.4" fill="#258D68"/><text x="1333" y="719.5" font-family="Arial, sans-serif" font-size="10.5" font-weight="700" fill="#258D68">INSTALLED · v0.1.0</text>
-<rect x="1311" y="740" width="145" height="34" rx="9" fill="#233B67"/><text x="1383" y="762" text-anchor="middle" font-family="Arial, sans-serif" font-size="13.5" font-weight="700" fill="#FFFFFF">Open</text>
-<text x="1476" y="761" font-family="Arial, sans-serif" font-size="11" fill="#8A95A8">Manage</text></g>
-<text x="270" y="846" font-family="Arial, sans-serif" font-size="17" font-weight="700" fill="#1B2941">Manage any app</text><text x="270" y="872" font-family="Arial, sans-serif" font-size="13" fill="#68778F">Use the three-dot menu on an app card for more actions, settings and uninstall options.</text>
-<g filter="url(#shadow)"><rect x="1168" y="844" width="366" height="274" rx="16" fill="#FFFFFF" stroke="#E0E6EF"/></g>
-<text x="1194" y="880" font-family="Arial, sans-serif" font-size="15" font-weight="700" fill="#1B2941">Sheets · More actions</text><text x="1194" y="902" font-family="Arial, sans-serif" font-size="11" fill="#8491A7">Example three-dot menu</text>
-<rect x="1187" y="922" width="328" height="42" rx="8" fill="#F3F6FC"/><text x="1220" y="949" font-family="Arial, sans-serif" font-size="13" fill="#30415E">Open</text>
-<text x="1220" y="994" font-family="Arial, sans-serif" font-size="13" fill="#30415E">Check for updates</text><path d="M1202 978h12m-6-6v12" stroke="#6D7EA0" stroke-width="2" stroke-linecap="round"/>
-<path d="M1187 1010h328" stroke="#EDF0F5"/><text x="1220" y="1043" font-family="Arial, sans-serif" font-size="13" fill="#30415E">Product settings</text><path d="M1205 1034a8 8 0 1 0 0 16 8 8 0 1 0 0-16m0-4v3m0 18v3" fill="none" stroke="#6D7EA0" stroke-width="1.8"/>
-<text x="1220" y="1085" font-family="Arial, sans-serif" font-size="13" fill="#BE4C58">Uninstall</text><path d="M1201 1075h10v13h-10zM1199 1072h14" fill="none" stroke="#BE4C58" stroke-width="1.8" stroke-linecap="round"/>
-<text x="270" y="1170" font-family="Arial, sans-serif" font-size="11" fill="#8996AA">CONCEPT PREVIEW · One suite-wide Settings cogwheel appears at the top-right; there is no Settings item in the sidebar. Product-specific settings remain in the app-card menu. Other actions are design targets, not proof of live runtime behaviour.</text>
+<rect x="1311" y="704" width="156" height="22" rx="11" fill="#E9F7F0"/><circle cx="1323" cy="715" r="3.4" fill="#258D68"/><text x="1333" y="719.5" font-family="Arial, sans-serif" font-size="10.5" font-weight="700" fill="#258D68">INSTALLED</text>
+<rect x="1311" y="740" width="92" height="34" rx="9" fill="#233B67"/><text x="1357" y="762" text-anchor="middle" font-family="Arial, sans-serif" font-size="12.5" font-weight="700" fill="#FFFFFF">Open</text>
+<rect x="1411" y="740" width="106" height="34" rx="9" fill="#FFFFFF" stroke="#DCE3ED"/><text x="1464" y="762" text-anchor="middle" font-family="Arial, sans-serif" font-size="10.5" font-weight="700" fill="#52627A">Uninstall</text></g>
+<g filter="url(#shadow)"><rect x="270" y="844" width="612" height="274" rx="16" fill="#FFFFFF" stroke="#E0E6EF"/></g>
+<circle cx="312" cy="886" r="17" fill="#E9F0FF"/><path d="M312 877v18m-9-9h18" stroke="#4669CA" stroke-width="2.2" stroke-linecap="round"/>
+<text x="342" y="891" font-family="Arial, sans-serif" font-size="17" font-weight="700" fill="#1B2941">Install a product</text>
+<text x="296" y="934" font-family="Arial, sans-serif" font-size="13" fill="#53627A">Install adds an available product to this Brightdesk workspace.</text>
+<text x="296" y="958" font-family="Arial, sans-serif" font-size="13" fill="#53627A">It does not download a separate desktop installer.</text>
+<path d="M296 981h560" stroke="#EDF0F5"/>
+<text x="296" y="1013" font-family="Arial, sans-serif" font-size="13" fill="#53627A">Installed products show Open and Uninstall. Removing a product</text>
+<text x="296" y="1037" font-family="Arial, sans-serif" font-size="13" fill="#53627A">from the workspace does not delete its local documents.</text>
+<g filter="url(#shadow)"><rect x="900" y="844" width="634" height="274" rx="16" fill="#FFFFFF" stroke="#E0E6EF"/></g>
+<circle cx="942" cy="886" r="17" fill="#E9F7F0"/><path d="M935 886a7 7 0 1 1 2 5m-2-5h5m-5 0v-5" fill="none" stroke="#248A67" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="972" y="891" font-family="Arial, sans-serif" font-size="17" font-weight="700" fill="#1B2941">Update Brightdesk</text>
+<text x="926" y="934" font-family="Arial, sans-serif" font-size="13" fill="#53627A">Update applies to the Brightdesk Suite release, not an individual</text>
+<text x="926" y="958" font-family="Arial, sans-serif" font-size="13" fill="#53627A">product card. Check for updates from Settings.</text>
+<path d="M926 981h582" stroke="#EDF0F5"/>
+<text x="926" y="1013" font-family="Arial, sans-serif" font-size="13" fill="#53627A">Automatic checking is optional. Downloading and installing an</text>
+<text x="926" y="1037" font-family="Arial, sans-serif" font-size="13" fill="#53627A">update are separate actions and always require confirmation.</text>
+<text x="270" y="1150" font-family="Arial, sans-serif" font-size="11" fill="#8996AA">CONCEPT PREVIEW · Each product has its own icon; the four-panel mark above is the Brightdesk Suite logo. The sidebar shows all ten icons for reference; a live workspace lists only installed products. Card states are examples, not live account data.</text>
 </svg>

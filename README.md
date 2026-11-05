@@ -29,7 +29,11 @@ These are the only products in the approved suite. Outlook, OneDrive, Teams and 
 
 > **Concept artwork — not a screenshot.** This image communicates the intended Brightdesk visual direction. It is not a capture from the running desktop build.
 
-Brightdesk uses exactly one suite-wide Settings entry point: the cogwheel in the top-right corner. It opens the Settings area for app management, language resources and updates. The left sidebar is reserved for product navigation and contains no duplicate Settings item. The Suite preview artwork follows the same rule. The bell immediately to the left of the cogwheel is Notifications, with a clearly labelled panel and an honest empty state. Product-specific options remain in an app card's three-dot menu under **Product settings**, distinct from suite-wide Settings. The Save control has a recognisable save icon and a visible label.
+Brightdesk uses exactly one suite-wide Settings entry point: the cogwheel in the top-right corner. The four-panel mark beside the Brightdesk wordmark is the Suite logo; it is not a product icon. Each approved product has its own original icon, shown beside its name in the preview sidebar and on its product card. The concept displays all ten icons for reference; a running workspace sidebar lists only the products installed in that workspace. The bell beside the Settings cogwheel is Notifications.
+
+**What the card actions mean:** **Install** adds an available product to the current Brightdesk workspace. It does not download a separate desktop installer. Installed products show **Open** and **Uninstall**; removing a product from the workspace does not delete its local documents. **Update** is different: it applies to the Brightdesk Suite release, not an individual product card. Update checks and preferences are managed in Settings. Automatic checking is optional, and downloading and installing updates require separate confirmation. The current suite has no configured GitHub update publishing provider, so automatic release delivery is not active or verified.
+
+The current App Centre uses direct **Open**, **Uninstall** and **Install** actions. A three-dot **Product settings** menu is not shown as an implemented control in this preview. Product-specific card settings remain a design consideration, not a claim about the current interface. The Save control has a recognisable save icon and a visible label.
 
 ## Cross-platform consistency
 
