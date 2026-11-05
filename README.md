@@ -29,6 +29,8 @@ These are the only products in the approved suite. Outlook, OneDrive, Teams and 
 
 > **Concept artwork — not a screenshot.** This image communicates the intended Brightdesk visual direction. It is not a capture from the running desktop build.
 
+The app-centre concept uses a Settings cogwheel in the top-right corner instead of an account/avatar badge. In the integrated desktop suite, that control opens the existing Settings area.
+
 ## What is implemented
 
 All ten approved product areas are integrated into the main suite source and have dedicated workspace or service modules. The current first-use scope includes:
