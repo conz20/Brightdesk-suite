@@ -42,6 +42,7 @@ test('the product source lock records all thirteen pinned modules across ten pro
   const lock = loadProductSourceLock();
   assert.equal(lock.schemaVersion, 1);
   assert.equal(lock.products.length, 13);
+  assert.equal(new Set(lock.products.map(product => product.repository)).size, 10);
   const actualProducts = lock.products.map(product => ({
     id: product.id,
     name: product.name,
