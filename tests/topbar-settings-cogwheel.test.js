@@ -20,7 +20,8 @@ test('top-right controls clearly identify notifications, saving and Settings', (
   assert.match(html, /id="open-settings"[^>]*aria-label="Open Brightdesk settings"/);
   assert.match(html, /id="open-settings"[\s\S]*?assets\/icons\/settings\.svg/);
   assert.match(app, /\$\('open-notifications'\)\.addEventListener\('click'/);
-  assert.match(app, /\$\('notification-panel'\)\.hidden\s*=\s*!\$\('notification-panel'\)\.hidden/);
+  assert.match(app, /panel\.hidden\s*=\s*!panel\.hidden/);
+  assert.match(app, /\$\('open-notifications'\)\.hidden\s*=\s*Boolean\(launchAppId\)/);
   assert.match(app, /\$\('open-settings'\)\.addEventListener\('click',[\s\S]*?\$\('manage-apps'\)\.click\(\)/);
   assert.match(app, /\$\('open-settings'\)\.hidden\s*=\s*Boolean\(launchAppId\)/);
   assert.match(styles, /\.top-notifications-button/);
