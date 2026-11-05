@@ -29,7 +29,11 @@ test('top-right controls clearly identify notifications, saving and Settings', (
   assert.match(app, /\$\('open-notifications'\)\.addEventListener\('click'/);
   assert.match(app, /panel\.hidden\s*=\s*!panel\.hidden/);
   assert.match(app, /\$\('open-notifications'\)\.hidden\s*=\s*Boolean\(launchAppId\)/);
-  assert.match(app, /\$\('open-settings'\)\.addEventListener\('click',[\s\S]*?\$\('manage-apps'\)\.click\(\)/);
+  assert.match(app, /function openSuiteSettings\(\)\s*\{\s*if \(launchAppId\) return;\s*state\.view = 'manager';\s*render\(\);\s*\}/);
+  assert.match(app, /\$('open-settings'\)\.addEventListener\('click',\s*openSuiteSettings\)/);
+  assert.doesNotMatch(html, /id="manage-apps"|settings-nav/, 'suite Settings must not be duplicated in the sidebar');
+  assert.doesNotMatch(app, /manage-apps/, 'the top-right Settings control must not depend on a sidebar button');
+  assert.match(html, /class="sidebar-bottom"/);
   assert.match(app, /\$\('open-settings'\)\.hidden\s*=\s*Boolean\(launchAppId\)/);
   assert.match(styles, /\.top-notifications-button/);
   assert.match(styles, /\.top-settings-button/);
