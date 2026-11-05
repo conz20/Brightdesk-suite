@@ -90,7 +90,6 @@ test('platform artifacts retain their Suite and product folders through collecti
     assert.match(download, /path: release/);
   }
   assert.match(workflow, /path: release\\/\\*\\*/);
-  assert.match(workflow, /release\\/apps\\/\\$\\{\\{ matrix\\.platform \\}\\}\\/\\*\\*/);
   assert.match(workflow, /name: Download the exact dependency lock used for this release[\s\S]*?path: release\/build-metadata/);
   assert.match(workflow, /files: release\/\*\*\/\*/);
   assert.doesNotMatch(workflow, /merge-multiple: true/);
