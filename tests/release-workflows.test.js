@@ -144,6 +144,12 @@ test('README freshness check uses the existing self-hosted runner', () => {
   assert.doesNotMatch(read('.github/workflows/readme-freshness.yml'), /ubuntu-latest|windows-latest|macos-latest/);
 });
 
+test('README freshness script remains compatible with the macOS system Bash 3.2', () => {
+  const workflow = read('.github/workflows/readme-freshness.yml');
+  assert.doesNotMatch(workflow, /\\bmapfile\\b/, 'macOS Bash 3.2 does not provide mapfile');
+  assert.match(workflow, /while IFS= read -r file; do/, 'changed files are processed with Bash 3.2-compatible syntax');
+});
+
 test('dependency-maintenance workflows use the existing self-hosted runner', () => {
   for (const file of ['.github/workflows/generate-lockfile.yml', '.github/workflows/generate-third-party-notices.yml']) {
     assert.match(read(file), /runs-on: self-hosted/, `${file} must not consume hosted-runner minutes`);
