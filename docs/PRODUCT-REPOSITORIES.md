@@ -46,7 +46,7 @@ The integrated Suite build is intended to produce the Suite and all ten individu
 
 Automatic update delivery is **not configured yet** in the installer branch. The Suite's `build.publish` list and the individual-product builder's `publish` list are empty. The current updater code therefore reports that automatic updates are unavailable. Interface controls, an updater dependency, or a build workflow do not prove that a release can be discovered or installed.
 
-Before claiming update parity, configure and test a reachable publishing provider and a versioned update channel for Suite and individual-product installations. Test older installations discovering the release, downloading it, validating its integrity and installing it only with the user's approval on Windows, macOS and Linux. Test Linux AppImage and DEB/package-manager update behaviour separately. Keep the update gate blocked until the evidence exists.
+The default policy is to check for updates without downloading or installing them automatically. Automatic downloading is disabled until the user explicitly opts in; automatic installation is also disabled until the user separately opts in. A manual download action remains available once a valid update source exists. Before claiming update parity, configure and test a reachable publishing provider and a versioned update channel for Suite and individual-product installations. Test older installations discovering the release, downloading it, validating its integrity and installing it only with the user's approval on Windows, macOS and Linux. Test Linux AppImage and DEB/package-manager update behaviour separately. Keep the update gate blocked until the evidence exists.
 
 ## Current CI runner limitation
 
