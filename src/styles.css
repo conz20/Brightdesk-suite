@@ -12,7 +12,7 @@
 .nav[hidden]{display:none}
 .sidebar-divider{height:1px;background:#eceef3;margin:13px 6px 9px}
 .manager-icon{background:#f1f1f7;color:#555b71;font-size:21px}
-.manager-nav.active{background:#f4f3ff}
+
 .main{padding:24px 3vw 16px}
 .topbar{min-height:58px;padding:0 2px 13px;border-bottom:1px solid #e8eaf0}
 .topbar h1{font-size:23px;font-weight:650;letter-spacing:-.55px}
@@ -70,7 +70,7 @@
 .slide-stage.theme-midnight .slide-body{color:#d9dcf4}
 .slide-stage.theme-paper{background:#fff;border:1px solid #e1e1e1}
 @media(max-width:1050px){.sidebar{width:205px}.manager-grid{grid-template-columns:1fr}.main{padding-left:19px;padding-right:19px}}
-@media(max-width:720px){.sidebar{width:100%;padding:10px;display:block}.brand{padding:0 8px 10px}.sidebar-divider{display:none}.nav{width:auto;display:inline-flex;margin:0 2px;padding:6px}.nav small{display:none}.manager-nav{margin-top:5px}.main{padding:15px 10px}.topbar{align-items:flex-start;flex-direction:column}.top-actions{justify-content:flex-start}.ribbon-tabs{overflow-x:auto;padding:0 5px}.ribbon-tab{padding:0 10px;min-height:38px}.toolbar{overflow-x:auto;flex-wrap:nowrap}.ribbon-group{flex-shrink:0}.manager-hero{padding:17px}.manager-hero-mark{display:none}.manager-bottom{align-items:flex-start;flex-direction:column}.manager-bottom .primary{width:100%}}
+@media(max-width:720px){.sidebar{width:100%;padding:10px;display:block}.brand{padding:0 8px 10px}.sidebar-divider{display:none}.nav{width:auto;display:inline-flex;margin:0 2px;padding:6px}.nav small{display:none}.main{padding:15px 10px}.topbar{align-items:flex-start;flex-direction:column}.top-actions{justify-content:flex-start}.ribbon-tabs{overflow-x:auto;padding:0 5px}.ribbon-tab{padding:0 10px;min-height:38px}.toolbar{overflow-x:auto;flex-wrap:nowrap}.ribbon-group{flex-shrink:0}.manager-hero{padding:17px}.manager-hero-mark{display:none}.manager-bottom{align-items:flex-start;flex-direction:column}.manager-bottom .primary{width:100%}}
 @media print{.ribbon-tabs,.app-manager{display:none!important}}
 
 [hidden]{display:none!important}
@@ -254,15 +254,8 @@ input:disabled, select:disabled, textarea:disabled, button:disabled { cursor: no
 
 
 /* Brightdesk management and product-card finish */
-.settings-nav { margin-top: 8px; border: 1px solid transparent; }
-.settings-nav .manager-gear {
-  width: 36px; height: 36px; border: 1px solid #dce3ed; border-radius: 11px;
-  background: linear-gradient(145deg,#f8fafc,#edf1f7); color: #31425b;
-  font-size: 21px; line-height: 1;
-}
-.settings-nav.active .manager-gear { border-color: #d2dced; background: #eaf0f8; color: #294e83; }
-.settings-sidebar-meta { padding-top: 14px; border-top: 1px solid #e8edf3; }
-.settings-sidebar-meta small { color: #8390a3; font-size: 10px; }
+.sidebar-meta { padding-top: 14px; border-top: 1px solid #e8edf3; }
+.sidebar-meta small { color: #8390a3; font-size: 10px; }
 .settings-toolbar {
   display: flex; align-items: center; justify-content: space-between; gap: 18px;
   padding: 17px 19px; margin: 0 0 15px; border: 1px solid #dfe6ef;
@@ -333,8 +326,6 @@ input:disabled, select:disabled, textarea:disabled, button:disabled { cursor: no
   .app-card > p { min-height: 0; }
 }
 
-.settings-gear-icon { display: block; width: 19px; height: 19px; object-fit: contain; }
-.settings-nav .manager-gear { display: grid; place-items: center; }
 .app-card-actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 7px; }
 .app-card-footer .app-install-action { min-width: 78px; }
 @media (max-width: 700px) {

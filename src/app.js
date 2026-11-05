@@ -802,11 +802,9 @@ function render() {
   $('open-home').classList.toggle('active', home);
   $('back-to-home').hidden = Boolean(launchAppId) || home;
   $('open-home').hidden = Boolean(launchAppId);
-  $('manage-apps').hidden = Boolean(launchAppId);
   $('open-settings').hidden = Boolean(launchAppId);
   $('open-notifications').hidden = Boolean(launchAppId);
   if (launchAppId) $('notification-panel').hidden = true;
-  $('manage-apps').classList.toggle('active', manager || languages);
   $('manage-languages').classList.toggle('active', languages);
 }
 function collectDocxBlocks() {
@@ -859,8 +857,7 @@ document.querySelectorAll('.nav[data-app]').forEach(btn=>btn.addEventListener('c
 $('open-home').addEventListener('click',()=>{if (launchAppId) return; state.view='home';render();});
 $('back-to-home').addEventListener('click',()=>{if (launchAppId) return; state.view='home';render();});
 $('app-centre-search').addEventListener('input',()=>{if(state.view==='home')renderAppManager();});
-$('manage-apps').addEventListener('click',()=>{if (launchAppId) return; state.view='manager';render();});
-$('open-settings').addEventListener('click',()=> $('manage-apps').click());
+$('open-settings').addEventListener('click',()=>{if (launchAppId) return; state.view='manager';render();});
 $('open-notifications').addEventListener('click',()=>{const panel=$('notification-panel');panel.hidden=!panel.hidden;$('open-notifications').setAttribute('aria-expanded',String(!panel.hidden));});
 document.addEventListener('keydown',event=>{if(event.key==='Escape'&&!$('notification-panel').hidden){$('notification-panel').hidden=true;$('open-notifications').setAttribute('aria-expanded','false');}});
 $('manage-languages').addEventListener('click',openLanguageManager);

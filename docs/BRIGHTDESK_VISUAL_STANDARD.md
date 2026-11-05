@@ -52,6 +52,9 @@ The product-specific accents should help recognition, not create ten unrelated d
 
 The suite home should make each product immediately recognisable and manageable:
 
+- Use one clear Settings cog in the top-right as the suite-wide entry point for app management, language resources and updates; do not repeat it as a sidebar item.
+- Label genuinely product-specific options in an app card's three-dot menu **Product settings** so they remain distinct from suite-wide Settings.
+
 - Make Home the default first viewport for the integrated suite and show all ten approved products together in a responsive app-centre grid with strong, product-specific preview artwork.
 - Keep a persistent **All apps** destination in the suite sidebar and a clear return-to-home control in every product workspace. All ten product destinations remain directly reachable from the sidebar; switching products must never strand the user inside a workspace.
 - Every home card contains the original app icon, product name, concise purpose line, truthful **Included in Brightdesk Office Suite** state and an obvious **Open** action.
