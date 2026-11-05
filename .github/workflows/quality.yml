@@ -47,6 +47,8 @@ jobs:
 
       - name: Verify third-party licence notices
         run: npm run verify:licenses
+      - name: Verify pinned product source parity
+        run: npm run verify:product-sources
 
       - name: Check the shared desktop renderer
         run: node --check src/app.js
