@@ -175,6 +175,25 @@ test('platform collector moves only the current suite files and product folders 
   }
 });
 
+test('Windows Suite filename verification treats release dots literally', () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'brightdesk-suite-version-regex-'));
+  try {
+    const wrong = 'Brightdesk-Office-Suite-0x1x0-x64.exe';
+    writeFile(root, wrong);
+    for (const filename of [
+      'Brightdesk-Windows-TERMS_AND_CONDITIONS.txt',
+      'Brightdesk-Windows-LICENSE.txt',
+      'Brightdesk-Windows-THIRD_PARTY_NOTICES.md'
+    ]) writeFile(root, filename);
+    assert.throws(
+      () => expectedSuiteFiles({ directory: root, platform: 'win', version: VERSION }),
+      /Expected exactly one Windows Brightdesk Office Suite x64 installer; found 0/
+    );
+  } finally {
+    fs.rmSync(root, { recursive: true, force: true });
+  }
+});
+
 test('Linux Suite verifier accepts the configured lower-case AppImage artifact name', () => {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'brightdesk-suite-linux-name-'));
   try {
