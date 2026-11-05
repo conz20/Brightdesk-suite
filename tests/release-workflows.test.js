@@ -149,6 +149,15 @@ test('GitHub Release publishing is manual, main-only and disabled by default', (
   assert.match(releaseJob, /permissions:\n      contents: write/);
 });
 
+test('README freshness validation uses the existing private runner without Bash 4-only commands', () => {
+  const workflow = read('.github/workflows/readme-freshness.yml');
+  assert.match(workflow, /runs-on: self-hosted/);
+  assert.doesNotMatch(workflow, /runs-on: ubuntu-latest|mapfile/);
+  assert.match(workflow, /changed_files=\(\)/);
+  assert.match(workflow, /while IFS= read -r file/);
+  assert.match(workflow, /actions\/checkout@11d5960a326750d5838078e36cf38b85af677262/);
+});
+
 test('dependency-maintenance workflows use the existing self-hosted runner', () => {
   for (const file of ['.github/workflows/generate-lockfile.yml', '.github/workflows/generate-third-party-notices.yml']) {
     assert.match(read(file), /runs-on: self-hosted/, `${file} must not consume hosted-runner minutes`);
