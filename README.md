@@ -56,6 +56,10 @@ The concept previews in the product repositories are not genuine screenshots. Th
 
 A genuine screenshot should be captured directly from the current Electron build after launching the product and checking its primary workflow. The capture must show the real interface without composited controls or fabricated UI. Use non-sensitive sample data, retain the full product window, and label the image with the tested build or commit. See the [visual standard](docs/BRIGHTDESK_VISUAL_STANDARD.md).
 
+## Installer agreement
+
+The Windows installer, macOS DMG and macOS PKG display the Brightdesk Terms and Conditions before continuing. The macOS DMG shows the agreement when opened; the PKG shows it in Apple's Installer. Choose **Accept** or **Agree** to proceed, or **Decline** or **Disagree** to cancel. Declining stops installation. A normal packaged Windows or Mac installation does not show a duplicate agreement after the desktop product opens. For a first-time Mac installation, use the DMG or PKG rather than the update ZIP.
+
 ## Local-first desktop software
 
 Brightdesk is designed to keep product data on the current device. The first-use features described above do not require an account, cloud workspace or online collaboration. Some tasks such as downloads and update checks may use network access when explicitly requested.
