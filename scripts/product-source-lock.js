@@ -57,6 +57,7 @@ function loadProductSourceLock(root = DEFAULT_ROOT) {
     }
     ids.add(product.id);
     suitePaths.add(product.suitePath);
+    resolveRepositoryFile(root, product.sourcePath);
     resolveRepositoryFile(root, product.suitePath);
   }
   return lock;
