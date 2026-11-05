@@ -31,6 +31,14 @@ jobs:
           node-version: 24.22.2
           cache: npm
 
+
+      - name: Set up the pinned Rust toolchain
+        uses: dtolnay/rust-toolchain@683b588c487a69d01f6c6ddf40f036ff682cc2c8 # pinned action revision
+        with:
+          toolchain: 1.99.1
+          components: rustfmt, clippy
+
+
       - name: Prepare exact dependency lock
         run: npm run lock:prepare
 
@@ -39,6 +47,13 @@ jobs:
 
       - name: Install locked dependencies
         run: npm ci --no-audit --no-fund
+
+      - name: Check Rust formatting, lint and unit tests
+        run: |
+          cargo fmt --manifest-path rust/Cargo.toml --all -- --check
+          cargo clippy --manifest-path rust/Cargo.toml --workspace --all-targets --locked -- -D warnings
+          cargo test --manifest-path rust/Cargo.toml --workspace --locked
+
 
       - name: Verify third-party licence notices
         run: npm run verify:licenses
