@@ -9,6 +9,7 @@ const path = require('node:path');
 const {
   PRODUCTS,
   expectedProductFiles,
+  resolveProductFiles,
   verifyProductInstallers
 } = require('../scripts/verify-product-installers');
 const { collectPlatformBuild } = require('../scripts/collect-platform-build');
@@ -111,6 +112,25 @@ test('product verifier expects the approved ten products and platform-specific i
     'brightdesk-pages-0.1.0-x86_64.AppImage',
     'brightdesk-pages-0.1.0-amd64.deb'
   ]);
+});
+
+test('Linux product resolver accepts a single known Electron Builder x64 naming variant', () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'brightdesk-linux-arch-'));
+  try {
+    writeFile(root, 'brightdesk-pages-0.1.0-x64.AppImage');
+    writeFile(root, 'brightdesk-pages-0.1.0-x64.deb');
+    assert.deepEqual(
+      resolveProductFiles(root, 'pages', 'linux', VERSION),
+      ['brightdesk-pages-0.1.0-x64.AppImage', 'brightdesk-pages-0.1.0-x64.deb']
+    );
+    writeFile(root, 'brightdesk-pages-0.1.0-x86_64.AppImage');
+    assert.throws(
+      () => resolveProductFiles(root, 'pages', 'linux', VERSION),
+      /exactly one Brightdesk Pages Linux AppImage/
+    );
+  } finally {
+    fs.rmSync(root, { recursive: true, force: true });
+  }
 });
 
 test('product verifier checks every expected installer and writes verifiable SHA-256 manifests', () => {
