@@ -42,7 +42,7 @@ test('top-right controls clearly identify notifications, saving and Settings', (
   assert.match(notificationIcon, /<svg[\s\S]*?viewBox="0 0 24 24"/);
   assert.match(saveIcon, /<svg[\s\S]*?viewBox="0 0 24 24"/);
   assert.match(concept, /id="notifications-bell"/);
-  assert.match(readme, /suite-dashboard-concept-single-settings\\.svg/);
+  assert.ok(readme.includes('suite-dashboard-concept-single-settings.svg'), 'README must display the refreshed single-Settings preview');
   assert.match(concept, /id="settings-cogwheel"/);
   assert.match(concept, /no Settings label or second Settings gear in the left sidebar/);
   assert.equal(concept.includes('>Settings</text>'), false, 'the sidebar must not show a second Settings label');
