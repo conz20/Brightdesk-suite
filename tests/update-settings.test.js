@@ -22,3 +22,11 @@ test('suite update preferences are visible and use validated IPC handlers', () =
   assert.match(main, /updates:set-settings/);
   assert.match(settings, /Pages, Sheets, Decks, Notes, Database, Forms, Lists, Planner, To Do and Workspace/);
 });
+
+test('automatic update downloads and installs require explicit user opt-in', () => {
+  const main = read('src/main.js');
+  const settings = read('src/update-settings.js');
+
+  assert.match(main, /const defaultUpdateSettings = \{ autoCheck: true, autoDownload: false, autoInstall: false \};/);
+  assert.match(settings, /const defaults = \{ autoCheck: true, autoDownload: false, autoInstall: false \};/);
+});
