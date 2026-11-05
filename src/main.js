@@ -1,5 +1,6 @@
 const { app, BrowserWindow, Menu, ipcMain, dialog, shell } = require('electron');
 const packageConfig = require('../package.json');
+const { DEFAULT_UPDATE_PREFERENCES, normalizeUpdatePreferences, mergeUpdatePreferences } = require('./update-preferences');
 const path = require('node:path');
 const crypto = require('node:crypto');
 const fs = require('node:fs/promises');
@@ -28,13 +29,13 @@ if (standaloneAppId && !supportedStandaloneApps.has(standaloneAppId)) {
 
 function sendUpdateState(state) { if (mainWindow && !mainWindow.isDestroyed()) mainWindow.webContents.send('updates:state', state); }
 const updateSettingsPath = path.join(app.getPath('userData'), 'update-settings.json');
-const defaultUpdateSettings = { autoCheck: true, autoDownload: false, autoInstall: false };
+const defaultUpdateSettings = DEFAULT_UPDATE_PREFERENCES;
 
 async function readUpdateSettings() {
   try {
     const raw = await fs.readFile(updateSettingsPath, 'utf8');
     const parsed = JSON.parse(raw);
-    return { ...defaultUpdateSettings, ...parsed };
+    return normalizeUpdatePreferences(parsed);
   } catch (error) {
     if (error.code !== 'ENOENT') console.warn('Could not read Brightdesk update settings.', error);
     return { ...defaultUpdateSettings };
@@ -42,7 +43,7 @@ async function readUpdateSettings() {
 }
 
 async function writeUpdateSettings(settings = {}) {
-  const next = { ...defaultUpdateSettings, ...(settings || {}) };
+  const next = mergeUpdatePreferences(settings);
   await fs.mkdir(app.getPath('userData'), { recursive: true });
   await fs.writeFile(updateSettingsPath, `${JSON.stringify(next, null, 2)}\n`, { mode: 0o600 });
   return next;
