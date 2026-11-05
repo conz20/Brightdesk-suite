@@ -63,7 +63,7 @@ test('signing and notarisation secrets are restricted to the main branch', () =>
   for (const secret of ['CSC_LINK', 'CSC_KEY_PASSWORD', 'CSC_INSTALLER_LINK', 'CSC_INSTALLER_KEY_PASSWORD', 'APPLE_ID', 'APPLE_APP_SPECIFIC_PASSWORD', 'APPLE_TEAM_ID']) {
     const line = buildStep.split('\n').find((item) => item.trimStart().startsWith(`${secret}:`));
     assert.ok(line, `${secret} is configured for the build step`);
-    assert.match(line, /github\\.ref == 'refs\\/heads\\/main'/, `${secret} is available only on main`);
+    assert.match(line, /github\.ref == 'refs\/heads\/main'/, `${secret} is available only on main`);
   }
   const installerCert = buildStep.split('\n').find((item) => item.trimStart().startsWith('CSC_INSTALLER_LINK:'));
   const appleId = buildStep.split('\n').find((item) => item.trimStart().startsWith('APPLE_ID:'));
@@ -86,10 +86,10 @@ test('platform artifacts retain their Suite and product folders through collecti
   const workflow = read('.github/workflows/build-release.yml');
   const collect = workflow.split('  collect:')[1].split('  publish-release:')[0];
   for (const platform of ['Linux', 'Windows', 'macOS']) {
-    const download = collect.split(`name: Download verified ${platform} build`)[1].split('\\n      - name:')[0];
+    const download = collect.split(`name: Download verified ${platform} build`)[1].split('\n      - name:')[0];
     assert.match(download, /path: release/);
   }
-  assert.match(workflow, /path: release\\/\\*\\*/);
+  assert.match(workflow, /path: release\/\*\*/);
   assert.match(workflow, /name: Download the exact dependency lock used for this release[\s\S]*?path: release\/build-metadata/);
   assert.match(workflow, /files: release\/\*\*\/\*/);
   assert.doesNotMatch(workflow, /merge-multiple: true/);
@@ -143,10 +143,10 @@ test('local release verification runs tests and builds only for the current nati
 
 test('GitHub Release publishing is manual, main-only and disabled by default', () => {
   const workflow = read('.github/workflows/build-release.yml');
-  assert.match(workflow, /publish_release:[\\s\\S]*?default: false/);
-  assert.match(workflow, /if: github\\.event_name == 'workflow_dispatch' && inputs\\.publish_release == true && github\\.ref == 'refs\\/heads\\/main'/);
+  assert.match(workflow, /publish_release:[\s\S]*?default: false/);
+  assert.match(workflow, /if: github\.event_name == 'workflow_dispatch' && inputs\.publish_release == true && github\.ref == 'refs\/heads\/main'/);
   const releaseJob = workflow.split('  publish-release:')[1];
-  assert.match(releaseJob, /permissions:\\n      contents: write/);
+  assert.match(releaseJob, /permissions:\n      contents: write/);
 });
 
 test('dependency-maintenance workflows use the existing self-hosted runner', () => {
