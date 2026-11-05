@@ -1,0 +1,63 @@
+name: README freshness
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+
+permissions:
+  contents: read
+
+jobs:
+  readme-freshness:
+    name: Require README updates for product changes
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out pull request
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+
+      - name: Require a root README update for non-Markdown changes
+        shell: bash
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -euo pipefail
+
+          mapfile -t changed_files < <(git diff --name-only "${BASE_SHA}...${HEAD_SHA}")
+
+          if (( ${#changed_files[@]} == 0 )); then
+            echo "No changed files were found. README freshness check passed."
+            exit 0
+          fi
+
+          printf 'Changed files:\n'
+          printf '  %s\n' "${changed_files[@]}"
+
+          readme_changed=false
+          non_markdown_changed=false
+
+          for file in "${changed_files[@]}"; do
+            if [[ "$file" == "README.md" ]]; then
+              readme_changed=true
+            fi
+
+            case "$file" in
+              *.md|*.mdx)
+                ;;
+              *)
+                non_markdown_changed=true
+                ;;
+            esac
+          done
+
+          if [[ "$non_markdown_changed" == "true" && "$readme_changed" != "true" ]]; then
+            echo "::error::This pull request changes code, tests, UI, assets, icons, configuration, dependencies, or build/release files but does not update the repository root README.md."
+            echo "Add an accurate README.md update in this same pull request, including any affected feature status, screenshots, visual references, icons, setup/build instructions, or platform support."
+            exit 1
+          fi
+
+          echo "README freshness check passed."
+          echo "This check verifies that README.md is included; reviewers must still verify that its content and visual references accurately match the implementation."
