@@ -459,7 +459,7 @@ function renderGenericWorkspace() {
 function renderAppManager() {
   const grid = $('app-manager-grid'); grid.innerHTML = '';
   const home = state.view === 'home';
-  $('.settings-toolbar').hidden = home;
+  document.querySelector('.settings-toolbar').hidden = home;
   $('manager-bottom').hidden = home;
   $('manager-title').textContent = home ? 'Your apps' : (state.setupComplete ? t('manager.manageTitle') : t('manager.chooseTitle'));
   $('manager-description').textContent = home ? 'Everything you need, all in one place.' : (state.setupComplete
@@ -766,8 +766,10 @@ function render() {
   $('app-manager').hidden = !manager && !home; $('language-manager').hidden = !languages;
   $('workspace').hidden = manager || home || languages; $('welcome').hidden = manager || home || languages || ['todo','lists','forms','planner','database','loop'].includes(state.app);
   $('app-title').textContent = home ? 'Your apps' : (manager ? 'Settings' : (languages ? t('language.title') : (catalog.find(item => item.id === state.app)?.name || state.app)));
-  $('top-actions').hidden = manager || home || languages;
+  $('top-actions').hidden = manager || languages;
   if (home) {
+    $('open-button').hidden = true; $('save-project').hidden = true; $('export-button').hidden = true;
+    $('open-notifications').hidden = false; $('open-settings').hidden = false;
     $('save-status').textContent = '10 products'; renderAppManager();
   } else if (manager) {
     $('save-status').textContent = t('manager.manageTitle'); renderAppManager();
@@ -809,6 +811,7 @@ function render() {
     const visible = launchAppId ? btn.dataset.app === launchAppId : installedApp(btn.dataset.app); btn.hidden = !visible; btn.classList.toggle('active', !manager && !home && !languages && btn.dataset.app === state.app);
   });
   $('open-home').classList.toggle('active', home);
+  $('open-home').hidden = Boolean(launchAppId);
   $('manage-apps').hidden = Boolean(launchAppId);
   $('open-settings').hidden = Boolean(launchAppId);
   $('open-notifications').hidden = Boolean(launchAppId);
