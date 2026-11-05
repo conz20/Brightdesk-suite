@@ -19,8 +19,8 @@ test('top-right Settings control uses the shared cogwheel and opens suite Settin
   assert.match(concept, /settings-cogwheel/);
   const icon = read('src/assets/icons/settings.svg');
   assert.match(icon, /viewBox="0 0 24 24"/);
-  assert.match(icon, /stroke-width="1\\.75"/);
-  assert.match(icon, /M10\\.1 2\\.7/);
-  assert.match(icon, /circle cx="12" cy="12" r="3\\.15"/);
-  assert.match(concept, /M10\\.1 2\\.7/);
+  assert.ok(icon.includes('stroke-width="1.75"'));
+  assert.ok(icon.includes('M10.1 2.7'));
+  assert.ok(icon.includes('circle cx="12" cy="12" r="3.15"'));
+  assert.ok(concept.includes('M10.1 2.7'));
 });
