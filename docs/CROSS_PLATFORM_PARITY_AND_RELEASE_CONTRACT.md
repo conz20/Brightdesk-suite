@@ -69,6 +69,10 @@ Current package targets:
 | macOS | .dmg, .pkg and .zip | Universal |
 | Linux | AppImage and Debian .deb | x86_64 / amd64 |
 
+### Universal macOS packaging detail
+
+The macOS universal target still combines the x64 and arm64 Electron binaries. The build sets `mac.mergeASARs: false` because the current electron-builder dependency tree uses legacy `@electron/asar` 3.4.1 in the archive-merging path, which is incompatible with the Suite's security-patched `minimatch` 11 override. Do not downgrade `minimatch` to work around this failure. The application JavaScript/resources remain in ASAR, while `native/brightdesk_engine.node` is explicitly kept outside ASAR by `asarUnpack` and built for each architecture. This avoids the failing ASAR-merge code path without changing the universal target. The macOS artifacts remain unverified until a fresh native build, artifact verification and launch checks pass.
+
 The download centre must detect the operating system and offer the correct verified downloads, while allowing a user to select another supported platform. Each card must clearly identify Suite vs product, product name, version, OS, architecture, file size and checksum.
 
 All installers must have the same user-facing sequence and safeguards where the platform supports them:
