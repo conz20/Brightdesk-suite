@@ -204,9 +204,9 @@ A direct blob comparison between the individual product repositories' documented
 | Lists | `src/lists-service.js` | Identical blob |
 | To Do | `src/todo-service.js` | Identical blob |
 | Workspace | `src/workspace-editor.js` | Identical blob |
-| Planner | `src/planner-workspace.js` | One local-storage error-handling difference |
+| Planner | `src/planner-workspace.js` | The individual repository's `main` snapshot differed; the draft fix branch now matches the Suite module byte-for-byte |
 
-The Planner difference was that the suite caught local storage write errors and displayed a clear failure status, while the individual repository did not. The individual repository now has a focused regression-test and fix proposal in [Brightdesk Planner PR #3](https://github.com/connormolloy12/Brightdesk-Planner/pull/3). Its proposed feature module matches the suite branch blob. This PR remains separate and must pass its own checks before the product repository's `main` branch changes.
+The Planner difference in the original `main` snapshot was that the Suite caught local-storage write errors and displayed a clear failure status, while the individual repository did not. [Brightdesk Planner PR #3](https://github.com/connormolloy12/Brightdesk-Planner/pull/3) now proposes the same error handling and adds a focused failure regression test. The current draft Planner branch and Suite integration branch both resolve `src/planner-workspace.js` to blob SHA `88b9f66e3a04d952f2958fd2a0075fad11dfc30d`. This is source parity evidence, not a claim that PR #3 has merged or passed its full CI and packaged-app checks.
 
 ### Migration implications
 
