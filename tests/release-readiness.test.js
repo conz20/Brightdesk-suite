@@ -64,6 +64,13 @@ test('artifact verification requires all expected installer formats and writes S
   }
 });
 
+test('universal macOS packaging keeps the identical ASAR archive unmerged and the Rust addon unpacked', () => {
+  const manifest = require('../package.json');
+  assert.equal(manifest.build.mac.mergeASARs, false);
+  assert.equal(manifest.build.asar, true);
+  assert.ok(manifest.build.asarUnpack.includes('native/brightdesk_engine.node'));
+});
+
 test('release terms are wired into native installers and the first-launch agreement gate', () => {
   const manifest = require('../package.json');
   assert.equal(manifest.build.nsis.license, 'TERMS_AND_CONDITIONS.txt');
