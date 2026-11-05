@@ -1,4 +1,4 @@
-# Brightdesk Office Suite
+The integrated suite header includes a dedicated Notifications control with an honest empty state, a clearly labelled Save action, and a refined Settings cogwheel. The app-centre concept artwork uses the same notification and Settings icon language.\n\n# Brightdesk Office Suite
 
 <p align="center"><img src="assets/brand/brightdesk-logo.svg" alt="Brightdesk" width="340"></p>
 
