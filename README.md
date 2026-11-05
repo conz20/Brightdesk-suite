@@ -29,7 +29,7 @@ These are the only products in the approved suite. Outlook, OneDrive, Teams and 
 
 > **Concept artwork — not a screenshot.** This image communicates the intended Brightdesk visual direction. It is not a capture from the running desktop build.
 
-The app-centre concept has one suite-wide Settings entry point: the cogwheel in the top-right corner. The left sidebar does not repeat Settings. In the integrated desktop suite, that cogwheel opens the existing Settings area. The bell immediately to its left is Notifications: it opens a clearly labelled panel with an honest empty state. The three-dot menu on an individual product card uses the label Product settings for product-specific options. The Save control also has a recognisable save icon and a visible label.
+The app-centre concept and integrated desktop suite use one suite-wide Settings entry point: the cogwheel in the top-right corner. The left sidebar does not repeat Settings. In the running suite, the cogwheel opens the app centre/settings view for managing apps, language resources and updates. The bell immediately to its left is Notifications: it opens a clearly labelled panel with an honest empty state. The three-dot menu on an individual product card uses the label Product settings for product-specific options. The Save control also has a recognisable save icon and a visible label.
 
 ## Cross-platform consistency
 
