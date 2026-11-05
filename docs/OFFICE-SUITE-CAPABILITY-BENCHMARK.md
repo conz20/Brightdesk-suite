@@ -204,6 +204,8 @@ A direct blob comparison between the individual product repositories' documented
 | Pages | `src/page-layout.js` | Identical blob |
 | Sheets | `src/formula.js` | Identical blob |
 | Forms | `src/forms-service.js` | Identical blob |
+| Database | `src/database-service.js` | Matches the immutable Database source commit `8a1e8a50329b90a68e2062b85a34ae052c831dc3` |
+| Database | `src/database-workspace.js` | Matches the immutable Database source commit `8a1e8a50329b90a68e2062b85a34ae052c831dc3` |
 | Lists | `src/lists-service.js` | Identical blob |
 | To Do | `src/todo-service.js` | Identical blob |
 | Planner | `src/planner-service.js` | Identical blob on product `main` and the Suite branch |
@@ -212,26 +214,28 @@ A direct blob comparison between the individual product repositories' documented
 
 The Planner difference in the original `main` snapshot was that the Suite caught local-storage write errors and displayed a clear failure status, while the individual repository did not. [Brightdesk Planner PR #3](https://github.com/connormolloy12/Brightdesk-Planner/pull/3) now proposes the same error handling and adds a focused failure regression test. The current draft Planner branch and Suite integration branch both resolve `src/planner-workspace.js` to blob SHA `88b9f66e3a04d952f2958fd2a0075fad11dfc30d`. This is source parity evidence, not a claim that PR #3 has merged or passed its full CI and packaged-app checks.
 
-### Source-parity pilot — Pages, Sheets, Forms, Lists, To Do, Planner and Workspace
+### Source-parity pilot — Pages, Sheets, Forms, Lists, To Do, Planner, Database and Workspace
 
-The Suite now has pinned, automated parity checks for eight feature modules across seven individual product repositories:
+The Suite now has pinned, automated parity checks for ten feature modules across eight individual product repositories:
 
 | Product | Canonical repository | Source file | Suite vendor file | Pinned upstream Git blob |
 | --- | --- | --- | --- | --- |
 | Pages | [Brightdesk-Pages](https://github.com/connormolloy12/Brightdesk-Pages) | `src/page-layout.js` | `src/page-layout.js` | `9777090bbbd01fee1b2789c703619dc8faa87859` |
 | Sheets | [Brightdesk-Sheets](https://github.com/connormolloy12/Brightdesk-Sheets) | `src/formula.js` | `src/formula.js` | `4b75569239c9834308f77815392b98d7371ea459` |
 | Forms | [Brightdesk-Forms](https://github.com/connormolloy12/Brightdesk-Forms) | `src/forms-service.js` | `src/forms-service.js` | `d925764977a79ec6b7d79af5e1a0d6e08ab9d8e4` |
+| Database | [Brightdesk-Database](https://github.com/connormolloy12/Brightdesk-Database) | `src/database-service.js` | `src/database-service.js` | `d879ab20878c3ed838cf6cf56020fd3c4695834b` |
+| Database | [Brightdesk-Database](https://github.com/connormolloy12/Brightdesk-Database) | `src/database-workspace.js` | `src/database-workspace.js` | `f7ba29971887321b931bdc013291d90c502a5e0b` |
 | Lists | [Brightdesk-Lists](https://github.com/connormolloy12/Brightdesk-Lists) | `src/lists-service.js` | `src/lists-service.js` | `ae3aebadd3194af4846c80fe58a2f1c98c88c57f` |
 | To Do | [Brightdesk-To-Do](https://github.com/connormolloy12/Brightdesk-To-Do) | `src/todo-service.js` | `src/todo-service.js` | `34e048b651dfdd50cb8b3292c660e1dbd57fe7f8` |
 | Planner | [Brightdesk-Planner](https://github.com/connormolloy12/Brightdesk-Planner) | `src/planner-service.js` | `src/planner-service.js` | `6b05218a71f0f0d63beebdf20decae5ea112f7fc` |
 | Workspace | [Brightdesk-Workspace](https://github.com/connormolloy12/Brightdesk-Workspace) | `src/workspace-editor.js` | `src/workspace-editor.js` | `2cd96b879c7b90da1df66dee7fc2a2c319b53781` |
 | Workspace | [Brightdesk-Workspace](https://github.com/connormolloy12/Brightdesk-Workspace) | `src/workspace-service.js` | `src/workspace-service.js` | `a5a73ac3b727064f43fde0a14320fe2f594a5ba7` |
 
-All eight canonical source references are pinned to their product repositories' `main` branches. The lock record is [docs/PRODUCT_SOURCE_LOCK.json](PRODUCT_SOURCE_LOCK.json), and the verification command is `npm run verify:product-sources`.
+The eight Pages, Sheets, Forms, Lists, To Do, Planner and Workspace entries are pinned to their product repositories' `main` branches. The two Database entries are pinned to immutable product-source commit `8a1e8a50329b90a68e2062b85a34ae052c831dc3`; these modules are not yet present on Database `main`. The lock record is [docs/PRODUCT_SOURCE_LOCK.json](PRODUCT_SOURCE_LOCK.json), and the verification command is `npm run verify:product-sources`.
 
 The verifier calculates Git's blob SHA-1 from the actual vendored file bytes and compares it with each reviewed upstream blob. It rejects missing or modified vendor copies and repository paths that escape the project. The check is included in Suite CI and release preflight.
 
-This establishes a repeatable source-integrity gate for eight feature modules across seven products. It does **not** automatically fetch upstream changes, verify every UI/shell file or shared asset, or establish source parity for the remaining three products. When a canonical product file changes, review the product change first, update the Suite vendor copy and pinned blob deliberately, then require the parity check and product/Suite tests to pass.
+This establishes a repeatable source-integrity gate for ten feature modules across eight products. It does **not** automatically fetch upstream changes or verify every UI/shell file or shared asset. Decks and Notes still need verified product-specific source modules; the Database references remain pinned to an immutable pre-merge product commit. When a canonical product file changes, review the product change first, update the Suite vendor copy and pinned blob deliberately, then require the parity check and product/Suite tests to pass.
 
 ### Migration implications
 
