@@ -38,3 +38,7 @@ test('README freshness pins its checkout action to a full commit SHA', () => {
   );
   assert.doesNotMatch(workflow, /uses:\s*actions\/checkout@v[0-9]/);
 });
+
+test('README freshness uses the approved immutable checkout revision', () => {
+  assert.match(workflow, /uses:\s*actions\/checkout@11bd71901bbe5b1630ceea73d27597364c9af683\b/);
+});
