@@ -370,42 +370,6 @@ input:disabled, select:disabled, textarea:disabled, button:disabled { cursor: no
 @media(max-width:700px){.top-actions{width:100%;justify-content:flex-start}.notification-popover{right:0}}
 
 
-/* Approved Brightdesk visual standard: deep navy suite navigation. */
-.sidebar {
-  background: linear-gradient(180deg, #14233f 0%, #0d1930 100%);
-  border-right: 1px solid #344766;
-  color: #ffffff;
-}
-.sidebar .brand b { color: #ffffff; }
-.sidebar .brand small { color: #8292b2; }
-.sidebar .section-label { color: #8292b2; }
-.sidebar .nav { color: #bcc8df; }
-.sidebar .nav b { color: inherit; }
-.sidebar .nav small { color: #93a5c4; }
-.sidebar .nav:hover { background: #1f3152; color: #ffffff; }
-.sidebar .nav.active,
-.sidebar .manager-nav.active { background: #293b60; color: #ffffff; }
-.sidebar .nav.active small { color: #cbd6e8; }
-.sidebar .nav:focus-visible {
-  outline: 2px solid #afc2ff;
-  outline-offset: 2px;
-}
-.sidebar .sidebar-divider { background: #344766; }
-.sidebar .sidebar-bottom small { color: #a8b6d0; }
-.sidebar .manager-icon { background: #243755; color: #ffffff; border: 1px solid #3a4c6b; }
-.sidebar .settings-gear-icon { filter: brightness(0) invert(1); }
-.sidebar .home-nav .sidebar-line-icon {
-  width: 21px;
-  height: 21px;
-  flex: 0 0 21px;
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 1.7;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-
-
 /* App Centre controls and responsive search. */
 .app-centre-search {
   width: min(32vw, 330px);
@@ -434,3 +398,56 @@ input:disabled, select:disabled, textarea:disabled, button:disabled { cursor: no
 @media (max-width: 720px) {
   .app-centre-search { width: 100%; min-width: 0; }
 }
+
+/* Brightdesk approved design contract v1.0.0 — shared suite shell. */
+:root{
+  --bd-accent:#526FE0;
+  --bd-accent-dark:#344FBC;
+  --bd-canvas:#F3F6FA;
+  --bd-nav-gradient:linear-gradient(180deg,#14233F 0%,#0D1930 100%);
+  --bd-nav-text:#EEF3FB;
+  --bd-nav-muted:#A8B6D0;
+  --bd-nav-hover:rgba(255,255,255,.08);
+  --bd-nav-active:rgba(255,255,255,.12);
+  --bd-nav-divider:rgba(255,255,255,.15);
+}
+body,.main{background:var(--bd-canvas)}
+.sidebar{
+  color:var(--bd-nav-text);
+  background:var(--bd-nav-gradient);
+  border-right:1px solid rgba(255,255,255,.09);
+  box-shadow:none;
+}
+.brand b{color:#fff}
+.brand small,.nav small,.sidebar-bottom small{color:var(--bd-nav-muted)}
+.section-label{color:var(--bd-nav-muted)}
+.nav{color:var(--bd-nav-text)}
+.nav:hover{background:var(--bd-nav-hover);color:#fff}
+.nav.active{background:var(--bd-nav-active);color:#fff;box-shadow:inset 3px 0 0 var(--bd-accent)}
+.nav.active small{color:#DCE7FA}
+.sidebar-divider{background:var(--bd-nav-divider)}
+.manager-icon{background:rgba(255,255,255,.12);color:#fff}
+.free-pill{background:rgba(255,255,255,.10);color:#E3EBFC}
+.text-button{color:#DCE7FA}
+.welcome{background:linear-gradient(105deg,#E8F0FF 0%,#F7F9FD 70%,#F0ECFF 100%);border-color:#E0E8F5}
+.welcome h2{color:#20324E}
+.welcome p{color:#64748A}
+.primary{background:#526FE0;border-color:#526FE0}
+.primary:hover{background:#344FBC;border-color:#344FBC}
+
+/* Final token alignment for the suite header and all shared surfaces. */
+:root{
+  --bd-ink:#202B3C;
+  --bd-text:#354256;
+  --bd-muted:#68778C;
+  --bd-surface:#FFFFFF;
+  --bd-surface-muted:#F8F9FB;
+  --bd-line:#DFE4EC;
+  --bd-line-soft:#EBEFF4;
+  --bd-positive:#16845B;
+}
+.top-save-button{background:#526FE0;border-color:#526FE0}
+.top-save-button:hover{background:#344FBC;border-color:#344FBC}
+.top-settings-button:hover,.top-notifications-button:hover{background:#EFF3FA;border-color:#CBD8EC;color:#344FBC}
+.top-notifications-button[aria-expanded="true"]{background:#EAF0FF;border-color:#C9D8FA;color:#344FBC;box-shadow:inset 0 0 0 1px #DCE7FF}
+.top-notifications-button:focus-visible,.top-settings-button:focus-visible,.top-save-button:focus-visible{outline:2px solid #526FE0;outline-offset:2px}
