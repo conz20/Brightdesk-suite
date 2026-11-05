@@ -42,6 +42,13 @@
     "evidence": {
       "conceptArtwork": "Concept artwork is a design reference, not a running-app screenshot.",
       "screenshots": "Only publish screenshots captured from the current running desktop build after its workflow has been checked. Keep them separate from concept previews."
+    },
+    "homeExperience": {
+      "defaultView": "app-centre",
+      "allApprovedProductsVisible": true,
+      "persistentReturnNavigation": "All apps control in the suite sidebar and workspace header",
+      "appCardActions": "Open each included product directly",
+      "downloadPolicy": "Show Download only when a verified published installer URL exists; all ten products are currently included in the suite package."
     }
   },
   "applications": [
