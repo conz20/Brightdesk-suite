@@ -38,10 +38,10 @@ test('the source parity check rejects upstream paths outside the repository', ()
   }
 });
 
-test('the product source lock records all ten pinned modules across eight product repositories', () => {
+test('the product source lock records all eleven pinned modules across eight product repositories', () => {
   const lock = loadProductSourceLock();
   assert.equal(lock.schemaVersion, 1);
-  assert.equal(lock.products.length, 10);
+  assert.equal(lock.products.length, 11);
   const actualProducts = lock.products.map(product => ({
     id: product.id,
     name: product.name,
@@ -125,6 +125,16 @@ test('the product source lock records all ten pinned modules across eight produc
         sourceBlobSha: 'd925764977a79ec6b7d79af5e1a0d6e08ab9d8e4'
       },
       {
+        id: 'forms-workspace',
+        name: 'Brightdesk Forms workspace',
+        repository: 'connormolloy12/Brightdesk-Forms',
+        sourceRef: '0960d0ceee9e00bc7f0f78a053289c3d4d3699ce',
+        sourcePath: 'src/forms-workspace.js',
+        suitePath: 'src/forms-workspace.js',
+        sourceBlobSha: '642b39a353016b575a8f7b9ed624a00bb060ceb2'
+      },
+
+      {
         id: 'workspace-editor',
         name: 'Brightdesk Workspace editor',
         repository: 'connormolloy12/Brightdesk-Workspace',
@@ -146,12 +156,12 @@ test('the product source lock records all ten pinned modules across eight produc
   assert.deepEqual(actualProducts, expectedProducts);
 });
 
-test('the vendored Database, Pages, Sheets, Forms, Lists, To Do, Planner and Workspace modules match their pinned upstream Git blobs', () => {
+test('the eleven vendored product feature modules match their pinned upstream Git blobs', () => {
   const result = verifyProductSourceLock();
-  assert.equal(result.verifiedCount, 10);
+  assert.equal(result.verifiedCount, 11);
   assert.deepEqual(
     result.products.map(product => product.id).sort(),
-    ['database-service', 'database-workspace', 'forms-service', 'lists', 'pages-layout', 'planner-service', 'sheets-formula', 'todo', 'workspace-editor', 'workspace-service']
+    ['database-service', 'database-workspace', 'forms-service', 'forms-workspace', 'lists', 'pages-layout', 'planner-service', 'sheets-formula', 'todo', 'workspace-editor', 'workspace-service']
   );
   assert.ok(result.products.every(product => product.verified));
   assert.equal(
