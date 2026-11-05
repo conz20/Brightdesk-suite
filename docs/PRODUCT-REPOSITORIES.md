@@ -55,7 +55,7 @@ The repository workflows define product checks, dependency-lock verification, th
 
 A product installer build must complete on the native Windows, macOS or Linux runner for the relevant operating system and produce the expected artifacts and SHA-256 checksums. Publishing a GitHub Release is a separate manual action and must remain off until the build and release gates pass.
 
-The integrated Suite build is intended to produce the Suite and all ten individual product installers. The complete build matrix must be verified on one coherent candidate commit before any package is described as a current release.
+The integrated Suite build is intended to produce the Suite and all ten individual product installers. The complete build matrix must be verified on one coherent candidate commit before any package is described as a current release. The final collection job must check out the pinned Node.js 24.22.2 verifier, validate every Suite and product checksum manifest again after artifact transfer, verify all expected versioned installer names and the exact ten product folders for each operating system, and reject the combined artifact unless all 66 outputs pass.
 
 ## Automatic update status
 
