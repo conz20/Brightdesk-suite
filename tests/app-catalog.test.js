@@ -181,7 +181,7 @@ test('standalone app packaging has independent product IDs and all three platfor
       assert.equal(config.extraMetadata.brightdeskAppId, id);
       assert.equal(config.extraMetadata.productName, `Brightdesk ${name}`);
       assert.ok(config.win.artifactName.includes(name));
-      assert.equal(config.directories.output, `release/apps/${id}`);
+      assert.equal(config.directories.output, path.join('release', 'apps', id));
       assert.ok(config.mac.target.includes('pkg'), `${name} mac build must include pkg for installer licence`);
       assert.ok(config.mac.target.includes('dmg'), `${name} mac build must include dmg`);
       assert.ok(config.mac.target.includes('zip'), `${name} mac build must include zip`);
