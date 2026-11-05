@@ -1,5 +1,5 @@
 (function() {
-  const defaults = { autoCheck: true, autoDownload: true, autoInstall: false };
+  const defaults = { autoCheck: true, autoDownload: false, autoInstall: false };
   const byId = (id) => document.getElementById(id);
   const message = () => byId('update-message');
 
