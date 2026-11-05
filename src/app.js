@@ -803,6 +803,7 @@ function render() {
     const visible = launchAppId ? btn.dataset.app === launchAppId : installedApp(btn.dataset.app); btn.hidden = !visible; btn.classList.toggle('active', !manager && !languages && btn.dataset.app === state.app);
   });
   $('manage-apps').hidden = Boolean(launchAppId);
+  $('open-settings').hidden = Boolean(launchAppId);
   $('manage-apps').classList.toggle('active', manager || languages);
   $('manage-languages').classList.toggle('active', languages);
 }
@@ -854,6 +855,7 @@ function setApp(app){if((launchAppId && app !== launchAppId) || !(configs[app] |
 
 document.querySelectorAll('.nav[data-app]').forEach(btn=>btn.addEventListener('click',()=>setApp(btn.dataset.app)));
 $('manage-apps').addEventListener('click',()=>{if (launchAppId) return; state.view='manager';render();});
+$('open-settings').addEventListener('click',()=> $('manage-apps').click());
 $('manage-languages').addEventListener('click',openLanguageManager);
 $('display-language').addEventListener('change',event=>changeDisplayLanguage(event.target.value));
 $('proofing-language').addEventListener('change',event=>changeProofingLanguage(event.target.value));
