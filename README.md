@@ -34,11 +34,11 @@ See the [Office Suite capability benchmark](docs/OFFICE-SUITE-CAPABILITY-BENCHMA
 
 ## Suite design preview
 
-<p align="center"><img src="assets/previews/suite-dashboard-concept-single-settings.svg" alt="Brightdesk Suite design preview showing one Settings cogwheel at the top-right, with no Settings item or gear in the left sidebar" width="100%"></p>
+<p align="center"><img src="assets/previews/suite-dashboard-concept-single-settings.svg" alt="Brightdesk Suite App Centre preview with one App Centre sidebar entry, ten product cards and one top-right Settings cogwheel" width="100%"></p>
 
 > **Concept artwork — not a screenshot.** This image communicates the intended Brightdesk visual direction. It is not a capture from the running desktop build.
 
-The refreshed preview above shows the only suite-wide Settings control: one cogwheel in the top-right, with Notifications beside it. The left sidebar is for product navigation and has no Settings button or second gear. The four-panel mark beside the Brightdesk wordmark is the Suite logo, not a product icon. Each approved product has its own original icon, shown beside its name in the preview sidebar and on its product card. The concept displays all ten icons for reference; a running workspace sidebar lists only the products installed in that workspace.
+The refreshed preview shows one suite-wide Settings cogwheel in the top-right, beside Notifications. On the App Centre screen, the sidebar contains one suite-level **App Centre** entry; the ten product shortcuts are not repeated beside the ten product cards. When a product workspace is open, installed products appear in the sidebar under **Switch product** for quick navigation. The original product icons appear on the App Centre cards and in that workspace switcher. The four-panel mark beside the Brightdesk wordmark is the Suite logo.
 
 **What the card actions mean:** **Install** adds an available product to the current Brightdesk workspace. It does not download a separate desktop installer. Installed products show **Open** and **Uninstall**; removing a product from the workspace does not delete its local documents. **Update** is different: it applies to the Brightdesk Suite release, not an individual product card. Update checks and preferences are managed in Settings. Automatic checking is optional, and downloading and installing updates require separate confirmation. The current suite has no configured GitHub update publishing provider, so automatic release delivery is not active or verified.
 
