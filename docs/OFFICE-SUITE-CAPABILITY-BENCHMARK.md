@@ -210,18 +210,22 @@ A direct blob comparison between the individual product repositories' documented
 | To Do | `src/todo-service.js` | Identical blob |
 | Planner | `src/planner-service.js` | Identical blob on product `main` and the Suite branch |
 | Workspace | `src/workspace-editor.js` | Identical blob |
+| Decks | `src/slides-service.js` | Matches Decks PR #15's immutable feature commit `a0e049a5402d8a53f0be3454ae87440f81619889` |
+| Notes | `src/notes-service.js` | Matches Notes PR #15's immutable feature commit `733adb51adcd9586ee8b71dd4154d16da661f1b9` |
 | Planner | `src/planner-workspace.js` | The individual repository's `main` snapshot differed; the draft fix branch now matches the Suite module byte-for-byte |
 
 The Planner difference in the original `main` snapshot was that the Suite caught local-storage write errors and displayed a clear failure status, while the individual repository did not. [Brightdesk Planner PR #3](https://github.com/connormolloy12/Brightdesk-Planner/pull/3) now proposes the same error handling and adds a focused failure regression test. The current draft Planner branch and Suite integration branch both resolve `src/planner-workspace.js` to blob SHA `88b9f66e3a04d952f2958fd2a0075fad11dfc30d`. This is source parity evidence, not a claim that PR #3 has merged or passed its full CI and packaged-app checks.
 
-### Source-parity pilot — Pages, Sheets, Forms, Lists, To Do, Planner, Database and Workspace
+### Source-parity pilot — thirteen modules across all ten product repositories
 
-The Suite now has pinned, automated parity checks for ten feature modules across eight individual product repositories:
+The Suite now has pinned, automated parity checks for thirteen feature modules across all ten individual product repositories:
 
 | Product | Canonical repository | Source file | Suite vendor file | Pinned upstream Git blob |
 | --- | --- | --- | --- | --- |
 | Pages | [Brightdesk-Pages](https://github.com/connormolloy12/Brightdesk-Pages) | `src/page-layout.js` | `src/page-layout.js` | `9777090bbbd01fee1b2789c703619dc8faa87859` |
 | Sheets | [Brightdesk-Sheets](https://github.com/connormolloy12/Brightdesk-Sheets) | `src/formula.js` | `src/formula.js` | `4b75569239c9834308f77815392b98d7371ea459` |
+| Decks | [Brightdesk-Decks](https://github.com/connormolloy12/Brightdesk-Decks) | `src/slides-service.js` | `src/slides-service.js` | `ef50442552e62fd8dda4452718e9f72650850287` |
+| Notes | [Brightdesk-Notes](https://github.com/connormolloy12/Brightdesk-Notes) | `src/notes-service.js` | `src/notes-service.js` | `12cc34e772bb751eb49804e645f97fed348e477f` |
 | Forms | [Brightdesk-Forms](https://github.com/connormolloy12/Brightdesk-Forms) | `src/forms-service.js` | `src/forms-service.js` | `d925764977a79ec6b7d79af5e1a0d6e08ab9d8e4` |
 | Database | [Brightdesk-Database](https://github.com/connormolloy12/Brightdesk-Database) | `src/database-service.js` | `src/database-service.js` | `d879ab20878c3ed838cf6cf56020fd3c4695834b` |
 | Database | [Brightdesk-Database](https://github.com/connormolloy12/Brightdesk-Database) | `src/database-workspace.js` | `src/database-workspace.js` | `f7ba29971887321b931bdc013291d90c502a5e0b` |
@@ -231,11 +235,11 @@ The Suite now has pinned, automated parity checks for ten feature modules across
 | Workspace | [Brightdesk-Workspace](https://github.com/connormolloy12/Brightdesk-Workspace) | `src/workspace-editor.js` | `src/workspace-editor.js` | `2cd96b879c7b90da1df66dee7fc2a2c319b53781` |
 | Workspace | [Brightdesk-Workspace](https://github.com/connormolloy12/Brightdesk-Workspace) | `src/workspace-service.js` | `src/workspace-service.js` | `a5a73ac3b727064f43fde0a14320fe2f594a5ba7` |
 
-The eight Pages, Sheets, Forms, Lists, To Do, Planner and Workspace entries are pinned to their product repositories' `main` branches. The two Database entries are pinned to immutable Database PR #15 commit `46d0feeb9e7110c2025857b6a2d145eeed06d40a`; these modules are not yet present on Database `main`. The lock record is [docs/PRODUCT_SOURCE_LOCK.json](PRODUCT_SOURCE_LOCK.json), and the verification command is `npm run verify:product-sources`.
+The Pages, Sheets, Forms service, Lists, To Do, Planner and Workspace entries are pinned to their respective product repositories' `main` branches. Forms workspace is pinned to Forms PR #15 commit `0960d0ceee9e00bc7f0f78a053289c3d4d3699ce`; Database service/workspace are pinned to Database PR #15 commit `46d0feeb9e7110c2025857b6a2d145eeed06d40a`; Decks slide service is pinned to Decks PR #15 commit `a0e049a5402d8a53f0be3454ae87440f81619889`; and Notes content service is pinned to Notes PR #15 commit `733adb51adcd9586ee8b71dd4154d16da661f1b9`. These four product PRs remain unmerged, so the Suite uses immutable, reviewable source commits pending integration into the product repositories' `main` branches. The lock record is [docs/PRODUCT_SOURCE_LOCK.json](PRODUCT_SOURCE_LOCK.json), and the verification command is `npm run verify:product-sources`.
 
 The verifier calculates Git's blob SHA-1 from the actual vendored file bytes and compares it with each reviewed upstream blob. It rejects missing or modified vendor copies and repository paths that escape the project. The check is included in Suite CI and release preflight.
 
-This establishes a repeatable source-integrity gate for ten feature modules across eight products. It does **not** automatically fetch upstream changes or verify every UI/shell file or shared asset. Decks and Notes still need verified product-specific source modules; the Database references remain pinned to an immutable pre-merge product commit. When a canonical product file changes, review the product change first, update the Suite vendor copy and pinned blob deliberately, then require the parity check and product/Suite tests to pass.
+This establishes a repeatable source-integrity gate for thirteen feature modules across all ten product repositories. It does **not** automatically fetch upstream changes or verify every UI/shell file or shared asset, and it does not yet prove one shared implementation for every product workflow. Forms workspace, Database, Decks and Notes are pinned to immutable pre-merge product PR commits. When a canonical product file changes, review the product change first, update the Suite vendor copy and pinned blob deliberately, then require the parity check and product/Suite tests to pass.
 
 ### Migration implications
 
