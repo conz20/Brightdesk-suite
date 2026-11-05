@@ -48,9 +48,9 @@ test('release workflow builds and verifies all three desktop platforms', () => {
   assert.match(workflow, /node-version: 24\.22\.2/);
   assert.match(workflow, /\non:\s*\n\s*workflow_dispatch:/);
   assert.doesNotMatch(workflow, /^\s+push:/m, 'installer builds must be manual, not automatic on push');
-  assert.match(workflow, /npm run lock:prepare/);
+  assert.doesNotMatch(workflow, /npm run lock:prepare/, 'release builds must not regenerate the committed lock');
   assert.match(workflow, /npm run lock:verify/);
-  assert.match(workflow, /brightdesk-dependency-lock/);
+  assert.doesNotMatch(workflow, /brightdesk-dependency-lock/, 'the committed lock is read directly from the checked-out source');
   assert.match(workflow, /npm run release:preflight/);
   assert.match(workflow, /npm test/);
   assert.match(workflow, /npm audit --audit-level=high/);
@@ -88,7 +88,11 @@ test('platform release artifacts remain in separate folders and release lock met
     assert.match(workflow, new RegExp(`name: Download verified ${platform} build`));
     assert.ok(workflow.includes(`path: ${folder}`), `${platform} is downloaded into its own folder`);
   }
-  assert.match(workflow, /name: Download the exact dependency lock used for this release[\s\S]*?path: release\/build-metadata/);
+  assert.ok(workflow.includes('name: Check out the exact release source'));
+  assert.ok(workflow.includes('ref: ${{ github.sha }}'));
+  assert.ok(workflow.includes('node-version: 24.22.2'));
+  assert.ok(workflow.includes('name: Preserve the committed dependency lock in release metadata'));
+  assert.ok(workflow.includes('cp package-lock.json release/build-metadata/package-lock.json'));
   assert.match(workflow, /files: release\/\*\*\/\*/);
   assert.doesNotMatch(workflow, /merge-multiple: true/);
   const prepare = read('scripts/prepare-release-assets.js');
