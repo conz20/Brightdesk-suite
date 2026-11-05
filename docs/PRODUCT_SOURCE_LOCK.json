@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "sourcePolicy": "The individual product repository is the canonical owner of its feature modules. The Suite stores a reviewed, pinned vendor copy and verifies its Git blob SHA before integration or release.",
+  "products": [
+    {
+      "id": "lists",
+      "name": "Brightdesk Lists",
+      "repository": "connormolloy12/Brightdesk-Lists",
+      "sourceRef": "main",
+      "sourcePath": "src/lists-service.js",
+      "suitePath": "src/lists-service.js",
+      "sourceBlobSha": "ae3aebadd3194af4846c80fe58a2f1c98c88c57f",
+      "status": "verified-source-match"
+    }
+  ]
+}
