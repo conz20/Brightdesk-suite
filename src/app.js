@@ -209,7 +209,7 @@ function renderToolbar() {
   } else if (app === 'notes') {
     if (tab === 'home') {
       const note = group('note'); addButton(note, label('exportNote'), exportCurrent);
-      addButton(note, label('clearNote'), () => { if (confirm('Clear this note?')) { $('notes-editor').value = ''; activeDoc().text = ''; persist(); } });
+      addButton(note, label('clearNote'), () => { if (confirm('Clear this note?')) { const text = window.BrightdeskNotesService.clearNoteText(); $('notes-editor').value = text; window.BrightdeskNotesService.updateNoteText(activeDoc(), text); persist(); } });
     } else if (tab === 'insert') {
       const insert = group('tools');
       addButton(insert, label('date'), () => insertNoteText(new Date().toLocaleDateString()));
@@ -257,8 +257,8 @@ function changeEditorZoom(delta) { state.editorZoom = Math.max(70, Math.min(160,
 function applyEditorZoom() { editor.style.fontSize = `${14 * state.editorZoom / 100}px`; setStatus(`Document zoom ${state.editorZoom}%`); }
 function changeSheetZoom(delta) { state.sheetZoom = Math.max(70, Math.min(160, state.sheetZoom + delta)); applySheetZoom(); }
 function applySheetZoom() { sheetWrap.style.zoom = `${state.sheetZoom}%`; setStatus(`Sheet zoom ${state.sheetZoom}%`); }
-function insertNoteText(value) { const input = $('notes-editor'); const start = input.selectionStart, end = input.selectionEnd; input.setRangeText(value, start, end, 'end'); activeDoc().text = input.value; persist(); input.focus(); }
-function addSlideWithContent(title, body) { activeDoc().slides.push({ title, body }); activeDoc().current = activeDoc().slides.length - 1; renderSlides(); renderToolbar(); persist(); }
+function insertNoteText(value) { const input = $('notes-editor'); const result = window.BrightdeskNotesService.insertText(input.value, input.selectionStart, input.selectionEnd, value); input.value = result.text; input.setSelectionRange(result.selectionStart, result.selectionEnd); window.BrightdeskNotesService.updateNoteText(activeDoc(), result.text); persist(); input.focus(); }
+function addSlideWithContent(title, body) { window.BrightdeskSlidesService.addSlide(activeDoc(), { title, body }); renderSlides(); renderToolbar(); persist(); }
 function setSlideTheme(theme) { state.slideTheme = theme; renderSlides(); setStatus(`${theme[0].toUpperCase()}${theme.slice(1)} theme selected`); }
 function setCell(row,col,value) { while (activeDoc().cells.length <= row) activeDoc().cells.push([]); while (activeDoc().cells[row].length <= col) activeDoc().cells[row].push(''); activeDoc().cells[row][col]=value; persist(); }
 function refreshSheetValues() {
@@ -286,23 +286,22 @@ function renderSheet() {
   }); table.append(tbody); sheetWrap.innerHTML=''; sheetWrap.append(table);
 }
 function renderSlides() {
-  const doc=activeDoc(); if(!Array.isArray(doc.slides)||!doc.slides.length)doc.slides=[{title:t('common.newSlide'),body:''}];
-  doc.current=Math.min(Math.max(0,doc.current||0),doc.slides.length-1); const slide=doc.slides[doc.current];
+  const doc=window.BrightdeskSlidesService.ensurePresentation(activeDoc(), t('common.newSlide')); const slide=doc.slides[doc.current];
   slideWrap.innerHTML='';
   const stage=document.createElement('div');stage.className=`slide-stage theme-${state.slideTheme}`;
   const title=document.createElement('textarea');title.className='slide-title';title.value=slide.title||'';title.setAttribute('aria-label','Slide title');title.lang=state.proofingLanguage;
   const body=document.createElement('textarea');body.className='slide-body';body.value=slide.body||'';body.setAttribute('aria-label','Slide text');body.lang=state.proofingLanguage;
-  title.addEventListener('input',()=>{slide.title=title.value;persist();});body.addEventListener('input',()=>{slide.body=body.value;persist();});
+  title.addEventListener('input',()=>{window.BrightdeskSlidesService.updateSlide(doc,doc.current,{title:title.value});persist();});body.addEventListener('input',()=>{window.BrightdeskSlidesService.updateSlide(doc,doc.current,{body:body.value});persist();});
   stage.append(title,body);
   const controls=document.createElement('div');controls.className='slide-controls';
-  const prev=document.createElement('button');prev.textContent='← Previous';prev.disabled=doc.current===0;prev.onclick=()=>{doc.current--;renderSlides();renderToolbar();};
+  const prev=document.createElement('button');prev.textContent='← Previous';prev.disabled=doc.current===0;prev.onclick=()=>{window.BrightdeskSlidesService.setCurrentSlide(doc,doc.current-1);renderSlides();renderToolbar();};
   const count=document.createElement('span');count.textContent=`Slide ${doc.current+1} of ${doc.slides.length}`;
-  const next=document.createElement('button');next.textContent='Next →';next.disabled=doc.current===doc.slides.length-1;next.onclick=()=>{doc.current++;renderSlides();renderToolbar();};
+  const next=document.createElement('button');next.textContent='Next →';next.disabled=doc.current===doc.slides.length-1;next.onclick=()=>{window.BrightdeskSlidesService.setCurrentSlide(doc,doc.current+1);renderSlides();renderToolbar();};
   controls.append(prev,count,next);slideWrap.append(stage,controls);
 }
-function addSlide(){activeDoc().slides.push({title:`Slide ${activeDoc().slides.length+1}`,body:''});activeDoc().current=activeDoc().slides.length-1;renderSlides();renderToolbar();persist();}
-function duplicateSlide(){const d=activeDoc(),copy=clone(d.slides[d.current]);d.slides.splice(d.current+1,0,copy);d.current++;renderSlides();renderToolbar();persist();}
-function deleteSlide(){const d=activeDoc();if(d.slides.length===1){alert('A presentation needs at least one slide.');return;}d.slides.splice(d.current,1);d.current=Math.max(0,d.current-1);renderSlides();renderToolbar();persist();}
+function addSlide(){window.BrightdeskSlidesService.addSlide(activeDoc());renderSlides();renderToolbar();persist();}
+function duplicateSlide(){window.BrightdeskSlidesService.duplicateSlide(activeDoc());renderSlides();renderToolbar();persist();}
+function deleteSlide(){if(!window.BrightdeskSlidesService.deleteSlide(activeDoc())){alert('A presentation needs at least one slide.');return;}renderSlides();renderToolbar();persist();}
 function presentSlides(){const d=activeDoc();let i=d.current;const overlay=document.createElement('div');overlay.className='presentation-overlay';const slide=document.createElement('div');slide.className='presentation-slide';const title=document.createElement('h1'),body=document.createElement('p'),footer=document.createElement('div');footer.className='presentation-footer';footer.textContent='Click or press an arrow key to move · Esc to exit';slide.append(title,body,footer);overlay.append(slide);document.body.append(overlay);
   const draw=()=>{title.textContent=d.slides[i].title;body.textContent=d.slides[i].body;};const key=(e)=>{if(e.key==='Escape'){overlay.remove();document.removeEventListener('keydown',key);}else if(e.key==='ArrowRight'){i=Math.min(d.slides.length-1,i+1);draw();}else if(e.key==='ArrowLeft'){i=Math.max(0,i-1);draw();}};overlay.addEventListener('click',()=>{i=Math.min(d.slides.length-1,i+1);draw();});document.addEventListener('keydown',key);draw();}
 function todoTasks() { return Array.isArray(activeDoc().tasks) ? activeDoc().tasks : (activeDoc().tasks = []); }
@@ -845,7 +844,7 @@ function exportPayload(){
   if(state.app==='pages')return {kind:'pages',title,html:editor.innerHTML,blocks:collectDocxBlocks()};
   if(state.app==='sheets')return {kind:'sheets',title,rows:doc.cells||[]};
   if(state.app==='slides')return {kind:'slides',title,slides:doc.slides||[]};
-  return {kind:'notes',title,text:$('notes-editor').value||''};
+  return window.BrightdeskNotesService.exportPayload(doc, $('notes-editor').value);
 }
 async function exportCurrent(){try{const result=await window.brightdesk.exportFile(exportPayload());if(result?.canceled)return;setStatus('Exported successfully');}catch(error){alert(`Export failed: ${error.message}`);}}
 async function exportPdf(){try{const result=await window.brightdesk.exportPdf({title:$('doc-title').value});if(!result?.canceled)setStatus('PDF exported');}catch(error){alert(`PDF export failed: ${error.message}`);}}
@@ -890,7 +889,7 @@ $('back-to-apps').addEventListener('click',()=>{state.view=state.setupComplete?'
 $('finish-app-setup').addEventListener('click',()=>{if(state.setupComplete){state.view='home';render();}else completeAppSetup();});
 $('doc-title').addEventListener('change',()=>{activeDoc().title=$('doc-title').value;persist();});
 editor.addEventListener('input',()=>{activeDoc().html=editor.innerHTML;persist();});
-$('notes-editor').addEventListener('input',()=>{activeDoc().text=$('notes-editor').value;persist();});
+$('notes-editor').addEventListener('input',()=>{window.BrightdeskNotesService.updateNoteText(activeDoc(), $('notes-editor').value);persist();});
 $('todo-create-form').addEventListener('submit', createTodoTask);
 $('todo-search').addEventListener('input', event => { state.todoQuery = event.target.value; renderTodoWorkspace(); });
 document.querySelectorAll('[data-todo-view]').forEach(button => button.addEventListener('click', () => { state.todoView = button.dataset.todoView; renderTodoWorkspace(); }));
