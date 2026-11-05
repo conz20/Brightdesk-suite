@@ -31,6 +31,8 @@ Our product names, four-panel brand mark, icons, artwork, interface styling, sou
 
 See the [Office Suite capability benchmark](docs/OFFICE-SUITE-CAPABILITY-BENCHMARK.md) for the researched feature areas, current first-use boundaries, local-first adaptations and staged implementation direction. Planned capabilities are not represented as finished features.
 
+The cross-platform product requirements are locked in the [Cross-platform parity and release contract](docs/CROSS_PLATFORM_PARITY_AND_RELEASE_CONTRACT.md). Windows, macOS and Linux must receive the same approved product capabilities and design, with native installers, verified update channels, and equivalent data-preserving install/uninstall behaviour.
+
 
 ## Suite design preview
 
