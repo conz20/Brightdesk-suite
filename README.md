@@ -31,6 +31,22 @@ These are the only products in the approved suite. Outlook, OneDrive, Teams and 
 
 The app-centre concept uses a Settings cogwheel in the top-right corner instead of an account/avatar badge. In the integrated desktop suite, that control opens the existing Settings area. The bell immediately to its left is Notifications: it opens a clearly labelled panel with an honest empty state. The Save control also has a recognisable save icon and a visible label.
 
+## Cross-platform consistency
+
+Brightdesk uses one approved visual system and the same ten-product feature scope on Windows, macOS and Linux. All products share the Brightdesk navigation, typography, spacing, component states, layout rules and original icon artwork. Each product keeps its approved accent colour and icon on every platform. Only operating-system integrations such as window chrome, keyboard conventions, native file dialogs, permissions, installation and removal surfaces may adapt to native conventions. The authoritative rules are in the [Brightdesk visual and interaction standard](docs/BRIGHTDESK_VISUAL_STANDARD.md).
+
+| Operating system | Configured suite package targets |
+| --- | --- |
+| Windows | x64 NSIS installer (.exe) |
+| macOS | Universal disk image (.dmg), package installer (.pkg) and archive (.zip) |
+| Linux | x64 AppImage (.AppImage) and Debian package (.deb) |
+
+These are configured targets, not proof that current installers are published or verified. A complete cross-platform release requires successful native build, install, first launch, upgrade and removal checks for every supported operating system, using the same approved suite version and source commit.
+
+**Terms and first launch:** Windows NSIS and macOS DMG/PKG installers present the Terms and Conditions before installation continues. Linux uses the same blocking agreement in the packaged product on first launch, because AppImage has no installer agreement page. The workspace remains unavailable until the user explicitly accepts; declining or closing the agreement exits the product.
+
+**Updates and removal:** The suite owns the customer-facing version and approved release. The current suite package does not configure a GitHub update publishing provider, so automatic cross-platform update delivery must not be described as active or verified yet. When update delivery is enabled, every platform must receive the same approved version, features and release notes. Operating systems use different native install/removal mechanisms; the required outcome is consistent removal of the software without silently deleting local project data. Do not claim uninstall/data-preservation parity until each native route has passed its checks.
+
 ## What is implemented
 
 All ten approved product areas are integrated into the main suite source and have dedicated workspace or service modules. The current first-use scope includes:
@@ -58,7 +74,7 @@ A genuine screenshot should be captured directly from the current Electron build
 
 ## Installer agreement
 
-The Windows installer, macOS DMG and macOS PKG display the Brightdesk Terms and Conditions before continuing. The macOS DMG shows the agreement when opened; the PKG shows it in Apple's Installer. Choose **Accept** or **Agree** to proceed, or **Decline** or **Disagree** to cancel. Declining stops installation. A normal packaged Windows or Mac installation does not show a duplicate agreement after the desktop product opens. For a first-time Mac installation, use the DMG or PKG rather than the update ZIP.
+The Windows NSIS installer and macOS DMG/PKG present the Brightdesk Terms and Conditions before installation can continue. Choose **Accept** or **Agree** to proceed, or **Decline** or **Disagree** to cancel; declining stops installation. Linux AppImage/DEB packages use a blocking in-product agreement on first launch because AppImage has no installer agreement page. The Brightdesk workspace does not open until the agreement is accepted; declining or closing it exits the product. For a first-time Mac installation, use the DMG or PKG rather than the update ZIP.
 
 ## Local-first desktop software
 
