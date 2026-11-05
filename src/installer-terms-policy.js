@@ -1,9 +1,10 @@
 'use strict';
 
 function shouldRequireFirstLaunchTerms({ platform = process.platform, isPackaged = false } = {}) {
-  // The Windows NSIS installer already requires explicit acceptance before it installs.
-  // Do not ask the customer to accept the same agreement again on first launch.
-  return !(platform === 'win32' && isPackaged);
+  // Windows NSIS and macOS DMG/PKG installers collect agreement before installation.
+  // Linux packages retain the in-app fallback because AppImage has no installer agreement page.
+  if (!isPackaged) return true;
+  return platform === 'linux';
 }
 
 module.exports = { shouldRequireFirstLaunchTerms };

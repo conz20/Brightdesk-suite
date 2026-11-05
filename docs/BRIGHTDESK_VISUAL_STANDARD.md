@@ -33,7 +33,8 @@ The product-specific accents should help recognition, not create ten unrelated d
 
 The suite home should make each product immediately recognisable and manageable:
 
-- Use one clear Settings cog as the entry point for local app, language and update management.
+- Use one clear Settings cog in the top-right as the suite-wide entry point for local app, language and update management; do not repeat it as a sidebar item.
+- Label genuinely product-specific options in a product card's three-dot menu **Product settings** so they are clearly distinct from suite-wide Settings.
 - Show all ten approved products in a responsive app grid with strong, product-specific preview artwork.
 - Every card contains the app icon, product name, a concise purpose line, a truthful Installed or Available state, and obvious Open plus Uninstall actions when installed, or Install when available.
 - Keep installation state and primary actions visible; do not hide them in overflow menus.
@@ -68,6 +69,36 @@ Product-specific controls must use the same visual language:
 - Respect reduced-motion preferences.
 - At narrow sizes, navigation and grids must adapt without clipping controls or hiding essential actions.
 - Keep touch/click targets comfortable and avoid tiny three-dot menus.
+
+## Cross-platform parity (Windows, macOS and Linux)
+
+The same approved Brightdesk visual system and supported feature scope apply on every supported desktop operating system. Do not create a separate visual design for Windows, macOS or Linux.
+
+- Keep shared navigation, information hierarchy, typography, spacing, radii, controls, empty/loading/error states, focus treatment and interaction behaviour aligned across platforms.
+- Keep each product's original icon and approved product accent identical across platforms. Product accents distinguish the ten products; they are not operating-system themes.
+- Use the same application modules and first-use workflow coverage on every platform. Do not hide or downgrade a supported feature merely because a different operating system is being used.
+- Adapt only where the operating system requires it: window chrome, standard file/folder dialogs, keyboard conventions, permissions, notifications, installer surfaces and native removal controls.
+- Keep text, labels, validation, save status, update status and accessibility behaviour consistent. Never use colour alone to communicate status.
+
+### Package and release parity
+
+The configured suite package targets are:
+
+| Operating system | Expected package targets |
+| --- | --- |
+| Windows | x64 NSIS installer (.exe) |
+| macOS | Universal DMG (.dmg), PKG (.pkg) and ZIP (.zip) |
+| Linux | x64 AppImage (.AppImage) and Debian package (.deb) |
+
+These are build targets, not proof of a published or verified release. A release is ready only after each target operating system has completed its own native build and verification. Test install, first launch, agreement acceptance/decline, upgrade, launch after upgrade, removal and local-data handling on the actual target OS. A successful build on one OS does not verify another.
+
+The suite's Windows and macOS installers present the Terms and Conditions during installation. Linux AppImage has no installer agreement page, so the packaged suite enforces the same blocking agreement before the first workspace opens. A valid agreement must be accepted; declining or closing the agreement exits without opening the product.
+
+The suite owns the customer-facing version. All platform packages for one release must use the same approved source commit, version, product scope and release notes. Do not advertise automatic update delivery until a publisher/feed and its signed or otherwise approved artifacts have been configured and verified on all supported platforms. The current suite package has an empty build publishing-provider list, so an active cross-platform update feed is not yet established.
+
+### Consistent removal outcome
+
+Native uninstall controls differ between Windows, macOS and Linux. The interface and documentation must still give users a consistent outcome: remove the requested Brightdesk product or suite software, clearly distinguish product removal from full-suite removal, and never silently delete local project data. Confirm the exact data-retention behaviour through native uninstall tests on each OS before describing it as verified.
 
 ## README, concept artwork and genuine screenshots
 
