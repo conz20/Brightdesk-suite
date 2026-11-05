@@ -31,8 +31,6 @@ Our product names, four-panel brand mark, icons, artwork, interface styling, sou
 
 See the [Office Suite capability benchmark](docs/OFFICE-SUITE-CAPABILITY-BENCHMARK.md) for the researched feature areas, current first-use boundaries, local-first adaptations and staged implementation direction. Planned capabilities are not represented as finished features.
 
-The cross-platform product requirements are locked in the [Cross-platform parity and release contract](docs/CROSS_PLATFORM_PARITY_AND_RELEASE_CONTRACT.md). Windows, macOS and Linux must receive the same approved product capabilities and design, with native installers, verified update channels, and equivalent data-preserving install/uninstall behaviour.
-
 
 ## Suite design preview
 
@@ -98,7 +96,7 @@ npm test
 npm run build
 ```
 
-The source-parity pilot now covers ten feature modules across eight individual product repositories: Pages (`src/page-layout.js`), Sheets (`src/formula.js`), Forms (`src/forms-service.js`), Lists (`src/lists-service.js`), To Do (`src/todo-service.js`), Planner (`src/planner-service.js`), Database (`src/database-service.js` plus `src/database-workspace.js`), and Workspace (`src/workspace-editor.js` plus `src/workspace-service.js`). The Suite verifies each vendored copy against the pinned Git blob recorded in [PRODUCT_SOURCE_LOCK.json](docs/PRODUCT_SOURCE_LOCK.json). The eight existing entries are pinned to their product repositories' `main` branches; the two Database modules are pinned to immutable Database PR #15 commit `46d0feeb9e7110c2025857b6a2d145eeed06d40a` pending integration into Database `main`. The same check runs in CI and release preflight. This is verified source parity for these ten modules only, not complete UI-shell parity; Decks and Notes still need a verified product-specific source module.
+The source-parity pilot now covers eleven feature modules across eight individual product repositories: Pages (`src/page-layout.js`), Sheets (`src/formula.js`), Forms (`src/forms-service.js` plus `src/forms-workspace.js`), Lists (`src/lists-service.js`), To Do (`src/todo-service.js`), Planner (`src/planner-service.js`), Database (`src/database-service.js` plus `src/database-workspace.js`), and Workspace (`src/workspace-editor.js` plus `src/workspace-service.js`). The Suite verifies each vendored copy against the pinned Git blob recorded in [PRODUCT_SOURCE_LOCK.json](docs/PRODUCT_SOURCE_LOCK.json). The existing product-source modules for Pages, Sheets, Forms service, Lists, To Do, Planner and Workspace are pinned to their product repositories' `main` branches; the Database modules are pinned to Database PR #15 commit `46d0feeb9e7110c2025857b6a2d145eeed06d40a`, and Forms workspace is pinned to Forms PR #15 commit `0960d0ceee9e00bc7f0f78a053289c3d4d3699ce`, pending integration into their respective `main` branches. The same check runs in CI and release preflight. This is verified source parity for these eleven modules only, not complete UI-shell parity; Decks and Notes still need a verified product-specific source module.
 
 Run `npm run release:preflight` before preparing an installer. Build and verify installers on their matching native platforms; a build script existing in the repository does not mean that a verified installer has been published.
 
