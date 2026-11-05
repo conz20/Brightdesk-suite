@@ -33,7 +33,7 @@ test('Notes inserts text at the current cursor position', () => {
 });
 
 test('Notes replaces the selected text when inserting a checklist item or date', () => {
-  const result = insertText('Add text here', 4, 8, '☐ ');
+  const result = insertText('Add text here', 4, 9, '☐ ');
 
   assert.deepEqual(result, {
     text: 'Add ☐ here',
