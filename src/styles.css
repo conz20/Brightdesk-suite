@@ -477,3 +477,5 @@ body,.main{background:var(--bd-canvas)}
 @media(max-width:1120px){.app-manager .manager-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:720px){.topbar-heading{align-items:flex-start;flex-wrap:wrap}.app-manager .manager-grid{grid-template-columns:1fr}.app-manager .app-card{min-height:0}.app-manager .app-card .app-preview{height:145px}}
 @media(prefers-reduced-motion:reduce){.app-manager .app-card{transition:none}.app-manager .app-card:hover{transform:none}}
+
+.app-centre-note{margin:13px 2px 0;color:#68778c;font-size:12px;line-height:1.5}
