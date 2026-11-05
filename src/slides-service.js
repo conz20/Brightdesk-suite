@@ -12,7 +12,7 @@
     return presentation;
   }
 
-  function normalizeSlide(slide) {
+  function normalizeSlide(slide, index) {
     const source = slide && typeof slide === 'object' && !Array.isArray(slide) ? slide : {};
     return {
       title: String(source.title ?? ''),
