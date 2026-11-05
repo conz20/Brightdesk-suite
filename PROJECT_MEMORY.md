@@ -32,3 +32,8 @@ The Suite and individual product packages must share the canonical implementatio
 
 Native installers and uninstall mechanisms may differ by OS, but download selection, product identity, consent, install/update status, recovery, data preservation and user guidance must be equivalent. Do not claim cross-platform parity or release readiness without successful current-head evidence for every build target and operating system. See docs/CROSS_PLATFORM_PARITY_AND_RELEASE_CONTRACT.md.
 
+## Integration checkpoint — 5 November 2026
+
+Brightdesk Suite PR #60 remains an open draft on `fix/all-ten-products-after-upgrade`. The latest source-parity correction commit is `0f152aa2c03b686f8447aa29daa7c1d1c9736df0`. The lock contains thirteen feature modules across all ten product repositories. Direct GitHub content comparisons at the recorded upstream refs confirmed all thirteen upstream files are byte-for-byte identical to their Suite vendor copies. The source-parity regression test's Decks and Notes expected refs were corrected to match the current lock in that commit.
+
+This is module-level source parity only. It does not establish complete UI-shell parity, all-ten-product packaged runtime acceptance, or release readiness. The current-head test change has not yet been run locally under Node.js 24.22.2, and no completed current-head CI status was available at this checkpoint. Continue by running `npm run check:node`, `npm run verify:product-sources`, `npm test`, build and release preflight on Node.js 24.22.2. Do not merge, tag or publish until the remaining visual, runtime, accessibility and native Windows/macOS/Linux acceptance checks pass. Keep all README files updated with verified changes.
