@@ -57,11 +57,11 @@ test('Notes clears only the note text', () => {
 });
 
 test('Notes exports the current title and text using the Brightdesk project shape', () => {
-  const note = createNote({ title: 'Shopping list', text: 'Milk\\nBread' });
+  const note = createNote({ title: 'Shopping list', text: 'Milk\nBread' });
 
   assert.deepEqual(exportPayload(note), {
     kind: 'notes',
     title: 'Shopping list',
-    text: 'Milk\\nBread'
+    text: 'Milk\nBread'
   });
 });
