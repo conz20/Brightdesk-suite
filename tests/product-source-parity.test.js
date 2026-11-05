@@ -56,7 +56,7 @@ test('the product source lock records all ten pinned modules across eight produc
         id: 'database-service',
         name: 'Brightdesk Database service',
         repository: 'connormolloy12/Brightdesk-Database',
-        sourceRef: '8a1e8a50329b90a68e2062b85a34ae052c831dc3',
+        sourceRef: '46d0feeb9e7110c2025857b6a2d145eeed06d40a',
         sourcePath: 'src/database-service.js',
         suitePath: 'src/database-service.js',
         sourceBlobSha: 'd879ab20878c3ed838cf6cf56020fd3c4695834b'
@@ -65,7 +65,7 @@ test('the product source lock records all ten pinned modules across eight produc
         id: 'database-workspace',
         name: 'Brightdesk Database workspace',
         repository: 'connormolloy12/Brightdesk-Database',
-        sourceRef: '8a1e8a50329b90a68e2062b85a34ae052c831dc3',
+        sourceRef: '46d0feeb9e7110c2025857b6a2d145eeed06d40a',
         sourcePath: 'src/database-workspace.js',
         suitePath: 'src/database-workspace.js',
         sourceBlobSha: 'f7ba29971887321b931bdc013291d90c502a5e0b'
