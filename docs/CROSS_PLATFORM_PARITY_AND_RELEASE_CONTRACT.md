@@ -147,7 +147,7 @@ This section records source-level evidence, not a claim that a packaged desktop 
 3. The reviewed Suite and individual-product build configurations use an empty publishing-provider list. The update code checks for a configured publishing provider and reports updates unavailable when one is missing. The current updater therefore is not ready to deliver the latest release across platforms.
 4. Linux .deb update guidance currently points users to their package manager or a new .deb; this is not the same automatic in-app update path used by an AppImage or a configured Windows/macOS update channel.
 5. The reviewed updater settings describe Suite update controls. They do not yet establish verified update delivery for every individually installed product on all operating systems.
-6. The current source-parity pilot verifies ten feature modules across eight product repositories. Decks and Notes still need pinned, verified product-specific source modules; this is not yet complete source parity for all ten individual products.
+6. The current source-parity pilot verifies eleven feature modules across eight product repositories, including both Database modules and the Forms workspace. Decks and Notes still need pinned, verified product-specific source modules; this is not yet complete source parity for all ten individual products.
 7. The current main CI/quality workflows use a self-hosted runner. Platform release builds use separate native OS runners. The complete cross-platform release matrix must report current, successful results at the exact candidate commit.
 8. A Windows NSIS uninstaller patch exists in the individual-product build work. Its existence is not proof of complete install/repair/uninstall parity across Windows, macOS and Linux.
 
