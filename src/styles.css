@@ -434,3 +434,13 @@ input:disabled, select:disabled, textarea:disabled, button:disabled { cursor: no
 @media (max-width: 720px) {
   .app-centre-search { width: 100%; min-width: 0; }
 }
+
+
+/* Align the suite navigation with the approved Brightdesk visual standard. */
+.sidebar{background:#17243e;color:#eef3fb;border-right-color:#2e3d5c}
+.sidebar .brand b{color:#f7f9ff}
+.sidebar .brand small,.sidebar .nav small,.sidebar .section-label,.sidebar .sidebar-bottom small{color:#b7c3d7}
+.sidebar .nav{color:#e1e8f4}
+.sidebar .nav:hover{background:#263753;color:#fff}
+.sidebar .nav.active{background:#e9e7ff;color:#433fae;box-shadow:inset 3px 0 0 #a5a0ff}
+.sidebar .sidebar-divider{background:#344563}
