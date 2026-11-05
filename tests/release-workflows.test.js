@@ -138,3 +138,44 @@ test('dependency-maintenance workflows use the existing self-hosted runner', () 
   }
 });
 
+
+
+test('native release matrix builds and collects all ten product installers before upload', () => {
+  const workflow = read('.github/workflows/build-release.yml');
+  const manifest = JSON.parse(read('package.json'));
+  const matrixBuild = workflow.split('  build:')[1].split('  collect:')[0];
+  const collect = workflow.split('  collect:')[1].split('  publish-release:')[0];
+
+  for (const platform of ['win', 'mac', 'linux']) {
+    assert.equal(manifest.scripts[`dist:products:${platform}`], `node scripts/build-apps.js ${platform}`);
+    assert.equal(manifest.scripts[`release:verify:products:${platform}`], `node scripts/verify-product-installers.js ${platform} release/apps`);
+  }
+  assert.match(matrixBuild, /npm run dist:products:\$\{\{ matrix\.script \}\}/);
+  assert.match(matrixBuild, /npm run release:verify:products:\$\{\{ matrix\.script \}\}/);
+  assert.match(matrixBuild, /node scripts\/collect-platform-build\.js \$\{\{ matrix\.script \}\}/);
+  assert.match(matrixBuild, /release\/apps\/\$\{\{ matrix\.platform \}\}\/\*\*/);
+
+  assert.match(collect, /node-version: 24\.22\.2/);
+  assert.match(collect, /npm run release:verify:complete -- release/);
+  assert.ok(
+    collect.indexOf('npm run release:verify:complete -- release') <
+      collect.indexOf('Upload complete Brightdesk installer bundle'),
+    'the combined artifact must be uploaded only after the complete integrity check'
+  );
+  assert.equal(
+    manifest.scripts['release:verify:complete'],
+    'node scripts/verify-complete-release-bundle.js'
+  );
+});
+
+test('product verifier is wired to the ten approved outputs and their post-transfer SHA-256 manifests', () => {
+  const verifier = read('scripts/verify-product-installers.js');
+  const complete = read('scripts/verify-complete-release-bundle.js');
+  for (const id of ['pages', 'sheets', 'slides', 'notes', 'database', 'forms', 'lists', 'planner', 'todo', 'loop']) {
+    assert.match(verifier, new RegExp(`\\b${id}: '`));
+  }
+  assert.match(verifier, /verifyChecksumManifest\(/);
+  assert.match(complete, /verifyChecksumManifest\(/);
+  assert.match(complete, /installerCount !== 66/);
+  assert.match(complete, /lock\.packages\?\.\[''\]\?\.version/);
+});
