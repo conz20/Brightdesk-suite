@@ -519,14 +519,32 @@ function updateDocumentLanguage() {
   slideWrap.querySelectorAll('textarea').forEach(input => { input.lang = lang; });
 }
 function syncAppNavigation() {
-  const host = $('dynamic-app-nav'); if (!host) return;
+  const host = $('dynamic-app-nav');
+  if (!host) return;
   host.innerHTML = '';
-  catalog.filter(item => !['pages','sheets','slides','notes'].includes(item.id)).forEach(item => {
-    const button=document.createElement('button'); button.className='nav'; button.dataset.app=item.id;
-    const icon=document.createElement('img'); icon.className='app-icon-image'; icon.src=appIconPath(item); icon.alt=''; icon.setAttribute('aria-hidden','true');
-    const label=document.createElement('span'); const name=document.createElement('b'); name.textContent=item.name; const sub=document.createElement('small'); sub.textContent=item.subtitle;
-    label.append(name,sub); button.append(icon,label);
-    button.addEventListener('click',()=>setApp(item.id)); host.append(button);
+
+  catalog.filter(item => installedApp(item.id)).forEach(item => {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = state.app === item.id ? 'nav active' : 'nav';
+    button.dataset.app = item.id;
+
+    const icon = document.createElement('img');
+    icon.className = 'app-icon-image';
+    icon.src = appIconPath(item);
+    icon.alt = '';
+    icon.setAttribute('aria-hidden', 'true');
+
+    const label = document.createElement('span');
+    const name = document.createElement('b');
+    name.textContent = t('apps.' + item.id);
+    const subtitle = document.createElement('small');
+    subtitle.textContent = item.subtitle;
+
+    label.append(name, subtitle);
+    button.append(icon, label);
+    button.addEventListener('click', () => setApp(item.id));
+    host.append(button);
   });
 }
 
