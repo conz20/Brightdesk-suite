@@ -31,7 +31,7 @@ test('all ten installed products remain available in the product-switching sideb
 
 test('Brightdesk Home and My Applications artwork match the ten-product suite navigation', () => {
   const svg = read('assets/product-experience/brightdesk-app-centre.svg');
-  assert.equal((svg.match(/id="sidebar-app-centre"/g) || []).length, 1);
+  assert.equal((svg.match(/id="sidebar-applications"/g) || []).length, 1);
   assert.doesNotMatch(svg, /id="sidebar-(?:pages|sheets|decks|notes|database|forms|lists|planner|todo|workspace)-/);
   assert.match(svg, /Brightdesk Office Suite My Applications experience/);
   assert.match(svg, /Product shortcuts are not repeated beside the My Applications grid/);
