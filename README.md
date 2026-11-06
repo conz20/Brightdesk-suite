@@ -48,9 +48,9 @@ The ten original SVG application icons remain the single source of truth. The Su
 | macOS | Universal disk image (.dmg), package installer (.pkg) and archive (.zip) |
 | Linux | x64 AppImage (.AppImage) and Debian package (.deb) |
 
-These are configured targets, not proof that current installers are published or verified. A complete cross-platform release requires successful native build, install, first launch, upgrade and removal checks for every supported operating system, using the same approved suite version and source commit.
+The Suite and individual products use these same configured targets. The release bundle is designed to contain **66 files**: six Suite outputs and 60 individual-product outputs (one Windows installer, three macOS formats and two Linux formats for each of the ten products). A build workflow is not proof that those files have been produced, installed or verified.
 
-The manual installer workflow is configured to use private self-hosted GitHub Actions runners, avoiding paid GitHub-hosted minutes. GitHub Actions dependencies are pinned to full commit SHAs where required by the repository's security policy. The existing Apple-silicon Mac runner handles preparation, collection and macOS packaging. Native Windows x64 and Linux x64 packaging each require their own registered, online self-hosted runner; until those runners are registered and all platform jobs pass, a complete three-platform installer bundle is not available. See [no-cost runner setup](docs/LOCAL-RELEASE-VERIFICATION.md#no-cost-github-actions-runners). Release publishing remains off by default and requires an explicit manual selection.
+The manual installer workflow builds the Suite and all ten products on the matching native Windows, macOS and Linux self-hosted runners. Each product output is checked against its expected product name, version, platform format and SHA-256 manifest. The final collector rechecks the dependency-lock version, legal files, all ten product folders and the transferred checksums before uploading the complete bundle. The workflow uses self-hosted runners rather than paid GitHub-hosted minutes. Native Windows x64 and Linux x64 runners must be registered and online; if a required runner is unavailable, the platform build cannot pass. See [no-cost runner setup](docs/LOCAL-RELEASE-VERIFICATION.md#no-cost-github-actions-runners) and [cross-platform release verification](docs/CROSS-PLATFORM-RELEASE-VERIFICATION.md). Release publishing remains a separate manual choice, disabled by default.
 
 **Terms and first launch:** Windows NSIS and macOS DMG/PKG installers present the Terms and Conditions before installation continues. Linux uses the same blocking agreement in the packaged product on first launch, because AppImage has no installer agreement page. The workspace remains unavailable until the user explicitly accepts; declining or closing the agreement exits the product.
 
@@ -153,9 +153,9 @@ For a local, current-platform release verification, run:
 npm run verify:local-release
 ```
 
-This local process does not publish a GitHub Release or upload artifacts. Run it separately on each operating system you intend to distribute for. The pull-request macOS packaging check also builds and verifies its installers locally on the native runner without uploading duplicate installer bundles to GitHub Actions storage; the build and SHA-256 results remain in the workflow log.
+This local process builds the Suite and all ten product installers for the current operating system, creates per-product SHA-256 manifests, collects them into the platform folder and verifies the expected outputs. It does not publish a GitHub Release or upload artifacts. Run it separately on each operating system you intend to distribute for. The full release workflow is still required to verify the final combined 66-file bundle across all three platforms.
 
-See [installation guidance](docs/INSTALLATION.md), [local release verification](docs/LOCAL-RELEASE-VERIFICATION.md), [versioning](docs/VERSIONING.md), [Rust integration](docs/RUST_ENGINE_INTEGRATION.md), [PRODUCT_SCOPE_LOCK.md](PRODUCT_SCOPE_LOCK.md), [LICENSE](LICENSE) and [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
+See [installation guidance](docs/INSTALLATION.md), [local release verification](docs/LOCAL-RELEASE-VERIFICATION.md), [cross-platform release verification](docs/CROSS-PLATFORM-RELEASE-VERIFICATION.md), [versioning](docs/VERSIONING.md), [Rust integration](docs/RUST_ENGINE_INTEGRATION.md), [PRODUCT_SCOPE_LOCK.md](PRODUCT_SCOPE_LOCK.md), [LICENSE](LICENSE) and [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
 
 ## Integration and release status
 
