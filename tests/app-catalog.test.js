@@ -260,3 +260,16 @@ test('Suite product management describes adding and removing workspaces, not OS 
   assert.match(copy['manager.notInstalled'], /Available in Suite/);
   assert.match(copy['manager.note'], /does not install or uninstall a separate program/i);
 });
+
+test('installation guidance documents native removal on all three operating systems and preserves user data', () => {
+  const fs = require('node:fs');
+  const path = require('node:path');
+  const guide = fs.readFileSync(path.join(__dirname, '..', 'docs', 'INSTALLATION.md'), 'utf8');
+
+  assert.match(guide, /Windows[\s\S]*Installed apps[\s\S]*Uninstall/i);
+  assert.match(guide, /macOS[\s\S]*Applications[\s\S]*Trash/i);
+  assert.match(guide, /Linux[\s\S]*\.deb[\s\S]*software manager|Linux[\s\S]*software manager[\s\S]*\.deb/i);
+  assert.match(guide, /AppImage[\s\S]*delete/i);
+  assert.match(guide, /normal removal[\s\S]*does not delete[\s\S]*documents/i);
+  assert.match(guide, /user data[\s\S]*preserv/i);
+});
