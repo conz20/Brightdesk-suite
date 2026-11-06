@@ -300,6 +300,32 @@ test('complete release verifier rejects missing or unexpected product folders', 
   }
 });
 
+test('complete release verifier rejects unexpected files and directories in the published bundle root', () => {
+  const fixture = createCompleteBundle();
+  try {
+    writeFile(fixture.release, 'internal-debug.log', 'private build output');
+    assert.throws(
+      () => verifyCompleteReleaseBundle({ releaseDir: fixture.release, version: VERSION }),
+      /unexpected files or directories/
+    );
+  } finally {
+    fs.rmSync(fixture.root, { recursive: true, force: true });
+  }
+});
+
+test('complete release verifier rejects unexpected files in product and metadata staging folders', () => {
+  const fixture = createCompleteBundle();
+  try {
+    writeFile(path.join(fixture.release, 'apps'), 'unexpected-marker.txt', 'not a product platform folder');
+    assert.throws(
+      () => verifyCompleteReleaseBundle({ releaseDir: fixture.release, version: VERSION }),
+      /unexpected files or directories/
+    );
+  } finally {
+    fs.rmSync(fixture.root, { recursive: true, force: true });
+  }
+});
+
 test('complete release verifier rejects wrong versions and unsafe checksum paths', () => {
   const fixture = createCompleteBundle();
   try {
