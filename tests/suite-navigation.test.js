@@ -43,6 +43,23 @@ test('product settings menu can hide an installed product from Switch product na
   assert.match(read('src/styles.css'), /app-card-menu-trigger/);
 });
 
+test('the live desktop shell provides Home, Apps and Files navigation', () => {
+  const html = read('src/index.html');
+  const app = read('src/app.js');
+  assert.match(html, /id="home-nav"/);
+  assert.match(html, /id="app-centre-nav"/);
+  assert.match(html, /id="files-nav"/);
+  assert.match(html, /id="files-manager"/);
+  assert.match(html, /id="files-open-button"/);
+  assert.match(html, /id="files-save-button"/);
+  assert.match(app, /state\.view = 'home'/);
+  assert.match(app, /state\.view = 'files'/);
+  assert.match(app, /\$\('home-nav'\)\.addEventListener/);
+  assert.match(app, /\$\('files-nav'\)\.addEventListener/);
+  assert.match(app, /\$\('files-open-button'\)\.addEventListener\('click', openFile\)/);
+  assert.match(app, /\$\('files-save-button'\)\.addEventListener\('click', saveProject\)/);
+});
+
 test('all ten installed products remain available in the product-switching sidebar during workspace use', () => {
   const app = read('src/app.js');
   const catalogue = require('../src/app-catalog');
