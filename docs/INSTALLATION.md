@@ -29,6 +29,22 @@ The Brightdesk Terms and Conditions must be accepted before the product workspac
 Choose **Accept** or **Agree** to continue. Choose **Decline** or **Disagree** to cancel. Declining, or closing the blocking first-launch agreement without accepting, prevents the product workspace from opening. The application records acceptance against the current Terms text; changed terms require a fresh acceptance.
 
 The agreement step is designed to produce the same consent outcome on all three operating systems, but its presentation differs where the operating system's package format requires it.
+
+## Removing Brightdesk
+
+Use your operating system's normal removal route. Removing the Suite removes the Brightdesk program; it does not remove documents and project files you created.
+
+- **Windows:** Open **Settings → Apps → Installed apps**, find **Brightdesk Office Suite**, and choose **Uninstall**. You can also use the Brightdesk Office Suite uninstall entry in the Start menu.
+- **macOS:** Quit Brightdesk Office Suite. In Finder, open **Applications** and move **Brightdesk Office Suite** to the Trash. This removes the application bundle.
+- **Linux DEB:** Use your desktop's software manager or package manager to remove **Brightdesk Office Suite**.
+- **Linux AppImage:** Quit Brightdesk Office Suite, then delete the AppImage file.
+
+Brightdesk keeps its settings and other application data in the current user's profile. Normal application removal must not silently delete that user data, documents or project files. Back up important files before removing software. Do not remove Brightdesk data folders as part of an ordinary uninstall.
+
+**Important Suite distinction:** The **Add to Suite** and **Remove from Suite** controls in the product catalogue only change which of the ten included workspaces are available inside Brightdesk Office Suite. They do not install or uninstall separate operating-system programs. The individual product packages, when distributed separately, are removed through the matching operating system's normal removal route.
+
+The removal instructions describe the configured package formats. Successful native uninstall and data-preservation behaviour must still be verified on Windows, macOS and Linux before release.
+
 ## Important
 
 - Do not install Node.js just to run Brightdesk.
