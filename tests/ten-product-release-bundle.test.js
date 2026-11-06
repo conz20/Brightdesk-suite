@@ -155,20 +155,35 @@ test('product verifier checks every expected installer and writes verifiable SHA
   }
 });
 
-test('platform collector moves only the current suite files and product folders into their OS bundle', () => {
+test('platform collector stages only verified installer files and excludes build intermediates', () => {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'brightdesk-platform-collector-'));
   try {
     const release = path.join(root, 'release');
-    writeFile(release, 'Brightdesk-Office-Suite-0.1.0-x64.exe');
-    writeFile(path.join(release, 'apps', 'pages'), 'Brightdesk-Pages-0.1.0-x64.exe');
-    writeFile(path.join(release, 'apps', 'sheets'), 'Brightdesk-Sheets-0.1.0-x64.exe');
+    const suiteFilename = 'Brightdesk-Office-Suite-0.1.0-x64.exe';
+    writeFile(release, suiteFilename);
+    writeManifest(release, SUITE_MANIFEST.win, [suiteFilename]);
+    writeFile(path.join(release, 'win-unpacked'), 'Brightdesk.exe', 'temporary Suite build output');
     writeFile(path.join(release, 'build-metadata'), 'package-lock.json', '{}');
-    const result = collectPlatformBuild({ rootDir: root, platform: 'win' });
+
+    for (const productId of Object.keys(PRODUCTS)) {
+      const productDirectory = path.join(release, 'apps', productId);
+      const files = expectedProductFiles(productId, 'win', VERSION);
+      for (const filename of files) writeFile(productDirectory, filename);
+      writeManifest(productDirectory, `Brightdesk-${productId}-SHA256SUMS-WIN.txt`, files);
+      writeFile(path.join(productDirectory, 'win-unpacked'), 'temporary.exe', 'temporary product build output');
+    }
+
+    const result = collectPlatformBuild({ rootDir: root, platform: 'win', version: VERSION });
     assert.equal(result.suiteFiles, 1);
-    assert.equal(result.productFolders, 2);
-    assert.ok(fs.existsSync(path.join(release, 'Windows', 'Brightdesk-Office-Suite-0.1.0-x64.exe')));
+    assert.equal(result.productFolders, 10);
+    assert.equal(result.productFiles, 10);
+    assert.ok(fs.existsSync(path.join(release, 'Windows', suiteFilename)));
+    assert.ok(fs.existsSync(path.join(release, 'Windows', SUITE_MANIFEST.win)));
     assert.ok(fs.existsSync(path.join(release, 'apps', 'Windows', 'pages', 'Brightdesk-Pages-0.1.0-x64.exe')));
-    assert.ok(fs.existsSync(path.join(release, 'apps', 'Windows', 'sheets', 'Brightdesk-Sheets-0.1.0-x64.exe')));
+    assert.ok(fs.existsSync(path.join(release, 'apps', 'Windows', 'pages', 'Brightdesk-pages-SHA256SUMS-WIN.txt')));
+    assert.ok(!fs.existsSync(path.join(release, 'apps', 'Windows', 'pages', 'win-unpacked')));
+    assert.ok(fs.existsSync(path.join(release, 'apps', 'pages', 'win-unpacked', 'temporary.exe')));
+    assert.ok(fs.existsSync(path.join(release, 'win-unpacked', 'Brightdesk.exe')));
     assert.ok(fs.existsSync(path.join(release, 'build-metadata', 'package-lock.json')));
   } finally {
     fs.rmSync(root, { recursive: true, force: true });
