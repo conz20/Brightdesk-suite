@@ -40,6 +40,7 @@ test('product settings menu can hide an installed product from Switch product na
   assert.match(app, /catalog\.filter\(item => installedApp\(item\.id\) && !state\.hiddenProducts\.includes\(item\.id\)\)/);
   assert.match(app, /More options for \$\{item\.name\}/);
   assert.match(app, /Hide from Switch product/);
+  assert.match(app, /visibleProducts\.length <= 1/);
   assert.match(read('src/assets/icons/more.svg'), /circle/);
   assert.match(read('src/styles.css'), /app-card-menu-trigger/);
 });
