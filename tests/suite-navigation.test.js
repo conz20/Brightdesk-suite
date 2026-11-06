@@ -66,7 +66,7 @@ test('all ten installed products remain available in the product-switching sideb
   assert.equal(catalogue.length, 10);
   assert.match(app, /function syncAppNavigation\(\)[\s\S]*?catalog\.filter\(item => installedApp\(item\.id\)\)/);
   assert.match(app, /button\.addEventListener\('click',\(\)=>setApp\(item\.id\)\)/);
-  assert.match(app, /sidebar-section-label'\)\.textContent = manager \? t\('sidebar\.suite'\) : \(languages \? t\('sidebar\.settings'\) : t\('sidebar\.yourApps'\)\)/);
+  assert.match(app, /const suitePage = home \|\| manager \|\| files/);
 });
 
 test('one Brightdesk Home artwork combines the suite sidebar and ten-product grid', () => {
@@ -98,7 +98,7 @@ test('README and visual standard explain the contextual product-switching rule',
   const readme = read('README.md');
   const standard = read('docs/BRIGHTDESK_VISUAL_STANDARD.md');
   const home = read('assets/product-experience/brightdesk-home.svg');
-  assert.match(readme, /approved Home, Apps and Files sidebar/);
+  assert.match(readme, /approved sidebar uses \\*\\*Home\\*\\*, \\*\\*Apps\\*\\* and \\*\\*Files\\*\\*/);
   assert.match(readme, /in the \*\*Switch product\*\*/);
   assert.match(readme, /hide or restore an installed product/);
   assert.equal((readme.match(/assets\/product-experience\/brightdesk-home\.svg/g) || []).length, 1);
