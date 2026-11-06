@@ -512,6 +512,8 @@ function toggleAppInstall(id) {
   if (!installableCatalog.some(item => item.id === id) || launchAppId) return;
   if (installedApp(id)) {
     if (state.installedApps.length === 1) { alert('Keep at least one app installed in your Brightdesk workspace.'); return; }
+    const product = catalog.find(item => item.id === id);
+    if (!window.confirm(`Uninstall ${product?.name || 'this product'}? Your documents and project files will remain on this device.`)) return;
     state.installedApps = state.installedApps.filter(appId => appId !== id);
     if (state.app === id) { state.app = state.installedApps[0]; state.ribbonTab = 'home'; }
   } else { state.installedApps.push(id); }
