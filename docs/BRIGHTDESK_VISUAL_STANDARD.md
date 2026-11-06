@@ -29,13 +29,13 @@ This is the shared design contract for Brightdesk Office Suite and all ten appro
 
 The product-specific accents should help recognition, not create ten unrelated design systems. Shared surfaces, typography and interaction patterns remain common.
 
-## Suite Home and My Apps experience
+## Suite Home and My Applications experience
 
 The suite home should make each product immediately recognisable and manageable:
 
 - Use one clear Settings cog in the top-right as the suite-wide entry point for local app, language and update management; do not repeat it as a sidebar item.
-- Use a clean, professional suite sidebar with only **Home**, **My Apps** and **Files**. **My Apps** is the plain-language destination for all ten installed desktop products; do not use the technical label “App Centre”. Do not add a **Create** navigation item. Keep the ten product choices in the main My Apps grid, not repeated as sidebar shortcuts.
-- Inside an active product workspace, show only installed products in a **Switch product** sidebar group for quick navigation. Hide that group on the My Apps and language/settings screens; the sidebar should reflect the current context rather than duplicate the page content.
+- Use a clean, professional suite sidebar with only **Home**, **My Applications** and **Files**. **My Applications** is the plain-language destination for all ten installed desktop products; do not use the technical label “App Centre”. Do not add a **Create** navigation item. Keep the ten product choices in the main My Applications grid, not repeated as sidebar shortcuts.
+- Inside an active product workspace, show only installed products in a **Switch product** sidebar group for quick navigation. Hide that group on the My Applications and language/settings screens; the sidebar should reflect the current context rather than duplicate the page content.
 - Label genuinely product-specific options in a product card's three-dot menu **Product settings** so they are clearly distinct from suite-wide Settings.
 - Show all ten approved products in a responsive app grid with strong, product-specific application artwork.
 - Every card contains the app icon, product name, a concise purpose line, a truthful Installed or Available state, and obvious Open plus Uninstall actions when installed, or Install when available.
@@ -45,7 +45,7 @@ The suite home should make each product immediately recognisable and manageable:
 - Show progress and clear success/failure feedback for downloads and updates.
 - Never show fabricated update states, availability or version numbers. If an action is only a design target, label it as such in documentation.
 
-The suite is local-first desktop software. Do not add account creation, sign-in, cloud storage, online workspace or cloud-sync imagery or language. Keep navigation focused on local desktop work: Home, My Apps and Files. Do not add online-service destinations or a Create sidebar button. Settings must describe controls and resources on this device. Local save states should be explicit and truthful.
+The suite is local-first desktop software. Do not add account creation, sign-in, cloud storage, online workspace or cloud-sync imagery or language. Keep navigation focused on local desktop work: Home, My Applications and Files. Do not add online-service destinations or a Create sidebar button. Settings must describe controls and resources on this device. Local save states should be explicit and truthful.
 
 ## Application workspaces
 
