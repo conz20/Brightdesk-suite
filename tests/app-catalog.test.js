@@ -249,7 +249,7 @@ test('Suite product management describes adding and removing workspaces, not OS 
   const english = JSON.parse(fs.readFileSync(path.join(root, 'src', 'languages', 'en-AU.json'), 'utf8'));
   const copy = english.translations;
 
-  assert.match(app, /action\.textContent = isInstalled \? t\('manager\.remove'\) : t\('manager\.install'\)/);
+  assert.match(app, /action\.textContent = t\(isInstalled \? 'manager\.remove' : 'manager\.install'\)/);
   assert.match(app, /stateChip\.textContent = !canInstall \? 'In development' : t\(isInstalled \? 'manager\.inWorkspace' : 'manager\.notInstalled'\)/);
   assert.match(app, /Remove \$\{product\?\.name \|\| 'this product'\} from Brightdesk Office Suite\?/);
   assert.doesNotMatch(app, /textContent = isInstalled \? 'Uninstall' : 'Install'/);
