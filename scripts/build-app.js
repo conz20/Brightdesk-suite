@@ -14,6 +14,9 @@ if (!apps.has(appId) || !targets[platform]) {
   process.exit(2);
 }
 const npmExec = process.platform === 'win32' ? 'npx.cmd' : 'npx';
+const iconPreparation = spawnSync(process.execPath, [path.join(__dirname, 'prepare-platform-icons.js')], { cwd: path.resolve(__dirname, '..'), stdio: 'inherit' });
+if (iconPreparation.error) throw iconPreparation.error;
+if (iconPreparation.status !== 0) process.exit(iconPreparation.status ?? 1);
 const result = spawnSync(npmExec, ['electron-builder', ...targets[platform], '--publish', 'never', '--config', path.resolve(__dirname, '..', 'electron-builder.app.config.js')], {
   cwd: path.resolve(__dirname, '..'), stdio: 'inherit', shell: process.platform === 'win32',
   env: { ...process.env, BRIGHTDESK_APP_ID: appId }

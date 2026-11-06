@@ -72,3 +72,75 @@ test('suite and active app-module README files use original icon artwork without
     assert.ok(readme.includes(`assets/icons/${file}`), `Main README must show the original icon ${file}`);
   }
 });
+
+
+test('native platform icon archive contains verified Windows, macOS and Linux assets for the Suite and every product', async () => {
+  const JSZip = require('jszip');
+  const root = path.join(__dirname, '..');
+  const archivePath = path.join(root, 'assets', 'platform-icons', 'brightdesk-platform-icons.zip');
+  assert.ok(fs.existsSync(archivePath), 'native icon archive must be committed');
+  const zip = await JSZip.loadAsync(fs.readFileSync(archivePath));
+  const ids = ['suite', 'pages', 'sheets', 'decks', 'notes', 'database', 'forms', 'lists', 'planner', 'todo', 'workspace'];
+  assert.equal(Object.keys(zip.files).filter(name => !zip.files[name].dir).length, 34);
+  for (const id of ids) {
+    const png = await zip.file(`${id}.png`).async('nodebuffer');
+    const ico = await zip.file(`${id}.ico`).async('nodebuffer');
+    const icns = await zip.file(`${id}.icns`).async('nodebuffer');
+    assert.equal(png.subarray(0, 8).toString('hex'), '89504e470d0a1a0a');
+    assert.equal(png.readUInt32BE(16), 512);
+    assert.equal(png.readUInt32BE(20), 512);
+    assert.equal(ico.readUInt16LE(0), 0);
+    assert.equal(ico.readUInt16LE(2), 1);
+    assert.ok(ico.readUInt16LE(4) >= 6);
+    assert.equal(icns.subarray(0, 4).toString('ascii'), 'icns');
+    assert.equal(icns.readUInt32BE(4), icns.length);
+    for (const type of ['ic07', 'ic08', 'ic09']) assert.ok(icns.includes(Buffer.from(type)), `${id}.icns missing ${type}`);
+  }
+});
+
+test('Suite and integrated product packagers select their own native platform icons', () => {
+  const root = path.join(__dirname, '..');
+  const pkg = JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8'));
+  assert.equal(pkg.build.directories.buildResources, 'assets/platform-icons/native');
+  assert.equal(pkg.build.win.icon, 'suite.ico');
+  assert.equal(pkg.build.mac.icon, 'suite.icns');
+  assert.equal(pkg.build.linux.icon, 'suite.png');
+  const configPath = path.join(root, 'electron-builder.app.config.js');
+  const previous = process.env.BRIGHTDESK_APP_ID;
+  try {
+    for (const app of catalog) {
+      process.env.BRIGHTDESK_APP_ID = app.id;
+      delete require.cache[require.resolve(configPath)];
+      const config = require(configPath);
+      assert.equal(config.directories.buildResources, 'assets/platform-icons/native');
+      assert.equal(config.win.icon, `${app.id}.ico`);
+      assert.equal(config.mac.icon, `${app.id}.icns`);
+      assert.equal(config.linux.icon, `${app.id}.png`);
+    }
+  } finally {
+    if (previous === undefined) delete process.env.BRIGHTDESK_APP_ID;
+    else process.env.BRIGHTDESK_APP_ID = previous;
+    delete require.cache[require.resolve(configPath)];
+  }
+});
+
+test('native icon preparation validates and extracts the archive before installer packaging', async () => {
+  const os = require('node:os');
+  const { preparePlatformIcons } = require('../scripts/prepare-platform-icons');
+  const root = path.join(__dirname, '..');
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'brightdesk-platform-icons-'));
+  const outputDir = path.join(tmp, 'native');
+  try {
+    const result = await preparePlatformIcons({
+      archivePath: path.join(root, 'assets', 'platform-icons', 'brightdesk-platform-icons.zip'),
+      outputDir
+    });
+    assert.equal(result.iconCount, 11);
+    assert.equal(result.fileCount, 34);
+    for (const id of ['suite', ...catalog.map(app => app.id)]) {
+      for (const extension of ['png', 'ico', 'icns']) assert.ok(fs.existsSync(path.join(outputDir, `${id}.${extension}`)));
+    }
+  } finally {
+    fs.rmSync(tmp, { recursive: true, force: true });
+  }
+});

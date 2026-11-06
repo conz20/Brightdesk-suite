@@ -42,9 +42,10 @@ module.exports = {
   asar: true,
   files: ['src/**/*', 'native/brightdesk_engine.node', 'package.json', 'LICENSE', 'THIRD_PARTY_NOTICES.md', 'TERMS_AND_CONDITIONS.txt'],
   asarUnpack: ['native/brightdesk_engine.node'],
-  directories: { output: path.join('release', 'apps', appId) },
+  directories: { output: path.join('release', 'apps', appId), buildResources: 'assets/platform-icons/native' },
   publish: [],
   win: {
+    icon: `${appId}.ico`,
     target: ['nsis'],
     artifactName: 'Brightdesk-' + appSlug + '-${version}-${arch}.${ext}'
   },
@@ -56,6 +57,7 @@ module.exports = {
     license: 'TERMS_AND_CONDITIONS.txt'
   },
   mac: {
+    icon: `${appId}.icns`,
     target: ['dmg', 'pkg', 'zip'],
     category: 'public.app-category.productivity',
     artifactName: 'Brightdesk-' + appSlug + '-${version}-${arch}.${ext}'
@@ -67,6 +69,7 @@ module.exports = {
     installLocation: '/Applications'
   },
   linux: {
+    icon: `${appId}.png`,
     syncDesktopName: true,
     target: ['AppImage', 'deb'],
     category: 'Office',
