@@ -39,7 +39,7 @@ jobs:
           for attempt in 1 2 3; do
             echo "Refreshing third-party notices (attempt ${attempt}/3)."
             git fetch origin main
-            git reset --hard origin/main
+            git reset --hard FETCH_HEAD
             npm run check:node
             npm run lock:verify
             npm ci --ignore-scripts --no-audit --no-fund
