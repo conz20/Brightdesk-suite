@@ -237,15 +237,27 @@ test('all third-party workflow actions are pinned to full commit SHAs', () => {
   }
 });
 
-test('the pull-request macOS installer check builds and verifies all ten product installers', () => {
+test('pull-request installer verification builds and verifies Suite plus all ten products on every native platform', () => {
   const workflow = read('.github/workflows/verify-macos-installer.yml');
-  assert.match(workflow, /runs-on: \["self-hosted", "macOS", "ARM64"\]/);
-  assert.ok(workflow.includes('npm run dist:products:mac'));
-  assert.ok(workflow.includes('npm run release:verify:products:mac'));
+  for (const platform of ['Linux', 'Windows', 'macOS']) {
+    assert.ok(workflow.includes(`platform: ${platform}`), `${platform} is included in PR installer verification`);
+  }
+  for (const runner of [
+    'runner: ["self-hosted", "Linux", "X64"]',
+    'runner: ["self-hosted", "Windows", "X64"]',
+    'runner: ["self-hosted", "macOS", "ARM64"]'
+  ]) assert.ok(workflow.includes(runner), `native runner configured: ${runner}`);
+  for (const command of [
+    'npm run dist:${{ matrix.script }}',
+    'npm run release:verify:${{ matrix.script }}',
+    'npm run dist:products:${{ matrix.script }}',
+    'npm run release:verify:products:${{ matrix.script }}'
+  ]) assert.ok(workflow.includes(command), `workflow includes ${command}`);
   assert.ok(
-    workflow.indexOf('npm run dist:products:mac') < workflow.indexOf('npm run release:verify:products:mac'),
-    'all ten product archives must be built before their checksum manifests are verified'
+    workflow.indexOf('npm run dist:products:${{ matrix.script }}') < workflow.indexOf('npm run release:verify:products:${{ matrix.script }}'),
+    'all ten product installers must be built before their manifests are verified'
   );
+  assert.match(workflow, /if: github\.event\.pull_request\.head\.repo\.full_name == github\.repository/);
   for (const changedPath of [
     'electron-builder.app.config.js',
     'scripts/build-app.js',
@@ -253,9 +265,11 @@ test('the pull-request macOS installer check builds and verifies all ten product
     'scripts/verify-product-installers.js',
     'scripts/verify-complete-release-bundle.js',
     'scripts/collect-platform-build.js',
-    'tests/ten-product-release-bundle.test.js'
+    'tests/ten-product-release-bundle.test.js',
+    '.github/workflows/build-release.yml',
+    '.github/workflows/verify-macos-installer.yml'
   ]) {
-    assert.ok(workflow.includes(changedPath), 'the native macOS installer check must run when ' + changedPath + ' changes');
+    assert.ok(workflow.includes(changedPath), 'native installer checks must run when ' + changedPath + ' changes');
   }
   assert.doesNotMatch(workflow, /ubuntu-latest|windows-latest|macos-latest/);
   assert.doesNotMatch(workflow, /publish_release|gh release create|publish always/i);
