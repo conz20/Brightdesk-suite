@@ -179,3 +179,13 @@ test('Home sidebar footer and navigation match the production artwork', () => {
   assert.ok(styles.includes('body.suite-home .main > footer { display: none; }'));
   assert.ok(readme.includes('with no secondary captions'));
 });
+
+
+test('Home product section uses one clear heading without the Apps eyebrow', () => {
+  const styles = read('src/styles.css');
+  const readme = read('README.md');
+  const guide = read('docs/BRIGHTDESK_VISUAL_STANDARD.md');
+  assert.ok(styles.includes('body.suite-home .app-manager.home-view .manager-hero .eyebrow { display: none; }'));
+  assert.ok(readme.includes('redundant **MY APPS** label is hidden on Home'));
+  assert.ok(guide.includes('Do not place an additional eyebrow label above this heading.'));
+});
