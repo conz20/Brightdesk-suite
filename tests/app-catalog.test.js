@@ -70,8 +70,8 @@ test('the customer-facing release version has one authoritative source across th
   assert.doesNotMatch(html, /\d+\.\d+\.\d+/);
   // The version-label and footer-version elements are static shell markup.
   // The renderer must not duplicate or hard-code the release version.
-  assert.doesNotMatch(app, /\\d+\\.\\d+\\.\\d+/);
-  assert.doesNotMatch(app, /\\$\\(['"](?:version-label|footer-version)['"]\\)\\.textContent/);
+  assert.doesNotMatch(app, /\d+\.\d+\.\d+/);
+  assert.doesNotMatch(app, /\$\(['"](?:version-label|footer-version)['"]\)\.textContent/);
   assert.match(versioning, /package\.json.*single source of truth/i);
   assert.match(versioning, /Brightdesk-AI.*no Brightdesk customer release number/i);
   assert.doesNotMatch(workflow, /Brightdesk-0\.1\.0-Installers|default: 'v0\.1\.0'/);
