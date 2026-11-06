@@ -139,6 +139,6 @@ test('macOS installer pull-request verification does not upload the entire relea
   );
 
   assert.match(workflow, /npm run release:verify:mac/);
-  assert.doesNotMatch(workflow, /actions\\/upload-artifact/);
-  assert.doesNotMatch(workflow, /path:\\s*release\\/\\*\\*/);
+  assert.equal(workflow.includes('actions/upload-artifact'), false);
+  assert.equal(workflow.includes('path: release/**'), false);
 });
