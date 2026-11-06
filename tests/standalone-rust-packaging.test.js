@@ -38,3 +38,12 @@ test('standalone product build scripts build the Rust addon once before Electron
   assert.ok(manifest.scripts['dist:apps:linux'].startsWith('npm run native:build && '));
   assert.doesNotMatch(read('scripts/build-app.js'), /build-native\.js/);
 });
+
+test('repository ignores Rust target output and native Node-API binaries in embedded products', () => {
+  const ignore = read('.gitignore');
+  assert.match(ignore, /^\/rust\/target\/$/m);
+  assert.match(ignore, /^\*\*\/rust\/target\/$/m);
+  assert.match(ignore, /^\*\*\/target\/$/m);
+  assert.match(ignore, /^\*\*\/native\/\*\.node$/m);
+  assert.match(ignore, /^\*\*\/node_modules\/$/m);
+});
