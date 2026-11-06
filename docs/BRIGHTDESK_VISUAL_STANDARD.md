@@ -130,3 +130,6 @@ A visual change is not complete until:
 4. Navigation, focus, keyboard and empty/error states are checked.
 5. The affected app's tests and shared-suite tests pass.
 6. The README accurately distinguishes implemented behaviour from planned behaviour.
+
+
+The **Apps** sidebar entry uses the original four-tile launcher icon from `assets/icons/apps.svg`, not the Brightdesk brand mark or a document icon. Keep the icon paired with the Apps label in both the desktop interface and Home artwork.
