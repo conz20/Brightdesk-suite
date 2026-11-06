@@ -495,7 +495,7 @@ function renderAppManager() {
     menu.append(visibilityAction);
     menuTrigger.addEventListener('click', () => {
       const shouldOpen = menu.hidden;
-      document.querySelectorAll('.app-card-menu').forEach(openMenu => { openMenu.hidden = true; });
+      document.querySelectorAll('.app-card-menu').forEach(openMenu => { openMenu.hidden = true; openMenu.closest('.app-card-menu-wrap')?.querySelector('.app-card-menu-trigger')?.setAttribute('aria-expanded', 'false'); });
       menu.hidden = !shouldOpen;
       menuTrigger.setAttribute('aria-expanded', String(shouldOpen));
     });
@@ -1001,6 +1001,14 @@ async function saveProject(){try{const result=await window.brightdesk.saveProjec
 function setApp(app){if((launchAppId && app !== launchAppId) || !(configs[app] || genericConfigs[app]) || !installedApp(app))return;state.app=app;state.view='workspace';state.ribbonTab='home';render();persist();}
 
 document.querySelectorAll('.nav[data-app]').forEach(btn=>btn.addEventListener('click',()=>setApp(btn.dataset.app)));
+document.addEventListener('click', event => {
+  if (event.target.closest('.app-card-menu-wrap')) return;
+  document.querySelectorAll('.app-card-menu').forEach(menu => { menu.hidden = true; menu.closest('.app-card-menu-wrap')?.querySelector('.app-card-menu-trigger')?.setAttribute('aria-expanded', 'false'); });
+});
+document.addEventListener('keydown', event => {
+  if (event.key !== 'Escape') return;
+  document.querySelectorAll('.app-card-menu').forEach(menu => { menu.hidden = true; menu.closest('.app-card-menu-wrap')?.querySelector('.app-card-menu-trigger')?.setAttribute('aria-expanded', 'false'); });
+});
 $('home-nav').addEventListener('click',()=>{if(launchAppId)return;state.view='home';render();});
 $('app-centre-nav').addEventListener('click',()=>{if(launchAppId)return;state.view='manager';render();});
 $('files-nav').addEventListener('click',()=>{if(launchAppId)return;state.view='files';render();});
