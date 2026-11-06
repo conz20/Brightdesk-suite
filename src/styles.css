@@ -365,3 +365,27 @@ input:disabled, select:disabled, textarea:disabled, button:disabled { cursor: no
 #dynamic-app-nav[hidden]{display:none!important}
 .manager-nav{cursor:default}
 .manager-nav .app-icon-image{filter:none}
+
+/* Persistent update notifications: an unread badge, readable history and a dismissible alert. */
+.top-notifications-button{position:relative}
+.notification-count{position:absolute;top:-5px;right:-5px;min-width:17px;height:17px;padding:0 4px;border:2px solid #fff;border-radius:10px;background:#c74754;color:#fff;font-size:9px;font-weight:750;line-height:13px;text-align:center}
+.notification-count[hidden]{display:none}
+.notification-popover{width:min(390px,calc(100vw - 32px));max-height:min(70vh,520px);display:flex;flex-direction:column;gap:12px}
+.notification-panel-header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding-bottom:10px;border-bottom:1px solid #edf0f5}
+.notification-list{display:grid;gap:8px;overflow:auto;min-height:0}
+.notification-empty{margin:4px 0;color:#7b879a;font-size:12px;font-weight:500}
+.notification-item{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:11px 10px;border:1px solid #edf0f5;border-radius:10px;background:#fff}
+.notification-item.unread{border-color:#dbe4f7;background:#f7f9ff}
+.notification-item-copy{min-width:0}
+.notification-item-copy b{font-size:12px}
+.notification-item-copy p{margin:5px 0;color:#53627a;font-size:11px;font-weight:450;line-height:1.5;overflow-wrap:anywhere}
+.notification-item-copy small{font-size:10px}
+.notification-action{flex:0 0 auto;white-space:nowrap;padding:8px 10px}
+.notification-toast{position:fixed;z-index:1000;top:22px;right:22px;width:min(390px,calc(100vw - 32px))}
+.notification-toast[hidden]{display:none}
+.notification-toast-card{display:flex;align-items:flex-start;gap:13px;padding:15px 15px 15px 17px;border:1px solid #dce4f1;border-radius:13px;background:#fff;box-shadow:0 14px 38px #182b481f;color:#27364e}
+.notification-toast-copy{flex:1;min-width:0}
+.notification-toast-copy b{display:block;font-size:13px}
+.notification-toast-copy p{margin:5px 0 0;color:#617087;font-size:11px;line-height:1.5}
+.notification-toast-dismiss{border:0;background:transparent;color:#8994a5;font-size:20px;line-height:1;cursor:pointer;padding:0 3px}
+@media(max-width:700px){.notification-toast{top:12px;right:12px;width:calc(100vw - 24px)}.notification-popover{right:0;max-height:65vh}}
