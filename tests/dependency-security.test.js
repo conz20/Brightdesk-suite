@@ -53,6 +53,34 @@ test('ExcelJS resolves patched CommonJS uuid and still round-trips an XLSX workb
   assert.equal(restored.getWorksheet('Security check').getCell('A2').value, 42);
 });
 
+test('Electron ASAR keeps the callable minimatch API required by its v3 packager', async () => {
+  const asarEntry = require.resolve('@electron/asar');
+  const minimatchEntry = require.resolve('minimatch', { paths: [path.dirname(asarEntry)] });
+  const minimatchPackage = packageAt(minimatchEntry);
+  const minimatch = require(minimatchEntry);
+
+  assert.equal(minimatchPackage.version, '3.1.5');
+  assert.equal(typeof minimatch, 'function');
+  assert.equal(minimatch('native/brightdesk_engine.node', '**/*.node'), true);
+
+  const directory = fs.mkdtempSync(path.join(require('node:os').tmpdir(), 'brightdesk-asar-compatibility-'));
+  try {
+    const input = path.join(directory, 'input');
+    const archive = path.join(directory, 'app.asar');
+    fs.mkdirSync(input);
+    fs.writeFileSync(path.join(input, 'brightdesk_engine.node'), 'native module fixture');
+    const { createPackageWithOptions } = require('@electron/asar');
+    await createPackageWithOptions(input, archive, { unpack: '**/*.node' });
+    assert.ok(fs.existsSync(archive));
+    assert.equal(
+      fs.readFileSync(path.join(archive + '.unpacked', 'brightdesk_engine.node'), 'utf8'),
+      'native module fixture'
+    );
+  } finally {
+    fs.rmSync(directory, { recursive: true, force: true });
+  }
+});
+
 test('electron-builder resolves patched minimatch with the API its packaging code uses', () => {
   const appBuilderEntry = require.resolve('app-builder-lib');
   const minimatchEntry = require.resolve('minimatch', { paths: [path.dirname(appBuilderEntry)] });
