@@ -53,6 +53,18 @@ test('ExcelJS resolves patched CommonJS uuid and still round-trips an XLSX workb
   assert.equal(restored.getWorksheet('Security check').getCell('A2').value, 42);
 });
 
+test('@electron/asar resolves a CommonJS-compatible minimatch 3 implementation for ASAR packaging', () => {
+  const appBuilderEntry = require.resolve('app-builder-lib');
+  const asarEntry = require.resolve('@electron/asar', { paths: [path.dirname(appBuilderEntry)] });
+  const minimatchEntry = require.resolve('minimatch', { paths: [path.dirname(asarEntry)] });
+  const minimatchPackage = packageAt(minimatchEntry);
+  const minimatch = require(minimatchEntry);
+
+  assert.ok(minimatchPackage.version.startsWith('3.'), `@electron/asar must resolve minimatch 3.x, received ${minimatchPackage.version}`);
+  assert.equal(typeof minimatch, 'function');
+  assert.equal(minimatch('src/main.js', 'src/**/*.js'), true);
+});
+
 test('electron-builder resolves patched minimatch with the API its packaging code uses', () => {
   const appBuilderEntry = require.resolve('app-builder-lib');
   const minimatchEntry = require.resolve('minimatch', { paths: [path.dirname(appBuilderEntry)] });
