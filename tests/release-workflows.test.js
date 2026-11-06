@@ -93,20 +93,20 @@ test('platform release artifacts retain their platform folders and lock metadata
   const workflow = read('.github/workflows/build-release.yml');
   for (const platform of ['Linux', 'Windows', 'macOS']) {
     const block = workflow.split(`name: Download verified ${platform} build`)[1]?.split('      - name:')[0] || '';
-    assert.match(block, /name: brightdesk-/);
-    assert.match(block, /path: release\\s*$/m, `${platform} is downloaded into the release root with its archived folder structure`);
+    assert.ok(block.includes(`name: brightdesk-${platform}`));
+    assert.ok(block.includes('path: release'), `${platform} is downloaded into the release root with its archived folder structure`);
   }
   assert.ok(workflow.includes('name: Check out the exact release source'));
   assert.ok(workflow.includes('ref: ${{ github.sha }}'));
   assert.ok(workflow.includes('node-version: 24.22.2'));
   assert.ok(workflow.includes('name: Preserve the committed dependency lock in release metadata'));
   assert.ok(workflow.includes('cp package-lock.json release/build-metadata/package-lock.json'));
-  assert.match(workflow, /files: release\\/\\*\\*\\/\\*/);
-  assert.doesNotMatch(workflow, /merge-multiple: true/);
+  assert.ok(workflow.includes('files: release/**/**'));
+  assert.ok(!workflow.includes('merge-multiple: true'));
   const prepare = read('scripts/prepare-release-assets.js');
-  assert.match(prepare, /Brightdesk-\\$\\{label\\}-LICENSE\\.txt/);
+  assert.ok(prepare.includes('Brightdesk-${label}-LICENSE.txt'));
   const verifier = read('scripts/verify-release-artifacts.js');
-  assert.match(verifier, /Brightdesk-SHA256SUMS-\\$\\{platform\\.toUpperCase\\(\\)\\}/);
+  assert.ok(verifier.includes('Brightdesk-SHA256SUMS-${platform.toUpperCase()}'));
 });
 
 test('native release workflow builds and verifies all ten product installers on each platform', () => {
@@ -119,17 +119,17 @@ test('native release workflow builds and verifies all ten product installers on 
     assert.equal(manifest.scripts[`release:verify:products:${platform}`], `node scripts/verify-product-installers.js ${platform} release/apps`);
     assert.equal(manifest.scripts[`release:collect:${platform}`], `node scripts/collect-platform-build.js ${platform}`);
   }
-  assert.match(matrix, /npm run dist:products:\\$\\{\\{ matrix\\.script \\}\\}/);
-  assert.match(matrix, /npm run release:verify:products:\\$\\{\\{ matrix\\.script \\}\\}/);
-  assert.match(matrix, /node scripts\\/collect-platform-build\\.js \\$\\{\\{ matrix\\.script \\}\\}/);
-  assert.match(matrix, /path: release\\/\\*\\*/);
-  assert.match(collect, /npm run release:verify:complete -- release/);
-  assert.match(workflow, /retention-days: 7/);
-  assert.doesNotMatch(workflow, /Upload complete Brightdesk installer bundle/);
-  assert.doesNotMatch(workflow, /Brightdesk-\\$\\{\\{ steps\\.release-version\\.outputs\\.version \\}\\}-Installers/);
+  assert.ok(matrix.includes('npm run dist:products:${{ matrix.script }}'));
+  assert.ok(matrix.includes('npm run release:verify:products:${{ matrix.script }}'));
+  assert.ok(matrix.includes('node scripts/collect-platform-build.js ${{ matrix.script }}'));
+  assert.ok(matrix.includes('path: release/**'));
+  assert.ok(collect.includes('npm run release:verify:complete -- release'));
+  assert.ok(workflow.includes('retention-days: 7'));
+  assert.ok(!workflow.includes('Upload complete Brightdesk installer bundle'));
+  assert.ok(!workflow.includes('Brightdesk-${{ steps.release-version.outputs.version }}-Installers'));
   const publish = workflow.split('  publish-release:')[1];
-  assert.match(publish, /inputs\\.publish_release == true/);
-  assert.match(publish, /npm run release:verify:complete -- release/);
+  assert.ok(publish.includes('inputs.publish_release == true'));
+  assert.ok(publish.includes('npm run release:verify:complete -- release'));
   assert.ok(
     publish.indexOf('npm run release:verify:complete -- release') < publish.indexOf('Publish verified installer files'),
     'publishing must re-verify all downloaded platform artifacts first'
