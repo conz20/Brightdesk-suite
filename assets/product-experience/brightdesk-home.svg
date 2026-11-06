@@ -26,21 +26,6 @@
 <path d="M25 810h188" stroke="#344766"/>
 <text x="28" y="842" font-family="Arial, sans-serif" font-size="12" fill="#A8B6D0">Brightdesk Office Suite</text>
 <text x="28" y="865" font-family="Arial, sans-serif" font-size="10" fill="#7184A7">Local-first · Your files stay here</text>
-<rect x="27" y="27" width="45" height="45" rx="13" fill="#526FE0"/><rect x="39" y="39" width="9" height="9" rx="2" fill="#fff"/><rect x="51" y="39" width="9" height="9" rx="2" fill="#C7D5FF"/><rect x="39" y="51" width="9" height="9" rx="2" fill="#AFC1FF"/><rect x="51" y="51" width="9" height="9" rx="2" fill="#fff"/>
-<text x="83" y="57" font-family="Arial, sans-serif" font-size="25" font-weight="700" fill="#FFFFFF">brightdesk</text><text x="29" y="114" font-family="Arial, sans-serif" font-size="10" letter-spacing="2" font-weight="700" fill="#8292B2">SUITE</text>
-<g id="sidebar-applications">
-  <rect x="16" y="136" width="206" height="56" rx="10" fill="#293B60"/>
-  <rect x="25" y="145" width="38" height="38" rx="10" fill="#526FE0"/>
-  <g fill="none" stroke="#F7F9FF" stroke-width="2.1">
-    <rect x="33" y="152" width="9" height="9" rx="1.8"/>
-    <rect x="46" y="152" width="9" height="9" rx="1.8"/>
-    <rect x="33" y="165" width="9" height="9" rx="1.8"/>
-    <rect x="46" y="165" width="9" height="9" rx="1.8"/>
-  </g>
-  <text x="73" y="160" font-family="Arial, sans-serif" font-size="13.5" font-weight="700" fill="#E7EDF7">My Applications</text>
-  <text x="73" y="178" font-family="Arial, sans-serif" font-size="9.5" fill="#91A2BF">Products and suite tools</text>
-</g>
-<path d="M24 1112h190" stroke="#344766"/><text x="28" y="1145" font-family="Arial, sans-serif" font-size="12" fill="#A8B6D0">Brightdesk Office Suite</text><text x="28" y="1170" font-family="Arial, sans-serif" font-size="11" fill="#7184A7">Version 0.1.0 · Local-first</text>
 <text x="270" y="65" font-family="Arial, sans-serif" font-size="12" font-weight="700" letter-spacing="2" fill="#7786A0">BRIGHTDESK MY APPS</text>
 <text x="270" y="111" font-family="Arial, sans-serif" font-size="34" font-weight="700" fill="#1B2941">Your applications</text>
 <text x="270" y="141" font-family="Arial, sans-serif" font-size="15" fill="#68778F">Your documents and applications, together in one place.</text>
