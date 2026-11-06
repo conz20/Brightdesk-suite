@@ -1,6 +1,6 @@
 # Brightdesk visual and interaction standard
 
-This is the shared design contract for Brightdesk Office Suite and all ten approved applications. It draws on familiar productivity and creative-software conventions while keeping Brightdesk's own brand, layout, icon artwork and interaction language. It must not copy proprietary Microsoft, Adobe or ArtCraft code, logos, screenshots or distinctive trade dress.
+This is the shared design contract for Brightdesk Office Suite and all ten approved applications. It draws on familiar productivity-software conventions while keeping Brightdesk's own brand, layout, icon artwork and interaction language. It must not copy proprietary Microsoft, Adobe or ArtCraft code, logos, screenshots or distinctive trade dress.
 
 ## Brand foundation
 
