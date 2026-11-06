@@ -17,7 +17,7 @@ const saveIcon = read('src/assets/icons/save.svg');
 test('top-right controls clearly identify notifications, saving and Settings', () => {
   assert.match(html, /id="open-notifications"[^>]*aria-label="Open notifications"/);
   assert.match(html, /id="open-notifications"[\s\S]*?assets\/icons\/notifications\.svg/);
-  assert.match(html, /id="notification-panel"[\s\S]*?No new notifications/);
+  assert.match(html, /id="notification-panel"[\s\S]*?id="notification-list"/);
   assert.match(html, /id="save-project"[\s\S]*?assets\/icons\/save\.svg[\s\S]*?Save/);
   const saveButtonStart = html.indexOf('<button class="primary top-save-button" id="save-project"');
   const saveButtonEnd = html.indexOf('</button>', saveButtonStart);
@@ -56,8 +56,8 @@ test('top-right controls clearly identify notifications, saving and Settings', (
   assert.match(app, /updateState\.status === 'downloaded'[\s\S]*?addNotification/);
   assert.match(app, /notification\.action === 'download-update'/);
   assert.match(app, /notification\.action === 'install-update'/);
-  assert.match(main, /new Notification\\(/);
-  assert.match(main, /Notification\\.isSupported\\(\\)/);
+  assert.match(main, /new Notification\(/);
+  assert.match(main, /Notification\.isSupported\(\)/);
   assert.doesNotMatch(homeArtwork, /Install a product|Update Brightdesk/);
   assert.match(homeArtwork, /id="settings-cogwheel"/);
   assert.match(homeArtwork, /Brightdesk Office Suite Home experience/i);
