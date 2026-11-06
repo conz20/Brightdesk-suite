@@ -40,6 +40,8 @@ Each App Centre card uses the same original product icon as the Home screen and 
 
 Brightdesk uses one approved visual system and the same ten-product feature scope on Windows, macOS and Linux. All products share the Brightdesk navigation, typography, spacing, component states, layout rules and original icon artwork. Each product keeps its approved accent colour and icon on every platform. Only operating-system integrations such as window chrome, keyboard conventions, native file dialogs, permissions, installation and removal surfaces may adapt to native conventions. The authoritative rules are in the [Brightdesk visual and interaction standard](docs/BRIGHTDESK_VISUAL_STANDARD.md).
 
+The ten approved SVG application icons in the Suite and their corresponding product repositories are aligned. **The remaining desktop-icon gap is packaging:** the current per-product Electron Builder configuration does not yet assign platform-native icon files for Windows, macOS and Linux. Until those native assets are generated from the approved SVGs, wired into all ten packages and verified in installed shortcuts and launchers, do not claim that the Dock, taskbar or desktop search already shows each final product icon.
+
 | Operating system | Configured suite package targets |
 | --- | --- |
 | Windows | x64 NSIS installer (.exe) |
