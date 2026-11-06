@@ -268,7 +268,7 @@ test('complete release verifier rejects wrong versions and unsafe checksum paths
     fs.writeFileSync(checksum, original.replace(/  [^\n]+/, '  ../outside.exe'));
     assert.throws(
       () => verifyCompleteReleaseBundle({ releaseDir: fixture.release, version: VERSION }),
-      /invalid or unsafe checksum manifest row/
+      /invalid or unsafe checksum manifest row/i
     );
     fs.writeFileSync(checksum, original);
     assert.throws(

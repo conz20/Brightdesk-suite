@@ -214,7 +214,9 @@ test('product verifier is wired to the ten approved outputs and their post-trans
   assert.match(verifier, /verifyChecksumManifest\(/);
   assert.match(complete, /verifyChecksumManifest\(/);
   assert.match(complete, /installerCount !== 66/);
-  assert.match(complete, /lock\.packages\?\.\[''\]\?\.version/);
+  assert.match(complete, /!lock\.packages/);
+  assert.match(complete, /!lock\.packages\[''\]/);
+  assert.match(complete, /lock\.packages\[''\]\.version !== version/);
 });
 
 test('README freshness workflow protects the private runner from forked pull requests', () => {
