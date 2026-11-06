@@ -52,9 +52,10 @@ function runPreflight({ rootDir, nodeVersion = process.versions.node, platform =
   add('All ten approved apps available', JSON.stringify(availableIds) === JSON.stringify(AVAILABLE_IDS), `Available: ${availableIds.join(', ')}; ${APPROVED_IDS.filter(id => !availableIds.includes(id)).length} approved apps remain planned.`);
   add('Excluded apps absent', EXCLUDED_NAMES.every(name => !catalog.some(item => item.name.toLowerCase().includes(name.toLowerCase()))), `Excluded from the catalogue: ${EXCLUDED_NAMES.join(', ')}.`);
   add('Release metadata', Boolean(manifest.version && manifest.build?.appId && manifest.build?.productName), `Version ${manifest.version}; app ID ${manifest.build?.appId || 'missing'}.`);
-  const iconArchive = path.join(root, 'assets', 'platform-icons', 'brightdesk-platform-icons.zip');
-  add('Native platform icon source', fs.existsSync(iconArchive), 'The original product artwork must be supplied as Windows ICO, macOS ICNS and Linux PNG assets before native packaging.');
-  add('Native icon build resources', manifest.build?.directories?.buildResources === 'assets/platform-icons/native' && manifest.build?.win?.icon === 'suite.ico' && manifest.build?.mac?.icon === 'suite.icns' && manifest.build?.linux?.icon === 'suite.png', 'The Suite builder must use its native platform icon set.');
+  const nativeIconSources = require('./prepare-platform-icons').ICON_SOURCES;
+  const missingIconSources = Object.values(nativeIconSources).filter(relativePath => !fs.existsSync(path.join(root, relativePath)));
+  add('Native platform icon sources', missingIconSources.length === 0, missingIconSources.length ? `Missing canonical SVG artwork: ${missingIconSources.join(', ')}.` : `Verified ${Object.keys(nativeIconSources).length} canonical SVG icon sources for automatic Windows, macOS and Linux conversion.`);
+  add('Native icon build resources', manifest.build?.directories?.buildResources === 'assets/platform-icons/native' && manifest.build?.win?.icon === 'suite.svg' && manifest.build?.mac?.icon === 'suite.svg' && manifest.build?.linux?.icon === 'suite.svg', 'The Suite builder must use the same canonical SVG source on all three platforms.');
   add('Terms and Conditions', fs.existsSync(path.join(root, 'TERMS_AND_CONDITIONS.txt')), 'A readable Terms and Conditions document must ship with every installer.');
   add('Open-source licence bundle', manifest.license === 'MIT' && fs.existsSync(path.join(root, 'LICENSE')) && fs.existsSync(path.join(root, 'THIRD_PARTY_NOTICES.md')), 'MIT source licence and dependency notices must ship with each installer.');
   add('Windows installer agreement', manifest.build?.nsis?.license === 'TERMS_AND_CONDITIONS.txt', 'NSIS must show the Terms and Conditions and require agreement.');

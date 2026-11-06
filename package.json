@@ -124,7 +124,7 @@
         "nsis"
       ],
       "artifactName": "Brightdesk-Office-Suite-${version}-${arch}.${ext}",
-      "icon": "suite.ico"
+      "icon": "suite.svg"
     },
     "nsis": {
       "oneClick": false,
@@ -141,7 +141,7 @@
       ],
       "category": "public.app-category.productivity",
       "artifactName": "Brightdesk-Office-Suite-${version}-${arch}.${ext}",
-      "icon": "suite.icns"
+      "icon": "suite.svg"
     },
     "dmg": {
       "sign": false,
@@ -160,7 +160,7 @@
       ],
       "category": "Office",
       "artifactName": "brightdesk-office-suite-${version}-${arch}.${ext}",
-      "icon": "suite.png"
+      "icon": "suite.svg"
     },
     "appImage": {
       "artifactName": "Brightdesk-Office-Suite-${version}-${arch}.${ext}"

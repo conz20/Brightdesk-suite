@@ -57,7 +57,7 @@ module.exports = {
   directories: { output: path.join('release', 'apps', appId), buildResources: 'assets/platform-icons/native' },
   publish: [],
   win: {
-    icon: `${appIcons[appId]}.ico`,
+    icon: `${appIcons[appId]}.svg`,
     target: ['nsis'],
     artifactName: 'Brightdesk-' + appSlug + '-${version}-${arch}.${ext}'
   },
@@ -69,7 +69,7 @@ module.exports = {
     license: 'TERMS_AND_CONDITIONS.txt'
   },
   mac: {
-    icon: `${appIcons[appId]}.icns`,
+    icon: `${appIcons[appId]}.svg`,
     target: ['dmg', 'pkg', 'zip'],
     category: 'public.app-category.productivity',
     artifactName: 'Brightdesk-' + appSlug + '-${version}-${arch}.${ext}'
@@ -81,7 +81,7 @@ module.exports = {
     installLocation: '/Applications'
   },
   linux: {
-    icon: `${appIcons[appId]}.png`,
+    icon: `${appIcons[appId]}.svg`,
     syncDesktopName: true,
     target: ['AppImage', 'deb'],
     category: 'Office',

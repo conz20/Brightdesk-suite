@@ -6,7 +6,7 @@ This is the shared design contract for Brightdesk Office Suite and all ten appro
 
 - Use the Brightdesk four-panel mark and lowercase wordmark consistently.
 - Use a calm, light workspace canvas, deep navy navigation, clear white content surfaces and restrained product-specific accents.
-- Use the product's original application icon artwork everywhere: launcher card, sidebar, window icon, application metadata, product README and approved interface artwork. For Windows, macOS and Linux installers, use the corresponding native ICO, ICNS and PNG generated from the same canonical artwork. Never reuse the Suite mark as a substitute for a product-specific icon.
+- Use the product's original application icon artwork everywhere: launcher card, sidebar, window icon, application metadata, product README and approved interface artwork. For Windows, macOS and Linux installers, pass the same canonical SVG to Electron Builder so its icon pipeline converts it into the correct platform format. Never reuse the Suite mark as a substitute for a product-specific icon.
 - Application icons must be original, designed SVG or raster assets. **Do not use emoji, Unicode symbols, text glyphs, generic placeholders or single-letter initials as application icons.**
 - Never substitute emoji for application icons in the launcher, navigation, README files, screenshots, approved interface artwork, documentation or release artwork.
 - Keep icon silhouettes recognisable at small sizes and ensure each product has a distinct visual metaphor.
@@ -145,3 +145,12 @@ The **Apps** sidebar entry uses the original four-tile launcher icon from `asset
 - Prepare the native icon sets from `assets/platform-icons/brightdesk-platform-icons.zip` with `npm run release:prepare:icons` before packaging.
 - Keep multi-resolution Windows ICO, macOS ICNS and Linux PNG outputs aligned to the canonical SVG source artwork. Validate file signatures and expected dimensions before invoking Electron Builder.
 - Native icon configuration is not proof of a verified installed icon. Check real Windows shortcuts and taskbar, macOS Dock and Finder, and Linux desktop launcher after each platform installer has been installed.
+
+
+## Native platform icon requirements
+
+- Keep one canonical SVG for the Suite and each of the ten products; use the exact same artwork in the launcher, workspace, README and package identity.
+- Run `npm run release:prepare:icons` before packaging. This copies the Suite mark and ten product SVGs into the isolated Electron Builder build-resources directory and verifies each source.
+- Pass each copied SVG to Windows, macOS and Linux Electron Builder targets. Electron Builder performs the platform conversion; do not maintain a second manually edited icon set.
+- Decks and Workspace use the `decks.svg` and `workspace.svg` build-resource names while retaining internal product IDs `slides` and `loop`.
+- Icon configuration is not proof of a verified installed icon. Check real Windows shortcuts and taskbar, macOS Dock and Finder, and Linux desktop launcher after each platform installer has been installed.
