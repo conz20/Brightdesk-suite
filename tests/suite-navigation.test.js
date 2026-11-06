@@ -17,7 +17,7 @@ test('My Applications shows one suite-level sidebar entry instead of repeating t
   assert.match(app, /catalog\.filter\(item => installedApp\(item\.id\)\)/);
   assert.match(app, /\$\('dynamic-app-nav'\)\.hidden = manager \|\| languages/);
   assert.match(app, /\$\('app-centre-nav'\)\.hidden = !manager \|\| Boolean\(launchAppId\)/);
-  assert.match(app, /manager \? t\('sidebar\.appCentre'\)/);
+  assert.match(app, /manager \? t\('sidebar\.applications'\)/);
 });
 
 test('all ten installed products remain available in the product-switching sidebar during workspace use', () => {
@@ -29,12 +29,12 @@ test('all ten installed products remain available in the product-switching sideb
   assert.match(app, /sidebar-section-label'\)\.textContent = manager \? t\('sidebar\.suite'\) : \(languages \? t\('sidebar\.settings'\) : t\('sidebar\.yourApps'\)\)/);
 });
 
-test('Brightdesk Home and My Apps artwork match the ten-product suite navigation', () => {
+test('Brightdesk Home and My Applications artwork match the ten-product suite navigation', () => {
   const svg = read('assets/product-experience/brightdesk-app-centre.svg');
   assert.equal((svg.match(/id="sidebar-app-centre"/g) || []).length, 1);
   assert.doesNotMatch(svg, /id="sidebar-(?:pages|sheets|decks|notes|database|forms|lists|planner|todo|workspace)-/);
   assert.match(svg, /Brightdesk Office Suite My Applications experience/);
-  assert.match(svg, /Product shortcuts are not repeated beside the My Apps grid/);
+  assert.match(svg, /Product shortcuts are not repeated beside the My Applications grid/);
   assert.match(svg, /id="settings-cogwheel"/);
   assert.match(svg, /id="notifications-bell"/);
 
@@ -52,7 +52,7 @@ test('README and visual standard explain the contextual product-switching rule',
   assert.match(standard, /Home.*My Applications.*Files/);
   assert.match(standard, /Create.*navigation item/);
   assert.match(standard, /online-service destinations/);
-  assert.match(home, /links Home, My Apps and Files/);
+  assert.match(home, /links Home, My Applications and Files/);
   assert.doesNotMatch(home, /Create<\/text>/);
   assert.match(standard, /Inside an active product workspace[\s\S]*?Switch product/);
 });
