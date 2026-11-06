@@ -1,6 +1,7 @@
 # Generated Node-API binaries and native build output
 /native/*.node
 **/native/*.node
+**/native/**/*.node
 
 # Rust compiler output, including embedded product repositories
 /rust/target/
