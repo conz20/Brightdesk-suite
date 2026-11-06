@@ -15,8 +15,12 @@
   <text x="58" y="162" font-family="Arial, sans-serif" font-size="14" font-weight="700" fill="#FFFFFF">Home</text>
 </g>
 <g id="sidebar-applications">
-  <rect x="28" y="197" width="17" height="15" rx="3" fill="none" stroke="#C9D6ED" stroke-width="1.7"/>
-  <path d="M33 197v-3h7v3M34 204h6M34 208h6" fill="none" stroke="#C9D6ED" stroke-width="1.5" stroke-linecap="round"/>
+  <g id="apps-launcher-icon" fill="none" stroke="#C9D6ED" stroke-width="1.7">
+    <rect x="27" y="193" width="8" height="8" rx="1.8"/>
+    <rect x="39" y="193" width="8" height="8" rx="1.8"/>
+    <rect x="27" y="205" width="8" height="8" rx="1.8"/>
+    <rect x="39" y="205" width="8" height="8" rx="1.8"/>
+  </g>
   <text x="58" y="215" font-family="Arial, sans-serif" font-size="13" fill="#C4CFE2">Apps</text>
 </g>
 <g id="sidebar-files">
