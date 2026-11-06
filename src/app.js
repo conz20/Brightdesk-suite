@@ -1026,8 +1026,8 @@ $('proofing-language').addEventListener('change',event=>changeProofingLanguage(e
 $('dictionary-search').addEventListener('input',renderAvailableDictionaryCatalogue);
 $('proofing-dictionary').addEventListener('change',event=>{state.selectedDictionary=event.target.value;localStorage.setItem('brightdesk-selected-dictionary',state.selectedDictionary);renderToolbar();});
 $('check-current-document').addEventListener('click',checkCurrentDocumentSpelling);
-$('back-to-apps').addEventListener('click',()=>{state.view=state.setupComplete?'workspace':'manager';render();});
-$('finish-app-setup').addEventListener('click',()=>{if(state.setupComplete){state.view='workspace';render();}else completeAppSetup();});
+$('back-to-apps').addEventListener('click',()=>{state.view='manager';render();});
+$('finish-app-setup').addEventListener('click',()=>{if(state.setupComplete){state.view='home';render();}else completeAppSetup();});
 $('doc-title').addEventListener('change',()=>{activeDoc().title=$('doc-title').value;persist();});
 editor.addEventListener('input',()=>{activeDoc().html=editor.innerHTML;persist();});
 $('notes-editor').addEventListener('input',()=>{activeDoc().text=$('notes-editor').value;persist();});
