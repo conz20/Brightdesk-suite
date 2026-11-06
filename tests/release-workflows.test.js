@@ -43,18 +43,18 @@ test('release workflow builds on private native runners using the committed lock
   for (const command of ['dist:linux', 'dist:win', 'dist:mac', 'release:verify:linux', 'release:verify:win', 'release:verify:mac']) {
     assert.ok(workflow.includes(command), 'workflow includes ' + command);
   }
-  assert.match(workflow, /node-version: 24\\.22\\.2/);
-  assert.match(workflow, /\\non:\\s*\\n\\s*workflow_dispatch:/);
-  assert.doesNotMatch(workflow, /^\\s+push:/m, 'installer builds must be manual');
+  assert.match(workflow, /node-version: 24\.22\.2/);
+  assert.match(workflow, /\non:\s*\n\s*workflow_dispatch:/);
+  assert.doesNotMatch(workflow, /^\s+push:/m, 'installer builds must be manual');
   assert.doesNotMatch(workflow, /npm run lock:prepare/);
   assert.match(workflow, /npm run lock:verify/);
   assert.doesNotMatch(workflow, /brightdesk-dependency-lock/);
   assert.match(workflow, /npm run release:preflight/);
   assert.match(workflow, /npm test/);
   assert.match(workflow, /npm audit --audit-level=high/);
-  assert.match(workflow, /runner: \\["self-hosted", "Linux", "X64"\\]/);
-  assert.match(workflow, /runner: \\["self-hosted", "Windows", "X64"\\]/);
-  assert.match(workflow, /runner: \\["self-hosted", "macOS", "ARM64"\\]/);
+  assert.ok(workflow.includes('runner: ["self-hosted", "Linux", "X64"]'));
+  assert.ok(workflow.includes('runner: ["self-hosted", "Windows", "X64"]'));
+  assert.ok(workflow.includes('runner: ["self-hosted", "macOS", "ARM64"]'));
 });
 
 test('signing and notarisation secrets are restricted to the main branch', () => {
@@ -88,19 +88,22 @@ test('platform artifacts retain Suite and ten product folders through full-bundl
   const matrixBuild = workflow.split('  build:')[1].split('  collect:')[0];
   const collect = workflow.split('  collect:')[1].split('  publish-release:')[0];
   for (const platform of ['Linux', 'Windows', 'macOS']) {
-    const download = collect.split('name: Download verified ' + platform + ' build')[1].split('\\n      - name:')[0];
-    assert.match(download, /path: release\\s*$/m);
+    const downloadName = 'name: Download verified ' + platform + ' build';
+    const start = collect.indexOf(downloadName);
+    const next = collect.indexOf('\n      - name:', start + downloadName.length);
+    const download = collect.slice(start, next < 0 ? collect.length : next);
+    assert.match(download, /path: release\s*$/m);
   }
-  assert.match(matrixBuild, /path: release\\/\\*\\*/);
-  assert.match(collect, /name: Preserve the committed dependency lock in release metadata[\\s\\S]*?cp package-lock.json release\\/build-metadata\\/package-lock.json/);
+  assert.match(matrixBuild, /path: release\/\*\*/);
+  assert.match(collect, /name: Preserve the committed dependency lock in release metadata[\s\S]*?cp package-lock.json release\/build-metadata\/package-lock.json/);
   assert.match(collect, /npm run release:verify:complete -- release/);
   assert.ok(collect.indexOf('npm run release:verify:complete -- release') < collect.indexOf('Upload complete Brightdesk installer bundle'));
-  assert.match(workflow, /files: release\\/\\*\\*\\/\\*/);
+  assert.match(workflow, /files: release\/\*\*\/\*/);
   assert.doesNotMatch(workflow, /merge-multiple: true/);
   const prepare = read('scripts/prepare-release-assets.js');
-  assert.match(prepare, /Brightdesk-\\$\\{label\\}-LICENSE\\.txt/);
+  assert.match(prepare, /Brightdesk-\$\{label\}-LICENSE\.txt/);
   const verifier = read('scripts/verify-release-artifacts.js');
-  assert.match(verifier, /Brightdesk-SHA256SUMS-\\$\\{platform\\.toUpperCase\\(\\)\\}/);
+  assert.match(verifier, /Brightdesk-SHA256SUMS-\$\{platform\.toUpperCase\(\)\}/);
 });
 
 test('Node.js runtime is pinned consistently to the current 24 LTS patch', () => {
@@ -156,10 +159,10 @@ test('GitHub Release publishing is manual, main-only and disabled by default', (
 test('README freshness validation uses the private runner and Bash 3.2-compatible commands', () => {
   const workflow = read('.github/workflows/readme-freshness.yml');
   assert.match(workflow, /runs-on: self-hosted/);
-  assert.doesNotMatch(workflow, /runs-on: ubuntu-latest|mapfile/);
-  assert.match(workflow, /changed_files="\\$\\(git diff --name-only/);
+  assert.doesNotMatch(workflow, /runs-on: ubuntu-latest|\bmapfile\b/);
+  assert.match(workflow, /changed_files="\$\(git diff --name-only/);
   assert.match(workflow, /while IFS= read -r file/);
-  assert.match(workflow, /actions\\/checkout@11d5960a326750d5838078e36cf38b85af677262/);
+  assert.match(workflow, /actions\/checkout@11d5960a326750d5838078e36cf38b85af677262/);
 });
 
 test('dependency-maintenance workflows use the existing self-hosted runner', () => {
@@ -216,9 +219,9 @@ test('product verifier is wired to the ten approved outputs and their post-trans
 
 test('README freshness workflow protects the private runner from forked pull requests', () => {
   const workflow = read('.github/workflows/readme-freshness.yml');
-  const guard = /if:\\s*github\\.event_name != 'pull_request' \\|\\| github\\.event\\.pull_request\\.head\\.repo\\.full_name == github\\.repository/;
+  const guard = /if:\s*github\.event_name != 'pull_request' \|\| github\.event\.pull_request\.head\.repo\.full_name == github\.repository/;
   assert.match(workflow, /pull_request:/);
-  assert.match(workflow, /runs-on:\\s*self-hosted/);
+  assert.match(workflow, /runs-on:\s*self-hosted/);
   assert.match(workflow, guard);
 });
 
@@ -227,8 +230,8 @@ test('all third-party workflow actions are pinned to full commit SHAs', () => {
   const workflowFiles = fs.readdirSync(workflowDirectory).filter(file => file.endsWith('.yml'));
   for (const file of workflowFiles) {
     const workflow = read('.github/workflows/' + file);
-    for (const line of workflow.split(/\\r?\\n/)) {
-      const match = /^\\s*uses:\\s*([^\\s#]+)/.exec(line);
+    for (const line of workflow.split(/\r?\n/)) {
+      const match = /^\s*uses:\s*([^\s#]+)/.exec(line);
       if (!match || match[1].startsWith('./')) continue;
       assert.match(match[1], /@[0-9a-f]{40}$/, file + ' must pin ' + match[1] + ' to a full commit SHA');
     }
@@ -240,10 +243,11 @@ test('ten-product installer builds receive signing credentials only on main for 
   const step = workflow.split('- name: Build all ten product installers on this native platform')[1];
   assert.ok(step, 'product installer build step exists');
   for (const key of ['CSC_LINK', 'CSC_KEY_PASSWORD', 'CSC_INSTALLER_LINK', 'CSC_INSTALLER_KEY_PASSWORD', 'APPLE_ID', 'APPLE_APP_SPECIFIC_PASSWORD', 'APPLE_TEAM_ID']) {
-    const line = step.split('\\n').find(item => item.trimStart().startsWith(key + ':'));
+    const line = step.split('\n').find(item => item.trimStart().startsWith(key + ':'));
     assert.ok(line, key + ' must be passed to the product build');
-    assert.match(line, /github\\.ref == 'refs\\/heads\\/main'/);
+    assert.match(line, /github\.ref == 'refs\/heads\/main'/);
   }
-  assert.match(step, /matrix\\.platform == 'Windows'/);
-  assert.match(step, /matrix\\.platform == 'macOS'/);
+  assert.match(step, /matrix\.platform == 'Windows'/);
+  assert.match(step, /matrix\.platform == 'macOS'/);
 });
+
