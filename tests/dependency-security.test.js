@@ -152,7 +152,7 @@ test('third-party notices are regenerated on the latest main before an automatic
 
   assert.match(commitStep, /for attempt in 1 2 3/);
   assert.match(commitStep, /git fetch origin main/);
-  assert.match(commitStep, /git reset --hard origin\\/main/);
+  assert.ok(commitStep.includes('git reset --hard origin/main'));
   assert.match(commitStep, /npm ci --ignore-scripts --no-audit --no-fund/);
   assert.match(commitStep, /npm run verify:licenses/);
   assert.match(commitStep, /git push origin HEAD:main/);
