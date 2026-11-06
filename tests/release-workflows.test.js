@@ -78,6 +78,21 @@ test('release publishing is manual, disabled by default, and main-only', () => {
   assert.ok(workflow.includes("if: github.event_name == 'workflow_dispatch' && inputs.publish_release == true && github.ref == 'refs/heads/main'"));
 });
 
+test('release workflow prunes only stale Brightdesk installer artifacts with job-scoped permissions', () => {
+  const workflow = read('.github/workflows/build-release.yml');
+  const cleanup = workflow.split('  cleanup-artifacts:')[1]?.split('  prepare:')[0] || '';
+  assert.ok(cleanup.includes('node scripts/prune-actions-artifacts.js'));
+  assert.ok(cleanup.includes('GITHUB_TOKEN: \${{ github.token }}'));
+  assert.ok(cleanup.includes('GITHUB_RUN_ID: \${{ github.run_id }}'));
+  assert.match(cleanup, /permissions:\s*\n\s+actions: write\s*\n\s+contents: read/);
+  assert.match(workflow, /prepare:\s*\n\s+name: Test and lock dependencies\s*\n\s+needs: cleanup-artifacts/);
+  assert.equal((workflow.match(/actions: write/g) || []).length, 1, 'only the cleanup job receives Actions write access');
+  const cleanupScript = read('scripts/prune-actions-artifacts.js');
+  assert.match(cleanupScript, /brightdesk-\(\?:Linux\|Windows\|macOS\)/);
+  assert.match(cleanupScript, /DEFAULT_MIN_AGE_MS = DAY_MS/);
+  assert.match(cleanupScript, /currentRunId/);
+});
+
 test('Linux builds do not receive Windows or macOS signing credentials', () => {
   const workflow = read('.github/workflows/build-release.yml');
   const buildStep = workflow.split('- name: Build suite installer')[1];

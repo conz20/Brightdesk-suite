@@ -31,7 +31,7 @@ The local `npm run verify:local-release` command follows this sequence on the ma
 
 ## Final combined-bundle checks
 
-After the Linux, Windows and macOS artifacts are downloaded into one release directory, the collector runs `npm run release:verify:complete -- release` before uploading the combined artifact.
+After the Linux, Windows and macOS platform artifacts are downloaded into one release directory, the collector runs `npm run release:verify:complete -- release`. The workflow does not upload a second combined Actions artifact. If publishing was explicitly selected, the publish job downloads the three platform artifacts again and repeats the complete verification before attaching the files to the GitHub Release.
 
 The final verifier checks:
 
@@ -48,7 +48,11 @@ The final combined bundle is not uploaded when any check fails. These file and c
 
 ## Release and update controls
 
-The installer workflow runs only when manually dispatched. Publishing a GitHub Release is a separate manual input and defaults to false. A release is not published by this verification task.
+The installer workflow runs only when manually dispatched. At the start of the run, a cleanup job paginates the repository's Actions artifact list and removes only the Brightdesk platform bundles and versioned aggregate installer bundles that are at least 24 hours old. It never selects unrelated artifacts and excludes artifacts belonging to the current workflow run. The job uses the built-in workflow token and is the only job granted `actions: write`; preparation, platform builds, verification and publication retain their existing read-only permissions. If the GitHub API denies cleanup, the workflow stops before consuming more artifact storage.
+
+Platform artifacts are retained for one day. Their storage is reused for final verification and, when separately authorised, release publication; no second combined Actions artifact is created. This is a quota-reduction measure, not a guarantee that the repository has enough capacity if other artifacts or caches remain stored.
+
+Publishing a GitHub Release is a separate manual input and defaults to false. A release is not published by this verification task.
 
 The electron-builder publishing provider remains unconfigured (`publish: []`). A manually published GitHub Release download bundle is not the same as a working in-product update channel. Do not claim automatic update availability until the provider, versioned channel, signed metadata and update/download/install/rollback flows have passed acceptance for Suite and all ten products on Windows, macOS and Linux.
 

@@ -18,8 +18,34 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  cleanup-artifacts:
+    name: Remove expired Brightdesk installer artifacts
+    # This job alone receives Actions write access; all other jobs remain read-only.
+    runs-on: self-hosted
+    timeout-minutes: 10
+    permissions:
+      actions: write
+      contents: read
+    steps:
+      - name: Check out Brightdesk
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Set up required Node.js version
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24.22.2
+
+      - name: Prune old Brightdesk installer artifacts
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_RUN_ID: ${{ github.run_id }}
+          GITHUB_API_URL: ${{ github.api_url }}
+        run: node scripts/prune-actions-artifacts.js
+
   prepare:
     name: Test and lock dependencies
+    needs: cleanup-artifacts
     # Run on an already registered private runner; no hosted minutes are consumed.
     runs-on: self-hosted
     timeout-minutes: 60
