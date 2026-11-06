@@ -8,7 +8,7 @@ This is the shared design contract for Brightdesk Office Suite and all ten appro
 - Use a calm, light workspace canvas, deep navy navigation, clear white content surfaces and restrained product-specific accents.
 - Use the product's original application icon artwork everywhere: launcher card, sidebar, window icon, application metadata, product README and approved interface artwork.
 - Application icons must be original, designed SVG or raster assets. **Do not use emoji, Unicode symbols, text glyphs, generic placeholders or single-letter initials as application icons.**
-- Never substitute emoji for application icons in the launcher, navigation, README files, screenshots, previews, documentation or release artwork.
+- Never substitute emoji for application icons in the launcher, navigation, README files, screenshots, approved interface artwork, documentation or release artwork.
 - Keep icon silhouettes recognisable at small sizes and ensure each product has a distinct visual metaphor.
 - Use consistent spacing, border radii, typography hierarchy, button heights, focus rings and motion across the portfolio.
 
@@ -117,7 +117,7 @@ Genuine screenshots must:
 - Be labelled with the product name and the tested version or commit.
 - Be captured only after the visible workflow has been checked against the product's acceptance criteria.
 
-Use `assets/screenshots/<product>-workspace.png` for verified captures. Keep approved interface references under `assets/product-experience/`. Do not replace an approved reference with a screenshot until the screenshot has passed the checks above. Do not imply that screenshots exist when the repository contains only concept artwork.
+Use `assets/screenshots/<product>-workspace.png` for verified captures. Keep approved interface references under `assets/product-experience/`. Do not replace an approved reference with a screenshot until the screenshot has passed the checks above. Do not imply that screenshots exist when the repository contains only approved design artwork.
 
 All product icons shown in Markdown must be embedded image assets with meaningful alt text. Do not use emoji, Unicode pictographs, initials or text characters as product icon substitutes.
 
