@@ -48,27 +48,34 @@ test('release workflow builds and verifies all three desktop platforms', () => {
   assert.match(workflow, /node-version: 24\.22\.2/);
   assert.match(workflow, /\non:\s*\n\s*workflow_dispatch:/);
   assert.doesNotMatch(workflow, /^\s+push:/m, 'installer builds must be manual, not automatic on push');
-  assert.match(workflow, /npm run lock:prepare/);
+  assert.doesNotMatch(workflow, /npm run lock:prepare/, 'release builds must not regenerate the committed lock');
   assert.match(workflow, /npm run lock:verify/);
-  assert.match(workflow, /brightdesk-dependency-lock/);
+  assert.doesNotMatch(workflow, /brightdesk-dependency-lock/, 'the committed lock is read directly from the checked-out source');
   assert.match(workflow, /npm run release:preflight/);
   assert.match(workflow, /npm test/);
   assert.match(workflow, /npm audit --audit-level=high/);
 });
 
-test('pull-request builds never receive code-signing or notarisation secrets', () => {
+test('signing and notarisation secrets are limited to main and the matching platform', () => {
   const workflow = read('.github/workflows/build-release.yml');
   const buildStep = workflow.split('- name: Build suite installer')[1];
   assert.ok(buildStep, 'build installer step exists');
   for (const secret of ['CSC_LINK', 'CSC_KEY_PASSWORD', 'CSC_INSTALLER_LINK', 'CSC_INSTALLER_KEY_PASSWORD', 'APPLE_ID', 'APPLE_APP_SPECIFIC_PASSWORD', 'APPLE_TEAM_ID']) {
     const line = buildStep.split('\n').find((item) => item.trimStart().startsWith(`${secret}:`));
     assert.ok(line, `${secret} is configured for the build step`);
-    assert.match(line, /github\.event_name != 'pull_request'/, `${secret} is blank for pull requests`);
+    assert.match(line, /github\.ref == 'refs\/heads\/main'/, `${secret} is available only on main`);
+    assert.doesNotMatch(line, /github\.event_name != 'pull_request'/);
   }
   const installerCert = buildStep.split('\n').find((item) => item.trimStart().startsWith('CSC_INSTALLER_LINK:'));
   const appleId = buildStep.split('\n').find((item) => item.trimStart().startsWith('APPLE_ID:'));
   assert.match(installerCert, /matrix\.platform == 'macOS'/, 'macOS installer certificate is macOS-only');
   assert.match(appleId, /matrix\.platform == 'macOS'/, 'Apple notarisation identity is macOS-only');
+});
+
+test('release publishing is manual, disabled by default, and main-only', () => {
+  const workflow = read('.github/workflows/build-release.yml');
+  assert.match(workflow, /publish_release:\s*[\s\S]*?default: false/);
+  assert.ok(workflow.includes("if: github.event_name == 'workflow_dispatch' && inputs.publish_release == true && github.ref == 'refs/heads/main'"));
 });
 
 test('Linux builds do not receive Windows or macOS signing credentials', () => {
@@ -88,7 +95,11 @@ test('platform release artifacts remain in separate folders and release lock met
     assert.match(workflow, new RegExp(`name: Download verified ${platform} build`));
     assert.ok(workflow.includes(`path: ${folder}`), `${platform} is downloaded into its own folder`);
   }
-  assert.match(workflow, /name: Download the exact dependency lock used for this release[\s\S]*?path: release\/build-metadata/);
+  assert.ok(workflow.includes('name: Check out the exact release source'));
+  assert.ok(workflow.includes('ref: ${{ github.sha }}'));
+  assert.ok(workflow.includes('node-version: 24.22.2'));
+  assert.ok(workflow.includes('name: Preserve the committed dependency lock in release metadata'));
+  assert.ok(workflow.includes('cp package-lock.json release/build-metadata/package-lock.json'));
   assert.match(workflow, /files: release\/\*\*\/\*/);
   assert.doesNotMatch(workflow, /merge-multiple: true/);
   const prepare = read('scripts/prepare-release-assets.js');
@@ -138,3 +149,47 @@ test('dependency-maintenance workflows use the existing self-hosted runner', () 
   }
 });
 
+
+test('installer pipeline uses the private native runner for each operating system', () => {
+  const workflow = read('.github/workflows/build-release.yml');
+  assert.match(workflow, /runner: \["self-hosted", "Linux", "X64"\]/);
+  assert.match(workflow, /runner: \["self-hosted", "Windows", "X64"\]/);
+  assert.match(workflow, /runner: \["self-hosted", "macOS", "ARM64"\]/);
+  assert.match(workflow, /runs-on: self-hosted/);
+  assert.doesNotMatch(workflow, /ubuntu-latest|windows-latest|macos-latest/);
+});
+
+test('README freshness check uses the existing self-hosted Mac runner', () => {
+  const workflow = read('.github/workflows/readme-freshness.yml');
+  assert.match(workflow, /runs-on:\s*(?:self-hosted|\[\s*self-hosted\b)/);
+  assert.match(workflow, /macOS, ARM64/);
+  assert.doesNotMatch(workflow, /ubuntu-latest|windows-latest|macos-latest/);
+});
+
+test('README freshness script remains compatible with macOS system Bash 3.2', () => {
+  const workflow = read('.github/workflows/readme-freshness.yml');
+  assert.doesNotMatch(workflow, /\bmapfile\b/, 'macOS Bash 3.2 does not provide mapfile');
+  assert.match(workflow, /while IFS= read -r file; do/, 'changed files are processed with Bash 3.2-compatible syntax');
+});
+
+test('README freshness workflow protects the private runner from forked pull requests', () => {
+  const workflow = read('.github/workflows/readme-freshness.yml');
+  const guard = /if:\s*github\.event_name != 'pull_request' \|\| github\.event\.pull_request\.head\.repo\.full_name == github\.repository/;
+  assert.match(workflow, /pull_request:/);
+  assert.match(workflow, /runs-on:\s*(?:self-hosted|\[\s*self-hosted\b)/);
+  assert.match(workflow, guard);
+});
+
+
+test('all third-party workflow actions are pinned to full commit SHAs', () => {
+  const workflowDirectory = path.join(root, '.github', 'workflows');
+  const workflowFiles = fs.readdirSync(workflowDirectory).filter(file => file.endsWith('.yml'));
+  for (const file of workflowFiles) {
+    const workflow = read('.github/workflows/' + file);
+    for (const line of workflow.split(/\r?\n/)) {
+      const match = /^\s*uses:\s*([^\s#]+)/.exec(line);
+      if (!match || match[1].startsWith('./')) continue;
+      assert.match(match[1], /@[0-9a-f]{40}$/, file + ' must pin ' + match[1] + ' to a full commit SHA');
+    }
+  }
+});

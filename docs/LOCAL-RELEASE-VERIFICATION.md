@@ -1,6 +1,6 @@
 # Local release verification
 
-GitHub-hosted workflow runs are currently failing before their first runner step. This script provides a no-cost way to test and build Brightdesk on a computer you already own.
+The Suite's automated checks and manual installer workflow now use private self-hosted GitHub Actions runners to avoid paid hosted-runner usage. This local script provides a direct native build path on the computer you already own; it does not upload artifacts or publish a release.
 
 ## Requirements
 
@@ -35,3 +35,19 @@ Live app launch and visual navigation acceptance remain unverified. `electron .`
 Build output is kept in the local `release/` folder. The script does not upload artifacts, create a GitHub Release or publish anything. Review the generated files and checksum report before sharing them. Local builds are unsigned unless signing credentials are already configured. Unsigned macOS apps may show a Gatekeeper warning, and unsigned Windows installers may show a SmartScreen warning. A successful unsigned build is not the same as a signed, notarised production release.
 
 Run it separately on each operating system you intend to distribute Brightdesk for. A successful build on one platform does not verify the other platforms.
+
+## No-cost GitHub Actions runners
+
+The manual installer workflow uses private self-hosted runners instead of GitHub-hosted runners. This avoids consuming paid hosted-runner minutes and keeps source code on computers controlled by the project owner.
+
+Register one runner for each required platform in the repository's **Settings → Actions → Runners** page:
+
+- **macOS:** labels `self-hosted`, `macOS`, `ARM64` (the existing Apple-silicon Mac runner).
+- **Windows:** labels `self-hosted`, `Windows`, `X64` (the project Windows PC).
+- **Linux:** labels `self-hosted`, `Linux`, `X64` (a Linux x64 computer).
+
+GitHub assigns the standard operating-system and architecture labels when each runner is registered. Do not add a custom label in place of the standard labels above. Keep the runner service active while a build is queued. The installer workflow waits for all three matching runners; if a platform runner is offline or not registered, that platform's job remains queued and the full bundle cannot be collected.
+
+The existing Mac runner can handle the preparation, collection and macOS build jobs. A Windows runner is required for the native Windows installer, and a Linux x64 runner is required for the native Linux packages. Do not substitute a cross-build from another operating system and call it verified. The workflow does not publish a release unless the manual `publish_release` input is explicitly enabled; its default remains disabled.
+
+Runner setup requires access to each physical computer and a one-time registration from the repository settings. Never copy a runner registration token into source files, logs, issues or documentation. Keep all runners private to this repository and do not run untrusted fork pull-request code on them.

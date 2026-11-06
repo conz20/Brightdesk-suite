@@ -87,7 +87,7 @@ const rustWorkflowSource = readFileSync(
 );
 test("Rust CI uses verified immutable action pins and requires the native engine", () => {
   assert.ok(rustWorkflowSource.includes("actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683"));
-  assert.ok(rustWorkflowSource.includes("actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020"));
+  assert.ok(rustWorkflowSource.includes("actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1"));
   assert.ok(rustWorkflowSource.includes("dtolnay/rust-toolchain@683b588c487a69d01f6c6ddf40f036ff682cc2c8"));
   assert.equal(rustWorkflowSource.includes("a26af69be951a213d495a4c3e4e4022e16d87065"), false);
   assert.ok(rustWorkflowSource.includes('BRIGHTDESK_REQUIRE_NATIVE_ENGINE: "1"'));
