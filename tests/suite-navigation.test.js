@@ -16,6 +16,7 @@ test('Apps shows one suite-level sidebar entry instead of repeating the ten prod
   assert.match(html, /class="brand-mark-image" src="assets\/brand\/brightdesk-suite-mark\.svg"/);
   assert.match(read('src/assets/icons/apps.svg'), /Apps/);
   assert.match(read('src/assets/brand/brightdesk-suite-mark.svg'), /Brightdesk Office Suite/);
+  assert.match(read('src/assets/brand/brightdesk-suite-mark.svg'), /viewBox="0 0 160 160"/);
   assert.doesNotMatch(html, /class="nav[^\"]*create|id="(?:create|new)-nav"/i);
   assert.doesNotMatch(html, /data-app="(?:pages|sheets|slides|notes|database|forms|lists|planner|todo|loop)"/);
   assert.match(app, /catalog\.filter\(item => installedApp\(item\.id\)\)/);
@@ -78,6 +79,7 @@ test('one Brightdesk Home artwork combines the suite sidebar and ten-product gri
   assert.match(svg, /id="settings-cogwheel"/);
   assert.match(svg, /id="notifications-bell"/);
 
+  assert.match(read('src/styles.css'), /\.sidebar\{background:linear-gradient\(180deg,#14233f 0%,#0d1930 100%\)/);
   const home = read('assets/product-experience/brightdesk-home.svg');
   assert.match(home, /Your apps/);
   assert.match(home, /Your products/);
