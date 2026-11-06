@@ -62,7 +62,7 @@ function loadLocal() {
     if (!launchAppId && appSetup?.schemaVersion !== resolvedSetup.schemaVersion) saveAppSetup();
     if (launchAppId) { state.app = launchAppId; state.view = 'workspace'; }
     else if (!state.setupComplete) state.view = 'manager';
-    else if (!installedApp(state.app)) state.app = state.installedApps[0] || 'pages';
+    else { state.view = 'home'; if (!installedApp(state.app)) state.app = state.installedApps[0] || 'pages'; }
     state.displayLanguage = localStorage.getItem('brightdesk-display-language') || 'en-AU';
     state.proofingLanguage = localStorage.getItem('brightdesk-proofing-language') || state.displayLanguage;
     try {
@@ -463,10 +463,9 @@ function renderGenericWorkspace() {
 
 function renderAppManager() {
   const grid = $('app-manager-grid'); grid.innerHTML = '';
-  $('manager-title').textContent = state.setupComplete ? t('manager.manageTitle') : t('manager.chooseTitle');
-  $('manager-description').textContent = state.setupComplete
-    ? t('manager.manageDesc')
-    : t('manager.chooseDesc');
+  const homeView = state.view === 'home';
+  $('manager-title').textContent = homeView ? 'Your apps' : (state.setupComplete ? t('manager.manageTitle') : t('manager.chooseTitle'));
+  $('manager-description').textContent = homeView ? 'Choose a product to open, install or manage.' : (state.setupComplete ? t('manager.manageDesc') : t('manager.chooseDesc'));
   $('manager-note').textContent = t('manager.note');
   $('finish-app-setup').textContent = state.setupComplete ? t('manager.done') : t('manager.installSelected');
   catalog.forEach(item => {
@@ -543,7 +542,7 @@ function toggleAppInstall(id) {
 function completeAppSetup() {
   const selected = [...state.firstRunSelection].filter(id => installableCatalog.some(item => item.id === id));
   if (!selected.length) { alert('Choose at least one app to install.'); return; }
-  state.installedApps = selected; state.setupComplete = true; state.app = selected[0]; state.view = 'workspace';
+  state.installedApps = selected; state.setupComplete = true; state.app = selected[0]; state.view = 'home';
   saveAppSetup(); render();
 }
 
@@ -783,19 +782,41 @@ function render() {
     const appId = btn.dataset.app;
     const name = btn.querySelector('b'); if (name) name.textContent = t(`apps.${appId}`);
   });
+  const home = state.view === 'home';
   const manager = state.view === 'manager';
+  const files = state.view === 'files';
   const languages = state.view === 'languages';
-  $('sidebar-section-label').textContent = manager ? t('sidebar.suite') : (languages ? t('sidebar.settings') : t('sidebar.yourApps'));
-  $('dynamic-app-nav').hidden = manager || languages;
-  $('app-centre-nav').hidden = !manager || Boolean(launchAppId);
-  $('app-manager').hidden = !manager; $('language-manager').hidden = !languages;
-  $('workspace').hidden = manager || languages; $('welcome').hidden = manager || languages || ['todo','lists','forms','planner','database','loop'].includes(state.app);
-  $('app-title').textContent = manager ? t('sidebar.applications') : (languages ? t('language.title') : (catalog.find(item => item.id === state.app)?.name || state.app));
+  const suitePage = home || manager || files;
+  $('sidebar-section-label').textContent = languages ? t('sidebar.settings') : (suitePage ? 'YOUR WORKSPACE' : t('sidebar.yourApps'));
+  $('sidebar-section-label').hidden = Boolean(launchAppId);
+  $('home-nav').hidden = !suitePage || Boolean(launchAppId);
+  $('app-centre-nav').hidden = !suitePage || Boolean(launchAppId);
+  $('files-nav').hidden = !suitePage || Boolean(launchAppId);
+  $('home-nav').classList.toggle('active', home);
+  $('app-centre-nav').classList.toggle('active', manager);
+  $('files-nav').classList.toggle('active', files);
+  $('home-nav').setAttribute('aria-current', home ? 'page' : 'false');
+  $('app-centre-nav').setAttribute('aria-current', manager ? 'page' : 'false');
+  $('files-nav').setAttribute('aria-current', files ? 'page' : 'false');
+  $('dynamic-app-nav').hidden = suitePage || languages || Boolean(launchAppId);
+  $('app-manager').hidden = !(home || manager);
+  $('app-manager').classList.toggle('home-view', home);
+  $('app-manager').querySelector('.settings-toolbar').hidden = home;
+  $('app-manager').querySelector('.manager-bottom').hidden = home;
+  $('files-manager').hidden = !files;
+  $('language-manager').hidden = !languages;
+  $('workspace').hidden = suitePage || files || languages;
+  $('welcome').hidden = suitePage || files || languages || ['todo','lists','forms','planner','database','loop'].includes(state.app);
+  $('app-title').textContent = home ? 'Your apps' : (manager ? t('sidebar.applications') : (files ? 'Files' : (languages ? t('language.title') : (catalog.find(item => item.id === state.app)?.name || state.app))));
   $('top-actions').hidden = languages;
-  $('open-button').hidden = manager || languages;
-  $('save-project').hidden = manager || languages;
-  if (manager) {
-    $('save-status').textContent = t('manager.manageTitle'); renderAppManager();
+  $('save-status').hidden = suitePage || files || languages;
+  $('open-button').hidden = suitePage || files || languages;
+  $('save-project').hidden = suitePage || files || languages;
+  if (home || manager) {
+    $('save-status').textContent = home ? 'Your apps' : t('manager.manageTitle');
+    renderAppManager();
+  } else if (files) {
+    $('save-status').textContent = 'Files on this device';
   } else if (languages) {
     $('save-status').textContent = t('language.title'); renderLanguageManager();
   } else {
@@ -832,7 +853,7 @@ function render() {
   syncAppNavigation();
   renderNotifications();
   document.querySelectorAll('.nav[data-app]').forEach(btn => {
-    const visible = launchAppId ? btn.dataset.app === launchAppId : installedApp(btn.dataset.app); btn.hidden = !visible; btn.classList.toggle('active', !manager && !languages && btn.dataset.app === state.app);
+    const visible = launchAppId ? btn.dataset.app === launchAppId : installedApp(btn.dataset.app); btn.hidden = !visible; btn.classList.toggle('active', !suitePage && !languages && btn.dataset.app === state.app);
   });
   $('open-settings').hidden = Boolean(launchAppId);
   $('open-notifications').hidden = Boolean(launchAppId);
@@ -980,6 +1001,11 @@ async function saveProject(){try{const result=await window.brightdesk.saveProjec
 function setApp(app){if((launchAppId && app !== launchAppId) || !(configs[app] || genericConfigs[app]) || !installedApp(app))return;state.app=app;state.view='workspace';state.ribbonTab='home';render();persist();}
 
 document.querySelectorAll('.nav[data-app]').forEach(btn=>btn.addEventListener('click',()=>setApp(btn.dataset.app)));
+$('home-nav').addEventListener('click',()=>{if(launchAppId)return;state.view='home';render();});
+$('app-centre-nav').addEventListener('click',()=>{if(launchAppId)return;state.view='manager';render();});
+$('files-nav').addEventListener('click',()=>{if(launchAppId)return;state.view='files';render();});
+$('files-open-button').addEventListener('click',openFile);
+$('files-save-button').addEventListener('click',saveProject);
 $('open-settings').addEventListener('click',()=>{if (launchAppId) return; state.view='manager';render();});
 $('open-notifications').addEventListener('click',()=>{const panel=$('notification-panel');panel.hidden=!panel.hidden;$('open-notifications').setAttribute('aria-expanded',String(!panel.hidden));if(!panel.hidden)markNotificationsRead();});
 $('clear-notifications').addEventListener('click',clearNotifications);
