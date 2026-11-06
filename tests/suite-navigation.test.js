@@ -49,6 +49,15 @@ test('one Brightdesk Home artwork combines the suite sidebar and ten-product gri
   assert.equal((home.match(/<svg x="/g) || []).length, 10, 'Home must embed all ten original product icons');
 });
 
+test('Apps cards use the approved icon-first layout without concept preview images', () => {
+  const app = read('src/app.js');
+  const styles = read('src/styles.css');
+  assert.doesNotMatch(app, /className = 'app-preview'/);
+  assert.match(app, /card\.append\(header, description, footer\)/);
+  assert.match(styles, /\.manager-grid\{[^}]*repeat\(auto-fit,minmax\(min\(100%,230px\),1fr\)\)/);
+  assert.match(styles, /\.app-card\{[^}]*border-radius:16px/);
+});
+
 test('README and visual standard explain the contextual product-switching rule', () => {
   const readme = read('README.md');
   const standard = read('docs/BRIGHTDESK_VISUAL_STANDARD.md');
