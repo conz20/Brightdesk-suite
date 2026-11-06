@@ -31,7 +31,7 @@ const SUITE_LEGAL_FILES = Object.freeze({
 });
 
 function escapeRegExp(value) {
-  const specialCharacters = '.*+?^$()|[]';
+  const specialCharacters = '.*+?^$()|[]{}';
   const backslash = String.fromCharCode(92);
   let escaped = '';
   for (const character of value) {
@@ -56,9 +56,12 @@ function requireExactlyOneMatch(directory, pattern, label) {
   return matches[0];
 }
 
-function expectedSuiteFiles({ directory, platform, version }) {
+function expectedSuiteFiles(options) {
+  const directory = options.directory;
+  const platform = options.platform;
+  const version = options.version;
   if (!PLATFORMS[platform]) throw new Error('Unsupported platform: ' + platform);
-  if (typeof version !== 'string' || !/^\\d+\\.\\d+\\.\\d+(?:-[0-9A-Za-z.-]+)?$/.test(version)) {
+  if (typeof version !== 'string' || !/^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?$/.test(version)) {
     throw new Error('A valid Brightdesk release version is required.');
   }
 
@@ -68,7 +71,7 @@ function expectedSuiteFiles({ directory, platform, version }) {
   if (platform === 'win') {
     required.unshift(requireExactlyOneMatch(
       directory,
-      new RegExp('^Brightdesk-Office-Suite-' + escaped + '-x64\\\\.exe$'),
+      new RegExp('^Brightdesk-Office-Suite-' + escaped + '-x64\\.exe$'),
       'Windows Brightdesk Office Suite x64 installer'
     ));
   } else if (platform === 'mac') {
@@ -81,12 +84,12 @@ function expectedSuiteFiles({ directory, platform, version }) {
     required.unshift(
       requireExactlyOneMatch(
         directory,
-        new RegExp('^(?:Brightdesk-Office-Suite|brightdesk-office-suite)-' + escaped + '-(?:x64|x86_64)\\\\.AppImage$'),
+        new RegExp('^(?:Brightdesk-Office-Suite|brightdesk-office-suite)-' + escaped + '-(?:x64|x86_64)\\.AppImage$'),
         'Linux Brightdesk Office Suite AppImage'
       ),
       requireExactlyOneMatch(
         directory,
-        new RegExp('^brightdesk-office-suite-' + escaped + '-(?:x64|amd64)\\\\.deb$', 'i'),
+        new RegExp('^brightdesk-office-suite-' + escaped + '-(?:x64|amd64)\\.deb$', 'i'),
         'Linux Brightdesk Office Suite Debian package'
       )
     );
@@ -99,7 +102,10 @@ function expectedSuiteFiles({ directory, platform, version }) {
   return required;
 }
 
-function verifySuitePlatform({ releaseDir, platform, version }) {
+function verifySuitePlatform(options) {
+  const releaseDir = options.releaseDir;
+  const platform = options.platform;
+  const version = options.version;
   const config = PLATFORMS[platform];
   if (!config) throw new Error('Unsupported platform: ' + platform);
 
@@ -122,7 +128,10 @@ function verifySuitePlatform({ releaseDir, platform, version }) {
   };
 }
 
-function verifyProductPlatform({ releaseDir, platform, version }) {
+function verifyProductPlatform(options) {
+  const releaseDir = options.releaseDir;
+  const platform = options.platform;
+  const version = options.version;
   const config = PLATFORMS[platform];
   if (!config) throw new Error('Unsupported platform: ' + platform);
 
@@ -166,11 +175,12 @@ function verifyProductPlatform({ releaseDir, platform, version }) {
   return { productCount: expectedIds.length, productInstallerCount };
 }
 
-function verifyCompleteReleaseBundle(options = {}) {
-  const releaseDir = options.releaseDir || path.resolve(__dirname, '..', 'release');
-  const version = options.version || require('../package.json').version;
+function verifyCompleteReleaseBundle(options) {
+  const opts = options || {};
+  const releaseDir = opts.releaseDir || path.resolve(__dirname, '..', 'release');
+  const version = opts.version || require('../package.json').version;
 
-  if (typeof version !== 'string' || !/^\\d+\\.\\d+\\.\\d+(?:-[0-9A-Za-z.-]+)?$/.test(version)) {
+  if (typeof version !== 'string' || !/^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?$/.test(version)) {
     throw new Error('A valid Brightdesk release version is required.');
   }
 
@@ -202,7 +212,9 @@ function verifyCompleteReleaseBundle(options = {}) {
     !lock ||
     lock.lockfileVersion !== 3 ||
     lock.version !== version ||
-    lock.packages?.['']?.version !== version
+    !lock.packages ||
+    !lock.packages[''] ||
+    lock.packages[''].version !== version
   ) {
     throw new Error(
       'Release version mismatch: dependency lock must be lockfileVersion 3 and declare ' + version + ' at its root.'
@@ -216,7 +228,7 @@ function verifyCompleteReleaseBundle(options = {}) {
   for (const platform of Object.keys(PLATFORMS)) {
     const suite = verifySuitePlatform({ releaseDir, platform, version });
     const products = verifyProductPlatform({ releaseDir, platform, version });
-    platforms[platform] = { ...suite, ...products };
+    platforms[platform] = Object.assign({}, suite, products);
     suiteInstallerCount += suite.suiteInstallerCount;
     productInstallerCount += products.productInstallerCount;
   }
