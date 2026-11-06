@@ -33,7 +33,7 @@ const installableCatalog = catalog.filter(item => item.availability === 'availab
 const state = {
   app: launchAppId || 'pages', view: 'workspace', docs: structuredClone(defaults),
   todoView: 'my-day', todoQuery: '',
-  selectedCell: { row: 0, col: 0 }, update: null, ribbonTab: 'home',
+  selectedCell: { row: 0, col: 0 }, update: null, notifications: [], ribbonTab: 'home',
   installedApps: [], setupComplete: false, firstRunSelection: new Set(installableCatalog.map(item => item.id)),
   slideTheme: 'lavender', focusMode: false, editorZoom: 100, sheetZoom: 100,
   languageCatalog: [], installedLanguagePacks: [], spellCheckerLanguages: [], usesNativeMacSpellChecker: false,
@@ -64,6 +64,10 @@ function loadLocal() {
     else if (!installedApp(state.app)) state.app = state.installedApps[0] || 'pages';
     state.displayLanguage = localStorage.getItem('brightdesk-display-language') || 'en-AU';
     state.proofingLanguage = localStorage.getItem('brightdesk-proofing-language') || state.displayLanguage;
+    try {
+      const history = JSON.parse(localStorage.getItem('brightdesk-notifications-v1') || '[]');
+      state.notifications = Array.isArray(history) ? history.filter(item => item && typeof item.title === 'string' && typeof item.message === 'string').slice(0, 30) : [];
+    } catch { state.notifications = []; }
   } catch (error) { console.warn('Local project or app settings could not be read.', error); state.view = 'manager'; }
 }
 function saveAppSetup() {
@@ -802,6 +806,7 @@ function render() {
     $('workspace').classList.toggle('focus-mode', state.focusMode);
   }
   syncAppNavigation();
+  renderNotifications();
   document.querySelectorAll('.nav[data-app]').forEach(btn => {
     const visible = launchAppId ? btn.dataset.app === launchAppId : installedApp(btn.dataset.app); btn.hidden = !visible; btn.classList.toggle('active', !manager && !languages && btn.dataset.app === state.app);
   });
@@ -809,6 +814,100 @@ function render() {
   $('open-notifications').hidden = Boolean(launchAppId);
   if (launchAppId) $('notification-panel').hidden = true;
   $('manage-languages').classList.toggle('active', languages);
+}
+let notificationToastTimer = null;
+function saveNotificationHistory() {
+  try { localStorage.setItem('brightdesk-notifications-v1', JSON.stringify(state.notifications.slice(0, 30))); }
+  catch (error) { console.warn('Notification history could not be saved locally.', error); }
+}
+function renderNotifications() {
+  const list = $('notification-list');
+  const button = $('open-notifications');
+  const count = $('notification-count');
+  if (!list || !button || !count) return;
+  list.replaceChildren();
+  const unread = state.notifications.filter(item => !item.read).length;
+  count.textContent = unread > 9 ? '9+' : String(unread);
+  count.hidden = unread === 0;
+  button.setAttribute('aria-label', unread ? `Open notifications, ${unread} unread` : 'Open notifications');
+  if (!state.notifications.length) {
+    const empty = document.createElement('p'); empty.className = 'notification-empty'; empty.textContent = 'No notifications yet.'; list.append(empty); return;
+  }
+  state.notifications.forEach(item => {
+    const card = document.createElement('article'); card.className = `notification-item${item.read ? '' : ' unread'}`;
+    const heading = document.createElement('b'); heading.textContent = item.title;
+    const message = document.createElement('p'); message.textContent = item.message;
+    const time = document.createElement('small'); time.textContent = new Date(item.createdAt).toLocaleString();
+    const content = document.createElement('div'); content.className = 'notification-item-copy'; content.append(heading, message, time); card.append(content);
+    if (item.action === 'download-update' || item.action === 'install-update') {
+      const action = document.createElement('button'); action.type = 'button'; action.className = 'secondary small-action notification-action';
+      action.textContent = item.action === 'download-update' ? 'Download update' : 'Install update';
+      action.addEventListener('click', () => runNotificationAction(item.id)); card.append(action);
+    }
+    list.append(card);
+  });
+}
+function showNotificationToast(item) {
+  const host = $('notification-toast');
+  if (!host) return;
+  host.replaceChildren();
+  const card = document.createElement('div'); card.className = 'notification-toast-card';
+  const copy = document.createElement('div'); copy.className = 'notification-toast-copy';
+  const heading = document.createElement('b'); heading.textContent = item.title;
+  const message = document.createElement('p'); message.textContent = item.message;
+  copy.append(heading, message);
+  const view = document.createElement('button'); view.type = 'button'; view.className = 'text-button'; view.textContent = 'View';
+  view.addEventListener('click', () => { host.hidden = true; $('open-notifications').click(); });
+  const dismiss = document.createElement('button'); dismiss.type = 'button'; dismiss.className = 'notification-toast-dismiss'; dismiss.setAttribute('aria-label', 'Dismiss notification'); dismiss.textContent = '×';
+  dismiss.addEventListener('click', () => { host.hidden = true; });
+  card.append(copy, view, dismiss); host.append(card); host.hidden = false;
+  if (notificationToastTimer) clearTimeout(notificationToastTimer);
+  notificationToastTimer = window.setTimeout(() => { host.hidden = true; }, 9000);
+}
+function addNotification({ title, message, status, action = null }) {
+  const duplicate = state.notifications.find(item => item.status === status && item.message === message && Date.now() - new Date(item.createdAt).getTime() < 60000);
+  if (duplicate) return duplicate;
+  const item = { id: `notification-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`, title, message, status, action, createdAt: new Date().toISOString(), read: false };
+  state.notifications.unshift(item);
+  state.notifications = state.notifications.slice(0, 30);
+  saveNotificationHistory(); renderNotifications(); showNotificationToast(item);
+  return item;
+}
+function markNotificationsRead() {
+  state.notifications = state.notifications.map(item => ({ ...item, read: true }));
+  saveNotificationHistory(); renderNotifications();
+}
+function clearNotifications() {
+  state.notifications = [];
+  saveNotificationHistory(); renderNotifications();
+}
+async function runNotificationAction(id) {
+  const item = state.notifications.find(entry => entry.id === id);
+  if (!item || !['download-update', 'install-update'].includes(item.action)) return;
+  try {
+    const result = item.action === 'download-update'
+      ? await window.brightdesk.downloadUpdate()
+      : await window.brightdesk.installUpdate();
+    if (result?.ok === false) addNotification({ title: 'Update action needs attention', message: result.message || 'The update action could not be completed.', status: 'error' });
+    else if (item.action === 'download-update') {
+      item.action = null; item.message = 'The Brightdesk update is downloading.'; item.read = true;
+      saveNotificationHistory(); renderNotifications();
+    }
+  } catch (error) {
+    addNotification({ title: 'Update action failed', message: error.message || 'The update action could not be completed.', status: 'error' });
+  }
+}
+function handleUpdateState(updateState) {
+  if (!updateState) return;
+  const message = $('update-message');
+  if (message) { message.hidden = false; message.textContent = updateState.message || 'Update status is available.'; }
+  if (updateState.status === 'available') {
+    addNotification({ title: 'Brightdesk update available', message: updateState.message || 'A new Brightdesk update is available.', status: 'available', action: 'download-update' });
+  } else if (updateState.status === 'downloaded') {
+    addNotification({ title: 'Brightdesk update ready', message: updateState.message || 'The Brightdesk update is ready to install.', status: 'downloaded', action: 'install-update' });
+  } else if (updateState.status === 'error') {
+    addNotification({ title: 'Brightdesk update check failed', message: updateState.message || 'Brightdesk could not check for updates.', status: 'error' });
+  }
 }
 function collectDocxBlocks() {
   const blocks=[];
@@ -858,7 +957,8 @@ function setApp(app){if((launchAppId && app !== launchAppId) || !(configs[app] |
 
 document.querySelectorAll('.nav[data-app]').forEach(btn=>btn.addEventListener('click',()=>setApp(btn.dataset.app)));
 $('open-settings').addEventListener('click',()=>{if (launchAppId) return; state.view='manager';render();});
-$('open-notifications').addEventListener('click',()=>{const panel=$('notification-panel');panel.hidden=!panel.hidden;$('open-notifications').setAttribute('aria-expanded',String(!panel.hidden));});
+$('open-notifications').addEventListener('click',()=>{const panel=$('notification-panel');panel.hidden=!panel.hidden;$('open-notifications').setAttribute('aria-expanded',String(!panel.hidden));if(!panel.hidden)markNotificationsRead();});
+$('clear-notifications').addEventListener('click',clearNotifications);
 document.addEventListener('keydown',event=>{if(event.key==='Escape'&&!$('notification-panel').hidden){$('notification-panel').hidden=true;$('open-notifications').setAttribute('aria-expanded','false');}});
 $('manage-languages').addEventListener('click',openLanguageManager);
 $('display-language').addEventListener('change',event=>changeDisplayLanguage(event.target.value));
@@ -886,7 +986,7 @@ $('lists-delete').addEventListener('click',deleteCurrentList);
 $('lists-column-type').addEventListener('change',()=>{$('lists-column-options-wrap').hidden=$('lists-column-type').value!=='choice';});
 $('export-button').addEventListener('click',exportCurrent);$('open-button').addEventListener('click',openFile);$('save-project').addEventListener('click',saveProject);
 $('updates-button').addEventListener('click',async()=>{const msg=$('update-message');msg.hidden=false;msg.textContent=t('common.updateChecking');try{const r=await window.brightdesk.checkForUpdates();if(!r?.ok)msg.textContent=r?.message||'Update checks are not configured yet.';}catch(e){msg.textContent=`Update check failed: ${e.message}`;}});
-window.brightdesk.onUpdateState?.(updateState=>{const msg=$('update-message');msg.hidden=false;msg.textContent=updateState.message;if(updateState.status==='available'){msg.textContent=updateState.message;}if(updateState.status==='downloaded'){const button=document.createElement('button');button.className='text-button';button.textContent=t('common.restartInstall');button.onclick=()=>window.brightdesk.installUpdate();msg.append(' ',button);}});
+window.brightdesk.onUpdateState?.(handleUpdateState);
 loadLocal();$('platform').textContent=`Desktop app · ${window.brightdesk.platform}`;
 (async()=>{
   try {
