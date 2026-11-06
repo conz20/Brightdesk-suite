@@ -1,6 +1,8 @@
 name: Build and verify Brightdesk installers
 
 on:
+  push:
+    branches: [ci/installer-validation]
   workflow_dispatch:
     inputs:
       publish_release:
