@@ -4,6 +4,7 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 const {
   DEFAULT_MIN_AGE_MS,
+  isApprovedArtifactName,
   isPrunableArtifact,
   pruneActionsArtifacts
 } = require('../scripts/prune-actions-artifacts');
@@ -22,6 +23,12 @@ function artifact(id, name, ageMs, workflowRunId = 10) {
 
 test('artifact cleanup only selects old Brightdesk installer bundles', () => {
   assert.equal(DEFAULT_MIN_AGE_MS, DAY);
+  assert.equal(isApprovedArtifactName('brightdesk-Linux'), true);
+  assert.equal(isApprovedArtifactName('brightdesk-Windows'), true);
+  assert.equal(isApprovedArtifactName('brightdesk-macOS'), true);
+  assert.equal(isApprovedArtifactName('Brightdesk-0.1.0-Installers'), true);
+  assert.equal(isApprovedArtifactName('Brightdesk-1.2.3-beta.1-Installers'), true);
+  assert.equal(isApprovedArtifactName('brightdesk-Linux-debug'), false);
   assert.equal(isPrunableArtifact(artifact(1, 'brightdesk-Linux', 2 * DAY), { now: NOW }), true);
   assert.equal(isPrunableArtifact(artifact(2, 'brightdesk-Windows', DAY - 1), { now: NOW }), false);
   assert.equal(isPrunableArtifact(artifact(3, 'brightdesk-macOS', 2 * DAY), { now: NOW }), true);

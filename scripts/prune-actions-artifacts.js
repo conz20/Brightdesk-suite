@@ -4,16 +4,24 @@
 const DAY_MS = 24 * 60 * 60 * 1000;
 const DEFAULT_MIN_AGE_MS = DAY_MS;
 const DEFAULT_PAGE_SIZE = 100;
-const RELEASE_ARTIFACT_NAMES = /^(?:brightdesk-(?:Linux|Windows|macOS)|Brightdesk-\\d+\\.\\d+\\.\\d+(?:-[0-9A-Za-z.-]+)?-Installers)$/;
+const PLATFORM_ARTIFACT_NAMES = new Set([
+  'brightdesk-Linux',
+  'brightdesk-Windows',
+  'brightdesk-macOS'
+]);
+const VERSIONED_BUNDLE_NAME = /^Brightdesk-[0-9]+[.][0-9]+[.][0-9]+(?:-[0-9A-Za-z.-]+)?-Installers$/;
+
+function isApprovedArtifactName(name) {
+  return typeof name === 'string' &&
+    (PLATFORM_ARTIFACT_NAMES.has(name) || VERSIONED_BUNDLE_NAME.test(name));
+}
 
 function isPrunableArtifact(artifact, {
   now = Date.now(),
   minAgeMs = DEFAULT_MIN_AGE_MS,
   currentRunId = null
 } = {}) {
-  if (!artifact || typeof artifact.name !== 'string' || !RELEASE_ARTIFACT_NAMES.test(artifact.name)) {
-    return false;
-  }
+  if (!artifact || !isApprovedArtifactName(artifact.name)) return false;
   if (!Number.isFinite(now) || !Number.isFinite(minAgeMs) || minAgeMs < 0) return false;
   if (currentRunId !== null && artifact.workflow_run?.id !== undefined &&
       String(artifact.workflow_run.id) === String(currentRunId)) {
@@ -26,10 +34,14 @@ function isPrunableArtifact(artifact, {
 }
 
 function validateRepository(repository) {
-  if (typeof repository !== 'string' || !/^[A-Za-z0-9_.-]+\\/[A-Za-z0-9_.-]+$/.test(repository)) {
+  if (typeof repository !== 'string') {
     throw new Error('GITHUB_REPOSITORY must be in owner/repository form.');
   }
-  return repository.split('/').map(encodeURIComponent).join('/');
+  const segments = repository.split('/');
+  if (segments.length !== 2 || segments.some(segment => !/^[A-Za-z0-9_.-]+$/.test(segment))) {
+    throw new Error('GITHUB_REPOSITORY must be in owner/repository form.');
+  }
+  return segments.map(encodeURIComponent).join('/');
 }
 
 function validateApiUrl(apiUrl) {
@@ -42,7 +54,9 @@ function validateApiUrl(apiUrl) {
   if (parsed.protocol !== 'https:' || parsed.username || parsed.password || parsed.search || parsed.hash) {
     throw new Error('GITHUB_API_URL must be an HTTPS API base URL without credentials, query or fragment.');
   }
-  return parsed.toString().replace(/\\/$/, '');
+  let value = parsed.toString();
+  while (value.endsWith('/')) value = value.slice(0, -1);
+  return value;
 }
 
 async function pruneActionsArtifacts({
@@ -151,7 +165,9 @@ if (require.main === module) main();
 module.exports = {
   DAY_MS,
   DEFAULT_MIN_AGE_MS,
-  RELEASE_ARTIFACT_NAMES,
+  PLATFORM_ARTIFACT_NAMES,
+  VERSIONED_BUNDLE_NAME,
+  isApprovedArtifactName,
   isPrunableArtifact,
   pruneActionsArtifacts
 };

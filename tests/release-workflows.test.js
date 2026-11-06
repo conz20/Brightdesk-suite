@@ -88,7 +88,7 @@ test('release workflow prunes only stale Brightdesk installer artifacts with job
   assert.match(workflow, /prepare:\s*\n\s+name: Test and lock dependencies\s*\n\s+needs: cleanup-artifacts/);
   assert.equal((workflow.match(/actions: write/g) || []).length, 1, 'only the cleanup job receives Actions write access');
   const cleanupScript = read('scripts/prune-actions-artifacts.js');
-  assert.match(cleanupScript, /brightdesk-\(\?:Linux\|Windows\|macOS\)/);
+  assert.match(cleanupScript, /PLATFORM_ARTIFACT_NAMES = new Set/);
   assert.match(cleanupScript, /DEFAULT_MIN_AGE_MS = DAY_MS/);
   assert.match(cleanupScript, /currentRunId/);
 });
