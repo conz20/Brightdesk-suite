@@ -12,6 +12,8 @@ test('Apps shows one suite-level sidebar entry instead of repeating the ten prod
   assert.match(html, /id="app-centre-nav"/);
   assert.match(html, /id="dynamic-app-nav"/);
   assert.match(html, /data-i18n="sidebar\.applications">Apps<\/b>/);
+  assert.match(html, /src="assets\/icons\/apps\.svg"/);
+  assert.match(read('assets/icons/apps.svg'), /Apps/);
   assert.doesNotMatch(html, /class="nav[^\"]*create|id="(?:create|new)-nav"/i);
   assert.doesNotMatch(html, /data-app="(?:pages|sheets|slides|notes|database|forms|lists|planner|todo|loop)"/);
   assert.match(app, /catalog\.filter\(item => installedApp\(item\.id\)\)/);
