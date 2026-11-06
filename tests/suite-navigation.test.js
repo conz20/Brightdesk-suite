@@ -143,6 +143,8 @@ test('production Home artwork matches the live desktop headings and card layout'
   assert.ok(styles.includes('min-height: 240px;'));
   assert.ok(readme.includes('approved production Home screen design and the single visual source of truth'));
   assert.ok(readme.includes('top bar reads **Your apps**'));
+  assert.ok(readme.includes('238 px deep-navy sidebar'));
+  assert.ok(readme.includes('38 px circular Notifications and Settings controls'));
   assert.ok(guide.includes('top-bar eyebrow **YOUR WORKSPACE** and heading **Your apps**'));
 });
 
