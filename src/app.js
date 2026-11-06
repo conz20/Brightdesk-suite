@@ -489,6 +489,8 @@ function renderAppManager() {
     const visibilityAction = document.createElement('button'); visibilityAction.type = 'button'; visibilityAction.className = 'app-card-menu-item'; visibilityAction.setAttribute('role', 'menuitemcheckbox'); visibilityAction.setAttribute('aria-checked', String(!hiddenFromSidebar)); visibilityAction.textContent = hiddenFromSidebar ? 'Show in Switch product' : 'Hide from Switch product'; visibilityAction.disabled = !isInstalled;
     visibilityAction.addEventListener('click', () => {
       if (!isInstalled) return;
+      const visibleProducts = state.installedApps.filter(id => !state.hiddenProducts.includes(id));
+      if (!hiddenFromSidebar && visibleProducts.length <= 1) { alert('Keep at least one product visible in Switch product.'); return; }
       state.hiddenProducts = hiddenFromSidebar ? state.hiddenProducts.filter(id => id !== item.id) : [...state.hiddenProducts, item.id];
       saveAppSetup(); render();
     });
