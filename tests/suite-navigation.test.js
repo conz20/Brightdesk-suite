@@ -62,7 +62,7 @@ test('README and visual standard explain the contextual product-switching rule',
   const readme = read('README.md');
   const standard = read('docs/BRIGHTDESK_VISUAL_STANDARD.md');
   const home = read('assets/product-experience/brightdesk-home.svg');
-  assert.match(readme, /professional Home, Apps and Files sidebar/);
+  assert.match(readme, /intended Home, Apps and Files sidebar/);
   assert.match(readme, /in the \*\*Switch product\*\*/);
   assert.equal((readme.match(/assets\/product-experience\/brightdesk-home\.svg/g) || []).length, 1);
   assert.doesNotMatch(readme, /brightdesk-app-centre\.svg/);
