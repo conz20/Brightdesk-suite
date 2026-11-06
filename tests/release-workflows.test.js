@@ -89,11 +89,11 @@ test('Linux builds do not receive Windows or macOS signing credentials', () => {
   }
 });
 
-test('platform release artifacts remain in separate folders and release lock metadata is retained', () => {
+test('platform release artifacts retain Suite and ten product folders through full-bundle verification', () => {
   const workflow = read('.github/workflows/build-release.yml');
-  for (const [platform, folder] of [['Linux', 'release/Linux'], ['Windows', 'release/Windows'], ['macOS', 'release/macOS']]) {
+  for (const platform of ['Linux', 'Windows', 'macOS']) {
     assert.match(workflow, new RegExp(`name: Download verified ${platform} build`));
-    assert.ok(workflow.includes(`path: ${folder}`), `${platform} is downloaded into its own folder`);
+    assert.ok(workflow.includes('path: release'), `${platform} is downloaded into the common release folder`);
   }
   assert.ok(workflow.includes('name: Check out the exact release source'));
   assert.ok(workflow.includes('ref: ${{ github.sha }}'));
@@ -102,10 +102,29 @@ test('platform release artifacts remain in separate folders and release lock met
   assert.ok(workflow.includes('cp package-lock.json release/build-metadata/package-lock.json'));
   assert.match(workflow, /files: release\/\*\*\/\*/);
   assert.doesNotMatch(workflow, /merge-multiple: true/);
+  assert.match(workflow, /npm run dist:apps:\$\{\{ matrix\.script \}\}/);
+  assert.match(workflow, /npm run release:verify:products:\$\{\{ matrix\.script \}\}/);
+  assert.match(workflow, /node scripts\/collect-platform-build\.js \$\{\{ matrix\.script \}\}/);
+  assert.match(workflow, /npm run release:verify:complete -- release/);
+  assert.ok(workflow.indexOf('npm run release:verify:complete -- release') < workflow.indexOf('Upload complete Brightdesk installer bundle'));
   const prepare = read('scripts/prepare-release-assets.js');
   assert.match(prepare, /Brightdesk-\$\{label\}-LICENSE\.txt/);
   const verifier = read('scripts/verify-release-artifacts.js');
   assert.match(verifier, /Brightdesk-SHA256SUMS-\$\{platform\.toUpperCase\(\)\}/);
+});
+
+test('the ten-product bundle verifier checks the exact 66-file release manifest', () => {
+  const manifest = JSON.parse(read('package.json'));
+  for (const platform of ['win', 'mac', 'linux']) {
+    assert.ok(manifest.scripts[`release:verify:products:${platform}`]);
+    assert.ok(manifest.scripts[`release:collect:${platform}`]);
+  }
+  assert.equal(manifest.scripts['release:verify:complete'], 'node scripts/verify-complete-release-bundle.js');
+  const verifier = read('scripts/verify-complete-release-bundle.js');
+  assert.match(verifier, /suiteInstallerCount !== 6/);
+  assert.match(verifier, /productInstallerCount !== 60/);
+  assert.match(verifier, /installerCount !== 66/);
+  assert.match(verifier, /lockfileVersion !== 3/);
 });
 
 test('Node.js runtime is pinned consistently to the current 24 LTS patch', () => {
