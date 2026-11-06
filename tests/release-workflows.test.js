@@ -126,7 +126,7 @@ test('native release workflow builds and verifies all ten product installers on 
   assert.ok(matrix.includes('release/apps/${{ matrix.platform }}/**'));
   assert.ok(!matrix.includes('path: release/**'));
   assert.ok(collect.includes('npm run release:verify:complete -- release'));
-  assert.ok(workflow.includes('retention-days: 7'));
+  assert.ok(workflow.includes('retention-days: 1'));
   assert.ok(!workflow.includes('Upload complete Brightdesk installer bundle'));
   assert.ok(!workflow.includes('Brightdesk-${{ steps.release-version.outputs.version }}-Installers'));
   const publish = workflow.split('  publish-release:')[1];
