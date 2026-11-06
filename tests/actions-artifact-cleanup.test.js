@@ -17,6 +17,7 @@ function artifact(id, name, ageMs, workflowRunId = 10) {
     id,
     name,
     created_at: new Date(NOW - ageMs).toISOString(),
+    expired: false,
     workflow_run: { id: workflowRunId }
   };
 }
@@ -69,6 +70,11 @@ test('artifact cleanup protects the current workflow and malformed timestamps', 
     isPrunableArtifact({ ...artifact(5, 'brightdesk-Linux', 3 * DAY), expired: true }, { now: NOW }),
     false,
     'already-expired artifacts must not receive a redundant delete request'
+  );
+  assert.equal(
+    isPrunableArtifact({ id: 7, name: 'brightdesk-Linux', created_at: new Date(NOW - 3 * DAY).toISOString() }, { now: NOW }),
+    false,
+    'artifacts without an explicit non-expired status must be retained'
   );
   assert.equal(
     isPrunableArtifact(artifact(3, 'brightdesk-Linux', 3 * DAY), { now: NOW, minAgeMs: 0 }),

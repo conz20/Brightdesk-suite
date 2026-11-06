@@ -23,7 +23,7 @@ function isPrunableArtifact(artifact, {
 } = {}) {
   if (!artifact || !isApprovedArtifactName(artifact.name)) return false;
   if (!Number.isFinite(now) || !Number.isFinite(minAgeMs) || minAgeMs < 0) return false;
-  if (artifact.expired === true) return false;
+  if (artifact.expired !== false) return false;
   if (currentRunId !== null) {
     const sourceRunId = artifact.workflow_run?.id;
     if (sourceRunId === undefined || sourceRunId === null ||
