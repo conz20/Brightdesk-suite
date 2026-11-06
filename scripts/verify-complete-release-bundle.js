@@ -102,6 +102,23 @@ function expectedSuiteFiles(options) {
   return required;
 }
 
+function verifyExactDirectoryContents(options) {
+  const directory = options.directory;
+  const expectedFiles = options.expectedFiles;
+  const manifestName = options.manifestName;
+  const label = options.label;
+  const allowedFiles = new Set([...expectedFiles, manifestName]);
+  const unexpected = fs.readdirSync(directory, { withFileTypes: true })
+    .filter(entry => !entry.isFile() || !allowedFiles.has(entry.name))
+    .map(entry => entry.name);
+
+  if (unexpected.length) {
+    throw new Error(
+      label + ' contains unexpected files or directories: ' + unexpected.join(', ') + '.'
+    );
+  }
+}
+
 function verifySuitePlatform(options) {
   const releaseDir = options.releaseDir;
   const platform = options.platform;
@@ -120,6 +137,12 @@ function verifySuitePlatform(options) {
     manifestName: config.checksum,
     expectedFiles: files,
     label: config.directory + ' Suite'
+  });
+  verifyExactDirectoryContents({
+    directory,
+    expectedFiles: files,
+    manifestName: config.checksum,
+    label: config.directory + ' Suite installer folder'
   });
 
   return {
@@ -167,6 +190,12 @@ function verifyProductPlatform(options) {
       manifestName,
       expectedFiles: files,
       label: 'Brightdesk ' + PRODUCTS[productId] + ' ' + config.directory
+    });
+    verifyExactDirectoryContents({
+      directory: productDirectory,
+      expectedFiles: files,
+      manifestName,
+      label: 'Brightdesk ' + PRODUCTS[productId] + ' ' + config.directory + ' installer folder'
     });
 
     productInstallerCount += files.length;
