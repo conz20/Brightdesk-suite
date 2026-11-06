@@ -39,7 +39,7 @@ test('first release version is consistently 0.1.0 across package, available apps
   const html = fs.readFileSync(path.join(root, 'src', 'index.html'), 'utf8');
   assert.equal(pkg.version, '0.1.0');
   for (const app of catalog.filter(item => item.availability === 'available')) assert.equal(app.moduleVersion, pkg.version);
-  assert.ok(html.includes('id="version-label">Version</small>'));
+  assert.ok(html.includes('id="version-label">Local-first · Your files stay here</small>'));
   assert.ok(html.includes('id="footer-version">Brightdesk</span>'));
   assert.doesNotMatch(html, /\d+\.\d+\.\d+/);
 });
@@ -65,7 +65,7 @@ test('the customer-facing release version has one authoritative source across th
   assert.match(catalogSource, /window\.brightdesk\?\.version/);
   assert.match(preload, /ipcRenderer\.sendSync\('app:version-sync'\)/);
   assert.match(main, /ipcMain\.on\('app:version-sync'.*app\.getVersion\(\)/);
-  assert.ok(html.includes('id="version-label">Version</small>'));
+  assert.ok(html.includes('id="version-label">Local-first · Your files stay here</small>'));
   assert.ok(html.includes('id="footer-version">Brightdesk</span>'));
   assert.doesNotMatch(html, /\d+\.\d+\.\d+/);
   assert.match(app, /version-label/);
