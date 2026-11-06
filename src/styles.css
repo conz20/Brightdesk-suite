@@ -415,3 +415,23 @@ input:disabled, select:disabled, textarea:disabled, button:disabled { cursor: no
 .app-card-menu-item:hover:not(:disabled){background:#f2f5fa}
 .app-card-menu-item:disabled{color:#a0a8b6;cursor:not-allowed}
 .app-card-menu-trigger:focus-visible,.app-card-menu-item:focus-visible{outline:2px solid #7771e6;outline-offset:2px}
+
+/* Home and Files destinations from the approved Brightdesk shell. */
+.app-manager.home-view .manager-hero{margin:18px 0 0;padding:0;border:0;border-radius:0;background:transparent}
+.app-manager.home-view .manager-hero h2{margin:0 0 5px;font-size:20px;letter-spacing:-.35px;color:#1b2941}
+.app-manager.home-view .manager-hero p{font-size:12px;color:#77859b}
+.app-manager.home-view .manager-grid{margin-top:16px}
+.files-manager{width:100%;max-width:1180px;flex:1;margin:24px auto 10px}
+.files-hero{padding:28px 30px;border:1px solid #e2e8f1;border-radius:16px;background:linear-gradient(115deg,#edf3ff 0%,#f5f3ff 62%,#f1f8ff 100%)}
+.files-hero .eyebrow{color:#667995}
+.files-hero h2{margin:8px 0;font-size:26px;letter-spacing:-.65px;color:#1b2941}
+.files-hero p{max-width:650px;margin:0;color:#68778f;font-size:13px;line-height:1.6}
+.files-actions{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:18px;margin-top:20px}
+.files-action-card{display:flex;min-height:220px;flex-direction:column;align-items:flex-start;padding:24px;border:1px solid #e1e6ef;border-radius:15px;background:#fff;box-shadow:0 5px 18px #1a2b4b0a}
+.files-action-icon{width:46px;height:46px;display:grid;place-items:center;border-radius:13px;background:#f0f3fa}
+.files-action-icon img{width:23px;height:23px;display:block}
+.files-action-card h3{margin:16px 0 7px;color:#27364d;font-size:16px}
+.files-action-card p{flex:1;margin:0 0 18px;color:#68778f;font-size:12px;line-height:1.6}
+.files-action-card button{min-width:126px}
+.files-note{margin:18px 2px;color:#8995a7;font-size:11px}
+@media(max-width:700px){.files-hero{padding:20px}.files-hero h2{font-size:22px}.files-action-card{min-height:190px;padding:19px}}
