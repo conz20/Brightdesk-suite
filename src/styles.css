@@ -220,7 +220,6 @@ textarea:focus-visible, [contenteditable="true"]:focus-visible, [tabindex]:focus
 .app-card:hover { transform: translateY(-2px); border-color: #c2cfe0; box-shadow: var(--bd-ui-shadow-hover); }
 .app-card-heading b { color: var(--bd-ui-ink); }
 .app-card-heading small, .app-card p { color: var(--bd-ui-muted); line-height: 1.55; }
-.app-preview { width: 100%; border: 1px solid var(--bd-ui-line); border-radius: 9px; background: #f7f9fc; }
 .app-card-footer { border-color: var(--bd-ui-line); }
 .todo-sidebar, .lists-sidebar, .forms-sidebar, .planner-sidebar, .database-sidebar, .workspace-sidebar { background: #f8f9fc; border-color: var(--bd-ui-line); }
 .todo-task-card, .planner-task-card, .forms-question-card, .forms-response-card, .workspace-block { border-color: var(--bd-ui-line); border-radius: 10px; }
@@ -244,8 +243,7 @@ input:disabled, select:disabled, textarea:disabled, button:disabled { cursor: no
   .welcome { min-height: 0; padding: 20px; }
   .welcome h2 { font-size: clamp(21px, 5vw, 27px); }
   .manager-grid { grid-template-columns: 1fr; }
-  .app-preview { height: auto; min-height: 120px; }
-  .toolbar { overflow-x: auto; flex-wrap: nowrap; align-items: center; }
+    .toolbar { overflow-x: auto; flex-wrap: nowrap; align-items: center; }
   .ribbon-group { flex: 0 0 auto; }
 }
 @media (prefers-reduced-motion: reduce) {
@@ -287,12 +285,7 @@ input:disabled, select:disabled, textarea:disabled, button:disabled { cursor: no
 .app-card[data-app-id="planner"] { --app-card-accent:#4667bf; --app-card-tint:#eef2fc; }
 .app-card[data-app-id="todo"] { --app-card-accent:#27834f; --app-card-tint:#edf7f0; }
 .app-card[data-app-id="loop"] { --app-card-accent:#4b68a8; --app-card-tint:#eff2f9; }
-.app-card .app-preview {
-  display: block; width: calc(100% + 30px); height: 142px; max-height: 142px;
-  margin: 0 -15px 13px; border: 0; border-bottom: 1px solid #e6ebf2;
-  border-radius: 0; object-fit: cover; object-position: top center; background: var(--app-card-tint);
-}
-.app-card-header { display: flex; align-items: center; gap: 11px; min-width: 0; }
+.app-card .app-card-header { display: flex; align-items: center; gap: 11px; min-width: 0; }
 .app-card-header .app-icon-image { flex: 0 0 42px; width: 42px; height: 42px; padding: 5px; border-radius: 12px; background: var(--app-card-tint); }
 .app-card-heading { min-width: 0; flex: 1; }
 .app-card-heading b { display: block; color: #1f2d43; font-size: 13px; letter-spacing: -.015em; }
@@ -322,8 +315,7 @@ input:disabled, select:disabled, textarea:disabled, button:disabled { cursor: no
   .settings-toolbar { padding: 14px; }
   .settings-actions { display: grid; grid-template-columns: 1fr; }
   .settings-actions button { width: 100%; }
-  .app-card .app-preview { height: 132px; max-height: 132px; }
-  .app-card > p { min-height: 0; }
+  .app-card   .app-card > p { min-height: 0; }
 }
 
 .app-card-actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 7px; }
