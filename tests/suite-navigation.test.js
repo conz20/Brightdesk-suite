@@ -95,6 +95,7 @@ test('Apps cards use the approved icon-first layout without concept preview imag
   assert.match(app, /card\.append\(header, description, footer\)/);
   assert.match(styles, /\.manager-grid\{[^}]*repeat\(auto-fit,minmax\(min\(100%,230px\),1fr\)\)/);
   assert.match(styles, /\.app-card\{[^}]*border-radius:16px/);
+  assert.doesNotMatch(styles, /app-preview/);
 });
 
 test('README and visual standard explain the contextual product-switching rule', () => {
