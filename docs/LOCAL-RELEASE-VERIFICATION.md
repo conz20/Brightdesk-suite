@@ -1,32 +1,45 @@
 # Local release verification
 
-GitHub-hosted workflow runs are currently failing before their first runner step. This script provides a no-cost way to test and build Brightdesk on a computer you already own.
+The local release command builds and verifies the Brightdesk Office Suite and all ten approved products on the computer where it runs. The automated and manual installer workflows use private self-hosted GitHub Actions runners; this local command does not upload artifacts or publish a release.
 
 ## Requirements
 
-- macOS, Windows or Linux
-- Exactly Node.js 24.22.2
-- Internet access to install the project's public npm dependencies and run the npm security audit
-- No GitHub payment method, paid subscription or signing certificate is required for an unsigned local build
+- macOS, Windows or Linux.
+- Exactly Node.js 24.22.2.
+- Internet access for the locked npm dependencies and the npm security audit.
+- A native build host matching the output platform.
+- No GitHub-hosted runner, release upload or signing certificate is required for an unsigned local build.
 
 ## Run
 
-From the Brightdesk repository folder, run:
+From the Brightdesk Suite repository root:
 
 ```sh
 npm run verify:local-release
 ```
 
-The script checks the Node.js version and dependency lock, installs the locked dependencies, verifies licence notices, runs the full test suite, refreshes the static source inventory with `npm run rea:inspect`, runs release preflight and the high-severity npm audit, builds for the current operating system, prepares the legal/checksum assets and verifies the installer files.
+The script checks the Node.js runtime and dependency lock, installs the locked dependencies, verifies third-party notices, runs the automated tests and source inspection, checks release preflight and high-severity npm advisories, then:
 
-The script builds only for the operating system where it is run:
-- macOS: universal DMG, PKG and ZIP
-- Windows: x64 EXE
-- Linux: x64 AppImage and DEB
+1. Builds the Brightdesk Office Suite for the current operating system.
+2. Prepares the operating-system-specific Terms and Conditions, MIT licence and third-party notices.
+3. Verifies the Suite installer/archive names, non-empty files and SHA-256 checksums.
+4. Builds all ten approved product installers for the same operating system.
+5. Verifies each product's versioned installer names and creates/re-reads its SHA-256 manifest.
+6. Collects the Suite and ten product outputs into the native platform folder.
 
-Build output is kept in the local `release/` folder. The script does not upload artifacts, create a GitHub Release or publish anything. Review the generated files and checksum report before sharing them. Local builds are unsigned unless signing credentials are already configured. Unsigned macOS apps may show a Gatekeeper warning, and unsigned Windows installers may show a SmartScreen warning. A successful unsigned build is not the same as a signed, notarised production release.
+## Expected local output
 
-Run it separately on each operating system you intend to distribute Brightdesk for. A successful build on one platform does not verify the other platforms.
+| Host | Suite outputs | Ten product outputs |
+| --- | --- | --- |
+| Windows | x64 NSIS installer (.exe) | 10 x64 NSIS installers (.exe) |
+| macOS | Universal DMG, PKG and ZIP | 10 × universal DMG, PKG and ZIP |
+| Linux | AppImage and Debian package (.deb) | 10 × AppImage and Debian package (.deb) |
+
+Files are collected under `release/Windows`, `release/macOS` or `release/Linux`. Product folders and their individual checksum manifests are under `release/apps/<platform>/<product-id>`.
+
+The script does not upload artifacts, create a GitHub Release or publish anything. Review the generated files and checksums before sharing them. Local builds are unsigned unless signing credentials are already configured. Unsigned macOS applications may show a Gatekeeper warning, and unsigned Windows installers may show a SmartScreen warning. A successful unsigned build is not the same as a signed and notarised production release.
+
+This command verifies only the operating system where it runs. It does not claim that other operating systems have passed, and it does not replace live installation, first-launch, upgrade, removal or data-preservation acceptance tests. The complete release workflow combines the three native outputs and runs the 66-file cross-platform integrity gate described in [CROSS-PLATFORM-RELEASE-VERIFICATION.md](CROSS-PLATFORM-RELEASE-VERIFICATION.md).
 
 ## No-cost GitHub Actions runners
 
