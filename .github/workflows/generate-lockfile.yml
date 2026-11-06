@@ -2,7 +2,7 @@ name: Generate dependency lockfile
 
 on:
   push:
-    branches: [main, security/vitest-5-vite-6-upgrade-2026-11-05]
+    branches: [main, security/vitest-5-vite-6-upgrade-2026-11-05, fix/files-sidebar-icon]
     paths:
       - 'package.json'
       - '.github/workflows/generate-lockfile.yml'

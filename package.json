@@ -171,7 +171,10 @@
       "image-size": "2.0.4"
     },
     "app-builder-lib": {
-      "minimatch": "^11.0.1"
+      "minimatch": "^11.0.1",
+      "@electron/asar": {
+        "minimatch": "^3.1.5"
+      }
     },
     "exceljs": {
       "uuid": "^11.1.1"
