@@ -363,7 +363,7 @@ input:disabled, select:disabled, textarea:disabled, button:disabled { cursor: no
 
 /* Keep the App Centre rail distinct from product switching; hidden wins at every width. */
 #dynamic-app-nav[hidden]{display:none!important}
-.manager-nav{cursor:default}
+.manager-nav{cursor:pointer}
 .manager-nav .app-icon-image{filter:none}
 
 /* Persistent update notifications: an unread badge, readable history and a dismissible alert. */
