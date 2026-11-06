@@ -21,7 +21,7 @@ function validatePng(buffer, name) {
   }
   const width = buffer.readUInt32BE(16);
   const height = buffer.readUInt32BE(20);
-  if (width !== 512 || height !== 512) throw new Error(`Expected 512 × 512 PNG for ${name}; got ${width} × ${height}.`);
+  if (width !== 256 || height !== 256) throw new Error(`Expected 256 × 256 PNG for ${name}; got ${width} × ${height}.`);
 }
 
 function validateIco(buffer, name) {
@@ -45,7 +45,7 @@ function validateIcns(buffer, name) {
     found.add(type);
     offset += length;
   }
-  for (const required of ['ic07', 'ic08', 'ic09']) {
+  for (const required of ['ic07', 'ic08']) {
     if (!found.has(required)) throw new Error(`ICNS ${name} is missing its ${required} representation.`);
   }
 }

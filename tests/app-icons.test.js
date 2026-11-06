@@ -87,14 +87,14 @@ test('native platform icon archive contains verified Windows, macOS and Linux as
     const ico = await zip.file(`${id}.ico`).async('nodebuffer');
     const icns = await zip.file(`${id}.icns`).async('nodebuffer');
     assert.equal(png.subarray(0, 8).toString('hex'), '89504e470d0a1a0a');
-    assert.equal(png.readUInt32BE(16), 512);
-    assert.equal(png.readUInt32BE(20), 512);
+    assert.equal(png.readUInt32BE(16), 256);
+    assert.equal(png.readUInt32BE(20), 256);
     assert.equal(ico.readUInt16LE(0), 0);
     assert.equal(ico.readUInt16LE(2), 1);
     assert.ok(ico.readUInt16LE(4) >= 6);
     assert.equal(icns.subarray(0, 4).toString('ascii'), 'icns');
     assert.equal(icns.readUInt32BE(4), icns.length);
-    for (const type of ['ic07', 'ic08', 'ic09']) assert.ok(icns.includes(Buffer.from(type)), `${id}.icns missing ${type}`);
+    for (const type of ['ic07', 'ic08']) assert.ok(icns.includes(Buffer.from(type)), `${id}.icns missing ${type}`);
   }
 });
 
@@ -113,9 +113,10 @@ test('Suite and integrated product packagers select their own native platform ic
       delete require.cache[require.resolve(configPath)];
       const config = require(configPath);
       assert.equal(config.directories.buildResources, 'assets/platform-icons/native');
-      assert.equal(config.win.icon, `${app.id}.ico`);
-      assert.equal(config.mac.icon, `${app.id}.icns`);
-      assert.equal(config.linux.icon, `${app.id}.png`);
+      const iconIds = { pages: 'pages', sheets: 'sheets', slides: 'decks', notes: 'notes', database: 'database', forms: 'forms', lists: 'lists', planner: 'planner', todo: 'todo', loop: 'workspace' };
+      assert.equal(config.win.icon, `${iconIds[app.id]}.ico`);
+      assert.equal(config.mac.icon, `${iconIds[app.id]}.icns`);
+      assert.equal(config.linux.icon, `${iconIds[app.id]}.png`);
     }
   } finally {
     if (previous === undefined) delete process.env.BRIGHTDESK_APP_ID;

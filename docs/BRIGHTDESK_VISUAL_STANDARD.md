@@ -141,7 +141,7 @@ The **Apps** sidebar entry uses the original four-tile launcher icon from `asset
 
 ## Native platform icon requirements
 
-- The Suite and each of the ten integrated product builds must point to their matching original icon identity in Electron Builder.
+- The Suite and each of the ten integrated product builds must point to their matching original icon identity in Electron Builder. Decks and Workspace use the `decks` and `workspace` native asset filenames while retaining their internal product IDs `slides` and `loop`.
 - Prepare the native icon sets from `assets/platform-icons/brightdesk-platform-icons.zip` with `npm run release:prepare:icons` before packaging.
 - Keep multi-resolution Windows ICO, macOS ICNS and Linux PNG outputs aligned to the canonical SVG source artwork. Validate file signatures and expected dimensions before invoking Electron Builder.
 - Native icon configuration is not proof of a verified installed icon. Check real Windows shortcuts and taskbar, macOS Dock and Finder, and Linux desktop launcher after each platform installer has been installed.

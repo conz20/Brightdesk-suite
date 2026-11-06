@@ -15,6 +15,18 @@ const appNames = {
   todo: 'To Do',
   loop: 'Workspace'
 };
+const appIcons = {
+  pages: 'pages',
+  sheets: 'sheets',
+  slides: 'decks',
+  notes: 'notes',
+  database: 'database',
+  forms: 'forms',
+  lists: 'lists',
+  planner: 'planner',
+  todo: 'todo',
+  loop: 'workspace'
+};
 const appSlugs = {
   pages: 'Pages',
   sheets: 'Sheets',
@@ -45,7 +57,7 @@ module.exports = {
   directories: { output: path.join('release', 'apps', appId), buildResources: 'assets/platform-icons/native' },
   publish: [],
   win: {
-    icon: `${appId}.ico`,
+    icon: `${appIcons[appId]}.ico`,
     target: ['nsis'],
     artifactName: 'Brightdesk-' + appSlug + '-${version}-${arch}.${ext}'
   },
@@ -57,7 +69,7 @@ module.exports = {
     license: 'TERMS_AND_CONDITIONS.txt'
   },
   mac: {
-    icon: `${appId}.icns`,
+    icon: `${appIcons[appId]}.icns`,
     target: ['dmg', 'pkg', 'zip'],
     category: 'public.app-category.productivity',
     artifactName: 'Brightdesk-' + appSlug + '-${version}-${arch}.${ext}'
@@ -69,7 +81,7 @@ module.exports = {
     installLocation: '/Applications'
   },
   linux: {
-    icon: `${appId}.png`,
+    icon: `${appIcons[appId]}.png`,
     syncDesktopName: true,
     target: ['AppImage', 'deb'],
     category: 'Office',
