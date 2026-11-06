@@ -31,8 +31,11 @@ test('all ten Brightdesk applications have their own bundled illustrated SVG ico
 test('the launcher and app navigation load the bundled icon artwork', () => {
   const html = fs.readFileSync(path.join(__dirname, '..', 'src', 'index.html'), 'utf8');
   const app = fs.readFileSync(path.join(__dirname, '..', 'src', 'app.js'), 'utf8');
-  for (const id of ['pages', 'sheets', 'decks', 'notes']) assert.ok(html.includes(`assets/icons/${id}.svg`));
+  assert.ok(html.includes('id="dynamic-app-nav"'), 'product navigation is generated from the catalogue');
+  assert.doesNotMatch(html, /assets\/icons\/(?:pages|sheets|decks|notes)\.svg/, 'product icons are not hard-coded into the HTML shell');
+  assert.equal(catalog.filter(item => !item.iconAsset).length, 0, 'every catalogue product declares its own SVG artwork');
   assert.match(app, /function appIconPath\(item\)/);
+  assert.match(app, /return `assets\/icons\/\$\{item\.iconAsset\}`/);
   assert.match(app, /icon\.src\s*=\s*appIconPath\(item\)/);
   assert.match(app, /app-icon-image/);
 });
