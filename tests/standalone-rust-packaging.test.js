@@ -45,5 +45,6 @@ test('repository ignores Rust target output and native Node-API binaries in embe
   assert.match(ignore, /^\*\*\/rust\/target\/$/m);
   assert.match(ignore, /^\*\*\/target\/$/m);
   assert.match(ignore, /^\*\*\/native\/\*\.node$/m);
+  assert.match(ignore, /^\*\*\/native\/\*\*\/\*\.node$/m);
   assert.match(ignore, /^\*\*\/node_modules\/$/m);
 });
