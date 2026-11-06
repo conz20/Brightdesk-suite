@@ -39,7 +39,7 @@ Use your operating system's normal removal route. Removing the Suite removes the
 - **Linux DEB:** Use your desktop's software manager or package manager to remove **Brightdesk Office Suite**.
 - **Linux AppImage:** Quit Brightdesk Office Suite, then delete the AppImage file.
 
-Brightdesk keeps its settings and other application data in the current user's profile. Normal application removal must not silently delete that user data, documents or project files. Back up important files before removing software. Do not remove Brightdesk data folders as part of an ordinary uninstall.
+Brightdesk keeps its settings and other application data in the current user's profile. Normal removal does not delete that user data, documents or project files; it preserves them in place. Back up important files before removing software. Do not remove Brightdesk data folders as part of an ordinary uninstall.
 
 **Important Suite distinction:** The **Add to Suite** and **Remove from Suite** controls in the product catalogue only change which of the ten included workspaces are available inside Brightdesk Office Suite. They do not install or uninstall separate operating-system programs. The individual product packages, when distributed separately, are removed through the matching operating system's normal removal route.
 
