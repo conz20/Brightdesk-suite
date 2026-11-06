@@ -764,7 +764,7 @@ function render() {
   $('app-centre-nav').hidden = !manager || Boolean(launchAppId);
   $('app-manager').hidden = !manager; $('language-manager').hidden = !languages;
   $('workspace').hidden = manager || languages; $('welcome').hidden = manager || languages || ['todo','lists','forms','planner','database','loop'].includes(state.app);
-  $('app-title').textContent = manager ? t('sidebar.appCentre') : (languages ? t('language.title') : (catalog.find(item => item.id === state.app)?.name || state.app));
+  $('app-title').textContent = manager ? t('sidebar.applications') : (languages ? t('language.title') : (catalog.find(item => item.id === state.app)?.name || state.app));
   $('top-actions').hidden = manager || languages;
   if (manager) {
     $('save-status').textContent = t('manager.manageTitle'); renderAppManager();
