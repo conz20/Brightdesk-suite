@@ -1011,9 +1011,9 @@ document.addEventListener('keydown', event => {
   if (event.key !== 'Escape') return;
   document.querySelectorAll('.app-card-menu').forEach(menu => { menu.hidden = true; menu.closest('.app-card-menu-wrap')?.querySelector('.app-card-menu-trigger')?.setAttribute('aria-expanded', 'false'); });
 });
-$('home-nav').addEventListener('click',()=>{if(launchAppId)return;state.view='home';render();});
-$('app-centre-nav').addEventListener('click',()=>{if(launchAppId)return;state.view='manager';render();});
-$('files-nav').addEventListener('click',()=>{if(launchAppId)return;state.view='files';render();});
+$('home-nav').addEventListener('click',()=>{if(launchAppId)return;state.view = 'home';render();});
+$('app-centre-nav').addEventListener('click',()=>{if(launchAppId)return;state.view = 'manager';render();});
+$('files-nav').addEventListener('click',()=>{if(launchAppId)return;state.view = 'files';render();});
 $('files-open-button').addEventListener('click', openFile);
 $('files-save-button').addEventListener('click', saveProject);
 $('open-settings').addEventListener('click',()=>{if (launchAppId) return; state.view='manager';render();});
