@@ -55,5 +55,8 @@ run(['audit', '--audit-level=high']);
 run(['run', `dist:${platform}`]);
 run(['run', 'release:prepare', '--', platform]);
 run(['run', `release:verify:${platform}`]);
+run(['run', `dist:apps:${platform}`]);
+run(['run', `release:verify:products:${platform}`]);
+run(['run', `release:collect:${platform}`]);
 
-console.log(`\nBrightdesk ${platform} build and local release checks completed. Review the release/ folder and checksum file before distributing anything.`);
+console.log(`\nBrightdesk ${platform} Suite and all ten product installers were built and individually verified. Review release/${platform === 'win' ? 'Windows' : platform === 'mac' ? 'macOS' : 'Linux'} and release/apps before distributing anything. This single-platform check does not replace the full three-platform 66-file release gate.`);
