@@ -19,8 +19,8 @@ test('Apps shows one suite-level sidebar entry instead of repeating the ten prod
   assert.doesNotMatch(html, /class="nav[^\"]*create|id="(?:create|new)-nav"/i);
   assert.doesNotMatch(html, /data-app="(?:pages|sheets|slides|notes|database|forms|lists|planner|todo|loop)"/);
   assert.match(app, /catalog\.filter\(item => installedApp\(item\.id\)\)/);
-  assert.match(app, /\$\('dynamic-app-nav'\)\.hidden = manager \|\| languages/);
-  assert.match(app, /\$\('app-centre-nav'\)\.hidden = !manager \|\| Boolean\(launchAppId\)/);
+  assert.match(app, /\$\('dynamic-app-nav'\)\.hidden = suitePage \|\| languages \|\| Boolean\(launchAppId\)/);
+  assert.match(app, /\$\('app-centre-nav'\)\.hidden = !suitePage \|\| Boolean\(launchAppId\)/);
   assert.match(app, /manager \? t\('sidebar\.applications'\)/);
 });
 
@@ -80,7 +80,7 @@ test('one Brightdesk Home artwork combines the suite sidebar and ten-product gri
 
   const home = read('assets/product-experience/brightdesk-home.svg');
   assert.match(home, /Your apps/);
-  assert.doesNotMatch(home, /Your products/);
+  assert.match(home, /Your products/);
   assert.match(home, /id="apps-launcher-icon"/);
   assert.equal((home.match(/<svg x="/g) || []).length, 10, 'Home must embed all ten original product icons');
 });
@@ -98,7 +98,7 @@ test('README and visual standard explain the contextual product-switching rule',
   const readme = read('README.md');
   const standard = read('docs/BRIGHTDESK_VISUAL_STANDARD.md');
   const home = read('assets/product-experience/brightdesk-home.svg');
-  assert.match(readme, /intended Home, Apps and Files sidebar/);
+  assert.match(readme, /approved Home, Apps and Files sidebar/);
   assert.match(readme, /in the \*\*Switch product\*\*/);
   assert.match(readme, /hide or restore an installed product/);
   assert.equal((readme.match(/assets\/product-experience\/brightdesk-home\.svg/g) || []).length, 1);
