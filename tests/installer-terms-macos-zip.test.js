@@ -8,16 +8,16 @@ const { shouldRequireFirstLaunchTerms } = require('../src/installer-terms-policy
 
 const root = path.resolve(__dirname, '..');
 
-test('packaged macOS ZIP is documented for updates, not first-time installation', () => {
+test('packaged macOS ZIP launches cannot bypass first-launch Terms acceptance', () => {
   assert.equal(
     shouldRequireFirstLaunchTerms({ platform: 'darwin', isPackaged: true }),
-    false,
-    'DMG and PKG already collect acceptance before first installation'
+    true,
+    'a ZIP can be launched directly without the DMG or PKG installer agreement'
   );
   const readme = fs.readFileSync(path.join(root, 'README.md'), 'utf8');
   const installation = fs.readFileSync(path.join(root, 'docs', 'INSTALLATION.md'), 'utf8');
-  assert.match(readme, /For a first-time Mac installation, use the DMG or PKG rather than the update ZIP/i);
-  assert.match(installation, /For a first-time Mac installation, use the DMG or PKG rather than the ZIP archive/i);
+  assert.ok(readme.includes('The packaged macOS product also checks consent on first launch for every package type'));
+  assert.ok(installation.includes('The packaged macOS product also checks the agreement on first launch for every package type'));
 });
 
 test('packaged Windows and Linux keep their existing agreement routes', () => {

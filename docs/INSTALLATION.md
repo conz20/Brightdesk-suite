@@ -23,7 +23,7 @@ Download the installer from the official Brightdesk release page. Open it and fo
 The Brightdesk Terms and Conditions must be accepted before the product workspace can be used.
 
 - **Windows:** the NSIS installer (.exe) presents the agreement before installation continues.
-- **macOS:** the DMG and PKG present the agreement before installation continues. For a first-time Mac installation, use the DMG or PKG rather than the ZIP archive.
+- **macOS:** the DMG and PKG present the agreement before installation continues. The packaged macOS product also checks the agreement on first launch for every package type, so a ZIP opened directly cannot bypass acceptance. Because the app bundle is the same, DMG/PKG installs also show the first-launch confirmation after installer acceptance. For first-time installations, prefer the DMG or PKG, which show the agreement before installation.
 - **Linux:** AppImage has no separate installer agreement page. The packaged application therefore displays the same blocking agreement on first launch, before the workspace opens.
 
 Choose **Accept** or **Agree** to continue. Choose **Decline** or **Disagree** to cancel. Declining, or closing the blocking first-launch agreement without accepting, prevents the product workspace from opening. The application records acceptance against the current Terms text; changed terms require a fresh acceptance.
