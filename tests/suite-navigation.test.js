@@ -26,9 +26,9 @@ test('Apps shows one suite-level sidebar entry instead of repeating the ten prod
 
 test('uninstall requires confirmation and does not delete local documents', () => {
   const app = read('src/app.js');
-  assert.match(app, /window\\.confirm\\(`Uninstall \\$\\{product\\?\\.name/);
-  assert.match(app, /state\\.installedApps = state\\.installedApps\\.filter/);
-  assert.doesNotMatch(app, /delete state\\.docs/);
+  assert.match(app, /window\.confirm\(`Uninstall \$\{product\?\.name/);
+  assert.match(app, /state\.installedApps = state\.installedApps\.filter/);
+  assert.doesNotMatch(app, /delete state\.docs/);
 });
 
 test('all ten installed products remain available in the product-switching sidebar during workspace use', () => {
