@@ -240,3 +240,23 @@ test('README presents all ten apps as the integrated first-release lineup', () =
   assert.match(readme, /These are the only products in the approved suite/i);
   assert.doesNotMatch(readme, /other six.*not yet working apps/i);
 });
+
+test('Suite product management describes adding and removing workspaces, not OS installation', () => {
+  const fs = require('node:fs');
+  const path = require('node:path');
+  const root = path.join(__dirname, '..');
+  const app = fs.readFileSync(path.join(root, 'src', 'app.js'), 'utf8');
+  const english = JSON.parse(fs.readFileSync(path.join(root, 'src', 'languages', 'en-AU.json'), 'utf8'));
+  const copy = english.translations;
+
+  assert.match(app, /action\.textContent = isInstalled \? t\('manager\.remove'\) : t\('manager\.install'\)/);
+  assert.match(app, /stateChip\.textContent = !canInstall \? 'In development' : t\(isInstalled \? 'manager\.inWorkspace' : 'manager\.notInstalled'\)/);
+  assert.match(app, /Remove \$\{product\?\.name \|\| 'this product'\} from Brightdesk Office Suite\?/);
+  assert.doesNotMatch(app, /textContent = isInstalled \? 'Uninstall' : 'Install'/);
+  assert.doesNotMatch(app, /confirm\(\`Uninstall /);
+  assert.match(copy['manager.install'], /Add to Suite/);
+  assert.match(copy['manager.remove'], /Remove from Suite/);
+  assert.match(copy['manager.inWorkspace'], /In your Suite/);
+  assert.match(copy['manager.notInstalled'], /Available in Suite/);
+  assert.match(copy['manager.note'], /does not install or uninstall a separate program/i);
+});
