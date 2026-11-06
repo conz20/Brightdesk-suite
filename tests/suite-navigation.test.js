@@ -6,12 +6,12 @@ const path = require('node:path');
 
 const read = (file) => fs.readFileSync(path.join(__dirname, '..', file), 'utf8');
 
-test('My Applications shows one suite-level sidebar entry instead of repeating the ten product cards', () => {
+test('Apps shows one suite-level sidebar entry instead of repeating the ten product cards', () => {
   const html = read('src/index.html');
   const app = read('src/app.js');
   assert.match(html, /id="app-centre-nav"/);
   assert.match(html, /id="dynamic-app-nav"/);
-  assert.match(html, /data-i18n="sidebar\.applications">My Applications<\/b>/);
+  assert.match(html, /data-i18n="sidebar\.applications">Apps<\/b>/);
   assert.doesNotMatch(html, /class="nav[^\"]*create|id="(?:create|new)-nav"/i);
   assert.doesNotMatch(html, /data-app="(?:pages|sheets|slides|notes|database|forms|lists|planner|todo|loop)"/);
   assert.match(app, /catalog\.filter\(item => installedApp\(item\.id\)\)/);
@@ -48,15 +48,15 @@ test('README and visual standard explain the contextual product-switching rule',
   const readme = read('README.md');
   const standard = read('docs/BRIGHTDESK_VISUAL_STANDARD.md');
   const home = read('assets/product-experience/brightdesk-home.svg');
-  assert.match(readme, /professional Home, My Applications and Files sidebar/);
+  assert.match(readme, /professional Home, Apps and Files sidebar/);
   assert.match(readme, /in the \*\*Switch product\*\*/);
   assert.equal((readme.match(/assets\/product-experience\/brightdesk-home\.svg/g) || []).length, 1);
   assert.doesNotMatch(readme, /brightdesk-app-centre\.svg/);
   assert.doesNotMatch(home, /Install a product|Update Brightdesk/);
-  assert.match(standard, /Home.*My Applications.*Files/);
+  assert.match(standard, /Home.*Apps.*Files/);
   assert.match(standard, /Create.*navigation item/);
   assert.match(standard, /online-service destinations/);
-  assert.match(home, /links Home, My Applications and Files/);
+  assert.match(home, /links Home, Apps and Files/);
   assert.doesNotMatch(home, /Create<\/text>/);
   assert.match(standard, /Inside an active product workspace[\s\S]*?Switch product/);
 });
