@@ -1,4 +1,4 @@
-name: Verify Brightdesk macOS installer
+name: Verify Brightdesk native installers
 
 on:
   pull_request:
@@ -24,14 +24,28 @@ permissions:
   contents: read
 
 concurrency:
-  group: brightdesk-macos-installer-pr-${{ github.event.pull_request.number }}
+  group: brightdesk-native-installers-pr-${{ github.event.pull_request.number }}
   cancel-in-progress: true
 
 jobs:
-  build-macos:
-    name: Build and verify macOS universal installer
-    runs-on: ["self-hosted", "macOS", "ARM64"]
-    timeout-minutes: 90
+  build-platform:
+    name: Build and verify ${{ matrix.platform }} Suite and product installers
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: Linux
+            runner: ["self-hosted", "Linux", "X64"]
+            script: linux
+          - platform: Windows
+            runner: ["self-hosted", "Windows", "X64"]
+            script: win
+          - platform: macOS
+            runner: ["self-hosted", "macOS", "ARM64"]
+            script: mac
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 120
     steps:
       - name: Check out Brightdesk
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -48,10 +62,20 @@ jobs:
           toolchain: 1.99.1
           components: rustfmt, clippy
 
+      - name: Verify committed dependency lock
+        run: npm run lock:verify
+
       - name: Install locked dependencies
         run: npm ci --no-audit --no-fund
 
-      - name: Build macOS universal DMG, PKG and ZIP
+      - name: Build Suite installer
+        if: matrix.platform != 'macOS'
+        run: |
+          npm run dist:${{ matrix.script }}
+          npm run release:prepare -- ${{ matrix.script }}
+
+      - name: Build macOS universal Suite installer
+        if: matrix.platform == 'macOS'
         env:
           CSC_IDENTITY_AUTO_DISCOVERY: "false"
         run: |
@@ -59,13 +83,17 @@ jobs:
           npm run release:prepare -- mac
 
       - name: Verify Suite installer files and generate SHA-256 checksums
-        run: npm run release:verify:mac
+        run: npm run release:verify:${{ matrix.script }}
 
-      - name: Build all ten product installers on the native macOS runner
+      - name: Build all ten product installers on the native platform
+        if: matrix.platform != 'macOS'
+        run: npm run dist:products:${{ matrix.script }}
+
+      - name: Build all ten macOS product installers
+        if: matrix.platform == 'macOS'
         env:
           CSC_IDENTITY_AUTO_DISCOVERY: "false"
         run: npm run dist:products:mac
 
       - name: Verify all ten product installers and their SHA-256 manifests
-        run: npm run release:verify:products:mac
-
+        run: npm run release:verify:products:${{ matrix.script }}
