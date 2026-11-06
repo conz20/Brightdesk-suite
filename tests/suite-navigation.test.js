@@ -41,7 +41,7 @@ test('one Brightdesk Home artwork combines the suite sidebar and ten-product gri
   assert.match(svg, /id="notifications-bell"/);
 
   const home = read('assets/product-experience/brightdesk-home.svg');
-  assert.match(home, /Your applications/);
+  assert.match(home, /Your apps/);
   assert.match(home, /Your products/);
   assert.equal((home.match(/<svg x="/g) || []).length, 10, 'Home must embed all ten original product icons');
 });
