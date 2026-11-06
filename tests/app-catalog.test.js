@@ -225,7 +225,7 @@ test('all first-release product cards use the original icons without concept pre
   for (const app of catalog) {
     const artwork = path.join(root, 'src', 'assets', 'icons', app.iconAsset);
     assert.ok(fs.existsSync(artwork), `missing icon for ${app.name}`);
-    assert.ok(fs.readFileSync(artwork, 'utf8').trimStart().startsWith('<svg'), `invalid SVG icon for ${app.name}`);
+    assert.ok(/^<\?xml[\s\S]*?\?>\s*<svg\b/.test(fs.readFileSync(artwork, 'utf8').trimStart()), `invalid SVG icon for ${app.name}`);
   }
   const renderer = fs.readFileSync(path.join(root, 'src', 'app.js'), 'utf8');
   assert.ok(renderer.includes('return `assets/icons/${item.iconAsset}`'));
