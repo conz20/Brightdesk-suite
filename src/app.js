@@ -464,8 +464,8 @@ function renderGenericWorkspace() {
 function renderAppManager() {
   const grid = $('app-manager-grid'); grid.innerHTML = '';
   const homeView = state.view === 'home';
-  $('manager-title').textContent = homeView ? 'Your apps' : (state.setupComplete ? t('manager.manageTitle') : t('manager.chooseTitle'));
-  $('manager-description').textContent = homeView ? 'Choose a product to open, install or manage.' : (state.setupComplete ? t('manager.manageDesc') : t('manager.chooseDesc'));
+  $('manager-title').textContent = homeView ? 'Your products' : (state.setupComplete ? t('manager.manageTitle') : t('manager.chooseTitle'));
+  $('manager-description').textContent = homeView ? 'Ten focused tools, connected by one Brightdesk experience.' : (state.setupComplete ? t('manager.manageDesc') : t('manager.chooseDesc'));
   $('manager-note').textContent = t('manager.note');
   $('finish-app-setup').textContent = state.setupComplete ? t('manager.done') : t('manager.installSelected');
   catalog.forEach(item => {
