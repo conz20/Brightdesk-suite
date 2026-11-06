@@ -6,7 +6,7 @@ const path = require('node:path');
 
 const read = (file) => fs.readFileSync(path.join(__dirname, '..', file), 'utf8');
 
-test('App Centre shows one suite-level sidebar entry instead of repeating the ten product cards', () => {
+test('My Apps shows one suite-level sidebar entry instead of repeating the ten product cards', () => {
   const html = read('src/index.html');
   const app = read('src/app.js');
   assert.match(html, /id="app-centre-nav"/);
@@ -27,12 +27,12 @@ test('all ten installed products remain available in the product-switching sideb
   assert.match(app, /sidebar-section-label'\)\.textContent = manager \? t\('sidebar\.suite'\) : \(languages \? t\('sidebar\.settings'\) : t\('sidebar\.yourApps'\)\)/);
 });
 
-test('Brightdesk Home and App Centre artwork match the ten-product suite navigation', () => {
+test('Brightdesk Home and My Apps artwork match the ten-product suite navigation', () => {
   const svg = read('assets/product-experience/brightdesk-app-centre.svg');
   assert.equal((svg.match(/id="sidebar-app-centre"/g) || []).length, 1);
   assert.doesNotMatch(svg, /id="sidebar-(?:pages|sheets|decks|notes|database|forms|lists|planner|todo|workspace)-/);
-  assert.match(svg, /Brightdesk Office Suite App Centre experience/);
-  assert.match(svg, /Product shortcuts are not repeated beside the App Centre grid/);
+  assert.match(svg, /Brightdesk Office Suite My Apps experience/);
+  assert.match(svg, /Product shortcuts are not repeated beside the My Apps grid/);
   assert.match(svg, /id="settings-cogwheel"/);
   assert.match(svg, /id="notifications-bell"/);
 
@@ -45,8 +45,8 @@ test('Brightdesk Home and App Centre artwork match the ten-product suite navigat
 test('README and visual standard explain the contextual product-switching rule', () => {
   const readme = read('README.md');
   const standard = read('docs/BRIGHTDESK_VISUAL_STANDARD.md');
-  assert.match(readme, /On the App Centre screen[\s\S]*?not repeated beside the ten product cards/);
+  assert.match(readme, /On the My Apps screen[\s\S]*?not repeated beside the ten product cards/);
   assert.match(readme, /under \*\*Switch product\*\*/);
-  assert.match(standard, /On the App Centre screen[\s\S]*?Do not repeat the same ten products/);
+  assert.match(standard, /On the My Apps screen[\s\S]*?Do not repeat the same ten products/);
   assert.match(standard, /Inside an active product workspace[\s\S]*?Switch product/);
 });
