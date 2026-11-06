@@ -1,7 +1,6 @@
 name: Generate third-party notices
 
 on:
-  workflow_dispatch:
   push:
     branches: [main]
     paths:
@@ -10,6 +9,7 @@ on:
       - "LICENSE"
       - "scripts/verify-licenses.js"
       - ".github/workflows/generate-third-party-notices.yml"
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -27,22 +27,38 @@ jobs:
         with:
           node-version: 24.22.2
           cache: npm
-      - name: Prepare exact dependency lock
-        run: npm run lock:prepare
-      - name: Verify dependency lock
-        run: npm run lock:verify
-      - name: Install exact locked dependencies
-        run: npm ci --ignore-scripts --no-audit --no-fund
-      - name: Generate and verify third-party notices
-        run: npm run verify:licenses
       - name: Commit generated notices
+        shell: bash
         run: |
-          git add THIRD_PARTY_NOTICES.md
-          if git diff --cached --quiet; then
-            echo "Third-party notices are already up to date."
-            exit 0
-          fi
+          set -euo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git commit -m "Generate third-party dependency notices"
-          git push
+
+          # Another main-branch workflow may update package-lock.json while this
+          # job is running. Always regenerate from the latest main commit.
+          for attempt in 1 2 3; do
+            echo "Refreshing third-party notices (attempt ${attempt}/3)."
+            git fetch origin main
+            git reset --hard origin/main
+            npm run check:node
+            npm run lock:verify
+            npm ci --ignore-scripts --no-audit --no-fund
+            npm run verify:licenses
+            git add THIRD_PARTY_NOTICES.md
+
+            if git diff --cached --quiet; then
+              echo "Third-party notices are already up to date."
+              exit 0
+            fi
+
+            git commit -m "Generate third-party dependency notices"
+            if git push origin HEAD:main; then
+              echo "Third-party notices were committed successfully."
+              exit 0
+            fi
+
+            echo "main changed during the push; retrying against the latest commit."
+          done
+
+          echo "Could not update THIRD_PARTY_NOTICES.md after three attempts." >&2
+          exit 1
