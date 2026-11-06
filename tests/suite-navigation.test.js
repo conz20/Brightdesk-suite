@@ -38,7 +38,7 @@ test('product settings menu can hide an installed product from Switch product na
   assert.match(app, /state\.hiddenProducts = Array\.isArray\(appSetup\?\.hiddenProducts\)/);
   assert.match(app, /catalog\.filter\(item => installedApp\(item\.id\) && !state\.hiddenProducts\.includes\(item\.id\)\)/);
   assert.match(app, /More options for \$\{item\.name\}/);
-  assert.match(app, /Hide from Switch product/);
+  assert.match(app, /Hide from Switch product/);\n  assert.match(read('src/assets/icons/more.svg'), /circle/);\n  assert.match(read('src/styles.css'), /app-card-menu-trigger/);
 });
 
 test('all ten installed products remain available in the product-switching sidebar during workspace use', () => {
