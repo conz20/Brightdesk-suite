@@ -162,7 +162,7 @@ test('README freshness validation uses the private runner and Bash 3.2-compatibl
   assert.doesNotMatch(workflow, /runs-on: ubuntu-latest|\bmapfile\b/);
   assert.match(workflow, /changed_files="\$\(git diff --name-only/);
   assert.match(workflow, /while IFS= read -r file/);
-  assert.match(workflow, /actions\/checkout@11d5960a326750d5838078e36cf38b85af677262/);
+  assert.match(workflow, /actions\/checkout@11bd71901bbe5b1630ceea73d27597364c9af683/);
 });
 
 test('dependency-maintenance workflows use the existing self-hosted runner', () => {
