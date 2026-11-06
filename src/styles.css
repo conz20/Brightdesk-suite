@@ -442,3 +442,7 @@ input:disabled, select:disabled, textarea:disabled, button:disabled { cursor: no
 .sidebar-divider{background:#344766}
 .sidebar-meta{border-top:1px solid #344766}
 .sidebar-bottom small{color:#a8b6d0}
+
+/* Allow the product settings popover to extend beyond its card without clipping. */
+.app-card{overflow:visible}
+.app-card-menu{z-index:20}
