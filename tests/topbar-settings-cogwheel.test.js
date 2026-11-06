@@ -6,6 +6,7 @@ const path = require('node:path');
 const read = (file) => readFileSync(path.join(__dirname, '..', file), 'utf8');
 const html = read('src/index.html');
 const app = read('src/app.js');
+const main = read('src/main.js');
 const styles = read('src/styles.css');
 const homeArtwork = read('assets/product-experience/brightdesk-home.svg');
 const readme = read('README.md');
