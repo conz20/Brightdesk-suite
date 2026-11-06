@@ -150,7 +150,7 @@ jobs:
           name: brightdesk-${{ matrix.platform }}
           path: release/${{ matrix.platform }}/**
           if-no-files-found: error
-          retention-days: 14
+          retention-days: 1
 
   collect:
     name: Collect verified installers
@@ -207,7 +207,7 @@ jobs:
           name: Brightdesk-${{ steps.release-version.outputs.version }}-Installers
           path: release/**/**
           if-no-files-found: error
-          retention-days: 30
+          retention-days: 7
 
   publish-release:
     name: Publish GitHub Release (manual approval only)
