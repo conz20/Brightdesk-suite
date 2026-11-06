@@ -34,7 +34,7 @@ const state = {
   app: launchAppId || 'pages', view: 'workspace', docs: structuredClone(defaults),
   todoView: 'my-day', todoQuery: '',
   selectedCell: { row: 0, col: 0 }, update: null, notifications: [], ribbonTab: 'home',
-  installedApps: [], setupComplete: false, firstRunSelection: new Set(installableCatalog.map(item => item.id)),
+  installedApps: [], hiddenProducts: [], setupComplete: false, firstRunSelection: new Set(installableCatalog.map(item => item.id)),
   slideTheme: 'lavender', focusMode: false, editorZoom: 100, sheetZoom: 100,
   languageCatalog: [], installedLanguagePacks: [], spellCheckerLanguages: [], usesNativeMacSpellChecker: false,
   displayLanguage: 'en-AU', proofingLanguage: 'en-AU',
@@ -57,6 +57,7 @@ function loadLocal() {
     const appSetup = JSON.parse(localStorage.getItem('brightdesk-app-setup-v1') || 'null');
     const resolvedSetup = resolveAppSetup(appSetup, launchAppId, installableCatalog.map(item => item.id));
     state.installedApps = resolvedSetup.installedApps;
+    state.hiddenProducts = Array.isArray(appSetup?.hiddenProducts) ? appSetup.hiddenProducts.filter(id => state.installedApps.includes(id)) : [];
     state.setupComplete = resolvedSetup.setupComplete;
     if (!launchAppId && appSetup?.schemaVersion !== resolvedSetup.schemaVersion) saveAppSetup();
     if (launchAppId) { state.app = launchAppId; state.view = 'workspace'; }
@@ -71,7 +72,7 @@ function loadLocal() {
   } catch (error) { console.warn('Local project or app settings could not be read.', error); state.view = 'manager'; }
 }
 function saveAppSetup() {
-  localStorage.setItem('brightdesk-app-setup-v1', JSON.stringify({ schemaVersion: 2, installedApps: state.installedApps, setupComplete: state.setupComplete }));
+  localStorage.setItem('brightdesk-app-setup-v1', JSON.stringify({ schemaVersion: 2, installedApps: state.installedApps, hiddenProducts: state.hiddenProducts, setupComplete: state.setupComplete }));
 }
 function installedApp(id) { return state.installedApps.includes(id); }
 function appLabel(id) { return catalog.find(item => item.id === id)?.name || id; }
@@ -480,7 +481,26 @@ function renderAppManager() {
     const subtitle = document.createElement('small'); subtitle.textContent = item.subtitle;
     const stateChip = document.createElement('span'); stateChip.className = `app-status-chip ${!canInstall ? 'development' : (isInstalled ? 'installed' : 'available')}`;
     stateChip.textContent = !canInstall ? 'In development' : (isInstalled ? 'Installed' : 'Available to install');
-    heading.append(name, subtitle, stateChip); header.append(icon, heading);
+    heading.append(name, subtitle, stateChip);
+    const menuWrap = document.createElement('div'); menuWrap.className = 'app-card-menu-wrap';
+    const menuTrigger = document.createElement('button'); menuTrigger.type = 'button'; menuTrigger.className = 'app-card-menu-trigger'; menuTrigger.title = 'Product settings'; menuTrigger.setAttribute('aria-label', `More options for ${item.name}`); menuTrigger.setAttribute('aria-haspopup', 'menu'); menuTrigger.setAttribute('aria-expanded', 'false');
+    const menuIcon = document.createElement('img'); menuIcon.src = 'assets/icons/more.svg'; menuIcon.alt = ''; menuIcon.setAttribute('aria-hidden', 'true'); menuTrigger.append(menuIcon);
+    const menu = document.createElement('div'); menu.className = 'app-card-menu'; menu.setAttribute('role', 'menu'); menu.hidden = true;
+    const hiddenFromSidebar = state.hiddenProducts.includes(item.id);
+    const visibilityAction = document.createElement('button'); visibilityAction.type = 'button'; visibilityAction.className = 'app-card-menu-item'; visibilityAction.setAttribute('role', 'menuitemcheckbox'); visibilityAction.setAttribute('aria-checked', String(!hiddenFromSidebar)); visibilityAction.textContent = hiddenFromSidebar ? 'Show in Switch product' : 'Hide from Switch product'; visibilityAction.disabled = !isInstalled;
+    visibilityAction.addEventListener('click', () => {
+      if (!isInstalled) return;
+      state.hiddenProducts = hiddenFromSidebar ? state.hiddenProducts.filter(id => id !== item.id) : [...state.hiddenProducts, item.id];
+      saveAppSetup(); render();
+    });
+    menu.append(visibilityAction);
+    menuTrigger.addEventListener('click', () => {
+      const shouldOpen = menu.hidden;
+      document.querySelectorAll('.app-card-menu').forEach(openMenu => { openMenu.hidden = true; });
+      menu.hidden = !shouldOpen;
+      menuTrigger.setAttribute('aria-expanded', String(shouldOpen));
+    });
+    menuWrap.append(menuTrigger, menu); header.append(icon, heading, menuWrap);
     const description = document.createElement('p'); description.textContent = item.description;
     const footer = document.createElement('div'); footer.className = 'app-card-footer app-card-actions';
     const version = document.createElement('span'); version.className = 'module-version'; version.textContent = `Module ${item.moduleVersion}`;
@@ -515,6 +535,7 @@ function toggleAppInstall(id) {
     const product = catalog.find(item => item.id === id);
     if (!window.confirm(`Uninstall ${product?.name || 'this product'}? Your documents and project files will remain on this device.`)) return;
     state.installedApps = state.installedApps.filter(appId => appId !== id);
+    state.hiddenProducts = state.hiddenProducts.filter(appId => appId !== id);
     if (state.app === id) { state.app = state.installedApps[0]; state.ribbonTab = 'home'; }
   } else { state.installedApps.push(id); }
   saveAppSetup(); render();
@@ -537,7 +558,7 @@ function updateDocumentLanguage() {
 function syncAppNavigation() {
   const host = $('dynamic-app-nav'); if (!host) return;
   host.innerHTML = '';
-  catalog.filter(item => installedApp(item.id)).forEach(item => {
+  catalog.filter(item => installedApp(item.id) && !state.hiddenProducts.includes(item.id)).forEach(item => {
     const button=document.createElement('button'); button.type='button'; button.className='nav'; button.dataset.app=item.id;
     const icon=document.createElement('img'); icon.className='app-icon-image'; icon.src=appIconPath(item); icon.alt=''; icon.setAttribute('aria-hidden','true');
     const label=document.createElement('span'); const name=document.createElement('b'); name.textContent=t(`apps.${item.id}`); const sub=document.createElement('small'); sub.textContent=item.subtitle;
