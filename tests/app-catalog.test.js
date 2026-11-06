@@ -218,20 +218,20 @@ test('the standalone build scripts reject unknown app and platform identifiers',
 });
 
 
-test('every first-release app has its own original preview artwork and the launcher displays it', () => {
+test('all first-release product cards use the original icons without concept preview images', () => {
   const fs = require('node:fs');
   const path = require('node:path');
   const root = path.join(__dirname, '..');
   for (const app of catalog) {
-    const artwork = path.join(root, 'src', 'assets', 'apps', `${app.id}.svg`);
-    assert.ok(fs.existsSync(artwork), `missing artwork for ${app.name}`);
-    assert.ok(fs.readFileSync(artwork, 'utf8').trimStart().startsWith('<svg'), `invalid SVG artwork for ${app.name}`);
+    const artwork = path.join(root, 'src', 'assets', 'icons', app.iconAsset);
+    assert.ok(fs.existsSync(artwork), `missing icon for ${app.name}`);
+    assert.ok(fs.readFileSync(artwork, 'utf8').trimStart().startsWith('<svg'), `invalid SVG icon for ${app.name}`);
   }
   const renderer = fs.readFileSync(path.join(root, 'src', 'app.js'), 'utf8');
-  assert.ok(renderer.includes('assets/apps/${item.id}.svg'));
-  assert.ok(renderer.includes('`${item.name} example screen`'));
+  assert.ok(renderer.includes('return `assets/icons/${item.iconAsset}`'));
+  assert.ok(!renderer.includes('assets/apps/${item.id}.svg'));
+  assert.ok(!renderer.includes('app-preview'));
 });
-
 test('README presents all ten apps as the integrated first-release lineup', () => {
   const fs = require('node:fs');
   const readme = fs.readFileSync(require('node:path').join(__dirname, '..', 'README.md'), 'utf8');
