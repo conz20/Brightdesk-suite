@@ -446,3 +446,24 @@ input:disabled, select:disabled, textarea:disabled, button:disabled { cursor: no
 /* Allow the product settings popover to extend beyond its card without clipping. */
 .app-card{overflow:visible}
 .app-card-menu{z-index:20}
+
+
+/* Production Home geometry: keep the live product grid aligned with brightdesk-home.svg. */
+.app-manager.home-view .manager-grid {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
+  gap: 16px;
+  margin: 16px 0 18px;
+}
+.app-manager.home-view .app-card {
+  min-height: 240px;
+  padding: 20px;
+  border-radius: 16px;
+}
+.app-manager.home-view .app-card-header .app-card-app-icon {
+  width: 64px;
+  height: 64px;
+}
+@media (max-width: 700px) {
+  .app-manager.home-view .manager-grid { grid-template-columns: 1fr; gap: 12px; }
+  .app-manager.home-view .app-card { min-height: 220px; }
+}

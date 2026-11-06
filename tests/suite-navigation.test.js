@@ -122,3 +122,26 @@ test('README and visual standard explain the contextual product-switching rule',
   assert.doesNotMatch(home, /Create<\/text>/);
   assert.match(standard, /Inside an active product workspace[\s\S]*?Switch product/);
 });
+
+
+test('production Home artwork matches the live desktop headings and card layout', () => {
+  const html = read('src/index.html');
+  const styles = read('src/styles.css');
+  const readme = read('README.md');
+  const guide = read('docs/BRIGHTDESK_VISUAL_STANDARD.md');
+  const home = read('assets/product-experience/brightdesk-home.svg');
+  assert.ok(html.includes('<h1 id="app-title">Your apps</h1>'));
+  assert.ok(home.includes('y="65" font-family="Arial, sans-serif" font-size="12" font-weight="700" letter-spacing="2" fill="#7786A0">YOUR WORKSPACE</text>'));
+  assert.ok(home.includes('y="111" font-family="Arial, sans-serif" font-size="34" font-weight="700" fill="#1B2941">Your apps</text>'));
+  assert.ok(home.includes('y="202" font-family="Arial, sans-serif" font-size="20" font-weight="700" fill="#1B2941">Your products</text>'));
+  assert.ok(home.includes('Ten focused tools, connected by one Brightdesk experience.'));
+  assert.ok(!home.includes('BRIGHTDESK APPS'));
+  assert.ok(!home.includes('Your documents and applications, together in one place.'));
+  assert.ok(styles.includes('.app-manager.home-view .manager-grid {'));
+  assert.ok(styles.includes('min(100%, 240px)'));
+  assert.ok(styles.includes('gap: 16px;'));
+  assert.ok(styles.includes('min-height: 240px;'));
+  assert.ok(readme.includes('approved production Home screen design and the single visual source of truth'));
+  assert.ok(readme.includes('top bar reads **Your apps**'));
+  assert.ok(guide.includes('top-bar eyebrow **YOUR WORKSPACE** and heading **Your apps**'));
+});
