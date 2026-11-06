@@ -14,7 +14,7 @@
     <div class="section-label" id="sidebar-section-label">YOUR WORKSPACE</div>
     <button type="button" class="nav suite-nav active" id="home-nav" aria-current="page">
       <img class="app-icon-image" src="assets/icons/home.svg" alt="" aria-hidden="true" />
-      <span><b>Home</b><small>Your work in one place</small></span>
+      <span><b data-i18n="sidebar.home">Home</b><small data-i18n="sidebar.homeDescription">Your work in one place</small></span>
     </button>
     <button type="button" class="nav manager-nav" id="app-centre-nav" hidden>
       <img class="app-icon-image" src="assets/icons/apps.svg" alt="" aria-hidden="true" />
@@ -22,7 +22,7 @@
     </button>
     <button type="button" class="nav suite-nav" id="files-nav">
       <img class="app-icon-image" src="assets/icons/files.svg" alt="" aria-hidden="true" />
-      <span><b>Files</b><small>Open and save files on this device</small></span>
+      <span><b data-i18n="sidebar.files">Files</b><small data-i18n="sidebar.filesDescription">Open and save files on this device</small></span>
     </button>
     <div id="dynamic-app-nav"></div>
     <div class="sidebar-divider"></div>
@@ -357,25 +357,25 @@
     </section>
     <section class="files-manager" id="files-manager" hidden>
       <div class="files-hero">
-        <span class="eyebrow">YOUR FILES</span>
-        <h2>Files on this device</h2>
-        <p>Open a supported file or save your current Brightdesk project. Your work stays on this computer.</p>
+        <span class="eyebrow" data-i18n="files.eyebrow">YOUR FILES</span>
+        <h2 data-i18n="files.title">Files on this device</h2>
+        <p data-i18n="files.description">Open a supported file or save your current Brightdesk project. Your work stays on this computer.</p>
       </div>
       <div class="files-actions">
         <article class="files-action-card">
           <div class="files-action-icon"><img src="assets/icons/files.svg" alt="" aria-hidden="true" /></div>
-          <h3>Open a file</h3>
-          <p>Choose a supported document, spreadsheet, presentation or Brightdesk project from this device.</p>
-          <button type="button" class="primary" id="files-open-button">Open file</button>
+          <h3 data-i18n="files.openTitle">Open a file</h3>
+          <p data-i18n="files.openDescription">Choose a supported document, spreadsheet, presentation or Brightdesk project from this device.</p>
+          <button type="button" class="primary" id="files-open-button" data-i18n="files.openButton">Open file</button>
         </article>
         <article class="files-action-card">
           <div class="files-action-icon"><img src="assets/icons/save.svg" alt="" aria-hidden="true" /></div>
-          <h3>Save your project</h3>
-          <p>Save your current Brightdesk work to a location you choose on this device.</p>
-          <button type="button" class="secondary" id="files-save-button">Save project</button>
+          <h3 data-i18n="files.saveTitle">Save your project</h3>
+          <p data-i18n="files.saveDescription">Save your current Brightdesk work to a location you choose on this device.</p>
+          <button type="button" class="secondary" id="files-save-button" data-i18n="files.saveButton">Save project</button>
         </article>
       </div>
-      <p class="files-note">Brightdesk does not upload your files to an online storage service.</p>
+      <p class="files-note" data-i18n="files.note">Brightdesk does not upload your files to an online storage service.</p>
     </section>
     <section class="language-manager" id="language-manager" hidden>
       <div class="manager-hero"><div><div class="eyebrow" data-i18n="language.eyebrow">BRIGHTDESK LANGUAGE CENTRE</div><h2 data-i18n="language.title">Language settings</h2><p data-i18n="language.description">Choose how Brightdesk displays and checks language.</p></div></div>
