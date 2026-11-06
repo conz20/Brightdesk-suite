@@ -42,12 +42,12 @@ test('standalone product build scripts build the Rust addon once before Electron
 
 test('repository ignores Rust target output and native Node-API binaries in embedded products', () => {
   const ignore = read('.gitignore');
-  assert.match(ignore, /^\\/rust\\/target\\/$/m);
-  assert.match(ignore, /^\\*\\*\\/rust\\/target\\/$/m);
-  assert.match(ignore, /^\\*\\*\\/target\\/$/m);
-  assert.match(ignore, /^\\*\\*\\/native\\/\\*\\.node$/m);
-  assert.match(ignore, /^\\*\\*\\/native\\/\\*\\*\\/\\*\\.node$/m);
-  assert.match(ignore, /^\\*\\*\\/node_modules\\/$/m);
+  assert.match(ignore, /^\/rust\/target\/$/m);
+  assert.match(ignore, /^\*\*\/rust\/target\/$/m);
+  assert.match(ignore, /^\*\*\/target\/$/m);
+  assert.match(ignore, /^\*\*\/native\/\*\.node$/m);
+  assert.match(ignore, /^\*\*\/native\/\*\*\/\*\.node$/m);
+  assert.match(ignore, /^\*\*\/node_modules\/$/m);
 
   const products = [
     'Brightdesk-Pages', 'Brightdesk-Sheets', 'Brightdesk-Decks',
