@@ -56,6 +56,8 @@ test('top-right controls clearly identify notifications, saving and Settings', (
   assert.match(app, /updateState\.status === 'downloaded'[\s\S]*?addNotification/);
   assert.match(app, /notification\.action === 'download-update'/);
   assert.match(app, /notification\.action === 'install-update'/);
+  assert.match(main, /new Notification\\(/);
+  assert.match(main, /Notification\\.isSupported\\(\\)/);
   assert.doesNotMatch(homeArtwork, /Install a product|Update Brightdesk/);
   assert.match(homeArtwork, /id="settings-cogwheel"/);
   assert.match(homeArtwork, /Brightdesk Office Suite Home experience/i);
