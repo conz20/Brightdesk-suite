@@ -11,11 +11,11 @@
 <body>
   <aside class="sidebar">
     <div class="brand"><img class="brand-mark-image" src="assets/brand/brightdesk-mark.svg" alt="" aria-hidden="true" width="38" height="38" /><div><b>brightdesk</b><small data-i18n="sidebar.workspace">YOUR WORKSPACE</small></div></div>
-    <div class="section-label" id="sidebar-section-label" data-i18n="sidebar.yourApps">SWITCH PRODUCT</div>
-    <div class="nav manager-nav active" id="app-centre-nav" aria-current="page" hidden>
-      <img class="app-icon-image" src="assets/brand/brightdesk-mark.svg" alt="" aria-hidden="true" />
-      <span><b data-i18n="sidebar.appCentre">App Centre</b><small data-i18n="sidebar.appCentreDescription">Products and suite tools</small></span>
-    </div>
+    <button class="nav home-nav" id="open-home" type="button" aria-label="Open Brightdesk Home">
+      <svg class="sidebar-line-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m3.5 10 8.5-7 8.5 7v10a1 1 0 0 1-1 1h-5.2v-6.5H9.7V21H4.5a1 1 0 0 1-1-1z"/></svg>
+      <span><b>All apps</b><small>Suite home and app centre</small></span>
+    </button>
+    <div class="section-label" data-i18n="sidebar.yourApps">YOUR APPS</div>
     <div id="dynamic-app-nav"></div>
     <div class="sidebar-divider"></div>
     <div class="sidebar-bottom sidebar-meta">
@@ -25,8 +25,8 @@
   </aside>
   <main class="main">
     <header class="topbar">
-      <div><div class="eyebrow" data-i18n="sidebar.workspace">YOUR WORKSPACE</div><h1 id="app-title">Brightdesk Pages</h1></div>
-      <div class="top-actions" id="top-actions"><span class="save-status" id="save-status" data-i18n="top.savedOnDevice">Saved on this device</span><button class="secondary" id="open-button" data-i18n="top.open">Open</button><button class="primary top-save-button" id="save-project"><img src="assets/icons/save.svg" alt="" aria-hidden="true" /><span data-i18n="top.saveProject">Save project</span></button><button type="button" id="open-notifications" class="icon-button top-notifications-button" aria-label="Open notifications" title="Notifications" aria-controls="notification-panel" aria-expanded="false"><img src="assets/icons/notifications.svg" alt="" aria-hidden="true" /></button><div class="notification-popover" id="notification-panel" role="status" aria-live="polite" hidden><b>Notifications</b><p>No new notifications</p><small>Suite updates and important messages will appear here.</small></div><button type="button" id="open-settings" class="icon-button top-settings-button" aria-label="Open Brightdesk settings" title="Settings"><img src="assets/icons/settings.svg" alt="" aria-hidden="true" /></button></div>
+      <div class="topbar-heading"><button type="button" id="back-to-home" class="back-to-home" hidden aria-label="Return to all Brightdesk apps">← All apps</button><div><div class="eyebrow" data-i18n="sidebar.workspace">YOUR WORKSPACE</div><h1 id="app-title">Brightdesk Pages</h1></div></div>
+      <div class="top-actions" id="top-actions"><input id="app-centre-search" class="app-centre-search" type="search" placeholder="Search apps" aria-label="Search apps" hidden /><span class="save-status" id="save-status" data-i18n="top.savedOnDevice">Saved on this device</span><button class="secondary" id="open-button" data-i18n="top.open">Open</button><button class="primary top-save-button" id="save-project"><img src="assets/icons/save.svg" alt="" aria-hidden="true" /><span data-i18n="top.saveProject">Save project</span></button><button type="button" id="open-notifications" class="icon-button top-notifications-button" aria-label="Open notifications" title="Notifications" aria-controls="notification-panel" aria-expanded="false"><img src="assets/icons/notifications.svg" alt="" aria-hidden="true" /></button><div class="notification-popover" id="notification-panel" role="status" aria-live="polite" hidden><b>Notifications</b><p>No new notifications</p><small>Suite updates and important messages will appear here.</small></div><button type="button" id="open-settings" class="icon-button top-settings-button" aria-label="Open Brightdesk settings" title="Settings"><img src="assets/icons/settings.svg" alt="" aria-hidden="true" /></button></div>
     </header>
     <section class="welcome" id="welcome"><div><div class="eyebrow" data-i18n="welcome.eyebrow">YOUR WORK. ONE DESKTOP SUITE.</div><h2 id="welcome-title">Make room for your ideas.</h2><p id="welcome-copy">Write letters, reports and documents with Brightdesk Pages.</p></div></section>
     <section class="workspace" id="workspace">
@@ -335,7 +335,7 @@
       <div class="settings-toolbar">
         <div class="settings-context">
           <span class="eyebrow">LOCAL APPLICATION SETTINGS</span>
-          <p>Manage the apps, language resources and updates installed on this device.</p>
+          <p>Manage language resources and update preferences on this device. Browse all ten products from Home.</p>
         </div>
         <div class="settings-actions">
           <button class="secondary settings-action" id="manage-languages" type="button">Languages &amp; dictionaries</button>
@@ -344,8 +344,9 @@
         </div>
       </div>
       <div class="manager-hero"><div><div class="eyebrow" data-i18n="manager.eyebrow">BRIGHTDESK APP CENTRE</div><h2 id="manager-title">Choose the apps you need</h2><p id="manager-description">Set up your Brightdesk workspace.</p></div></div>
+      <p class="app-centre-note">All ten products are included in this suite. Separate product downloads are not published yet.</p>
       <div class="manager-grid" id="app-manager-grid"></div>
-      <div class="manager-bottom"><p id="manager-note">Choose one or more apps. Your documents stay on this device, even if you remove an app from your workspace.</p><button class="primary" id="finish-app-setup" data-i18n="manager.done">Done</button></div>
+      <div class="manager-bottom" id="manager-bottom"><p id="manager-note">Choose one or more apps. Your documents stay on this device, even if you remove an app from your workspace.</p><button class="primary" id="finish-app-setup" data-i18n="manager.done">Done</button></div>
     </section>
     <section class="language-manager" id="language-manager" hidden>
       <div class="manager-hero"><div><div class="eyebrow" data-i18n="language.eyebrow">BRIGHTDESK LANGUAGE CENTRE</div><h2 data-i18n="language.title">Language settings</h2><p data-i18n="language.description">Choose how Brightdesk displays and checks language.</p></div></div>
@@ -397,6 +398,8 @@
   <script src="formula.js"></script>
   <script src="page-layout.js"></script>
   <script src="app-catalog.js"></script>
+  <script src="slides-service.js"></script>
+  <script src="notes-service.js"></script>
   <script src="todo-service.js"></script>
   <script src="lists-service.js"></script>
   <script src="forms-service.js"></script>

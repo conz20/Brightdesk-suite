@@ -61,13 +61,13 @@ function loadLocal() {
     if (!launchAppId && appSetup?.schemaVersion !== resolvedSetup.schemaVersion) saveAppSetup();
     if (launchAppId) { state.app = launchAppId; state.view = 'workspace'; }
     else if (!state.setupComplete) state.view = 'manager';
-    else if (!installedApp(state.app)) state.app = state.installedApps[0] || 'pages';
+    else { state.view = resolvedSetup.initialView; if (!installedApp(state.app)) state.app = state.installedApps[0] || 'pages'; }
     state.displayLanguage = localStorage.getItem('brightdesk-display-language') || 'en-AU';
     state.proofingLanguage = localStorage.getItem('brightdesk-proofing-language') || state.displayLanguage;
   } catch (error) { console.warn('Local project or app settings could not be read.', error); state.view = 'manager'; }
 }
 function saveAppSetup() {
-  localStorage.setItem('brightdesk-app-setup-v1', JSON.stringify({ schemaVersion: 2, installedApps: state.installedApps, setupComplete: state.setupComplete }));
+  localStorage.setItem('brightdesk-app-setup-v1', JSON.stringify({ schemaVersion: 3, installedApps: state.installedApps, setupComplete: state.setupComplete }));
 }
 function installedApp(id) { return state.installedApps.includes(id); }
 function appLabel(id) { return catalog.find(item => item.id === id)?.name || id; }
@@ -209,7 +209,7 @@ function renderToolbar() {
   } else if (app === 'notes') {
     if (tab === 'home') {
       const note = group('note'); addButton(note, label('exportNote'), exportCurrent);
-      addButton(note, label('clearNote'), () => { if (confirm('Clear this note?')) { $('notes-editor').value = ''; activeDoc().text = ''; persist(); } });
+      addButton(note, label('clearNote'), () => { if (confirm('Clear this note?')) { const text = window.BrightdeskNotesService.clearNoteText(); $('notes-editor').value = text; window.BrightdeskNotesService.updateNoteText(activeDoc(), text); persist(); } });
     } else if (tab === 'insert') {
       const insert = group('tools');
       addButton(insert, label('date'), () => insertNoteText(new Date().toLocaleDateString()));
@@ -257,8 +257,8 @@ function changeEditorZoom(delta) { state.editorZoom = Math.max(70, Math.min(160,
 function applyEditorZoom() { editor.style.fontSize = `${14 * state.editorZoom / 100}px`; setStatus(`Document zoom ${state.editorZoom}%`); }
 function changeSheetZoom(delta) { state.sheetZoom = Math.max(70, Math.min(160, state.sheetZoom + delta)); applySheetZoom(); }
 function applySheetZoom() { sheetWrap.style.zoom = `${state.sheetZoom}%`; setStatus(`Sheet zoom ${state.sheetZoom}%`); }
-function insertNoteText(value) { const input = $('notes-editor'); const start = input.selectionStart, end = input.selectionEnd; input.setRangeText(value, start, end, 'end'); activeDoc().text = input.value; persist(); input.focus(); }
-function addSlideWithContent(title, body) { activeDoc().slides.push({ title, body }); activeDoc().current = activeDoc().slides.length - 1; renderSlides(); renderToolbar(); persist(); }
+function insertNoteText(value) { const input = $('notes-editor'); const result = window.BrightdeskNotesService.insertText(input.value, input.selectionStart, input.selectionEnd, value); input.value = result.text; input.setSelectionRange(result.selectionStart, result.selectionEnd); window.BrightdeskNotesService.updateNoteText(activeDoc(), result.text); persist(); input.focus(); }
+function addSlideWithContent(title, body) { window.BrightdeskSlidesService.addSlide(activeDoc(), { title, body }); renderSlides(); renderToolbar(); persist(); }
 function setSlideTheme(theme) { state.slideTheme = theme; renderSlides(); setStatus(`${theme[0].toUpperCase()}${theme.slice(1)} theme selected`); }
 function setCell(row,col,value) { while (activeDoc().cells.length <= row) activeDoc().cells.push([]); while (activeDoc().cells[row].length <= col) activeDoc().cells[row].push(''); activeDoc().cells[row][col]=value; persist(); }
 function refreshSheetValues() {
@@ -286,23 +286,22 @@ function renderSheet() {
   }); table.append(tbody); sheetWrap.innerHTML=''; sheetWrap.append(table);
 }
 function renderSlides() {
-  const doc=activeDoc(); if(!Array.isArray(doc.slides)||!doc.slides.length)doc.slides=[{title:t('common.newSlide'),body:''}];
-  doc.current=Math.min(Math.max(0,doc.current||0),doc.slides.length-1); const slide=doc.slides[doc.current];
+  const doc=window.BrightdeskSlidesService.ensurePresentation(activeDoc(), t('common.newSlide')); const slide=doc.slides[doc.current];
   slideWrap.innerHTML='';
   const stage=document.createElement('div');stage.className=`slide-stage theme-${state.slideTheme}`;
   const title=document.createElement('textarea');title.className='slide-title';title.value=slide.title||'';title.setAttribute('aria-label','Slide title');title.lang=state.proofingLanguage;
   const body=document.createElement('textarea');body.className='slide-body';body.value=slide.body||'';body.setAttribute('aria-label','Slide text');body.lang=state.proofingLanguage;
-  title.addEventListener('input',()=>{slide.title=title.value;persist();});body.addEventListener('input',()=>{slide.body=body.value;persist();});
+  title.addEventListener('input',()=>{window.BrightdeskSlidesService.updateSlide(doc,doc.current,{title:title.value});persist();});body.addEventListener('input',()=>{window.BrightdeskSlidesService.updateSlide(doc,doc.current,{body:body.value});persist();});
   stage.append(title,body);
   const controls=document.createElement('div');controls.className='slide-controls';
-  const prev=document.createElement('button');prev.textContent='← Previous';prev.disabled=doc.current===0;prev.onclick=()=>{doc.current--;renderSlides();renderToolbar();};
+  const prev=document.createElement('button');prev.textContent='← Previous';prev.disabled=doc.current===0;prev.onclick=()=>{window.BrightdeskSlidesService.setCurrentSlide(doc,doc.current-1);renderSlides();renderToolbar();};
   const count=document.createElement('span');count.textContent=`Slide ${doc.current+1} of ${doc.slides.length}`;
-  const next=document.createElement('button');next.textContent='Next →';next.disabled=doc.current===doc.slides.length-1;next.onclick=()=>{doc.current++;renderSlides();renderToolbar();};
+  const next=document.createElement('button');next.textContent='Next →';next.disabled=doc.current===doc.slides.length-1;next.onclick=()=>{window.BrightdeskSlidesService.setCurrentSlide(doc,doc.current+1);renderSlides();renderToolbar();};
   controls.append(prev,count,next);slideWrap.append(stage,controls);
 }
-function addSlide(){activeDoc().slides.push({title:`Slide ${activeDoc().slides.length+1}`,body:''});activeDoc().current=activeDoc().slides.length-1;renderSlides();renderToolbar();persist();}
-function duplicateSlide(){const d=activeDoc(),copy=clone(d.slides[d.current]);d.slides.splice(d.current+1,0,copy);d.current++;renderSlides();renderToolbar();persist();}
-function deleteSlide(){const d=activeDoc();if(d.slides.length===1){alert('A presentation needs at least one slide.');return;}d.slides.splice(d.current,1);d.current=Math.max(0,d.current-1);renderSlides();renderToolbar();persist();}
+function addSlide(){window.BrightdeskSlidesService.addSlide(activeDoc());renderSlides();renderToolbar();persist();}
+function duplicateSlide(){window.BrightdeskSlidesService.duplicateSlide(activeDoc());renderSlides();renderToolbar();persist();}
+function deleteSlide(){if(!window.BrightdeskSlidesService.deleteSlide(activeDoc())){alert('A presentation needs at least one slide.');return;}renderSlides();renderToolbar();persist();}
 function presentSlides(){const d=activeDoc();let i=d.current;const overlay=document.createElement('div');overlay.className='presentation-overlay';const slide=document.createElement('div');slide.className='presentation-slide';const title=document.createElement('h1'),body=document.createElement('p'),footer=document.createElement('div');footer.className='presentation-footer';footer.textContent='Click or press an arrow key to move · Esc to exit';slide.append(title,body,footer);overlay.append(slide);document.body.append(overlay);
   const draw=()=>{title.textContent=d.slides[i].title;body.textContent=d.slides[i].body;};const key=(e)=>{if(e.key==='Escape'){overlay.remove();document.removeEventListener('keydown',key);}else if(e.key==='ArrowRight'){i=Math.min(d.slides.length-1,i+1);draw();}else if(e.key==='ArrowLeft'){i=Math.max(0,i-1);draw();}};overlay.addEventListener('click',()=>{i=Math.min(d.slides.length-1,i+1);draw();});document.addEventListener('keydown',key);draw();}
 function todoTasks() { return Array.isArray(activeDoc().tasks) ? activeDoc().tasks : (activeDoc().tasks = []); }
@@ -458,16 +457,19 @@ function renderGenericWorkspace() {
 
 function renderAppManager() {
   const grid = $('app-manager-grid'); grid.innerHTML = '';
-  $('manager-title').textContent = state.setupComplete ? t('manager.manageTitle') : t('manager.chooseTitle');
-  $('manager-description').textContent = state.setupComplete
-    ? t('manager.manageDesc')
-    : t('manager.chooseDesc');
-  $('manager-note').textContent = t('manager.note');
-  $('finish-app-setup').textContent = state.setupComplete ? t('manager.done') : t('manager.installSelected');
-  catalog.forEach(item => {
-    const canInstall = item.availability === 'available';
-    const selected = state.firstRunSelection.has(item.id);
-    const isInstalled = installedApp(item.id);
+  const home = state.view === 'home';
+  grid.hidden = !home;
+  document.querySelector('.settings-toolbar').hidden = home;
+  $('manager-bottom').hidden = home;
+  $('manager-title').textContent = home ? 'Your apps' : 'Settings';
+  $('manager-description').textContent = home
+    ? 'All ten Brightdesk products, ready to open from one place.'
+    : 'Manage language resources and update preferences on this device.';
+  $('manager-note').textContent = 'All ten products are included in Brightdesk Office Suite. Separate product downloads are not published yet.';
+  $('finish-app-setup').textContent = 'Back to Home';
+  if (!home) return;
+  const query = $('app-centre-search')?.value.trim().toLowerCase() || '';
+  catalog.filter(item => item.availability === 'available' && (!query || `${item.name} ${item.subtitle} ${item.description}`.toLowerCase().includes(query))).forEach(item => {
     const card = document.createElement('article'); card.className = 'app-card'; card.dataset.appId = item.id;
     const preview = document.createElement('img'); preview.className = 'app-preview'; preview.src = `assets/apps/${item.id}.svg`; preview.alt = `${item.name} example screen`;
     const header = document.createElement('div'); header.className = 'app-card-header';
@@ -475,35 +477,22 @@ function renderAppManager() {
     const heading = document.createElement('div'); heading.className = 'app-card-heading';
     const name = document.createElement('b'); name.textContent = item.name;
     const subtitle = document.createElement('small'); subtitle.textContent = item.subtitle;
-    const stateChip = document.createElement('span'); stateChip.className = `app-status-chip ${!canInstall ? 'development' : (isInstalled ? 'installed' : 'available')}`;
-    stateChip.textContent = !canInstall ? 'In development' : (isInstalled ? 'Installed' : 'Available to install');
+    const stateChip = document.createElement('span'); stateChip.className = 'app-status-chip included';
+    stateChip.textContent = 'Included in Brightdesk Office Suite';
     heading.append(name, subtitle, stateChip); header.append(icon, heading);
     const description = document.createElement('p'); description.textContent = item.description;
     const footer = document.createElement('div'); footer.className = 'app-card-footer app-card-actions';
-    const version = document.createElement('span'); version.className = 'module-version'; version.textContent = `Module ${item.moduleVersion}`;
-    footer.append(version);
-    if (!canInstall) {
-      const comingSoon = document.createElement('span'); comingSoon.className = 'app-state'; comingSoon.textContent = 'In development'; footer.append(comingSoon);
-    } else if (!state.setupComplete) {
-      const label = document.createElement('label'); label.className = 'app-select-label';
-      const check = document.createElement('input'); check.type = 'checkbox'; check.checked = selected; check.addEventListener('change', () => {
-        if (check.checked) state.firstRunSelection.add(item.id); else state.firstRunSelection.delete(item.id);
-        renderAppManager();
-      });
-      label.append(check, document.createTextNode(` ${t('manager.includeApp')}`)); footer.append(label);
-    } else {
-      if (isInstalled) {
-        const open = document.createElement('button'); open.className = 'primary small-action app-install-action';
-        open.textContent = 'Open'; open.setAttribute('aria-label', `Open ${item.name}`);
-        open.addEventListener('click', () => setApp(item.id)); footer.append(open);
-      }
-      const action = document.createElement('button'); action.className = isInstalled ? 'secondary small-action app-install-action' : 'primary small-action app-install-action';
-      action.textContent = isInstalled ? 'Uninstall' : 'Install';
-      action.setAttribute('aria-label', `${isInstalled ? 'Uninstall' : 'Install'} ${item.name}`);
-      action.addEventListener('click', () => toggleAppInstall(item.id)); footer.append(action);
-    }
+    const availability = document.createElement('span'); availability.className = 'module-version'; availability.textContent = 'Ready to open';
+    const open = document.createElement('button'); open.className = 'primary small-action app-install-action';
+    open.textContent = 'Open'; open.setAttribute('aria-label', `Open ${item.name}`);
+    open.addEventListener('click', () => setApp(item.id));
+    footer.append(availability, open);
     card.append(preview, header, description, footer); grid.append(card);
   });
+  if (!grid.children.length) {
+    const empty = document.createElement('p'); empty.className = 'app-centre-empty';
+    empty.textContent = 'No products match that search.'; grid.append(empty);
+  }
 }
 function toggleAppInstall(id) {
   if (!installableCatalog.some(item => item.id === id) || launchAppId) return;
@@ -517,7 +506,7 @@ function toggleAppInstall(id) {
 function completeAppSetup() {
   const selected = [...state.firstRunSelection].filter(id => installableCatalog.some(item => item.id === id));
   if (!selected.length) { alert('Choose at least one app to install.'); return; }
-  state.installedApps = selected; state.setupComplete = true; state.app = selected[0]; state.view = 'workspace';
+  state.installedApps = selected; state.setupComplete = true; state.app = selected[0]; state.view = 'home';
   saveAppSetup(); render();
 }
 
@@ -530,14 +519,32 @@ function updateDocumentLanguage() {
   slideWrap.querySelectorAll('textarea').forEach(input => { input.lang = lang; });
 }
 function syncAppNavigation() {
-  const host = $('dynamic-app-nav'); if (!host) return;
+  const host = $('dynamic-app-nav');
+  if (!host) return;
   host.innerHTML = '';
+
   catalog.filter(item => installedApp(item.id)).forEach(item => {
-    const button=document.createElement('button'); button.type='button'; button.className='nav'; button.dataset.app=item.id;
-    const icon=document.createElement('img'); icon.className='app-icon-image'; icon.src=appIconPath(item); icon.alt=''; icon.setAttribute('aria-hidden','true');
-    const label=document.createElement('span'); const name=document.createElement('b'); name.textContent=t(`apps.${item.id}`); const sub=document.createElement('small'); sub.textContent=item.subtitle;
-    label.append(name,sub); button.append(icon,label);
-    button.addEventListener('click',()=>setApp(item.id)); host.append(button);
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = state.app === item.id ? 'nav active' : 'nav';
+    button.dataset.app = item.id;
+
+    const icon = document.createElement('img');
+    icon.className = 'app-icon-image';
+    icon.src = appIconPath(item);
+    icon.alt = '';
+    icon.setAttribute('aria-hidden', 'true');
+
+    const label = document.createElement('span');
+    const name = document.createElement('b');
+    name.textContent = t('apps.' + item.id);
+    const subtitle = document.createElement('small');
+    subtitle.textContent = item.subtitle;
+
+    label.append(name, subtitle);
+    button.append(icon, label);
+    button.addEventListener('click', () => setApp(item.id));
+    host.append(button);
   });
 }
 
@@ -758,15 +765,20 @@ function render() {
     const name = btn.querySelector('b'); if (name) name.textContent = t(`apps.${appId}`);
   });
   const manager = state.view === 'manager';
+  const home = state.view === 'home';
   const languages = state.view === 'languages';
-  $('sidebar-section-label').textContent = manager ? t('sidebar.suite') : (languages ? t('sidebar.settings') : t('sidebar.yourApps'));
-  $('dynamic-app-nav').hidden = manager || languages;
-  $('app-centre-nav').hidden = !manager || Boolean(launchAppId);
-  $('app-manager').hidden = !manager; $('language-manager').hidden = !languages;
-  $('workspace').hidden = manager || languages; $('welcome').hidden = manager || languages || ['todo','lists','forms','planner','database','loop'].includes(state.app);
-  $('app-title').textContent = manager ? t('sidebar.appCentre') : (languages ? t('language.title') : (catalog.find(item => item.id === state.app)?.name || state.app));
+  $('app-manager').hidden = !manager && !home; $('language-manager').hidden = !languages;
+  $('workspace').hidden = manager || home || languages; $('welcome').hidden = manager || home || languages || ['todo','lists','forms','planner','database','loop'].includes(state.app);
+  $('app-title').textContent = home ? 'Your apps' : (manager ? 'Settings' : (languages ? t('language.title') : (catalog.find(item => item.id === state.app)?.name || state.app)));
+  const contextEyebrow = document.querySelector('.topbar .eyebrow');
+  if (contextEyebrow) contextEyebrow.textContent = home ? 'BRIGHTDESK APP CENTRE' : (manager ? 'LOCAL APPLICATION SETTINGS' : 'YOUR WORKSPACE');
+  $('app-centre-search').hidden = !home;
   $('top-actions').hidden = manager || languages;
-  if (manager) {
+  if (home) {
+    $('open-button').hidden = true; $('save-project').hidden = true; $('export-button').hidden = true;
+    $('open-notifications').hidden = false; $('open-settings').hidden = false;
+    $('save-status').textContent = `${state.installedApps.length} of ${catalog.length} products`; renderAppManager();
+  } else if (manager) {
     $('save-status').textContent = t('manager.manageTitle'); renderAppManager();
   } else if (languages) {
     $('save-status').textContent = t('language.title'); renderLanguageManager();
@@ -803,8 +815,11 @@ function render() {
   }
   syncAppNavigation();
   document.querySelectorAll('.nav[data-app]').forEach(btn => {
-    const visible = launchAppId ? btn.dataset.app === launchAppId : installedApp(btn.dataset.app); btn.hidden = !visible; btn.classList.toggle('active', !manager && !languages && btn.dataset.app === state.app);
+    const visible = launchAppId ? btn.dataset.app === launchAppId : true; btn.hidden = !visible; btn.classList.toggle('active', !manager && !home && !languages && btn.dataset.app === state.app);
   });
+  $('open-home').classList.toggle('active', home);
+  $('back-to-home').hidden = Boolean(launchAppId) || home;
+  $('open-home').hidden = Boolean(launchAppId);
   $('open-settings').hidden = Boolean(launchAppId);
   $('open-notifications').hidden = Boolean(launchAppId);
   if (launchAppId) $('notification-panel').hidden = true;
@@ -828,7 +843,7 @@ function exportPayload(){
   if(state.app==='pages')return {kind:'pages',title,html:editor.innerHTML,blocks:collectDocxBlocks()};
   if(state.app==='sheets')return {kind:'sheets',title,rows:doc.cells||[]};
   if(state.app==='slides')return {kind:'slides',title,slides:doc.slides||[]};
-  return {kind:'notes',title,text:$('notes-editor').value||''};
+  return window.BrightdeskNotesService.exportPayload(doc, $('notes-editor').value);
 }
 async function exportCurrent(){try{const result=await window.brightdesk.exportFile(exportPayload());if(result?.canceled)return;setStatus('Exported successfully');}catch(error){alert(`Export failed: ${error.message}`);}}
 async function exportPdf(){try{const result=await window.brightdesk.exportPdf({title:$('doc-title').value});if(!result?.canceled)setStatus('PDF exported');}catch(error){alert(`PDF export failed: ${error.message}`);}}
@@ -854,9 +869,12 @@ function importProject(data){
 function escapeHtml(value){return String(value).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));}
 async function openFile(){try{const data=await window.brightdesk.openFile();if(!data)return;importProject(data);persist();render();setStatus('File opened');}catch(error){alert(`Could not open file: ${error.message}`);}}
 async function saveProject(){try{const result=await window.brightdesk.saveProject({title:$('doc-title').value,docs:state.docs});if(!result?.canceled)setStatus('Project saved');}catch(error){alert(`Could not save project: ${error.message}`);}}
-function setApp(app){if((launchAppId && app !== launchAppId) || !(configs[app] || genericConfigs[app]) || !installedApp(app))return;state.app=app;state.view='workspace';state.ribbonTab='home';render();persist();}
+function setApp(app){const item=catalog.find(entry=>entry.id===app&&entry.availability==='available');const appConfig=configs[app] || genericConfigs[app];if (launchAppId && app !== launchAppId || !item || !appConfig) return;state.app=app;state.view='workspace';state.ribbonTab='home';render();persist();}
 
 document.querySelectorAll('.nav[data-app]').forEach(btn=>btn.addEventListener('click',()=>setApp(btn.dataset.app)));
+$('open-home').addEventListener('click',()=>{if (launchAppId) return; state.view='home';render();});
+$('back-to-home').addEventListener('click',()=>{if (launchAppId) return; state.view='home';render();});
+$('app-centre-search').addEventListener('input',()=>{if(state.view==='home')renderAppManager();});
 $('open-settings').addEventListener('click',()=>{if (launchAppId) return; state.view='manager';render();});
 $('open-notifications').addEventListener('click',()=>{const panel=$('notification-panel');panel.hidden=!panel.hidden;$('open-notifications').setAttribute('aria-expanded',String(!panel.hidden));});
 document.addEventListener('keydown',event=>{if(event.key==='Escape'&&!$('notification-panel').hidden){$('notification-panel').hidden=true;$('open-notifications').setAttribute('aria-expanded','false');}});
@@ -866,11 +884,11 @@ $('proofing-language').addEventListener('change',event=>changeProofingLanguage(e
 $('dictionary-search').addEventListener('input',renderAvailableDictionaryCatalogue);
 $('proofing-dictionary').addEventListener('change',event=>{state.selectedDictionary=event.target.value;localStorage.setItem('brightdesk-selected-dictionary',state.selectedDictionary);renderToolbar();});
 $('check-current-document').addEventListener('click',checkCurrentDocumentSpelling);
-$('back-to-apps').addEventListener('click',()=>{state.view=state.setupComplete?'workspace':'manager';render();});
-$('finish-app-setup').addEventListener('click',()=>{if(state.setupComplete){state.view='workspace';render();}else completeAppSetup();});
+$('back-to-apps').addEventListener('click',()=>{state.view=state.setupComplete?'home':'manager';render();});
+$('finish-app-setup').addEventListener('click',()=>{if(state.setupComplete){state.view='home';render();}else completeAppSetup();});
 $('doc-title').addEventListener('change',()=>{activeDoc().title=$('doc-title').value;persist();});
 editor.addEventListener('input',()=>{activeDoc().html=editor.innerHTML;persist();});
-$('notes-editor').addEventListener('input',()=>{activeDoc().text=$('notes-editor').value;persist();});
+$('notes-editor').addEventListener('input',()=>{window.BrightdeskNotesService.updateNoteText(activeDoc(), $('notes-editor').value);persist();});
 $('todo-create-form').addEventListener('submit', createTodoTask);
 $('todo-search').addEventListener('input', event => { state.todoQuery = event.target.value; renderTodoWorkspace(); });
 document.querySelectorAll('[data-todo-view]').forEach(button => button.addEventListener('click', () => { state.todoView = button.dataset.todoView; renderTodoWorkspace(); }));

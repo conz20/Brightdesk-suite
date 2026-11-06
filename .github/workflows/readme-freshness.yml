@@ -16,7 +16,7 @@ jobs:
     # Never execute fork-controlled pull-request code on the private self-hosted machine.
     if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
     # Reuse the private runner; keep this required check outside paid hosted billing.
-    runs-on: self-hosted
+    runs-on: [self-hosted, macOS, ARM64]
     steps:
       - name: Check out the change
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2

@@ -4,6 +4,8 @@ const assert = require('node:assert/strict');
 const { shouldRequireFirstLaunchTerms } = require('../src/installer-terms-policy');
 const { resolveAppSetup } = require('../src/app-setup-policy');
 
+const suiteIds = ['pages','sheets','slides','notes','database','forms','lists','planner','todo','loop'];
+
 test('packaged Windows and macOS installs rely on the installer terms agreement', () => {
   assert.equal(shouldRequireFirstLaunchTerms({ platform: 'win32', isPackaged: true }), false);
   assert.equal(shouldRequireFirstLaunchTerms({ platform: 'darwin', isPackaged: true }), false);
@@ -15,24 +17,42 @@ test('development and Linux builds retain the first-launch agreement where no gr
   assert.equal(shouldRequireFirstLaunchTerms({ platform: 'linux', isPackaged: true }), true);
 });
 
-test('a legacy single-product selection migrates to all ten integrated products', () => {
-  const ids = ['pages','sheets','slides','notes','database','forms','lists','planner','todo','loop'];
-  const setup = resolveAppSetup({ installedApps: ['pages'], setupComplete: true }, null, ids);
-  assert.deepEqual(setup.installedApps, ids);
+test('legacy single-product selection migrates to all ten integrated products', () => {
+  const setup = resolveAppSetup({ installedApps: ['pages'], setupComplete: true }, null, suiteIds);
+  assert.deepEqual(setup.installedApps, suiteIds);
   assert.equal(setup.setupComplete, true);
-  assert.equal(setup.schemaVersion, 2);
+  assert.equal(setup.schemaVersion, 3);
+  assert.equal(setup.initialView, 'home');
 });
 
-test('current suite preferences are retained after the migration', () => {
-  const ids = ['pages','sheets','slides','notes','database','forms','lists','planner','todo','loop'];
-  const setup = resolveAppSetup({ schemaVersion: 2, installedApps: ['pages','sheets'], setupComplete: true }, null, ids);
+test('older version-2 suite selections migrate to all ten products', () => {
+  const setup = resolveAppSetup({
+    schemaVersion: 2,
+    installedApps: ['pages','sheets','slides','notes'],
+    setupComplete: true
+  }, null, suiteIds);
+  assert.deepEqual(setup.installedApps, suiteIds);
+  assert.equal(setup.setupComplete, true);
+  assert.equal(setup.schemaVersion, 3);
+  assert.equal(setup.initialView, 'home');
+});
+
+test('version-3 suite preferences are retained after migration', () => {
+  const setup = resolveAppSetup({
+    schemaVersion: 3,
+    installedApps: ['pages','sheets'],
+    setupComplete: true
+  }, null, suiteIds);
   assert.deepEqual(setup.installedApps, ['pages','sheets']);
   assert.equal(setup.setupComplete, true);
+  assert.equal(setup.schemaVersion, 3);
+  assert.equal(setup.initialView, 'home');
 });
 
 test('single-product builds remain restricted to their selected product', () => {
-  const ids = ['pages','sheets','slides','notes','database','forms','lists','planner','todo','loop'];
-  const setup = resolveAppSetup({ schemaVersion: 2, installedApps: ids }, 'sheets', ids);
+  const setup = resolveAppSetup({ schemaVersion: 2, installedApps: suiteIds }, 'sheets', suiteIds);
   assert.deepEqual(setup.installedApps, ['sheets']);
   assert.equal(setup.setupComplete, true);
+  assert.equal(setup.schemaVersion, 3);
+  assert.equal(setup.initialView, 'workspace');
 });

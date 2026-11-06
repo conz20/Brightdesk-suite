@@ -159,9 +159,10 @@ test('installer pipeline uses the private native runner for each operating syste
   assert.doesNotMatch(workflow, /ubuntu-latest|windows-latest|macos-latest/);
 });
 
-test('README freshness check uses the existing self-hosted runner', () => {
+test('README freshness check uses the existing self-hosted Mac runner', () => {
   const workflow = read('.github/workflows/readme-freshness.yml');
-  assert.match(workflow, /runs-on: self-hosted/);
+  assert.match(workflow, /runs-on:\s*(?:self-hosted|\[\s*self-hosted\b)/);
+  assert.match(workflow, /macOS, ARM64/);
   assert.doesNotMatch(workflow, /ubuntu-latest|windows-latest|macos-latest/);
 });
 
@@ -175,7 +176,7 @@ test('README freshness workflow protects the private runner from forked pull req
   const workflow = read('.github/workflows/readme-freshness.yml');
   const guard = /if:\s*github\.event_name != 'pull_request' \|\| github\.event\.pull_request\.head\.repo\.full_name == github\.repository/;
   assert.match(workflow, /pull_request:/);
-  assert.match(workflow, /runs-on:\s*self-hosted/);
+  assert.match(workflow, /runs-on:\s*(?:self-hosted|\[\s*self-hosted\b)/);
   assert.match(workflow, guard);
 });
 

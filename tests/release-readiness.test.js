@@ -34,6 +34,17 @@ test('release preflight treats all ten approved apps as release-ready implementa
   assert.match(check.detail, /pages, sheets, slides, notes, database, forms, lists, planner, todo, loop/);
 });
 
+
+test('release preflight verifies every pinned individual product source module', () => {
+  const root = path.resolve(__dirname, '..');
+  const result = runPreflight({ rootDir: root, nodeVersion: '24.22.2', platform: 'linux' });
+  const check = result.checks.find(item => item.name === 'Product source parity');
+  assert.ok(check, 'preflight must verify the pinned individual-product source copies');
+  assert.equal(check.passed, true);
+  const lock = require('../docs/PRODUCT_SOURCE_LOCK.json');
+  assert.equal(check.detail, `Verified ${lock.products.length} pinned product source modules.`);
+});
+
 test('artifact verification requires all expected installer formats and writes SHA-256 sums', () => {
   const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'brightdesk-release-'));
   try {
@@ -51,6 +62,13 @@ test('artifact verification requires all expected installer formats and writes S
   } finally {
     fs.rmSync(directory, { recursive: true, force: true });
   }
+});
+
+test('universal macOS packaging keeps the identical ASAR archive unmerged and the Rust addon unpacked', () => {
+  const manifest = require('../package.json');
+  assert.equal(manifest.build.mac.mergeASARs, false);
+  assert.equal(manifest.build.asar, true);
+  assert.ok(manifest.build.asarUnpack.includes('native/brightdesk_engine.node'));
 });
 
 test('release terms are wired into native installers and the first-launch agreement gate', () => {

@@ -73,7 +73,8 @@
     "dist:apps:win": "npm run native:build && node scripts/build-apps.js win",
     "dist:apps:mac": "npm run native:build && node scripts/build-apps.js mac",
     "dist:apps:linux": "npm run native:build && node scripts/build-apps.js linux",
-    "verify:local-release": "node scripts/verify-local-release.js"
+    "verify:local-release": "node scripts/verify-local-release.js",
+    "verify:product-sources": "node scripts/verify-product-sources.js"
   },
   "devDependencies": {
     "jsdom": "^30.1.3",
@@ -136,6 +137,8 @@
         "pkg",
         "zip"
       ],
+      "icon": "build/icon.icns",
+      "mergeASARs": false,
       "category": "public.app-category.productivity",
       "artifactName": "Brightdesk-Office-Suite-${version}-${arch}.${ext}"
     },

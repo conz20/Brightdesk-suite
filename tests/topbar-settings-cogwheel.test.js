@@ -44,10 +44,17 @@ test('top-right controls clearly identify notifications, saving and Settings', (
   assert.match(concept, /id="notifications-bell"/);
   assert.ok(readme.includes('suite-dashboard-concept-single-settings.svg'), 'README must display the refreshed single-Settings preview');
   assert.match(concept, /id="settings-cogwheel"/);
-  assert.match(concept, /one suite-level App Centre entry in the left sidebar/i);
-  assert.match(concept, /Product shortcuts are not repeated beside the App Centre grid/i);
-  assert.match(concept, /id="sidebar-app-centre"/);
-  assert.doesNotMatch(concept, /id="sidebar-(?:pages|sheets|decks|notes|database|forms|lists|planner|todo|workspace)-/);
-  assert.match(concept, /one Settings cogwheel appears in the top-right beside Notifications/i);
+  const sidebarStart = concept.indexOf('<g id="sidebar-app-centre">');
+  const sidebarEnd = concept.indexOf('</g>\n<path d="M24 1112', sidebarStart);
+  const appCentreSidebar = sidebarStart >= 0 && sidebarEnd > sidebarStart
+    ? concept.slice(sidebarStart, sidebarEnd + 4)
+    : '';
+  assert.ok(appCentreSidebar, 'the App Centre preview must have its dedicated sidebar entry');
+  assert.match(appCentreSidebar, />App Centre</);
+  assert.doesNotMatch(appCentreSidebar, /Settings|Pages|Sheets|Decks|Notes|Database|Forms|Lists|Planner|To Do|Workspace/,
+    'the App Centre sidebar must not repeat Settings or the ten product shortcuts beside the product cards');
+  assert.equal((concept.match(/id="settings-cogwheel"/g) || []).length, 1,
+    'the concept must show exactly one Settings cogwheel');
+  assert.match(concept, /One Settings cogwheel appears in the top-right beside Notifications/i);
   assert.doesNotMatch(concept, /<text[^>]*>C<\/text>/, 'the concept must not show the account initial');
 });

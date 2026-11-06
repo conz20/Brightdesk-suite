@@ -2,6 +2,25 @@
 
 This is the shared design contract for Brightdesk Office Suite and all ten approved applications. It draws on familiar productivity and creative-software conventions while keeping Brightdesk's own brand, layout, icon artwork and interaction language. It must not copy proprietary Microsoft, Adobe or ArtCraft code, logos, screenshots or distinctive trade dress.
 
+The macOS suite application icon uses the approved Brightdesk four-panel brand mark in `src/assets/brand/brightdesk-mark.svg`, packaged as `build/icon.icns`. Do not use Electron's default icon or substitute unrelated artwork.
+
+
+## Canonical design contract
+
+The machine-readable source of truth is [BRIGHTDESK_DESIGN_CONTRACT.json](BRIGHTDESK_DESIGN_CONTRACT.json). It is part of this repository and defines the approved shared tokens and the ten product accent/icon identities. Keep it in sync with this document and the application stylesheets. Brightdesk-AI mirrors this file for offline guidance and checks its copy against this canonical suite version.
+
+## Approved shared shell tokens
+
+- **Canvas:** `#F3F6FA`
+- **Working surfaces:** `#FFFFFF`; muted surfaces `#F8F9FB`
+- **Navigation:** vertical deep-navy gradient from `#14233F` to `#0D1930`, with white primary labels and muted `#A8B6D0` secondary labels.
+- **Text:** ink `#202B3C`, body `#354256`, muted `#68778C`
+- **Borders:** `#DFE4EC` and soft separator `#EBEFF4`
+- **Suite accent:** `#526FE0`
+- **Typography:** Inter with system sans-serif fallbacks.
+
+Every product shares the same shell and surface language but retains the exact product accent recorded in the JSON contract. Accents identify product actions and focus states; they do not turn the suite into ten unrelated themes. Product-specific work surfaces must remain calm and readable.
+
 ## Brand foundation
 
 - Use the Brightdesk four-panel mark and lowercase wordmark consistently.
@@ -33,16 +52,15 @@ The product-specific accents should help recognition, not create ten unrelated d
 
 The suite home should make each product immediately recognisable and manageable:
 
-- Use one clear Settings cog in the top-right as the suite-wide entry point for local app, language and update management; do not repeat it as a sidebar item.
-- On the App Centre screen, show one suite-level **App Centre** entry in the sidebar and keep the ten product choices in the main product grid. Do not repeat the same ten products as sidebar shortcuts beside that grid.
-- Inside an active product workspace, show only installed products in a **Switch product** sidebar group for quick navigation. Hide that group on the App Centre and language/settings screens; the sidebar should reflect the current context rather than duplicate the page content.
-- Label genuinely product-specific options in a product card's three-dot menu **Product settings** so they are clearly distinct from suite-wide Settings.
-- Show all ten approved products in a responsive app grid with strong, product-specific preview artwork.
-- Every card contains the app icon, product name, a concise purpose line, a truthful Installed or Available state, and obvious Open plus Uninstall actions when installed, or Install when available.
-- Keep installation state and primary actions visible; do not hide them in overflow menus.
-- Confirm uninstall and make clear that removing an app from the suite does not delete its local documents.
-- Put language packs, spelling dictionaries and update preferences in the Settings area.
-- Show progress and clear success/failure feedback for downloads and updates.
+- Use one clear Settings cog in the top-right as the suite-wide entry point for app management, language resources and updates; do not repeat it as a sidebar item.
+- If product-specific card settings are implemented later, label them **Product settings** to distinguish them from suite-wide Settings. Do not present this future menu as an implemented App Centre control.
+
+- Make Home the default first viewport for the integrated suite and show all ten approved products together in a responsive app-centre grid with strong, product-specific preview artwork.
+- Keep a persistent **All apps** destination in the suite sidebar and a clear return-to-home control in every product workspace. All ten product destinations remain directly reachable from the sidebar; switching products must never strand the user inside a workspace.
+- Every home card contains the original app icon, product name, concise purpose line, truthful **Included in Brightdesk Office Suite** state and an obvious **Open** action.
+- Keep Settings separate from app discovery. Settings contains device-local language packs, spelling dictionaries and update preferences; it is not the place users must visit to find or open products.
+- Brightdesk currently bundles all ten products in one suite package. Do not label a local navigation preference as an install or uninstall, and do not show a Download action until a real, verified product installer URL is published. Separate downloadable product installers are not currently published.
+- Show progress and clear success/failure feedback for any future downloads and updates.
 - Never show fabricated update states, availability or version numbers. If an action is only a design target, label it as such in documentation.
 
 The suite is local-first desktop software. Do not add account creation, sign-in, cloud storage, online workspace or cloud-sync imagery or language. Settings must describe controls and resources on this device. Local save states should be explicit and truthful.
