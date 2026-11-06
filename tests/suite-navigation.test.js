@@ -27,16 +27,15 @@ test('all ten installed products remain available in the product-switching sideb
   assert.match(app, /sidebar-section-label'\)\.textContent = manager \? t\('sidebar\.suite'\) : \(languages \? t\('sidebar\.settings'\) : t\('sidebar\.yourApps'\)\)/);
 });
 
-test('both suite concept SVGs show one App Centre entry and no repeated product shortcut rail', () => {
+test('Brightdesk Home and App Centre artwork match the ten-product suite navigation', () => {
   const svg = read('assets/product-experience/brightdesk-app-centre.svg');
-  {
-    assert.equal((svg.match(/id="sidebar-app-centre"/g) || []).length, 1, file);
-    assert.doesNotMatch(svg, /id="sidebar-(?:pages|sheets|decks|notes|database|forms|lists|planner|todo|workspace)-/);
-    assert.match(svg, /Brightdesk Office Suite App Centre experience/);
-    assert.match(svg, /Product shortcuts are not repeated beside the App Centre grid/);
-    assert.match(svg, /id="settings-cogwheel"/);
-    assert.match(svg, /id="notifications-bell"/);
-  }
+  assert.equal((svg.match(/id="sidebar-app-centre"/g) || []).length, 1);
+  assert.doesNotMatch(svg, /id="sidebar-(?:pages|sheets|decks|notes|database|forms|lists|planner|todo|workspace)-/);
+  assert.match(svg, /Brightdesk Office Suite App Centre experience/);
+  assert.match(svg, /Product shortcuts are not repeated beside the App Centre grid/);
+  assert.match(svg, /id="settings-cogwheel"/);
+  assert.match(svg, /id="notifications-bell"/);
+
   const home = read('assets/product-experience/brightdesk-home.svg');
   assert.match(home, /Welcome to Brightdesk/);
   assert.match(home, /Your products/);
