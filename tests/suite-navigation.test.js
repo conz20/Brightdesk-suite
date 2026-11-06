@@ -48,6 +48,11 @@ test('product settings menu can hide an installed product from Switch product na
 test('the live desktop shell provides Home, Apps and Files navigation', () => {
   const html = read('src/index.html');
   const app = read('src/app.js');
+  const en = JSON.parse(read('src/languages/en-AU.json')).translations;
+  assert.equal(en['sidebar.home'], 'Home');
+  assert.equal(en['sidebar.files'], 'Files');
+  assert.match(read('src/assets/icons/home.svg'), /<svg/);
+  assert.match(read('src/assets/icons/files.svg'), /<svg/);
   assert.match(html, /id="home-nav"/);
   assert.match(html, /id="app-centre-nav"/);
   assert.match(html, /id="files-nav"/);
