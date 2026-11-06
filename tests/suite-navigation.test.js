@@ -55,7 +55,7 @@ test('the live desktop shell provides Home, Apps and Files navigation', () => {
   assert.match(read('src/assets/icons/files.svg'), /<svg/);
   const filesIcon = read('src/assets/icons/files.svg');
   const homeArtwork = read('assets/product-experience/brightdesk-home.svg');
-  assert.match(filesIcon, /<title[^>]*>Files<\\/title>/);
+  assert.match(filesIcon, /<title[^>]*>Files<\/title>/);
   assert.match(filesIcon, /<path[^>]*data-role="document-stack"/);
   assert.match(homeArtwork, /id="files-folder-documents-icon"/);
   assert.match(homeArtwork, /data-role="document-stack"/);
