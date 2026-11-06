@@ -48,7 +48,7 @@ test('README and visual standard explain the contextual product-switching rule',
   const readme = read('README.md');
   const standard = read('docs/BRIGHTDESK_VISUAL_STANDARD.md');
   const home = read('assets/product-experience/brightdesk-home.svg');
-  assert.match(readme, /On the My Applications screen[\s\S]*?not repeated beside the ten product cards/);
+  assert.match(readme, /professional Home, My Applications and Files sidebar/);
   assert.match(readme, /under \*\*Switch product\*\*/);
   assert.equal((readme.match(/assets\/product-experience\/brightdesk-home\.svg/g) || []).length, 1);
   assert.doesNotMatch(readme, /brightdesk-app-centre\.svg/);
