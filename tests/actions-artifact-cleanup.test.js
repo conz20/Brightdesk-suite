@@ -125,10 +125,12 @@ test('cleanup paginates before deleting only stale installer artifacts', async (
 
   assert.deepEqual(result.deletedArtifacts.map(item => item.id), [11, 21]);
   assert.deepEqual(deleted, [11, 21], 'artifacts from other workflows must not be deleted');
-  assert.deepEqual(
-    requests.filter(item => item.method === 'GET').map(item => new URL(item.url).searchParams.get('page')),
-    ['1', '2']
-  );
+  const artifactPages = requests
+    .filter(item => item.method === 'GET' && new URL(item.url).pathname.endsWith('/actions/artifacts'))
+    .map(item => new URL(item.url).searchParams.get('page'));
+  assert.deepEqual(artifactPages, ['1', '2']);
+  assert.ok(requests.some(item => item.url.endsWith('/actions/runs/10')));
+  assert.ok(requests.some(item => item.url.endsWith('/actions/runs/11')));
   assert.ok(requests.every(item => item.url.startsWith('https://api.github.com/repos/')));
 });
 
