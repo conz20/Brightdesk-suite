@@ -55,6 +55,16 @@ test('artifact cleanup protects the current workflow and malformed timestamps', 
     false
   );
   assert.equal(
+    isPrunableArtifact(artifact(4, 'brightdesk-Linux', 3 * DAY), { now: NOW, currentRunId: '999' }),
+    false,
+    'artifacts without an identifiable source run must be retained'
+  );
+  assert.equal(
+    isPrunableArtifact({ ...artifact(5, 'brightdesk-Linux', 3 * DAY), expired: true }, { now: NOW }),
+    false,
+    'already-expired artifacts must not receive a redundant delete request'
+  );
+  assert.equal(
     isPrunableArtifact(artifact(3, 'brightdesk-Linux', 3 * DAY), { now: NOW, minAgeMs: 0 }),
     true
   );

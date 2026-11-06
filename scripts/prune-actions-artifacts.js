@@ -23,9 +23,13 @@ function isPrunableArtifact(artifact, {
 } = {}) {
   if (!artifact || !isApprovedArtifactName(artifact.name)) return false;
   if (!Number.isFinite(now) || !Number.isFinite(minAgeMs) || minAgeMs < 0) return false;
-  if (currentRunId !== null && artifact.workflow_run?.id !== undefined &&
-      String(artifact.workflow_run.id) === String(currentRunId)) {
-    return false;
+  if (artifact.expired === true) return false;
+  if (currentRunId !== null) {
+    const sourceRunId = artifact.workflow_run?.id;
+    if (sourceRunId === undefined || sourceRunId === null ||
+        String(sourceRunId) === String(currentRunId)) {
+      return false;
+    }
   }
 
   const createdAt = Date.parse(artifact.created_at);
