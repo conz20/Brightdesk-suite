@@ -1048,11 +1048,11 @@ $('lists-column-type').addEventListener('change',()=>{$('lists-column-options-wr
 $('export-button').addEventListener('click',exportCurrent);$('open-button').addEventListener('click',openFile);$('save-project').addEventListener('click',saveProject);
 $('updates-button').addEventListener('click',async()=>{const msg=$('update-message');msg.hidden=false;msg.textContent=t('common.updateChecking');try{const r=await window.brightdesk.checkForUpdates();if(!r?.ok)msg.textContent=r?.message||'Update checks are not configured yet.';}catch(e){msg.textContent=`Update check failed: ${e.message}`;}});
 window.brightdesk.onUpdateState?.(handleUpdateState);
-loadLocal();$('platform').textContent=`Desktop app · ${window.brightdesk.platform}`;
+loadLocal();
 (async()=>{
   try {
     const version = await window.brightdesk.getVersion();
-    if (version) { $('version-label').textContent = `Version ${version}`; $('footer-version').textContent = `Brightdesk ${version}`; }
+    if (version) { $('footer-version').textContent = `Brightdesk ${version}`; }
   } catch (error) { console.warn('The desktop version could not be read.', error); }
   try { await refreshLanguageData(); } catch(error) { console.error('Language packs could not be loaded.',error); }
   try { await refreshDictionaries(); } catch(error) { console.error('Spelling dictionaries could not be loaded.',error); }

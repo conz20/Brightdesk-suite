@@ -552,3 +552,8 @@ body.suite-home .app-manager.home-view .manager-grid {
   body.suite-home .top-actions { gap: 8px; padding-right: 0; }
   body.suite-home .app-manager.home-view .manager-hero { margin-top: 24px; }
 }
+
+
+/* Keep the Home sidebar as clean as the production artwork. */
+body.suite-home .sidebar > .nav small { display: none; }
+body.suite-home .main > footer { display: none; }

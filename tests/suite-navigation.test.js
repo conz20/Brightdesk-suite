@@ -164,3 +164,18 @@ test('production Home activates its dedicated shell layout and circular utility 
   assert.ok(styles.includes('font-size: 34px;'));
   assert.ok(styles.includes('padding: 56px 4.125vw 20px 2vw;'));
 });
+
+
+test('Home sidebar footer and navigation match the production artwork', () => {
+  const html = read('src/index.html');
+  const app = read('src/app.js');
+  const styles = read('src/styles.css');
+  const readme = read('README.md');
+  assert.ok(html.includes('<small id="platform">Brightdesk Office Suite</small>'));
+  assert.ok(html.includes('<small id="version-label">Local-first · Your files stay here</small>'));
+  assert.ok(!app.includes("$('platform').textContent="));
+  assert.ok(!app.includes("$('version-label').textContent ="));
+  assert.ok(styles.includes('body.suite-home .sidebar > .nav small { display: none; }'));
+  assert.ok(styles.includes('body.suite-home .main > footer { display: none; }'));
+  assert.ok(readme.includes('with no secondary captions'));
+});
