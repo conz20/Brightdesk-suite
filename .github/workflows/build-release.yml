@@ -169,7 +169,7 @@ jobs:
             release/${{ matrix.platform }}/**
             release/apps/${{ matrix.platform }}/**
           if-no-files-found: error
-          retention-days: 7
+          retention-days: 1
 
   collect:
     name: Collect verified installers
