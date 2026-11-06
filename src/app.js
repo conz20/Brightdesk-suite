@@ -464,8 +464,8 @@ function renderGenericWorkspace() {
 function renderAppManager() {
   const grid = $('app-manager-grid'); grid.innerHTML = '';
   const homeView = state.view === 'home';
-  $('manager-title').textContent = homeView ? 'Your products' : (state.setupComplete ? t('manager.manageTitle') : t('manager.chooseTitle'));
-  $('manager-description').textContent = homeView ? 'Ten focused tools, connected by one Brightdesk experience.' : (state.setupComplete ? t('manager.manageDesc') : t('manager.chooseDesc'));
+  $('manager-title').textContent = homeView ? t('home.productsTitle') : (state.setupComplete ? t('manager.manageTitle') : t('manager.chooseTitle'));
+  $('manager-description').textContent = homeView ? t('home.productsDescription') : (state.setupComplete ? t('manager.manageDesc') : t('manager.chooseDesc'));
   $('manager-note').textContent = t('manager.note');
   $('finish-app-setup').textContent = state.setupComplete ? t('manager.done') : t('manager.installSelected');
   catalog.forEach(item => {
@@ -787,7 +787,7 @@ function render() {
   const files = state.view === 'files';
   const languages = state.view === 'languages';
   const suitePage = home || manager || files;
-  $('sidebar-section-label').textContent = languages ? t('sidebar.settings') : (suitePage ? 'YOUR WORKSPACE' : t('sidebar.yourApps'));
+  $('sidebar-section-label').textContent = languages ? t('sidebar.settings') : (suitePage ? t('sidebar.workspace') : t('sidebar.yourApps'));
   $('sidebar-section-label').hidden = Boolean(launchAppId);
   $('home-nav').hidden = !suitePage || Boolean(launchAppId);
   $('app-centre-nav').hidden = !suitePage || Boolean(launchAppId);
@@ -807,16 +807,16 @@ function render() {
   $('language-manager').hidden = !languages;
   $('workspace').hidden = suitePage || files || languages;
   $('welcome').hidden = suitePage || files || languages || ['todo','lists','forms','planner','database','loop'].includes(state.app);
-  $('app-title').textContent = home ? 'Your apps' : (manager ? t('sidebar.applications') : (files ? 'Files' : (languages ? t('language.title') : (catalog.find(item => item.id === state.app)?.name || state.app))));
+  $('app-title').textContent = home ? t('home.title') : (manager ? t('sidebar.applications') : (files ? 'Files' : (languages ? t('language.title') : (catalog.find(item => item.id === state.app)?.name || state.app))));
   $('top-actions').hidden = languages;
   $('save-status').hidden = suitePage || files || languages;
   $('open-button').hidden = suitePage || files || languages;
   $('save-project').hidden = suitePage || files || languages;
   if (home || manager) {
-    $('save-status').textContent = home ? 'Your apps' : t('manager.manageTitle');
+    $('save-status').textContent = home ? t('home.title') : t('manager.manageTitle');
     renderAppManager();
   } else if (files) {
-    $('save-status').textContent = 'Files on this device';
+    $('save-status').textContent = t('files.title');
   } else if (languages) {
     $('save-status').textContent = t('language.title'); renderLanguageManager();
   } else {
