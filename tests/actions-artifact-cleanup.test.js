@@ -54,10 +54,16 @@ test('artifact cleanup protects the current workflow and malformed timestamps', 
     isPrunableArtifact({ id: 2, name: 'brightdesk-Linux', created_at: 'not-a-date' }, { now: NOW }),
     false
   );
+  const { workflow_run: ignoredRun, ...withoutWorkflowRun } = artifact(4, 'brightdesk-Linux', 3 * DAY);
   assert.equal(
-    isPrunableArtifact(artifact(4, 'brightdesk-Linux', 3 * DAY), { now: NOW, currentRunId: '999' }),
+    isPrunableArtifact(withoutWorkflowRun, { now: NOW, currentRunId: '999' }),
     false,
     'artifacts without an identifiable source run must be retained'
+  );
+  assert.equal(
+    isPrunableArtifact(artifact(6, 'brightdesk-Linux', 3 * DAY, 10), { now: NOW, currentRunId: '999' }),
+    true,
+    'old artifacts from a different identified run can be pruned'
   );
   assert.equal(
     isPrunableArtifact({ ...artifact(5, 'brightdesk-Linux', 3 * DAY), expired: true }, { now: NOW }),
