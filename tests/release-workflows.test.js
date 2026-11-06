@@ -46,8 +46,8 @@ test('release workflow builds and verifies all three desktop platforms', () => {
     assert.ok(workflow.includes(command), `workflow includes ${command}`);
   }
   assert.match(workflow, /node-version: 24\.22\.2/);
-  assert.match(workflow, /\non:\s*\n\s*workflow_dispatch:/);
-  assert.doesNotMatch(workflow, /^\s+push:/m, 'installer builds must be manual, not automatic on push');
+  assert.match(workflow, /\non:\s*[\s\S]*?workflow_dispatch:/, 'manual installer trigger remains available');
+  assert.match(workflow, /push:\s*\n\s*branches: \[ci\/installer-validation\]/, 'automatic installer validation is restricted to the temporary verification branch');
   assert.doesNotMatch(workflow, /npm run lock:prepare/, 'release builds must not regenerate the committed lock');
   assert.match(workflow, /npm run lock:verify/);
   assert.doesNotMatch(workflow, /brightdesk-dependency-lock/, 'the committed lock is read directly from the checked-out source');
