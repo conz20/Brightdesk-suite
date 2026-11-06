@@ -19,7 +19,7 @@ test('Apps shows one suite-level sidebar entry instead of repeating the ten prod
   assert.match(read('src/assets/brand/brightdesk-suite-mark.svg'), /viewBox="0 0 160 160"/);
   assert.doesNotMatch(html, /class="nav[^\"]*create|id="(?:create|new)-nav"/i);
   assert.doesNotMatch(html, /data-app="(?:pages|sheets|slides|notes|database|forms|lists|planner|todo|loop)"/);
-  assert.match(app, /catalog\.filter\(item => installedApp\(item\.id\)\)/);
+  assert.match(app, /catalog\.filter\(item => installedApp\(item\.id\) && !state\.hiddenProducts\.includes\(item\.id\)\)/);
   assert.match(app, /\$\('dynamic-app-nav'\)\.hidden = suitePage \|\| languages \|\| Boolean\(launchAppId\)/);
   assert.match(app, /\$\('app-centre-nav'\)\.hidden = !suitePage \|\| Boolean\(launchAppId\)/);
   assert.match(app, /manager \? t\('sidebar\.applications'\)/);
@@ -65,7 +65,7 @@ test('all ten installed products remain available in the product-switching sideb
   const app = read('src/app.js');
   const catalogue = require('../src/app-catalog');
   assert.equal(catalogue.length, 10);
-  assert.match(app, /function syncAppNavigation\(\)[\s\S]*?catalog\.filter\(item => installedApp\(item\.id\)\)/);
+  assert.match(app, /function syncAppNavigation\(\)[\s\S]*?catalog\.filter\(item => installedApp\(item\.id\) && !state\.hiddenProducts\.includes\(item\.id\)\)/);
   assert.match(app, /button\.addEventListener\('click',\(\)=>setApp\(item\.id\)\)/);
   assert.match(app, /const suitePage = home \|\| manager \|\| files/);
 });
