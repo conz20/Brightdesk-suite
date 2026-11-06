@@ -54,8 +54,8 @@ test('top-right controls clearly identify notifications, saving and Settings', (
   assert.match(app, /localStorage\.setItem\('brightdesk-notifications-v1'/);
   assert.match(app, /updateState\.status === 'available'[\s\S]*?addNotification/);
   assert.match(app, /updateState\.status === 'downloaded'[\s\S]*?addNotification/);
-  assert.match(app, /notification\.action === 'download-update'/);
-  assert.match(app, /notification\.action === 'install-update'/);
+  assert.match(app, /item\.action === 'download-update'/);
+  assert.match(app, /item\.action === 'install-update'/);
   assert.match(main, /new Notification\(/);
   assert.match(main, /Notification\.isSupported\(\)/);
   assert.doesNotMatch(homeArtwork, /Install a product|Update Brightdesk/);
