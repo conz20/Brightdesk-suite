@@ -43,9 +43,9 @@ test('the launcher and app navigation load the bundled icon artwork', () => {
 test('suite sidebar uses the original Brightdesk geometric brand mark, not a letter placeholder', () => {
   const root = path.join(__dirname, '..');
   const html = fs.readFileSync(path.join(root, 'src', 'index.html'), 'utf8');
-  const markPath = path.join(root, 'src', 'assets', 'brand', 'brightdesk-mark.svg');
+  const markPath = path.join(root, 'src', 'assets', 'brand', 'brightdesk-suite-mark.svg');
   assert.ok(fs.existsSync(markPath), 'Brightdesk geometric mark must be bundled with the app');
-  assert.ok(html.includes('<img class="brand-mark-image" src="assets/brand/brightdesk-mark.svg"'));
+  assert.ok(html.includes('<img class="brand-mark-image" src="assets/brand/brightdesk-suite-mark.svg"'));
   assert.equal(html.includes('class="brand-mark">B</div>'), false);
 });
 
