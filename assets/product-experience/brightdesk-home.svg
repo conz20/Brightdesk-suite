@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1600" height="1120" viewBox="0 0 1600 1120" role="img" aria-labelledby="title desc">
 <title id="title">Brightdesk Office Suite Home</title>
-<desc id="desc">A unified Brightdesk Home screen combining local recent work, useful shortcuts and the ten original product icons. A professional navigation rail links Home, My Apps and Files, with suite Settings in the top-right.</desc>
+<desc id="desc">A unified Brightdesk Home screen combining local recent work, useful shortcuts and the ten original product icons. A professional navigation rail links Home, My Applications and Files, with suite Settings in the top-right.</desc>
 <defs>
  <linearGradient id="nav" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#172846"/><stop offset="1" stop-color="#0e1a30"/></linearGradient>
  <linearGradient id="hero" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#eaf1ff"/><stop offset="1" stop-color="#f1edff"/></linearGradient>
@@ -17,7 +17,7 @@
 <text x="49" y="162" font-family="Arial,sans-serif" font-size="14" font-weight="700" fill="#fff">Home</text>
 <g fill="none" stroke="#c9d6ed" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M29 153l9-8 9 8v11h-7v-7h-4v7h-7z"/></g>
 <g font-family="Arial,sans-serif" font-size="13" fill="#c4cfe2">
- <text x="49" y="215">My Apps</text><text x="49" y="263">Files</text>
+ <text x="49" y="215">My Applications</text><text x="49" y="263">Files</text>
 </g>
 <g fill="none" stroke="#aab9d2" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
  <rect x="28" y="197" width="17" height="15" rx="3"/><path d="M33 197v-3h7v3M34 204h6M34 208h6"/>
@@ -219,5 +219,5 @@
  <rect x="296" y="907" width="32" height="32" rx="8" fill="#eaf7ef"/><text x="307" y="929" font-size="13" font-weight="700" fill="#2c9160">S</text><text x="346" y="918" font-size="13" font-weight="700" fill="#253650">Monthly budget</text><text x="346" y="937" font-size="11" fill="#8490a4">Sheets · Saved on this device</text><text x="1410" y="929" font-size="11" fill="#8490a4">Recently opened</text>
  <rect x="296" y="981" width="32" height="32" rx="8" fill="#fff3e4"/><text x="307" y="1003" font-size="13" font-weight="700" fill="#b57a2a">D</text><text x="346" y="992" font-size="13" font-weight="700" fill="#253650">Product overview</text><text x="346" y="1011" font-size="11" fill="#8490a4">Decks · Saved on this device</text><text x="1410" y="1003" font-size="11" fill="#8490a4">Recently opened</text>
 </g>
-<text x="276" y="1080" font-family="Arial,sans-serif" font-size="11" fill="#8996aa">BRIGHTDESK OFFICE SUITE · Original product icons · Local-first files · Home and My Apps</text>
+<text x="276" y="1080" font-family="Arial,sans-serif" font-size="11" fill="#8996aa">BRIGHTDESK OFFICE SUITE · Original product icons · Local-first files · Home and My Applications</text>
 </svg>
