@@ -785,6 +785,7 @@ function render() {
     const name = btn.querySelector('b'); if (name) name.textContent = t(`apps.${appId}`);
   });
   const home = state.view === 'home';
+  document.body.classList.toggle('suite-home', home);
   const manager = state.view === 'manager';
   const files = state.view === 'files';
   const languages = state.view === 'languages';

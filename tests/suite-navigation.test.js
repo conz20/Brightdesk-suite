@@ -145,3 +145,20 @@ test('production Home artwork matches the live desktop headings and card layout'
   assert.ok(readme.includes('top bar reads **Your apps**'));
   assert.ok(guide.includes('top-bar eyebrow **YOUR WORKSPACE** and heading **Your apps**'));
 });
+
+
+test('production Home activates its dedicated shell layout and circular utility controls', () => {
+  const html = read('src/index.html');
+  const app = read('src/app.js');
+  const styles = read('src/styles.css');
+  assert.ok(html.includes('width="46" height="46"'));
+  assert.ok(!html.includes('<small data-i18n="sidebar.workspace">YOUR WORKSPACE</small>'));
+  assert.ok(app.includes("document.body.classList.toggle('suite-home', home)"));
+  assert.ok(styles.includes('width: 238px;'));
+  assert.ok(styles.includes('width: 46px;'));
+  assert.ok(styles.includes('font-size: 25px;'));
+  assert.ok(styles.includes('width: 38px;'));
+  assert.ok(styles.includes('body.suite-home .main'));
+  assert.ok(styles.includes('font-size: 34px;'));
+  assert.ok(styles.includes('padding: 56px 4.125vw 20px 2vw;'));
+});
