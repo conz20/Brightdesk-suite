@@ -403,3 +403,15 @@ input:disabled, select:disabled, textarea:disabled, button:disabled { cursor: no
 .app-card-footer{padding-top:12px;border-top:1px solid #edf0f5}
 .app-card:focus-within{outline:2px solid #7771e6;outline-offset:3px}
 @media(max-width:720px){.manager-grid{grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:12px}.app-card{padding:16px}}
+
+.app-card-header{position:relative;padding-right:38px}
+.app-card-menu-wrap{position:absolute;top:-4px;right:-5px;z-index:3}
+.app-card-menu-trigger{width:34px;height:34px;display:grid;place-items:center;padding:0;border:1px solid transparent;border-radius:10px;background:transparent;cursor:pointer}
+.app-card-menu-trigger:hover,.app-card-menu-trigger[aria-expanded=true]{background:#f2f5fa;border-color:#e4e9f1}
+.app-card-menu-trigger img{width:19px;height:19px;display:block}
+.app-card-menu{position:absolute;top:39px;right:0;min-width:190px;padding:6px;background:#fff;border:1px solid #e1e6ef;border-radius:11px;box-shadow:0 12px 30px #1a2b4b20}
+.app-card-menu[hidden]{display:none}
+.app-card-menu-item{width:100%;padding:9px 11px;border:0;border-radius:7px;background:transparent;color:#36445b;text-align:left;font:inherit;font-size:11px;cursor:pointer}
+.app-card-menu-item:hover:not(:disabled){background:#f2f5fa}
+.app-card-menu-item:disabled{color:#a0a8b6;cursor:not-allowed}
+.app-card-menu-trigger:focus-visible,.app-card-menu-item:focus-visible{outline:2px solid #7771e6;outline-offset:2px}
