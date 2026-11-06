@@ -131,3 +131,14 @@ test('Vitest keeps the previous mock-history default after the major upgrade', (
   const config = fs.readFileSync(path.join(__dirname, '..', 'vitest.config.js'), 'utf8');
   assert.match(config, /clearMocks:\s*false/);
 });
+
+test('macOS installer pull-request verification does not upload the entire release workspace', () => {
+  const workflow = fs.readFileSync(
+    path.join(__dirname, '..', '.github', 'workflows', 'verify-macos-installer.yml'),
+    'utf8'
+  );
+
+  assert.match(workflow, /npm run release:verify:mac/);
+  assert.doesNotMatch(workflow, /actions\\/upload-artifact/);
+  assert.doesNotMatch(workflow, /path:\\s*release\\/\\*\\*/);
+});
