@@ -110,8 +110,8 @@ test('platform release artifacts remain in separate folders and release lock met
 
 test('artifact retention limits temporary build bundles while preserving the final release bundle', () => {
   const workflow = read('.github/workflows/build-release.yml');
-  const platformUpload = workflow.split('- name: Upload verified platform build')[1]?.split('\\n      - name:')[0] || '';
-  const completeUpload = workflow.split('- name: Upload complete Brightdesk installer bundle')[1]?.split('\\n  publish-release:')[0] || '';
+  const platformUpload = workflow.split('- name: Upload verified platform build')[1]?.split('\n      - name:')[0] || '';
+  const completeUpload = workflow.split('- name: Upload complete Brightdesk installer bundle')[1]?.split('\n  publish-release:')[0] || '';
   assert.match(platformUpload, /retention-days: 1/);
   assert.match(completeUpload, /retention-days: 7/);
 });
