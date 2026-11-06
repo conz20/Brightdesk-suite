@@ -47,6 +47,7 @@ test('Brightdesk Home and My Applications artwork match the ten-product suite na
 test('README and visual standard explain the contextual product-switching rule', () => {
   const readme = read('README.md');
   const standard = read('docs/BRIGHTDESK_VISUAL_STANDARD.md');
+  const home = read('assets/product-experience/brightdesk-home.svg');
   assert.match(readme, /On the My Applications screen[\s\S]*?not repeated beside the ten product cards/);
   assert.match(readme, /under \*\*Switch product\*\*/);
   assert.match(standard, /Home.*My Applications.*Files/);
