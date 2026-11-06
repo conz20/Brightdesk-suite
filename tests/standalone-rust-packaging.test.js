@@ -2,6 +2,7 @@
 
 const test = require('node:test');
 const assert = require('node:assert/strict');
+const { spawnSync } = require('node:child_process');
 const fs = require('node:fs');
 const path = require('node:path');
 
@@ -41,10 +42,34 @@ test('standalone product build scripts build the Rust addon once before Electron
 
 test('repository ignores Rust target output and native Node-API binaries in embedded products', () => {
   const ignore = read('.gitignore');
-  assert.match(ignore, /^\/rust\/target\/$/m);
-  assert.match(ignore, /^\*\*\/rust\/target\/$/m);
-  assert.match(ignore, /^\*\*\/target\/$/m);
-  assert.match(ignore, /^\*\*\/native\/\*\.node$/m);
-  assert.match(ignore, /^\*\*\/native\/\*\*\/\*\.node$/m);
-  assert.match(ignore, /^\*\*\/node_modules\/$/m);
+  assert.match(ignore, /^\\/rust\\/target\\/$/m);
+  assert.match(ignore, /^\\*\\*\\/rust\\/target\\/$/m);
+  assert.match(ignore, /^\\*\\*\\/target\\/$/m);
+  assert.match(ignore, /^\\*\\*\\/native\\/\\*\\.node$/m);
+  assert.match(ignore, /^\\*\\*\\/native\\/\\*\\*\\/\\*\\.node$/m);
+  assert.match(ignore, /^\\*\\*\\/node_modules\\/$/m);
+
+  const products = [
+    'Brightdesk-Pages', 'Brightdesk-Sheets', 'Brightdesk-Decks',
+    'Brightdesk-Notes', 'Brightdesk-Database', 'Brightdesk-Forms',
+    'Brightdesk-Lists', 'Brightdesk-Planner', 'Brightdesk-To-Do',
+    'Brightdesk-Workspace'
+  ];
+  const generatedPaths = ['native/brightdesk_engine.node'];
+  for (const product of products) {
+    generatedPaths.push(
+      `${product}/rust/target/debug/.rustc_info.json`,
+      `${product}/target/debug/.rustc_info.json`,
+      `${product}/native/darwin-arm64/brightdesk_native.node`,
+      `${product}/native/darwin-x64/brightdesk_native.node`
+    );
+  }
+
+  for (const generatedPath of generatedPaths) {
+    const result = spawnSync('git', ['check-ignore', '--no-index', '--quiet', generatedPath], {
+      cwd: root,
+      encoding: 'utf8'
+    });
+    assert.equal(result.status, 0, `Expected generated output to be ignored: ${generatedPath}`);
+  }
 });
