@@ -52,7 +52,7 @@ test('README and visual standard explain the contextual product-switching rule',
   assert.match(readme, /under \*\*Switch product\*\*/);
   assert.equal((readme.match(/assets\/product-experience\/brightdesk-home\.svg/g) || []).length, 1);
   assert.doesNotMatch(readme, /brightdesk-app-centre\.svg/);
-  assert.doesNotMatch(svg, /Install a product|Update Brightdesk/);
+  assert.doesNotMatch(home, /Install a product|Update Brightdesk/);
   assert.match(standard, /Home.*My Applications.*Files/);
   assert.match(standard, /Create.*navigation item/);
   assert.match(standard, /online-service destinations/);
