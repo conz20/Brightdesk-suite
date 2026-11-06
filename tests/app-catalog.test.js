@@ -73,7 +73,11 @@ test('the customer-facing release version has one authoritative source across th
   assert.match(versioning, /package\.json.*single source of truth/i);
   assert.match(versioning, /Brightdesk-AI.*no Brightdesk customer release number/i);
   assert.doesNotMatch(workflow, /Brightdesk-0\.1\.0-Installers|default: 'v0\.1\.0'/);
-  assert.match(workflow, /Brightdesk-\$\{\{ steps\.release-version\.outputs\.version \}\}-Installers/);
+  assert.match(workflow, /name: brightdesk-Linux/);
+  assert.match(workflow, /name: brightdesk-Windows/);
+  assert.match(workflow, /name: brightdesk-macOS/);
+  assert.match(workflow, /VERSION=\"\$\(node -p \"require\('\.\/package\.json'\)\.version\"\)\"/);
+  assert.doesNotMatch(workflow, /Brightdesk-\$\{\{ steps\.release-version\.outputs\.version \}\}-Installers/);
   assert.match(workflow, /tag_name: v\$\{\{ needs\.collect\.outputs\.version \}\}/);
 });
 
