@@ -104,12 +104,32 @@ function expectedSuiteFiles(options) {
 
 function verifyExactDirectoryContents(options) {
   const directory = options.directory;
-  const expectedFiles = options.expectedFiles;
-  const manifestName = options.manifestName;
+  const expectedFiles = options.expectedFiles ?? [];
+  const manifestName = options.manifestName ?? null;
+  const expectedDirectories = options.expectedDirectories ?? [];
   const label = options.label;
-  const allowedFiles = new Set([...expectedFiles, manifestName]);
+  const allowedFiles = new Set([
+    ...expectedFiles,
+    ...(manifestName ? [manifestName] : [])
+  ]);
+  const allowedDirectories = new Set(expectedDirectories);
+
+  let stat;
+  try {
+    stat = fs.lstatSync(directory);
+  } catch {
+    throw new Error('Missing ' + label + ': ' + directory);
+  }
+  if (!stat.isDirectory() || stat.isSymbolicLink()) {
+    throw new Error(label + ' must be a real directory: ' + directory);
+  }
+
   const unexpected = fs.readdirSync(directory, { withFileTypes: true })
-    .filter(entry => !entry.isFile() || !allowedFiles.has(entry.name))
+    .filter(entry => {
+      if (entry.isFile()) return !allowedFiles.has(entry.name);
+      if (entry.isDirectory()) return !allowedDirectories.has(entry.name);
+      return true;
+    })
     .map(entry => entry.name);
 
   if (unexpected.length) {
@@ -223,6 +243,22 @@ function verifyCompleteReleaseBundle(options) {
   if (!fs.existsSync(releaseDir) || !fs.statSync(releaseDir).isDirectory()) {
     throw new Error('Complete release folder does not exist: ' + releaseDir);
   }
+
+  verifyExactDirectoryContents({
+    directory: releaseDir,
+    expectedDirectories: ['Windows', 'macOS', 'Linux', 'apps', 'build-metadata'],
+    label: 'Published release root'
+  });
+  verifyExactDirectoryContents({
+    directory: path.join(releaseDir, 'apps'),
+    expectedDirectories: ['Windows', 'macOS', 'Linux'],
+    label: 'Product release staging folder'
+  });
+  verifyExactDirectoryContents({
+    directory: path.join(releaseDir, 'build-metadata'),
+    expectedFiles: ['package-lock.json'],
+    label: 'Release metadata folder'
+  });
 
   const lockPath = requireNonEmptyFile(
     path.join(releaseDir, 'build-metadata'),
