@@ -162,7 +162,7 @@
     "common.words": "words",
     "common.zoomIn": "Zoom in",
     "common.zoomOut": "Zoom out",
-    "sidebar.applications": "My Applications",
-    "sidebar.applicationsDescription": "All your desktop applications"
+    "sidebar.applications": "Apps",
+    "sidebar.applicationsDescription": "All your apps"
   }
 }
