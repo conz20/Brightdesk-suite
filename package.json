@@ -74,7 +74,14 @@
     "dist:apps:mac": "npm run native:build && node scripts/build-apps.js mac",
     "dist:apps:linux": "npm run native:build && node scripts/build-apps.js linux",
     "verify:local-release": "node scripts/verify-local-release.js",
-    "release:prepare:icons": "node scripts/prepare-platform-icons.js"
+    "release:prepare:icons": "node scripts/prepare-platform-icons.js",
+    "release:verify:products:win": "node scripts/verify-product-installers.js win release/apps",
+    "release:verify:products:mac": "node scripts/verify-product-installers.js mac release/apps",
+    "release:verify:products:linux": "node scripts/verify-product-installers.js linux release/apps",
+    "release:verify:complete": "node scripts/verify-complete-release-bundle.js",
+    "release:collect:win": "node scripts/collect-platform-build.js win",
+    "release:collect:mac": "node scripts/collect-platform-build.js mac",
+    "release:collect:linux": "node scripts/collect-platform-build.js linux"
   },
   "devDependencies": {
     "jsdom": "^30.1.3",
