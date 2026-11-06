@@ -122,6 +122,7 @@ test('root overrides stay scoped to their compatible dependency parents', () => 
   assert.equal(manifest.overrides.pptxgenjs['image-size'], '2.0.4');
   assert.equal(manifest.overrides.exceljs.uuid, '^11.1.1');
   assert.equal(manifest.overrides['app-builder-lib'].minimatch, '^11.0.1');
+  assert.equal(manifest.overrides['@electron/asar'].minimatch, '^3.1.5');
   assert.equal(manifest.overrides['archiver@5.3.2']['readdir-glob@^1.1.2'].minimatch, '^11.0.1');
   assert.equal(manifest.overrides['archiver@5.3.2']['readdir-glob@^1.1.2']['.'], '^3.0.0');
 });
