@@ -6,7 +6,7 @@ This is the shared design contract for Brightdesk Office Suite and all ten appro
 
 - Use the Brightdesk four-panel mark and lowercase wordmark consistently.
 - Use a calm, light workspace canvas, deep navy navigation, clear white content surfaces and restrained product-specific accents.
-- Use the product's original application icon artwork everywhere: launcher card, sidebar, window icon, application metadata, product README and preview.
+- Use the product's original application icon artwork everywhere: launcher card, sidebar, window icon, application metadata, product README and approved interface artwork.
 - Application icons must be original, designed SVG or raster assets. **Do not use emoji, Unicode symbols, text glyphs, generic placeholders or single-letter initials as application icons.**
 - Never substitute emoji for application icons in the launcher, navigation, README files, screenshots, previews, documentation or release artwork.
 - Keep icon silhouettes recognisable at small sizes and ensure each product has a distinct visual metaphor.
@@ -102,11 +102,11 @@ The suite owns the customer-facing version. All platform packages for one releas
 
 Native uninstall controls differ between Windows, macOS and Linux. The interface and documentation must still give users a consistent outcome: remove the requested Brightdesk product or suite software, clearly distinguish product removal from full-suite removal, and never silently delete local project data. Confirm the exact data-retention behaviour through native uninstall tests on each OS before describing it as verified.
 
-## README, concept artwork and genuine screenshots
+## README, approved interface artwork and genuine screenshots
 
-Each product README should show the Brightdesk brand, its own original product icon, a product-specific preview, a short explanation, accurate first-use scope and truthful build/release status.
+Each product README should show the Brightdesk brand, its own original product icon, an approved product-specific interface reference, a short explanation, accurate first-use scope and truthful build/release status.
 
-Concept artwork is allowed as a design reference, but it must be labelled **Concept artwork — not a screenshot**. Never describe a concept image, rendered mockup, HTML prototype or composited illustration as a capture from the running desktop software.
+Approved interface artwork is the visual specification for the intended production interface. It is not a runtime screenshot. Never describe a design image, rendered mockup, HTML prototype or composited illustration as a capture from the running desktop software.
 
 Genuine screenshots must:
 - Be captured directly from the current Electron build running on its target desktop platform.
@@ -117,7 +117,7 @@ Genuine screenshots must:
 - Be labelled with the product name and the tested version or commit.
 - Be captured only after the visible workflow has been checked against the product's acceptance criteria.
 
-Use `assets/screenshots/<product>-workspace.png` for verified captures. Keep original design concepts under `assets/previews/` and label them as concepts. Do not replace a concept preview with a screenshot until the screenshot has passed the checks above. Do not imply that screenshots exist when the repository contains only concept artwork.
+Use `assets/screenshots/<product>-workspace.png` for verified captures. Keep approved interface references under `assets/product-experience/`. Do not replace an approved reference with a screenshot until the screenshot has passed the checks above. Do not imply that screenshots exist when the repository contains only concept artwork.
 
 All product icons shown in Markdown must be embedded image assets with meaningful alt text. Do not use emoji, Unicode pictographs, initials or text characters as product icon substitutes.
 
