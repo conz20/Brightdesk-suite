@@ -6,11 +6,13 @@ const path = require('node:path');
 
 const read = (file) => fs.readFileSync(path.join(__dirname, '..', file), 'utf8');
 
-test('My Apps shows one suite-level sidebar entry instead of repeating the ten product cards', () => {
+test('My Applications shows one suite-level sidebar entry instead of repeating the ten product cards', () => {
   const html = read('src/index.html');
   const app = read('src/app.js');
   assert.match(html, /id="app-centre-nav"/);
   assert.match(html, /id="dynamic-app-nav"/);
+  assert.match(html, /data-i18n="sidebar\.applications">My Applications<\/b>/);
+  assert.doesNotMatch(html, /class="nav[^\"]*create|id="(?:create|new)-nav"/i);
   assert.doesNotMatch(html, /data-app="(?:pages|sheets|slides|notes|database|forms|lists|planner|todo|loop)"/);
   assert.match(app, /catalog\.filter\(item => installedApp\(item\.id\)\)/);
   assert.match(app, /\$\('dynamic-app-nav'\)\.hidden = manager \|\| languages/);
@@ -31,7 +33,7 @@ test('Brightdesk Home and My Apps artwork match the ten-product suite navigation
   const svg = read('assets/product-experience/brightdesk-app-centre.svg');
   assert.equal((svg.match(/id="sidebar-app-centre"/g) || []).length, 1);
   assert.doesNotMatch(svg, /id="sidebar-(?:pages|sheets|decks|notes|database|forms|lists|planner|todo|workspace)-/);
-  assert.match(svg, /Brightdesk Office Suite My Apps experience/);
+  assert.match(svg, /Brightdesk Office Suite My Applications experience/);
   assert.match(svg, /Product shortcuts are not repeated beside the My Apps grid/);
   assert.match(svg, /id="settings-cogwheel"/);
   assert.match(svg, /id="notifications-bell"/);
@@ -45,9 +47,9 @@ test('Brightdesk Home and My Apps artwork match the ten-product suite navigation
 test('README and visual standard explain the contextual product-switching rule', () => {
   const readme = read('README.md');
   const standard = read('docs/BRIGHTDESK_VISUAL_STANDARD.md');
-  assert.match(readme, /On the My Apps screen[\s\S]*?not repeated beside the ten product cards/);
+  assert.match(readme, /On the My Applications screen[\s\S]*?not repeated beside the ten product cards/);
   assert.match(readme, /under \*\*Switch product\*\*/);
-  assert.match(standard, /Home.*My Apps.*Files/);
+  assert.match(standard, /Home.*My Applications.*Files/);
   assert.match(standard, /Create.*navigation item/);
   assert.match(standard, /online-service destinations/);
   assert.match(home, /links Home, My Apps and Files/);
