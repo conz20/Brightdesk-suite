@@ -25,11 +25,15 @@ These are the only products in the approved suite. Outlook, OneDrive, Teams and 
 
 ## Suite design preview
 
-<p align="center"><img src="assets/previews/suite-dashboard-concept.svg" alt="Brightdesk suite dashboard design concept, not a running application screenshot" width="100%"></p>
+<p align="center"><img src="assets/previews/suite-dashboard-concept-single-settings.svg" alt="Brightdesk Suite App Centre preview with one App Centre sidebar entry, ten product cards and one top-right Settings cogwheel" width="100%"></p>
 
 > **Concept artwork — not a screenshot.** This image communicates the intended Brightdesk visual direction. It is not a capture from the running desktop build.
 
-The app-centre concept uses a Settings cogwheel in the top-right corner instead of an account/avatar badge. In the integrated desktop suite, that control opens the existing Settings area. The bell immediately to its left is Notifications: it opens a clearly labelled panel with an honest empty state. The Save control also has a recognisable save icon and a visible label.
+The refreshed preview shows one suite-wide Settings cogwheel in the top-right, beside Notifications. On the App Centre screen, the sidebar contains one suite-level **App Centre** entry; the ten product shortcuts are not repeated beside the ten product cards. When a product workspace is open, installed products appear in the sidebar under **Switch product** for quick navigation. The original product icons appear on the App Centre cards and in that workspace switcher. The four-panel mark beside the Brightdesk wordmark is the Suite logo.
+
+**What the card actions mean:** **Install** adds an available product to the current Brightdesk workspace. It does not download a separate desktop installer. Installed products show **Open** and **Uninstall**; removing a product from the workspace does not delete its local documents. **Update** is different: it applies to the Brightdesk Suite release, not an individual product card. Update checks and preferences are managed in Settings. Automatic checking is optional, and downloading and installing updates require separate confirmation. The current suite has no configured GitHub update publishing provider, so automatic release delivery is not active or verified.
+
+The current App Centre uses direct **Open**, **Uninstall** and **Install** actions. A three-dot **Product settings** menu is not shown as an implemented control in this preview. Product-specific card settings remain a design consideration, not a claim about the current interface. The Save control has a recognisable save icon and a visible label.
 
 ## Cross-platform consistency
 
@@ -43,13 +47,15 @@ Brightdesk uses one approved visual system and the same ten-product feature scop
 
 These are configured targets, not proof that current installers are published or verified. A complete cross-platform release requires successful native build, install, first launch, upgrade and removal checks for every supported operating system, using the same approved suite version and source commit.
 
-The release build workflow is configured to build the Suite **and all ten individual product installers** on native Windows, macOS and Linux runners. The expected matrix contains 66 installer/archive outputs: 6 Suite files and 60 product files. Each platform build creates SHA-256 manifests for the Suite files and each product. After the three artifacts are downloaded together, the collection job checks the exact product folders, versioned filenames, dependency-lock version and every transferred file hash before uploading the combined bundle. This is a verification gate in the workflow source, not proof that the current native builds have completed successfully.
+The manual installer workflow is configured to use private self-hosted GitHub Actions runners, avoiding paid GitHub-hosted minutes. GitHub Actions dependencies are pinned to full commit SHAs where required by the repository's security policy. The existing Apple-silicon Mac runner handles preparation, collection and macOS packaging. Native Windows x64 and Linux x64 packaging each require their own registered, online self-hosted runner; until those runners are registered and all platform jobs pass, a complete three-platform installer bundle is not available. See [no-cost runner setup](docs/LOCAL-RELEASE-VERIFICATION.md#no-cost-github-actions-runners). Release publishing remains off by default and requires an explicit manual selection.
 
-The release workflow is started manually. GitHub Release publishing remains a separate explicit input and is off by default. The automatic update provider is not configured, so a published static download bundle must not be described as verified in-product automatic update delivery. See [cross-platform release verification](docs/CROSS-PLATFORM-RELEASE-VERIFICATION.md).
+The manual installer workflow builds the Suite and all ten individual product installers on native Windows, macOS and Linux runners. The intended bundle contains 66 installer/archive files: six Suite files and 60 product files. Each platform creates SHA-256 manifests for the Suite and each product. The collector verifies the exact product folders, versioned filenames, dependency-lock version and transferred file hashes before uploading the combined bundle. This is a workflow verification gate, not evidence that current native builds or installations have already completed.
 
-**Terms and first launch:** Windows NSIS and macOS DMG/PKG installers for the Suite and each individual product present the same Terms and Conditions before installation continues. Linux uses the same blocking agreement in the packaged product on first launch, because AppImage has no installer agreement page. The workspace remains unavailable until the user explicitly accepts; declining or closing the agreement exits the product.
+The workflow is started manually. GitHub Release publishing is a separate explicit input and is off by default. The automatic update provider is not configured, so a published static download bundle must not be described as verified in-product automatic update delivery. See [cross-platform release verification](docs/CROSS-PLATFORM-RELEASE-VERIFICATION.md).
 
-**Updates and removal:** The suite owns the customer-facing version and approved release. The current suite package does not configure a GitHub update publishing provider, so automatic cross-platform update delivery must not be described as active or verified yet. When update delivery is enabled, every platform must receive the same approved version, features and release notes. Operating systems use different native install/removal mechanisms; the required outcome is consistent removal of the software without silently deleting local project data. Do not claim uninstall/data-preservation parity until each native route has passed its checks.
+**Terms and first launch:** Windows NSIS and macOS DMG/PKG installers for the Suite and all ten products present the same Terms and Conditions before installation continues. Linux uses the same blocking agreement in the packaged product on first launch, because AppImage has no installer agreement page. The workspace remains unavailable until the user explicitly accepts; declining or closing the agreement exits the product.
+
+**Updates and removal:** The suite owns the customer-facing version and approved release. The current suite package does not configure a GitHub update publishing provider, so automatic cross-platform update delivery is not active or verified. When update delivery is enabled, every platform must receive the same approved version, features and release notes. Operating systems use different native install/removal mechanisms; the required outcome is consistent removal of the software without silently deleting local project data. Do not claim uninstall/data-preservation parity until each native route has passed its checks.
 
 ## What is implemented
 
@@ -69,6 +75,21 @@ All ten approved product areas are integrated into the main suite source and hav
 | **Workspace** | Create workspaces and pages; add and organise text, heading, bullet, callout, divider and checklist blocks. |
 
 This table describes the first-use scope represented in source code. It is not a claim of complete feature parity with other office suites, final accessibility sign-off or release acceptance. Each product has explicit boundaries and acceptance checks in its documentation.
+
+## Rust Node-API engine
+
+The Suite includes a Rust engine exposed to the Electron main process through a Node-API 8 native module. Electron and JavaScript continue to own application orchestration, user-interface state, file access and provider selection. The renderer does not load native code directly.
+
+The engine provides bounded source chunking and analysis, embedding-vector normalisation, cosine similarity and vector ranking. The provider-neutral JavaScript bridge accepts an injected embedding provider; Rust processes vectors returned by that provider.
+
+**Important boundaries:**
+- Rust does not generate semantic embeddings or call language models. A separate embedding provider is required for semantic vectors.
+- No remote model provider, paid API, credential or remote source upload is enabled by this engine.
+- The native binary is generated during the build and is not committed to the repository.
+- Ordinary development can use a bounded JavaScript fallback when the native module is unavailable. The dedicated Rust verification workflow requires the native module to load successfully.
+- Native calls are made through the trusted Electron main-process/preload boundary; renderer code does not receive direct Node.js or native-module access.
+
+The Rust toolchain is pinned to **1.99.1**. macOS native builds produce both Apple Silicon and Intel libraries and combine them for the universal desktop package. See [Rust engine integration](docs/RUST_ENGINE_INTEGRATION.md) for the API, safety limits, provider boundary and build details.
 
 ## Genuine screenshots and verification
 
@@ -101,7 +122,9 @@ Each approved product has its own repository and product documentation:
 
 ## Development
 
-Use Node.js **24.22.2** for development, tests and release builds.
+Use Node.js **24.22.2** for development, tests and release builds. Customers do not need to install Node.js; the desktop package includes its Electron runtime.
+
+Install the locked dependencies and run the main checks:
 
 ```sh
 npm ci
@@ -110,14 +133,33 @@ npm test
 npm run build
 ```
 
-Run `npm run release:preflight` before preparing an installer. Build and verify installers on their matching native platforms; a build script existing in the repository does not mean that a verified installer has been published.
+Build and verify the Rust engine:
+
+```sh
+cargo fmt --manifest-path rust/Cargo.toml --all -- --check
+cargo clippy --manifest-path rust/Cargo.toml --workspace --all-targets --locked -- -D warnings
+cargo test --manifest-path rust/Cargo.toml --workspace --locked
+npm run native:build
+```
+
+Run `npm run release:preflight` before preparing an installer. Build and verify installers on their matching native platforms; a build script existing in the repository does not mean that a verified installer has been published. The dedicated Rust workflow checks formatting, Clippy, Rust tests, native compilation and the native Node-API/provider bridge tests.
+
+For a local, current-platform release verification, run:
+
+```sh
+npm run verify:local-release
+```
+
+This local process does not publish a GitHub Release or upload artifacts. Run it separately on each operating system you intend to distribute for.
 
 See [installation guidance](docs/INSTALLATION.md), [local release verification](docs/LOCAL-RELEASE-VERIFICATION.md), [versioning](docs/VERSIONING.md), [Rust integration](docs/RUST_ENGINE_INTEGRATION.md), [PRODUCT_SCOPE_LOCK.md](PRODUCT_SCOPE_LOCK.md), [LICENSE](LICENSE) and [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
 
 ## Integration and release status
 
-Product integration, automated tests, live desktop acceptance and installer release are separate checkpoints. The integrated source still requires current-build workflow verification, accessibility review, local persistence/recovery checks, upgrade and uninstall checks, legal packaging checks, and native installer verification before a public release is described as complete.
+The customer-facing package version in the current main-branch manifest is **0.1.0**. Product integration, automated tests, live desktop acceptance and installer release are separate checkpoints. The integrated source includes all ten approved product areas and the Rust Node-API engine, but that does not by itself establish complete product workflows, accessibility acceptance, local persistence/recovery, upgrade and uninstall behaviour, or verified installers on all three operating systems.
+
+The quality and Rust workflows are configured to use the repository's private self-hosted Mac runner. The native installer workflow is a separate manual workflow with Windows, macOS and Linux build jobs; release publication is opt-in and disabled by default. Workflow configuration is not evidence that a job has completed successfully. Do not describe the release as complete until current-head checks and native install/runtime acceptance have actually passed. No automatic update publishing provider is configured.
 
 ## Documentation freshness
 
-The root README is maintained alongside the product, not as an end-of-project task. Every pull request that changes application code, tests, UI, design assets, screenshots, icons, configuration, dependencies, packaging, or build/release workflows must also update this README in the same pull request. Keep feature status, screenshots and visual references, application icons, setup/build instructions, platform compatibility, and repository links aligned with the latest verified implementation. Describe planned or untested functionality as planned, never as completed. The **README freshness** GitHub Actions check runs on the existing private self-hosted runner and requires a root `README.md` update whenever a pull request or direct push to `main` changes a non-Markdown file; a passing check confirms inclusion, while reviewers remain responsible for checking factual accuracy and current visuals.
+The root README is maintained alongside the product, not as an end-of-project task. Every pull request and direct push to `main` that changes application code, tests, UI, design assets, screenshots, icons, configuration, dependencies, packaging, or build/release workflows must also update this README in the same change. The **README freshness** GitHub Actions check runs on pull requests and pushes to `main`; it requires a root `README.md` update whenever a non-Markdown file changes. A passing check confirms inclusion, not factual accuracy. Reviewers remain responsible for checking that feature status, screenshots, visual references, application icons, setup/build instructions, platform compatibility and repository links match the latest verified implementation.

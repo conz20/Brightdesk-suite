@@ -93,13 +93,7 @@ test('automatic updates stay clearly disabled until a real GitHub owner is confi
   assert.match(main, /Automatic updates will be available after the Brightdesk GitHub release repository is configured/);
 });
 
-test('the main app rail keeps the four core apps as the permanent base rail', () => {
-  const fs = require('node:fs');
-  const path = require('node:path');
-  const html = fs.readFileSync(path.join(__dirname, '..', 'src', 'index.html'), 'utf8');
-  for (const name of ['Brightdesk Pages', 'Brightdesk Sheets', 'Brightdesk Decks', 'Brightdesk Notes']) assert.match(html, new RegExp(`<b>${name}</b>`));
-  for (const oldName of ['<b>Word</b>', '<b>Excel</b>', '<b>PowerPoint</b>', '<b>OneNote</b>']) assert.doesNotMatch(html, new RegExp(oldName));
-});
+test('workspace navigation is generated from all installed catalogue products, not four hard-coded entries',()=>{const fs=require('node:fs');const path=require('node:path');const root=path.join(__dirname,'..');const html=fs.readFileSync(path.join(root,'src','index.html'),'utf8');const app=fs.readFileSync(path.join(root,'src','app.js'),'utf8');assert.match(html,/id="dynamic-app-nav"/);assert.match(html,/id="app-centre-nav"/);assert.doesNotMatch(html,/data-app="(?:pages|sheets|slides|notes)"/);assert.match(app,/catalog\.filter\(item => installedApp\(item\.id\)\)/);assert.match(app,/\$\('dynamic-app-nav'\)\.hidden = manager \|\| languages/);assert.match(app,/\$\('app-centre-nav'\)\.hidden = !manager \|\| Boolean\(launchAppId\)/);});
 
 test('catalog is hard-limited to the ten approved Brightdesk apps', () => {
   assert.deepEqual(catalog.map(item => item.id), ['pages','sheets','slides','notes','database','forms','lists','planner','todo','loop']);
