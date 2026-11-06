@@ -42,10 +42,10 @@ test('top-right controls clearly identify notifications, saving and Settings', (
   assert.match(notificationIcon, /<svg[\s\S]*?viewBox="0 0 24 24"/);
   assert.match(saveIcon, /<svg[\s\S]*?viewBox="0 0 24 24"/);
   assert.match(appCentreArtwork, /id="notifications-bell"/);
-  assert.ok(readme.includes('assets/product-experience/brightdesk-app-centre.svg'), 'README must display the current App Centre artwork');
+  assert.ok(readme.includes('assets/product-experience/brightdesk-app-centre.svg'), 'README must display the current My Apps artwork');
   assert.match(appCentreArtwork, /id="settings-cogwheel"/);
-  assert.match(appCentreArtwork, /Brightdesk Office Suite App Centre experience with one suite-level App Centre entry in the left sidebar/i);
-  assert.match(appCentreArtwork, /Product shortcuts are not repeated beside the App Centre grid/i);
+  assert.match(appCentreArtwork, /Brightdesk Office Suite My Apps experience with one suite-level My Apps entry in the left sidebar/i);
+  assert.match(appCentreArtwork, /Product shortcuts are not repeated beside the My Apps grid/i);
   assert.match(appCentreArtwork, /id="sidebar-app-centre"/);
   assert.doesNotMatch(appCentreArtwork, /id="sidebar-(?:pages|sheets|decks|notes|database|forms|lists|planner|todo|workspace)-/);
   assert.match(appCentreArtwork, /one Settings cogwheel appears in the top-right beside Notifications/i);
