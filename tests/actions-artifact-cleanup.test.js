@@ -90,7 +90,7 @@ test('cleanup paginates before deleting only stale installer artifacts', async (
     ],
     2: [
       artifact(21, 'brightdesk-macOS', 2 * DAY),
-      artifact(22, 'brightdesk-quality-report', 4 * DAY)
+      artifact(22, 'brightdesk-Windows', 3 * DAY, 11)
     ]
   };
   const requests = [];
@@ -101,6 +101,12 @@ test('cleanup paginates before deleting only stale installer artifacts', async (
     if (options.method === 'DELETE') {
       deleted.push(Number(parsed.pathname.split('/').at(-1)));
       return { ok: true, status: 204, json: async () => ({}) };
+    }
+    if (parsed.pathname.endsWith('/actions/runs/10')) {
+      return { ok: true, status: 200, json: async () => ({ path: '.github/workflows/build-release.yml' }) };
+    }
+    if (parsed.pathname.endsWith('/actions/runs/11')) {
+      return { ok: true, status: 200, json: async () => ({ path: '.github/workflows/quality.yml' }) };
     }
     const page = Number(parsed.searchParams.get('page'));
     const artifacts = pages[page] || [];
@@ -118,7 +124,7 @@ test('cleanup paginates before deleting only stale installer artifacts', async (
   });
 
   assert.deepEqual(result.deletedArtifacts.map(item => item.id), [11, 21]);
-  assert.deepEqual(deleted, [11, 21]);
+  assert.deepEqual(deleted, [11, 21], 'artifacts from other workflows must not be deleted');
   assert.deepEqual(
     requests.filter(item => item.method === 'GET').map(item => new URL(item.url).searchParams.get('page')),
     ['1', '2']

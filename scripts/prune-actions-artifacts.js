@@ -4,6 +4,7 @@
 const DAY_MS = 24 * 60 * 60 * 1000;
 const DEFAULT_MIN_AGE_MS = DAY_MS;
 const DEFAULT_PAGE_SIZE = 100;
+const EXPECTED_WORKFLOW_PATH = '.github/workflows/build-release.yml';
 const PLATFORM_ARTIFACT_NAMES = new Set([
   'brightdesk-Linux',
   'brightdesk-Windows',
@@ -24,13 +25,9 @@ function isPrunableArtifact(artifact, {
   if (!artifact || !isApprovedArtifactName(artifact.name)) return false;
   if (!Number.isFinite(now) || !Number.isFinite(minAgeMs) || minAgeMs < 0) return false;
   if (artifact.expired !== false) return false;
-  if (currentRunId !== null) {
-    const sourceRunId = artifact.workflow_run?.id;
-    if (sourceRunId === undefined || sourceRunId === null ||
-        String(sourceRunId) === String(currentRunId)) {
-      return false;
-    }
-  }
+  const sourceRunId = artifact.workflow_run?.id;
+  if (sourceRunId === undefined || sourceRunId === null) return false;
+  if (currentRunId !== null && String(sourceRunId) === String(currentRunId)) return false;
 
   const createdAt = Date.parse(artifact.created_at);
   if (!Number.isFinite(createdAt)) return false;
@@ -128,8 +125,24 @@ async function pruneActionsArtifacts({
     .filter(artifact => isPrunableArtifact(artifact, { now, minAgeMs, currentRunId }))
     .filter(artifact => Number.isSafeInteger(artifact.id) && artifact.id > 0);
 
+  const workflowPathByRun = new Map();
   const deletedArtifacts = [];
   for (const artifact of selected) {
+    const sourceRunId = String(artifact.workflow_run.id);
+    if (!workflowPathByRun.has(sourceRunId)) {
+      const runUrl = baseUrl + '/repos/' + encodedRepository +
+        '/actions/runs/' + encodeURIComponent(sourceRunId);
+      const runResponse = await request(runUrl, 'GET');
+      let sourceRun;
+      try {
+        sourceRun = await runResponse.json();
+      } catch {
+        throw new Error('GitHub workflow API returned invalid JSON for source run ' + sourceRunId + '.');
+      }
+      workflowPathByRun.set(sourceRunId, sourceRun?.path || null);
+    }
+    if (workflowPathByRun.get(sourceRunId) !== EXPECTED_WORKFLOW_PATH) continue;
+
     const url = baseUrl + '/repos/' + encodedRepository +
       '/actions/artifacts/' + encodeURIComponent(String(artifact.id));
     await request(url, 'DELETE');
@@ -169,6 +182,7 @@ if (require.main === module) main();
 module.exports = {
   DAY_MS,
   DEFAULT_MIN_AGE_MS,
+  EXPECTED_WORKFLOW_PATH,
   PLATFORM_ARTIFACT_NAMES,
   VERSIONED_BUNDLE_NAME,
   isApprovedArtifactName,
