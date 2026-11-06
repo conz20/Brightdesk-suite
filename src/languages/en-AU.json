@@ -161,6 +161,8 @@
     "language.allInstalled": "All language packs in this catalogue are installed.",
     "common.words": "words",
     "common.zoomIn": "Zoom in",
-    "common.zoomOut": "Zoom out"
+    "common.zoomOut": "Zoom out",
+    "sidebar.applications": "My Applications",
+    "sidebar.applicationsDescription": "All your desktop applications"
   }
 }
