@@ -31,6 +31,16 @@ test('uninstall requires confirmation and does not delete local documents', () =
   assert.doesNotMatch(app, /delete state\.docs/);
 });
 
+test('product settings menu can hide an installed product from Switch product navigation', () => {
+  const app = read('src/app.js');
+  assert.match(app, /hiddenProducts: \[\]/);
+  assert.match(app, /hiddenProducts: state\.hiddenProducts/);
+  assert.match(app, /state\.hiddenProducts = Array\.isArray\(appSetup\?\.hiddenProducts\)/);
+  assert.match(app, /catalog\.filter\(item => installedApp\(item\.id\) && !state\.hiddenProducts\.includes\(item\.id\)\)/);
+  assert.match(app, /More options for \$\{item\.name\}/);
+  assert.match(app, /Hide from Switch product/);
+});
+
 test('all ten installed products remain available in the product-switching sidebar during workspace use', () => {
   const app = read('src/app.js');
   const catalogue = require('../src/app-catalog');
