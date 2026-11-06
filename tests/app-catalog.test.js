@@ -273,3 +273,29 @@ test('installation guidance documents native removal on all three operating syst
   assert.match(guide, /normal removal[\s\S]*does not delete[\s\S]*documents/i);
   assert.match(guide, /user data[\s\S]*preserv/i);
 });
+
+
+test('all shipped locales describe Suite workspace selection instead of operating-system installation', () => {
+  const fs = require('node:fs');
+  const path = require('node:path');
+  const root = path.join(__dirname, '..', 'src', 'languages');
+  const cases = [
+    { locale: 'en-AU', independentProgram: /separate program/i },
+    { locale: 'de-DE', independentProgram: /separates Programm/i },
+    { locale: 'es-ES', independentProgram: /programa independiente/i },
+    { locale: 'fr-FR', independentProgram: /programme séparé/i }
+  ];
+
+  for (const item of cases) {
+    const pack = JSON.parse(fs.readFileSync(path.join(root, item.locale + '.json'), 'utf8'));
+    const translations = pack.translations;
+
+    assert.match(translations['manager.chooseTitle'], /Suite/i, item.locale + ' choose title');
+    assert.match(translations['manager.manageTitle'], /Suite/i, item.locale + ' manage title');
+    assert.match(translations['manager.install'], /Suite/i, item.locale + ' add action');
+    assert.match(translations['manager.remove'], /Suite/i, item.locale + ' remove action');
+    assert.match(translations['manager.inWorkspace'], /Suite/i, item.locale + ' in-Suite state');
+    assert.match(translations['manager.notInstalled'], /Suite/i, item.locale + ' available state');
+    assert.match(translations['manager.note'], item.independentProgram, item.locale + ' must distinguish workspace selection from a separate program');
+  }
+});
