@@ -1004,8 +1004,8 @@ document.querySelectorAll('.nav[data-app]').forEach(btn=>btn.addEventListener('c
 $('home-nav').addEventListener('click',()=>{if(launchAppId)return;state.view='home';render();});
 $('app-centre-nav').addEventListener('click',()=>{if(launchAppId)return;state.view='manager';render();});
 $('files-nav').addEventListener('click',()=>{if(launchAppId)return;state.view='files';render();});
-$('files-open-button').addEventListener('click',openFile);
-$('files-save-button').addEventListener('click',saveProject);
+$('files-open-button').addEventListener('click', openFile);
+$('files-save-button').addEventListener('click', saveProject);
 $('open-settings').addEventListener('click',()=>{if (launchAppId) return; state.view='manager';render();});
 $('open-notifications').addEventListener('click',()=>{const panel=$('notification-panel');panel.hidden=!panel.hidden;$('open-notifications').setAttribute('aria-expanded',String(!panel.hidden));if(!panel.hidden)markNotificationsRead();});
 $('clear-notifications').addEventListener('click',clearNotifications);
