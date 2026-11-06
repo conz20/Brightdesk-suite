@@ -129,6 +129,8 @@ Install the locked dependencies and run the main checks:
 npm ci
 npm run check:node
 npm test
+
+The catalogue and shell tests also check the shared release-version source, the current Home footer wording, and the bundled original SVG icon artwork.
 npm run build
 ```
 
