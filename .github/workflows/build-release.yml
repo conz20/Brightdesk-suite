@@ -136,19 +136,36 @@ jobs:
         if: matrix.platform == 'macOS'
         run: npm run release:verify:mac
 
-      - name: Place verified files in platform folder
-        shell: bash
+      - name: Build all ten product installers on this native platform
         env:
-          BRIGHTDESK_PLATFORM: ${{ matrix.platform }}
+          WIN_CSC_LINK: ${{ github.ref == 'refs/heads/main' && matrix.platform == 'Windows' && secrets.WIN_CSC_LINK || '' }}
+          MAC_APP_CSC_LINK: ${{ github.ref == 'refs/heads/main' && matrix.platform == 'macOS' && secrets.MAC_APP_CSC_LINK || '' }}
+          MAC_INSTALLER_CSC_LINK: ${{ github.ref == 'refs/heads/main' && matrix.platform == 'macOS' && secrets.MAC_INSTALLER_CSC_LINK || '' }}
+          CSC_LINK: ${{ github.ref == 'refs/heads/main' && matrix.platform == 'Windows' && secrets.WIN_CSC_LINK || github.ref == 'refs/heads/main' && matrix.platform == 'macOS' && secrets.MAC_APP_CSC_LINK || '' }}
+          CSC_KEY_PASSWORD: ${{ github.ref == 'refs/heads/main' && matrix.platform == 'Windows' && secrets.WIN_CSC_KEY_PASSWORD || github.ref == 'refs/heads/main' && matrix.platform == 'macOS' && secrets.MAC_APP_CSC_KEY_PASSWORD || '' }}
+          CSC_INSTALLER_LINK: ${{ github.ref == 'refs/heads/main' && matrix.platform == 'macOS' && secrets.MAC_INSTALLER_CSC_LINK || '' }}
+          CSC_INSTALLER_KEY_PASSWORD: ${{ github.ref == 'refs/heads/main' && matrix.platform == 'macOS' && secrets.MAC_INSTALLER_CSC_KEY_PASSWORD || '' }}
+          APPLE_ID: ${{ github.ref == 'refs/heads/main' && matrix.platform == 'macOS' && secrets.APPLE_ID || '' }}
+          APPLE_APP_SPECIFIC_PASSWORD: ${{ github.ref == 'refs/heads/main' && matrix.platform == 'macOS' && secrets.APPLE_APP_SPECIFIC_PASSWORD || '' }}
+          APPLE_TEAM_ID: ${{ github.ref == 'refs/heads/main' && matrix.platform == 'macOS' && secrets.APPLE_TEAM_ID || '' }}
+        shell: bash
         run: |
-          mkdir -p "release/$BRIGHTDESK_PLATFORM"
-          node -e "const fs=require('node:fs');const p=require('node:path');const root='release';const dest=p.join(root,process.env.BRIGHTDESK_PLATFORM);for(const name of fs.readdirSync(root)){if(name===process.env.BRIGHTDESK_PLATFORM)continue;const source=p.join(root,name);if(fs.statSync(source).isFile())fs.renameSync(source,p.join(dest,name));}"
+          if [ -z "${CSC_LINK:-}" ]; then unset CSC_LINK CSC_KEY_PASSWORD; fi
+          if [ -z "${CSC_INSTALLER_LINK:-}" ]; then unset CSC_INSTALLER_LINK CSC_INSTALLER_KEY_PASSWORD; fi
+          if [ "${{ matrix.platform }}" = "macOS" ] && [ -z "${CSC_LINK:-}" ]; then export CSC_IDENTITY_AUTO_DISCOVERY=false; fi
+          npm run dist:apps:${{ matrix.script }}
+
+      - name: Verify all ten product installers and their SHA-256 manifests
+        run: npm run release:verify:products:${{ matrix.script }}
+
+      - name: Collect Suite and product outputs into the native platform bundle
+        run: node scripts/collect-platform-build.js ${{ matrix.script }}
 
       - name: Upload verified platform build
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: brightdesk-${{ matrix.platform }}
-          path: release/${{ matrix.platform }}/**
+          path: release/**
           if-no-files-found: error
           retention-days: 14
 
@@ -175,19 +192,19 @@ jobs:
         uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           name: brightdesk-Linux
-          path: release/Linux
+          path: release
 
       - name: Download verified Windows build
         uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           name: brightdesk-Windows
-          path: release/Windows
+          path: release
 
       - name: Download verified macOS build
         uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           name: brightdesk-macOS
-          path: release/macOS
+          path: release
 
       - name: Preserve the committed dependency lock in release metadata
         run: |
@@ -200,6 +217,9 @@ jobs:
         run: |
           VERSION="$(node -p "require('./package.json').version")"
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Verify all 66 Suite and product installer/archive files and transferred checksums
+        run: npm run release:verify:complete -- release
 
       - name: Upload complete Brightdesk installer bundle
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
