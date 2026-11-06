@@ -435,3 +435,18 @@ input:disabled, select:disabled, textarea:disabled, button:disabled { cursor: no
 .files-action-card button{min-width:126px}
 .files-note{margin:18px 2px;color:#8995a7;font-size:11px}
 @media(max-width:700px){.files-hero{padding:20px}.files-hero h2{font-size:22px}.files-action-card{min-height:190px;padding:19px}}
+
+/* The production sidebar follows the approved deep-navy Brightdesk shell. */
+.sidebar{background:linear-gradient(180deg,#14233f 0%,#0d1930 100%);border-right:1px solid #253957;color:#fff}
+.brand b{color:#fff}
+.brand small{color:#8292b2}
+.brand-mark-image{border-radius:12px;box-shadow:none;object-fit:contain}
+.section-label{color:#8292b2}
+.nav{color:#c4cfe2}
+.nav b{color:inherit}
+.nav small{color:#9aaac4}
+.nav:hover{background:#203654;color:#fff}
+.nav.active{background:#293e65;color:#fff;box-shadow:none}
+.sidebar-divider{background:#344766}
+.sidebar-meta{border-top:1px solid #344766}
+.sidebar-bottom small{color:#a8b6d0}
