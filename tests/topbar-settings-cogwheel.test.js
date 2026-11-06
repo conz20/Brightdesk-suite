@@ -61,7 +61,7 @@ test('top-right controls clearly identify notifications, saving and Settings', (
   assert.doesNotMatch(homeArtwork, /Install a product|Update Brightdesk/);
   assert.match(homeArtwork, /id="settings-cogwheel"/);
   assert.match(homeArtwork, /Brightdesk Office Suite Home experience/i);
-  assert.match(homeArtwork, /Home, My Applications and Files/i);
+  assert.match(homeArtwork, /Home, Apps and Files/i);
   assert.match(homeArtwork, /id="sidebar-applications"/);
   assert.doesNotMatch(homeArtwork, /id="sidebar-(?:pages|sheets|decks|notes|database|forms|lists|planner|todo|workspace)-/);
   assert.match(homeArtwork, /Notifications and Settings controls/);
