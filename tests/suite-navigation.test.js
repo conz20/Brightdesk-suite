@@ -29,12 +29,12 @@ test('all ten installed products remain available in the product-switching sideb
   assert.match(app, /sidebar-section-label'\)\.textContent = manager \? t\('sidebar\.suite'\) : \(languages \? t\('sidebar\.settings'\) : t\('sidebar\.yourApps'\)\)/);
 });
 
-test('Brightdesk Home and My Applications artwork match the ten-product suite navigation', () => {
-  const svg = read('assets/product-experience/brightdesk-app-centre.svg');
+test('one Brightdesk Home artwork combines the suite sidebar and ten-product grid', () => {
+  const svg = read('assets/product-experience/brightdesk-home.svg');
   assert.equal((svg.match(/id="sidebar-applications"/g) || []).length, 1);
   assert.doesNotMatch(svg, /id="sidebar-(?:pages|sheets|decks|notes|database|forms|lists|planner|todo|workspace)-/);
-  assert.match(svg, /Brightdesk Office Suite My Applications experience/);
-  assert.match(svg, /Product shortcuts are not repeated beside the My Applications grid/);
+  assert.match(svg, /Brightdesk Office Suite Home experience/);
+  assert.match(svg, /Product shortcuts are not repeated beside the Home application grid/);
   assert.match(svg, /id="settings-cogwheel"/);
   assert.match(svg, /id="notifications-bell"/);
 
@@ -50,6 +50,9 @@ test('README and visual standard explain the contextual product-switching rule',
   const home = read('assets/product-experience/brightdesk-home.svg');
   assert.match(readme, /On the My Applications screen[\s\S]*?not repeated beside the ten product cards/);
   assert.match(readme, /under \*\*Switch product\*\*/);
+  assert.equal((readme.match(/assets\/product-experience\/brightdesk-home\.svg/g) || []).length, 1);
+  assert.doesNotMatch(readme, /brightdesk-app-centre\.svg/);
+  assert.doesNotMatch(svg, /Install a product|Update Brightdesk/);
   assert.match(standard, /Home.*My Applications.*Files/);
   assert.match(standard, /Create.*navigation item/);
   assert.match(standard, /online-service destinations/);
