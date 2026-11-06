@@ -23,17 +23,15 @@ Brightdesk is an independent, local-first desktop productivity suite. It uses or
 
 These are the only products in the approved suite. Outlook, OneDrive, Teams and any other unapproved products are excluded.
 
-## Suite design preview
+## The Brightdesk experience
 
-<p align="center"><img src="assets/previews/suite-dashboard-concept-single-settings.svg" alt="Brightdesk Suite App Centre preview with one App Centre sidebar entry, ten product cards and one top-right Settings cogwheel" width="100%"></p>
+<p align="center"><img src="assets/product-experience/brightdesk-app-centre.svg" alt="Brightdesk Office Suite App Centre with all ten product cards, one App Centre sidebar entry and one top-right Settings cogwheel" width="100%"></p>
 
-> **Concept artwork — not a screenshot.** This image communicates the intended Brightdesk visual direction. It is not a capture from the running desktop build.
-
-The refreshed preview shows one suite-wide Settings cogwheel in the top-right, beside Notifications. On the App Centre screen, the sidebar contains one suite-level **App Centre** entry; the ten product shortcuts are not repeated beside the ten product cards. When a product workspace is open, installed products appear in the sidebar under **Switch product** for quick navigation. The original product icons appear on the App Centre cards and in that workspace switcher. The four-panel mark beside the Brightdesk wordmark is the Suite logo.
+The App Centre experience has one suite-wide Settings cogwheel in the top-right, beside Notifications. On the App Centre screen, the sidebar contains one suite-level **App Centre** entry; the ten product shortcuts are not repeated beside the ten product cards. When a product workspace is open, installed products appear in the sidebar under **Switch product** for quick navigation. The original product icons appear on the App Centre cards and in that workspace switcher. The four-panel mark beside the Brightdesk wordmark is the Suite logo.
 
 **What the card actions mean:** **Install** adds an available product to the current Brightdesk workspace. It does not download a separate desktop installer. Installed products show **Open** and **Uninstall**; removing a product from the workspace does not delete its local documents. **Update** is different: it applies to the Brightdesk Suite release, not an individual product card. Update checks and preferences are managed in Settings. Automatic checking is optional, and downloading and installing updates require separate confirmation. The current suite has no configured GitHub update publishing provider, so automatic release delivery is not active or verified.
 
-The current App Centre uses direct **Open**, **Uninstall** and **Install** actions. A three-dot **Product settings** menu is not shown as an implemented control in this preview. Product-specific card settings remain a design consideration, not a claim about the current interface. The Save control has a recognisable save icon and a visible label.
+The current App Centre uses direct **Open**, **Uninstall** and **Install** actions. A three-dot **Product settings** menu is not shown as an implemented control in this interface. Product-specific card settings remain a design consideration, not a claim about the current interface. The Save control has a recognisable save icon and a visible label.
 
 ## Cross-platform consistency
 
@@ -87,9 +85,9 @@ The engine provides bounded source chunking and analysis, embedding-vector norma
 
 The Rust toolchain is pinned to **1.99.1**. macOS native builds produce both Apple Silicon and Intel libraries and combine them for the universal desktop package. See [Rust engine integration](docs/RUST_ENGINE_INTEGRATION.md) for the API, safety limits, provider boundary and build details.
 
-## Genuine screenshots and verification
+## Product screenshots and verification
 
-The concept previews in the product repositories are not genuine screenshots. The older `assets/hero-showcase.png` file is a composed promotional collage, not a capture of the current running suite; it is intentionally not used as evidence of working screens. No verified screenshot set from the current running desktop build is published yet. Do not treat concept artwork, prototype package screens or the older v0.1.0 source archive as proof of current desktop behaviour.
+Product artwork communicates the intended customer experience; it is not a capture from the running desktop software. The older `assets/hero-showcase.png` file is a composed promotional collage, not a capture of the current running suite, so it is not used as evidence of working screens. No verified screenshot set from the current running desktop build is published yet. Do not treat design artwork, prototype package screens or the older v0.1.0 source archive as proof of current desktop behaviour.
 
 A genuine screenshot should be captured directly from the current Electron build after launching the product and checking its primary workflow. The capture must show the real interface without composited controls or fabricated UI. Use non-sensitive sample data, retain the full product window, and label the image with the tested build or commit. See the [visual standard](docs/BRIGHTDESK_VISUAL_STANDARD.md).
 
