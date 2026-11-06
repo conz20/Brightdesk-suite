@@ -256,6 +256,32 @@ test('complete release verifier rejects a checksum mismatch after platform artif
   }
 });
 
+test('complete release verifier rejects extra files in Suite installer folders', () => {
+  const fixture = createCompleteBundle();
+  try {
+    writeFile(path.join(fixture.release, 'Windows'), 'unexpected-debug.log', 'internal build log');
+    assert.throws(
+      () => verifyCompleteReleaseBundle({ releaseDir: fixture.release, version: VERSION }),
+      /unexpected files/
+    );
+  } finally {
+    fs.rmSync(fixture.root, { recursive: true, force: true });
+  }
+});
+
+test('complete release verifier rejects extra files in individual product folders', () => {
+  const fixture = createCompleteBundle();
+  try {
+    writeFile(path.join(fixture.release, 'apps', 'macOS', 'pages'), 'unexpected-debug.log', 'internal build log');
+    assert.throws(
+      () => verifyCompleteReleaseBundle({ releaseDir: fixture.release, version: VERSION }),
+      /unexpected files/
+    );
+  } finally {
+    fs.rmSync(fixture.root, { recursive: true, force: true });
+  }
+});
+
 test('complete release verifier rejects missing or unexpected product folders', () => {
   const fixture = createCompleteBundle();
   try {
