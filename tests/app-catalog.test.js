@@ -290,8 +290,14 @@ test('all shipped locales describe Suite workspace selection instead of operatin
     const pack = JSON.parse(fs.readFileSync(path.join(root, item.locale + '.json'), 'utf8'));
     const translations = pack.translations;
 
+    for (const key of ['manager.chooseDesc', 'manager.manageDesc', 'manager.installSelected', 'manager.includeApp']) {
+      assert.ok(typeof translations[key] === 'string' && translations[key].trim(), item.locale + ' must provide ' + key);
+    }
     assert.match(translations['manager.chooseTitle'], /Suite/i, item.locale + ' choose title');
     assert.match(translations['manager.manageTitle'], /Suite/i, item.locale + ' manage title');
+    assert.match(translations['manager.chooseDesc'], /Suite/i, item.locale + ' choose description');
+    assert.match(translations['manager.manageDesc'], /Suite/i, item.locale + ' manage description');
+    assert.match(translations['manager.installSelected'], /Suite/i, item.locale + ' add selected action');
     assert.match(translations['manager.install'], /Suite/i, item.locale + ' add action');
     assert.match(translations['manager.remove'], /Suite/i, item.locale + ' remove action');
     assert.match(translations['manager.inWorkspace'], /Suite/i, item.locale + ' in-Suite state');
