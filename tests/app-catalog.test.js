@@ -68,8 +68,8 @@ test('the customer-facing release version has one authoritative source across th
   assert.ok(html.includes('id="version-label">Local-first · Your files stay here</small>'));
   assert.ok(html.includes('id="footer-version">Brightdesk</span>'));
   assert.doesNotMatch(html, /\d+\.\d+\.\d+/);
-  assert.match(app, /version-label/);
-  assert.match(app, /footer-version/);
+  assert.doesNotMatch(app, /version-label/);
+  assert.match(app, /if \(version\) \{ \$\('footer-version'\)\.textContent = `Brightdesk \$\{version\}`; \}/);
   assert.match(versioning, /package\.json.*single source of truth/i);
   assert.match(versioning, /Brightdesk-AI.*no Brightdesk customer release number/i);
   assert.doesNotMatch(workflow, /Brightdesk-0\.1\.0-Installers|default: 'v0\.1\.0'/);
