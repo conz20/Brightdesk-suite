@@ -129,10 +129,10 @@ Install the locked dependencies and run the main checks:
 npm ci
 npm run check:node
 npm test
-
-The catalogue and shell tests also check the shared release-version source, the current Home footer wording, and the bundled original SVG icon artwork. The customer-facing package version is shown in the product footer outside Home; the Home sidebar keeps its local-first message.
 npm run build
 ```
+
+The catalogue and shell tests also check the shared release-version source, the current Home footer wording, and the bundled original SVG icon artwork. The customer-facing package version is shown in the product footer outside Home; the Home sidebar keeps its local-first message.
 
 Build and verify the Rust engine:
 
