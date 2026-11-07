@@ -99,7 +99,7 @@ Brightdesk Office Suite
   ├── Brightdesk-Planner
   ├── Brightdesk-To-Do
   ├── Brightdesk-Workspace
-  └── versioned shared interfaces/packages
+  └── shared interfaces and optional services
         ├── Design-System
         ├── Fonts
         ├── Localization
@@ -109,7 +109,8 @@ Brightdesk Office Suite
         ├── Developer-Tools
         ├── Extensions
         ├── Wiki
-        └── Release-Tools
+        ├── Release-Tools
+        └── Services (optional, self-hosted, device-scoped synchronisation)
 
 Brightdesk-AI
   └── private, scoped engineering access to the ecosystem
@@ -117,7 +118,7 @@ Brightdesk-AI
 
 - The Suite integrates and launches the ten products; each product remains the source of truth for its own implementation.
 - Products consume shared functionality through documented, versioned interfaces. Shared repositories must not depend on product repositories.
-- Brightdesk-AI can inspect and support the ecosystem through least-privilege access. It must not become a runtime dependency of customer products.
+- Brightdesk-AI can inspect and support the ecosystem through least-privilege access. It must not become a runtime dependency of customer products. Brightdesk-Services is an optional device-scoped synchronisation layer; it does not introduce customer accounts or sign-in, and products remain fully usable without it.
 - Shared CI actions are non-AI infrastructure. AI-specific orchestration and automation remain in Brightdesk-AI.
 - Release Tools coordinates release evidence and validation; it does not replace the Suite or product repositories as the source of versioned application code.
 - Do not create direct cross-repository source copies as a substitute for package/interface integration.
@@ -131,7 +132,7 @@ Use each repository's existing toolchain, lockfiles and test commands. Pin Node.
 ## 6. Safe integration sequence
 
 1. Correct and publish this canonical repository map through reviewed pull requests.
-2. Update Brightdesk-AI's inventory and audit rules to recognise all ten products, the Suite, AI and all ten shared repositories.
+2. Update Brightdesk-AI's inventory and audit rules to recognise all ten products, the Suite, AI and all eleven shared infrastructure repositories.
 3. Audit each shared repository's actual files, language, tests and package metadata before assigning implementation or extracting code.
 4. Define stable package names, ownership, versioning and compatibility contracts without moving existing source yet.
 5. Add contract tests to the shared interface and consuming repository before enabling each dependency.
