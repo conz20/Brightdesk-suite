@@ -159,3 +159,8 @@ As of 7 November 2026, GitHub contains **23 private repositories**: Brightdesk O
 Nine of the eleven shared repositories remain README-only. Brightdesk-Release-Tools and Brightdesk-Services have first implementation PRs under review, but neither has passed all verification gates or been connected to a product consumer. Some product repositories already contain Rust integration work and active pull requests. Their existing language choices and changes must be preserved.
 
 This document defines the target architecture and current repository map. It does not claim that every repository is already connected, every shared package has been published, or every product has passed integration and release testing.
+
+
+## Permanent customer connectivity and commercial boundary
+
+The customer product is free forever. No subscriptions, paid tiers, billing, trials, activation fees, user accounts, sign-in, passwords, customer profiles or account recovery may be introduced. The Suite and all ten products must work locally without internet access. The only permitted customer-runtime network activity is the official update path: check for, download and install updates for the Suite and its individual products. No cloud sync, online storage, remote AI/model provider, telemetry, analytics, crash reporting, advertising, online collaboration or other network-dependent customer feature is permitted. Access to private GitHub repositories is solely an owner/developer maintenance activity and is not part of the customer experience.
