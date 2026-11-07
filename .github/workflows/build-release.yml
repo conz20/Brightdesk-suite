@@ -21,7 +21,7 @@ jobs:
   cleanup-artifacts:
     name: Remove expired Brightdesk installer artifacts
     # This job alone receives Actions write access; all other jobs remain read-only.
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
       actions: write
@@ -46,8 +46,8 @@ jobs:
   prepare:
     name: Test and lock dependencies
     needs: cleanup-artifacts
-    # Run on an already registered private runner; no hosted minutes are consumed.
-    runs-on: self-hosted
+    # Use a standard hosted Linux runner; the account Actions budget caps usage.
+    runs-on: ubuntu-latest
     timeout-minutes: 60
     steps:
       - name: Check out Brightdesk
@@ -97,10 +97,10 @@ jobs:
       matrix:
         include:
           - platform: Linux
-            runner: ["self-hosted", "Linux", "X64"]
+            runner: ubuntu-latest
             script: linux
           - platform: Windows
-            runner: ["self-hosted", "Windows", "X64"]
+            runner: windows-latest
             script: win
           - platform: macOS
             runner: ["self-hosted", "macOS", "ARM64"]
@@ -200,8 +200,8 @@ jobs:
   collect:
     name: Collect verified installers
     needs: [prepare, build]
-    # Collect on the existing private runner to avoid hosted-runner billing.
-    runs-on: self-hosted
+    # Collect on a standard hosted Linux runner; the account Actions budget caps usage.
+    runs-on: ubuntu-latest
     timeout-minutes: 30
     outputs:
       version: ${{ steps.release-version.outputs.version }}
@@ -254,7 +254,7 @@ jobs:
     name: Publish GitHub Release (verified native bundle)
     needs: collect
     if: github.event_name == 'workflow_dispatch' && inputs.publish_release == true && github.ref == 'refs/heads/main'
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     timeout-minutes: 30
     permissions:
       contents: write
