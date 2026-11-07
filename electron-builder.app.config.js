@@ -63,6 +63,7 @@ module.exports = {
   },
   nsis: {
     oneClick: false,
+    deleteAppDataOnUninstall: false,
     allowToChangeInstallationDirectory: true,
     createDesktopShortcut: true,
     createStartMenuShortcut: true,

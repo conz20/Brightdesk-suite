@@ -112,6 +112,15 @@ test('all third-party workflow actions are pinned to full commit SHAs',()=>{
  }
 });
 
+test('Suite and product NSIS uninstallers preserve app data by default',()=>{
+ const suite=JSON.parse(read('package.json'));
+ const products=read('electron-builder.app.config.js');
+ assert.equal(suite.build.nsis.oneClick,false);
+ assert.equal(suite.build.nsis.deleteAppDataOnUninstall,false);
+ assert.match(products,/oneClick: false/);
+ assert.match(products,/deleteAppDataOnUninstall: false/);
+});
+
 test('release product scripts preserve platform-specific verification and disable implicit publishing',()=>{
  const manifest=JSON.parse(read('package.json'));
  for(const platform of ['win','mac','linux']){
