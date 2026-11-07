@@ -50,6 +50,36 @@ The following ten private repositories have been confirmed to exist. Their names
 
 **Implementation status:** the nine previously audited shared repositories were README-only bootstraps. Brightdesk-Release-Tools has now been created and its initial README committed, but its planned release scripts, schemas, tests and workflow integrations are not yet implemented or verified. Repository existence and documentation must not be reported as operational implementation.
 
+
+## 3A. Proposed Brightdesk-Services repository — not yet created
+
+**Reference reviewed:** [storytold/artcraft-services](https://github.com/storytold/artcraft-services). This is a capability reference only. Brightdesk must implement its own code, interfaces, data model, security controls and user experience. Do not copy its source, assets or implementation. Its published licence is restrictive; obtain legal review before considering any reuse. The Brightdesk implementation should be original and independently licensed.
+
+**Proposed repository:** [Brightdesk-Services](https://github.com/connormolloy12/Brightdesk-Services) (planned name; repository does not yet exist and is not included in the verified count of 22 existing private repositories).
+
+**Purpose:** an optional, self-hostable service layer that can support Brightdesk products without making a vendor-operated cloud, subscription, metered API or permanent internet connection mandatory.
+
+Initial capability areas to design and implement in stages:
+
+- **Identity and devices:** account/session boundaries where enabled, device enrolment, revocation, device lists and scoped service credentials. Keep local-only use available.
+- **Encrypted synchronisation:** versioned sync protocol, per-product namespaces, conflict detection/resolution, tombstones, resumable transfers and end-to-end encrypted payload handling where the server cannot read user content.
+- **Storage:** user-controlled storage adapters, metadata and blob lifecycle, quotas as configurable policy rather than a commercial gate, backup/restore and integrity checks.
+- **Background work:** durable job queue, retries, idempotency, cancellation, status reporting and bounded worker execution.
+- **API gateway and contracts:** documented versioned HTTP/WebSocket APIs, schema validation, compatibility tests, rate limits and health/readiness endpoints.
+- **Administration and deployment:** self-hosted setup, configuration validation, migrations, logs, diagnostics, backup and restore. No mandatory hosted control plane.
+
+**Brightdesk boundaries:**
+
+- The ten product repositories remain the source of truth for product behaviour and local data models. They integrate through stable, documented service contracts.
+- Brightdesk-Engine owns shared native/core code; Brightdesk-Common-Libs owns reusable contracts/utilities. Avoid duplicating these responsibilities in Services.
+- Brightdesk-AI owns models, prompts, provider adapters and AI orchestration. Services may expose a narrow integration boundary only when an explicit product workflow requires it; AI must remain optional.
+- Brightdesk-Release-Tools owns release manifests and artifact verification, not runtime services.
+- The Suite remains usable offline and without a Brightdesk-Services deployment. Sync and remote features should be opt-in and degrade safely when unavailable.
+
+**Security and acceptance gates:** threat model before production endpoints; TLS in transit; strong credential hashing and scoped tokens; token rotation/revocation; secret redaction; input and resource limits; audit events without content leakage; encryption design reviewed before storing user data; migration/backup recovery tests; API compatibility tests; and integration tests against at least one real product consumer. Do not claim end-to-end encryption until key ownership, recovery and server-blindness are independently verified.
+
+**Delivery status:** planned only. First create the private repository, then add an architecture/ADR and a minimal tested service skeleton. Do not connect any product or introduce a hosted dependency until the contracts and security gates pass review.
+
 ## 4. Dependency and connection rules
 
 ```text
