@@ -181,7 +181,7 @@ test('catalogue dictionaries not included in the build cannot trigger runtime ne
   try {
     await assert.rejects(
       () => service.installCatalogueEntry('bg'),
-      /not included in this build/
+      /not included in this Brightdesk build/
     );
     assert.equal(networkCalls, 0);
     assert.equal(typeof service.fetchUpstreamFile, 'undefined');
