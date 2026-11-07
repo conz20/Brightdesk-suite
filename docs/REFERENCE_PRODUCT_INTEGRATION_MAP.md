@@ -73,3 +73,26 @@ Brightdesk must retain its own name, icon system, colours, layout composition, c
 ## Research limitations
 
 This first review examined public repository metadata, README feature claims, top-level Rust workspace manifests, crate/app directories, roadmap summaries and attribution/licence documents. It did not execute either reference project, inspect every source file, measure runtime behaviour or independently validate their feature claims. Further source-level comparison should be feature-specific and should not be described as runtime reverse engineering.
+
+## Source-level isolation audit — 7 November 2026
+
+A read-only source audit of the ten product repositories found a common implementation pattern that needs a deliberate migration plan:
+
+- Each inspected product manifest declares its own `brightdeskAppId` (for example, `pages`, `sheets`, `slides`, `notes`, `database`, `forms`, `lists`, `planner`, `todo`, or `loop`).
+- The inspected product source directories also contain a broad shared set of modules for multiple products, including database, forms, lists, planner, To Do and Workspace modules. The Pages and Sheets `src/app.js` files both define defaults and configuration for all ten product IDs.
+- The Sheets, Decks and Notes repositories share an identical `src/main.js` blob at the time of inspection. Several product manifests use the same broad dependency set and include all of `src/**/*` in the packaged files.
+- Sheets, Decks, Notes, Database and Forms have matching long test-command lists that enumerate the same cross-product test areas. Other repositories use `node --test` discovery.
+
+This does not prove that every product exposes every other product at runtime: the per-product `brightdeskAppId` is used to select a launch target. It does show that the product source trees and packaged file sets are not yet cleanly isolated by product. The current approach creates duplicated cross-product implementation and makes independent ownership, test scope and future updates harder.
+
+### Required migration
+
+1. Preserve the current product-specific launch IDs and existing working behaviour.
+2. Establish a shared shell/runtime contract in the Suite and shared foundations.
+3. Identify the true product-owned modules and tests from each product's actual entry points and runtime paths.
+4. Move only shared infrastructure behind versioned, tested interfaces; move product-specific modules into their owning repositories.
+5. Keep a compatibility adapter while each product is migrated. Do not delete duplicated source until the independent product tests and Suite integration tests pass.
+6. Change each product's test command to run its own tests plus relevant shared contract tests, not unrelated product suites.
+7. Verify each product package contains only its required runtime modules and assets, then build, install, launch, save/reopen and remove it on its target platforms.
+
+This is a source-structure finding, not a runtime failure diagnosis. No source was moved or deleted during this audit.
