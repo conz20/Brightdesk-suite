@@ -166,3 +166,7 @@ The quality and Rust workflows are configured to use the repository's private se
 ## Documentation freshness
 
 The root README is maintained alongside the product, not as an end-of-project task. Every pull request and direct push to `main` that changes application code, tests, UI, design assets, screenshots, icons, configuration, dependencies, packaging, or build/release workflows must also update this README in the same change. The **README freshness** GitHub Actions check runs on pull requests and pushes to `main`; it requires a root `README.md` update whenever a non-Markdown file changes. A passing check confirms inclusion, not factual accuracy. Reviewers remain responsible for checking that feature status, screenshots, visual references, application icons, setup/build instructions, platform compatibility and repository links match the latest verified implementation.
+
+## Repository hygiene
+
+Generated build output and Cargo `target` directories are excluded from the tracked source tree. Build products are recreated by the local build and CI workflows; they are not committed as product source.
