@@ -84,7 +84,7 @@ The engine provides bounded source chunking and analysis, embedding-vector norma
 **Important boundaries:**
 - Rust does not generate semantic embeddings or call language models. A separate embedding provider is required for semantic vectors.
 - No remote model provider, paid API, credential or remote source upload is enabled by this engine.
-- The native binary is generated during the build and is not committed to the repository.
+- The native binary is generated during the build and is not committed to the repository. The ten product installers built from this Suite repository package the shared engine. A separate source audit found that the ten product repositories' own `brightdesk_native.node` wrappers currently expose only `engineInfo()`; their repeated `brightdesk-core` foundation is not yet connected to the Electron runtime. Those repository-local binaries must not be described as equivalent to the Suite engine until that integration is completed and tested.
 - Ordinary development can use a bounded JavaScript fallback when the native module is unavailable. The Rust verification job and the release matrix require the native module to load successfully on their respective runners; Windows, macOS and Linux results remain pending until each matching self-hosted runner completes its checks.
 - Native calls are made through the trusted Electron main-process/preload boundary; renderer code does not receive direct Node.js or native-module access.
 
