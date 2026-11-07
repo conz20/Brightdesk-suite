@@ -15,7 +15,7 @@ WHAT THIS PACKAGE DOES
 - Verifies the downloaded archive against GitHub's published SHA-256 digest.
 - Installs the runner under C:\actions-runner.
 - Prompts the official GitHub configuration program for a one-time registration token.
-- Registers the runner only to Brightdesk-suite, with the extra label brightdesk-windows.
+- Registers the runner only to Brightdesk-suite and retains GitHub's default labels: self-hosted, Windows and X64.
 - Installs and starts the runner as a Windows service.
 
 It does NOT change the Brightdesk release workflow, publish a release, or install Docker, Linux, or development tools.
@@ -48,7 +48,7 @@ The one-time registration token is needed only to register the runner. GitHub sa
 AFTER REGISTRATION
 ------------------
 Registration alone does not make Brightdesk use this PC. The Windows job in the release workflow must be updated to target the runner labels:
-self-hosted, Windows, X64, brightdesk-windows
+self-hosted, Windows, X64
 
 That workflow change is intentionally not included in this setup package. First confirm the runner is Idle/Online in GitHub. Then the workflow can be changed and tested separately.
 
