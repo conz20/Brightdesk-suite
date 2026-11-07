@@ -66,7 +66,7 @@ Brightdesk Suite and none of its ten product areas will offer or require user ac
 
 Initial capability areas to design and implement in stages:
 
-- **Identity and devices:** account/session boundaries where enabled, device enrolment, revocation, device lists and scoped service credentials. Keep local-only use available.
+- **Device enrolment and administration:** optional device pairing, enrolment, revocation, device lists and device-scoped service credentials. Do not create person/customer identity, user accounts or sign-in sessions. Keep local-only use available.
 - **Encrypted synchronisation:** versioned sync protocol, per-product namespaces, conflict detection/resolution, tombstones, resumable transfers and end-to-end encrypted payload handling where the server cannot read user content.
 - **Storage:** user-controlled storage adapters, metadata and blob lifecycle, quotas as configurable policy rather than a commercial gate, backup/restore and integrity checks.
 - **Background work:** durable job queue, retries, idempotency, cancellation, status reporting and bounded worker execution.
@@ -83,7 +83,7 @@ Initial capability areas to design and implement in stages:
 
 **Security and acceptance gates:** threat model before production endpoints; TLS in transit; strong credential hashing and scoped tokens; token rotation/revocation; secret redaction; input and resource limits; audit events without content leakage; encryption design reviewed before storing user data; migration/backup recovery tests; API compatibility tests; and integration tests against at least one real product consumer. Do not claim end-to-end encryption until key ownership, recovery and server-blindness are independently verified.
 
-**Delivery status:** first implementation under review. PR #1 adds a Node.js 24.22.2-targeted, zero-third-party-dependency API foundation for device enrolment/listing/revocation, product scopes, workspace isolation and revision-checked opaque sync payload storage. Eleven regression tests and syntax checks passed locally on Node 22.16.0; exact Node 24.22.2 verification remains outstanding. Client-side encryption/key recovery, full identity, production database, backups, multi-process operation, security review and product integration remain unfinished. Do not deploy as production or connect products until the remaining gates pass.
+**Delivery status:** first implementation under review. PR #1 adds a Node.js 24.22.2-targeted, zero-third-party-dependency API foundation for device enrolment/listing/revocation, product scopes, workspace isolation and revision-checked opaque sync payload storage. Eleven regression tests and syntax checks passed locally on Node 22.16.0; exact Node 24.22.2 verification remains outstanding. Client-side encryption/key recovery, production database, backups, multi-process operation, security review and product integration remain unfinished. No user-account or person-identity system is planned. Do not deploy as production or connect products until the remaining gates pass.
 
 ## 4. Dependency and connection rules
 
