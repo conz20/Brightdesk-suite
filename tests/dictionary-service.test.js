@@ -190,6 +190,50 @@ test('catalogue dictionaries not included in the build cannot trigger runtime ne
   }
 });
 
+test('legacy dictionaries without integrity metadata are rejected offline without changing files', async () => {
+  const userData = await fs.mkdtemp(path.join(os.tmpdir(), 'brightdesk-dictionary-legacy-offline-'));
+  let networkCalls = 0;
+  const service = new DictionaryService(userData, {
+    fetch: async () => { networkCalls += 1; throw new Error('unexpected network request'); }
+  });
+  const entry = service.catalogue().find(item => item.id === 'bg');
+  const folder = path.join(userData, 'dictionaries', entry.locale);
+  const manifest = {
+    schemaVersion: 1,
+    catalogueId: entry.id,
+    locale: entry.locale,
+    name: entry.name,
+    nativeName: entry.nativeName,
+    authors: 'Original authors are listed in the bundled attribution file.',
+    affFile: 'index.aff',
+    dicFile: 'index.dic',
+    licenseFile: 'LICENSE.txt',
+    readmeFile: 'UPSTREAM_README.md',
+    license: entry.license,
+    licenseUrl: entry.licenseUrl,
+    licenseSource: entry.licenseSource,
+    sourceUrl: entry.sourceUrl,
+    upstream: entry.upstream,
+    upstreamRevision: entry.upstreamRevision
+  };
+  const originalManifest = JSON.stringify(manifest, null, 2);
+  const originalAff = 'legacy dictionary file';
+  try {
+    await fs.mkdir(folder, { recursive: true });
+    await fs.writeFile(path.join(folder, 'manifest.json'), originalManifest);
+    await fs.writeFile(path.join(folder, 'dictionary.aff'), originalAff);
+    await assert.rejects(
+      () => service.installCatalogueEntry('bg'),
+      /cannot be verified offline/
+    );
+    assert.equal(networkCalls, 0);
+    assert.equal(await fs.readFile(path.join(folder, 'manifest.json'), 'utf8'), originalManifest);
+    assert.equal(await fs.readFile(path.join(folder, 'dictionary.aff'), 'utf8'), originalAff);
+  } finally {
+    await fs.rm(userData, { recursive: true, force: true });
+  }
+});
+
 test('the dictionary catalogue is browse-only and exposes no runtime download bridge', () => {
   const root = path.join(__dirname, '..');
   const app = fsSync.readFileSync(path.join(root, 'src', 'app.js'), 'utf8');
