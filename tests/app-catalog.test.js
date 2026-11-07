@@ -240,3 +240,68 @@ test('README presents all ten apps as the integrated first-release lineup', () =
   assert.match(readme, /These are the only products in the approved suite/i);
   assert.doesNotMatch(readme, /other six.*not yet working apps/i);
 });
+
+test('Suite product management describes adding and removing workspaces, not OS installation', () => {
+  const fs = require('node:fs');
+  const path = require('node:path');
+  const root = path.join(__dirname, '..');
+  const app = fs.readFileSync(path.join(root, 'src', 'app.js'), 'utf8');
+  const english = JSON.parse(fs.readFileSync(path.join(root, 'src', 'languages', 'en-AU.json'), 'utf8'));
+  const copy = english.translations;
+
+  assert.match(app, /action\.textContent = t\(isInstalled \? 'manager\.remove' : 'manager\.install'\)/);
+  assert.match(app, /stateChip\.textContent = !canInstall \? 'In development' : t\(isInstalled \? 'manager\.inWorkspace' : 'manager\.notInstalled'\)/);
+  assert.match(app, /Remove \$\{product\?\.name \|\| 'this product'\} from Brightdesk Office Suite\?/);
+  assert.doesNotMatch(app, /textContent = isInstalled \? 'Uninstall' : 'Install'/);
+  assert.doesNotMatch(app, /confirm\(\`Uninstall /);
+  assert.match(copy['manager.install'], /Add to Suite/);
+  assert.match(copy['manager.remove'], /Remove from Suite/);
+  assert.match(copy['manager.inWorkspace'], /In your Suite/);
+  assert.match(copy['manager.notInstalled'], /Available in Suite/);
+  assert.match(copy['manager.note'], /does not install or uninstall a separate program/i);
+});
+
+test('installation guidance documents native removal on all three operating systems and preserves user data', () => {
+  const fs = require('node:fs');
+  const path = require('node:path');
+  const guide = fs.readFileSync(path.join(__dirname, '..', 'docs', 'INSTALLATION.md'), 'utf8');
+
+  assert.match(guide, /Windows[\s\S]*Installed apps[\s\S]*Uninstall/i);
+  assert.match(guide, /macOS[\s\S]*Applications[\s\S]*Trash/i);
+  assert.match(guide, /Linux[\s\S]*\.deb[\s\S]*software manager|Linux[\s\S]*software manager[\s\S]*\.deb/i);
+  assert.match(guide, /AppImage[\s\S]*delete/i);
+  assert.match(guide, /normal removal[\s\S]*does not delete[\s\S]*documents/i);
+  assert.match(guide, /user data[\s\S]*preserv/i);
+});
+
+
+test('all shipped locales describe Suite workspace selection instead of operating-system installation', () => {
+  const fs = require('node:fs');
+  const path = require('node:path');
+  const root = path.join(__dirname, '..', 'src', 'languages');
+  const cases = [
+    { locale: 'en-AU', independentProgram: /separate program/i },
+    { locale: 'de-DE', independentProgram: /separates Programm/i },
+    { locale: 'es-ES', independentProgram: /programa independiente/i },
+    { locale: 'fr-FR', independentProgram: /programme séparé/i }
+  ];
+
+  for (const item of cases) {
+    const pack = JSON.parse(fs.readFileSync(path.join(root, item.locale + '.json'), 'utf8'));
+    const translations = pack.translations;
+
+    for (const key of ['manager.chooseDesc', 'manager.manageDesc', 'manager.installSelected', 'manager.includeApp']) {
+      assert.ok(typeof translations[key] === 'string' && translations[key].trim(), item.locale + ' must provide ' + key);
+    }
+    assert.match(translations['manager.chooseTitle'], /Suite/i, item.locale + ' choose title');
+    assert.match(translations['manager.manageTitle'], /Suite/i, item.locale + ' manage title');
+    assert.match(translations['manager.chooseDesc'], /Suite/i, item.locale + ' choose description');
+    assert.match(translations['manager.manageDesc'], /Suite/i, item.locale + ' manage description');
+    assert.match(translations['manager.installSelected'], /Suite/i, item.locale + ' add selected action');
+    assert.match(translations['manager.install'], /Suite/i, item.locale + ' add action');
+    assert.match(translations['manager.remove'], /Suite/i, item.locale + ' remove action');
+    assert.match(translations['manager.inWorkspace'], /Suite/i, item.locale + ' in-Suite state');
+    assert.match(translations['manager.notInstalled'], /Suite/i, item.locale + ' available state');
+    assert.match(translations['manager.note'], item.independentProgram, item.locale + ' must distinguish workspace selection from a separate program');
+  }
+});

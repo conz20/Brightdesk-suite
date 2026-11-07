@@ -27,7 +27,7 @@ test('Apps shows one suite-level sidebar entry instead of repeating the ten prod
 
 test('uninstall requires confirmation and does not delete local documents', () => {
   const app = read('src/app.js');
-  assert.match(app, /window\.confirm\(`Uninstall \$\{product\?\.name/);
+  assert.match(app, /window\.confirm\(`Remove \$\{product\?\.name/);
   assert.match(app, /state\.installedApps = state\.installedApps\.filter/);
   assert.doesNotMatch(app, /delete state\.docs/);
 });
@@ -117,7 +117,7 @@ test('README and visual standard explain the contextual product-switching rule',
   const home = read('assets/product-experience/brightdesk-home.svg');
   assert.match(readme, /approved sidebar uses \*\*Home\*\*, \*\*Apps\*\* and \*\*Files\*\*/);
   assert.match(readme, /in the \*\*Switch product\*\*/);
-  assert.match(readme, /hide or restore an installed product/);
+  assert.match(readme, /hide or restore a product/);
   assert.equal((readme.match(/assets\/product-experience\/brightdesk-home\.svg/g) || []).length, 1);
   assert.doesNotMatch(readme, /brightdesk-app-centre\.svg/);
   assert.doesNotMatch(home, /Install a product|Update Brightdesk/);
