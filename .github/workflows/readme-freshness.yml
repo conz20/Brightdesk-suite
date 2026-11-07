@@ -10,6 +10,10 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: brightdesk-readme-freshness-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   readme-freshness:
     name: Require README updates for product changes

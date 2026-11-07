@@ -209,6 +209,11 @@ test('README freshness check uses the existing self-hosted runner', () => {
   assert.doesNotMatch(workflow, /ubuntu-latest|windows-latest|macos-latest/);
 });
 
+test('README freshness checks cancel superseded runs for the same branch or pull request', () => {
+  const workflow = read('.github/workflows/readme-freshness.yml');
+  assert.match(workflow, /^concurrency:\s*\n\s+group:\s*brightdesk-readme-freshness-\$\{\{\s*github\.ref\s*\}\}\s*\n\s+cancel-in-progress:\s*true/m);
+});
+
 test('README freshness script remains compatible with macOS system Bash 3.2', () => {
   const workflow = read('.github/workflows/readme-freshness.yml');
   assert.doesNotMatch(workflow, /\bmapfile\b/, 'macOS Bash 3.2 does not provide mapfile');
