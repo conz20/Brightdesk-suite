@@ -85,7 +85,8 @@ test('PR installer workflow uses the Mac runner and checks the complete bundle',
  const workflow=read('.github/workflows/verify-macos-installer.yml');
  assert.match(workflow,macRunner);
  assert.match(workflow,/release:cross-platform/);
- assert.match(workflow,/release:assemble/);\n assert.match(workflow,/release:verify:complete -- release\/verified-bundle/);
+ assert.match(workflow,/release:assemble/);
+ assert.match(workflow,/release:verify:complete -- release\/verified-bundle/);
  assert.match(workflow,/if: github\.event\.pull_request\.head\.repo\.full_name == github\.repository/);
  assert.doesNotMatch(workflow,/ubuntu-latest|windows-latest|macos-latest|actions\/(?:upload|download)-artifact|publish_release/);
  for(const p of ['scripts/build-native.js','scripts/run-cross-platform-installer-builds.sh','scripts/build-cross-platform-installers.sh','tools/release-cross-build/Dockerfile','tests/native-build-target.test.js']){
