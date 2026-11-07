@@ -2,9 +2,9 @@ name: Brightdesk Rust Node-API engine
 on:
   push:
     branches: [main, "feature/**"]
-    paths: ["rust/**", "native/**", "scripts/build-native.js", "scripts/build-app.js", "scripts/build-apps.js", "src/rust-engine.js", "src/rust-engine-fallback.js", "src/embedding-bridge.js", "electron-builder.app.config.js", "package.json", "package-lock.json", "test/**", "tests/**", ".github/workflows/rust-engine.yml"]
+    paths: ["rust/**", "native/**", "scripts/build-native.js", "scripts/build-app.js", "scripts/build-apps.js", "src/rust-engine.js", "src/rust-engine-fallback.js", "src/embedding-bridge.js", "electron-builder.app.config.js", "package.json", "package-lock.json", "test/**", "tests/**", ".github/workflows/build-release.yml", ".github/workflows/rust-engine.yml"]
   pull_request:
-    paths: ["rust/**", "native/**", "scripts/build-native.js", "scripts/build-app.js", "scripts/build-apps.js", "src/rust-engine.js", "src/rust-engine-fallback.js", "src/embedding-bridge.js", "electron-builder.app.config.js", "package.json", "package-lock.json", "test/**", "tests/**", ".github/workflows/rust-engine.yml"]
+    paths: ["rust/**", "native/**", "scripts/build-native.js", "scripts/build-app.js", "scripts/build-apps.js", "src/rust-engine.js", "src/rust-engine-fallback.js", "src/embedding-bridge.js", "electron-builder.app.config.js", "package.json", "package-lock.json", "test/**", "tests/**", ".github/workflows/build-release.yml", ".github/workflows/rust-engine.yml"]
   workflow_dispatch:
 permissions:
   contents: read
