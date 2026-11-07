@@ -52,6 +52,10 @@ The following eleven private repositories have been confirmed to exist. Their na
 **Implementation status:** the nine earlier shared repositories remain README-only bootstraps. Brightdesk-Release-Tools has its first read-only implementation under review in PR #1. Brightdesk-Services now exists as a private repository; its first device and sync service foundation is under review in [Brightdesk-Services PR #1](https://github.com/connormolloy12/Brightdesk-Services/pull/1). Neither repository is production-ready or connected to product consumers. Repository existence and documentation must not be reported as completed operational infrastructure.
 
 
+### Permanent no-account requirement
+
+Brightdesk Suite and none of its ten product areas will offer or require user accounts. Do not add sign-up, sign-in, email/password registration, user profiles, cloud identity, account recovery or account-based subscriptions. The optional Services layer may support device pairing and device-scoped credentials for synchronisation, but these identify devices only, not people or customer accounts. The service-operator secret is an owner configuration credential, not an end-user login. Every product must remain fully usable locally without Services, accounts or an internet connection.
+
 ## 3A. Brightdesk-Services — initial foundation under review
 
 **Reference reviewed:** [storytold/artcraft-services](https://github.com/storytold/artcraft-services). This is a capability reference only. Brightdesk must implement its own code, interfaces, data model, security controls and user experience. Do not copy its source, assets or implementation. Its published licence is restrictive; obtain legal review before considering any reuse. The Brightdesk implementation should be original and independently licensed.
