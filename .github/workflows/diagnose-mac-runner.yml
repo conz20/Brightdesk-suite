@@ -1,0 +1,61 @@
+name: Temporary Mac runner diagnostic
+
+on:
+  push:
+    branches:
+      - diagnostics/mac-runner-readonly-2026-11-07
+    paths:
+      - .github/workflows/diagnose-mac-runner.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: brightdesk-mac-runner-readonly-diagnostic
+  cancel-in-progress: false
+
+jobs:
+  inspect:
+    name: Read-only Mac runner checks
+    runs-on: [self-hosted, macOS, ARM64]
+    timeout-minutes: 5
+    steps:
+      - name: Inspect host and runner service without changing anything
+        shell: bash
+        run: |
+          set -uo pipefail
+
+          echo "=== Host ==="
+          echo "os_name=$(sw_vers -productName 2>/dev/null || uname -s)"
+          echo "os_version=$(sw_vers -productVersion 2>/dev/null || echo unavailable)"
+          echo "architecture=$(uname -m)"
+          echo "node_version=$(node --version 2>/dev/null || echo unavailable)"
+          echo "npm_version=$(npm --version 2>/dev/null || echo unavailable)"
+          echo "rustc_version=$(rustc --version 2>/dev/null || echo unavailable)"
+          echo "cargo_version=$(cargo --version 2>/dev/null || echo unavailable)"
+          echo "root_disk_free=$(df -h / | awk 'END {print $4}')"
+
+          echo "=== Runner process ==="
+          if ps -axo comm= | grep -q 'Runner.Listener'; then
+            echo "runner_listener_process=present"
+          else
+            echo "runner_listener_process=not_visible"
+          fi
+
+          echo "=== Launch service ==="
+          launchctl list 2>/dev/null | awk '
+            $3 ~ /^actions\.runner\./ {
+              print "runner_service=" $3 ",pid=" $1 ",status=" $2
+              found=1
+            }
+            END {
+              if (!found) print "runner_launch_service=not_visible_in_current_domain"
+            }
+          '
+
+          echo "=== Runner workspace ==="
+          if [ -n "${RUNNER_WORKSPACE:-}" ] && [ -d "$RUNNER_WORKSPACE" ]; then
+            echo "runner_workspace=present"
+          else
+            echo "runner_workspace=not_visible"
+          fi
