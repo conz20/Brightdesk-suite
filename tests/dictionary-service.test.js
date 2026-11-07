@@ -171,25 +171,22 @@ test('catalogue installation rejects unknown IDs before making a network request
 });
 
 
-test('pinned catalogue downloader rejects URLs outside its fixed upstream repository', async () => {
+test('catalogue dictionaries not included in the build cannot trigger runtime network downloads', async () => {
+  const userData = await fs.mkdtemp(path.join(os.tmpdir(), 'brightdesk-dictionary-offline-catalogue-'));
   let networkCalls = 0;
-  const service = new DictionaryService('/tmp/brightdesk-dictionary-url-test', {
-    fetch: async () => { networkCalls += 1; return new Response('ok'); }
+  const service = new DictionaryService(userData, {
+    fetch: async () => { networkCalls += 1; throw new Error('unexpected network request'); }
   });
-  await assert.rejects(() => service.fetchUpstreamFile('https://example.com/dictionaries/bg/index.aff', 100), /pinned, approved upstream sources/);
-  await assert.rejects(() => service.fetchUpstreamFile('https://raw.githubusercontent.com/wooorm/dictionaries/main/dictionaries/bg/index.aff', 100), /pinned, approved upstream sources/);
-  await assert.rejects(() => service.fetchUpstreamFile('https://raw.githubusercontent.com/spdx/license-list-data/main/text/GPL-2.0-only.txt', 100), /pinned, approved upstream sources/);
-  assert.equal(networkCalls, 0);
+  try {
+    await assert.rejects(
+      () => service.installCatalogueEntry('bg'),
+      /not included in this build/
+    );
+    assert.equal(networkCalls, 0);
+  } finally {
+    await fs.rm(userData, { recursive: true, force: true });
+  }
 });
-
-test('pinned catalogue downloader accepts a bounded file from an approved source', async () => {
-  const service = new DictionaryService('/tmp/brightdesk-dictionary-download-test', {
-    fetch: async () => new Response('SET UTF-8\n')
-  });
-  const bytes = await service.fetchUpstreamFile('https://raw.githubusercontent.com/wooorm/dictionaries/8cfea406b505e4d7df52d5a19bce525df98c54ab/dictionaries/bg/index.aff', 100);
-  assert.equal(bytes.toString('utf8'), 'SET UTF-8\n');
-});
-
 
 test('the two licence-file exceptions use bundled canonical GNU texts', async () => {
   const gpl = await fs.readFile(path.join(__dirname, '..', 'src', 'licenses', 'GPL-2.0.txt'), 'utf8');
