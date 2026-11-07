@@ -36,10 +36,10 @@ jobs:
       matrix:
         include:
           - platform: Linux
-            runner: ["self-hosted", "Linux", "X64"]
+            runner: ubuntu-latest
             script: linux
           - platform: Windows
-            runner: ["self-hosted", "Windows", "X64"]
+            runner: windows-latest
             script: win
           - platform: macOS
             runner: ["self-hosted", "macOS", "ARM64"]
