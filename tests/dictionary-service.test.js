@@ -1,6 +1,7 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs/promises');
+const fsSync = require('node:fs');
 const os = require('node:os');
 const path = require('node:path');
 const crypto = require('node:crypto');
@@ -183,9 +184,26 @@ test('catalogue dictionaries not included in the build cannot trigger runtime ne
       /not included in this build/
     );
     assert.equal(networkCalls, 0);
+    assert.equal(typeof service.fetchUpstreamFile, 'undefined');
   } finally {
     await fs.rm(userData, { recursive: true, force: true });
   }
+});
+
+test('the dictionary catalogue is browse-only and exposes no runtime download bridge', () => {
+  const root = path.join(__dirname, '..');
+  const app = fsSync.readFileSync(path.join(root, 'src', 'app.js'), 'utf8');
+  const main = fsSync.readFileSync(path.join(root, 'src', 'main.js'), 'utf8');
+  const preload = fsSync.readFileSync(path.join(root, 'src', 'preload.js'), 'utf8');
+  const start = app.indexOf('function renderAvailableDictionaryCatalogue()');
+  const end = app.indexOf('function currentDocumentText()', start);
+  assert.ok(start >= 0 && end > start, 'dictionary catalogue renderer must exist');
+  const renderer = app.slice(start, end);
+  assert.match(renderer, /Not included in this build/);
+  assert.doesNotMatch(renderer, /installCatalogueDictionary|Downloading/);
+  assert.doesNotMatch(app, /installCatalogueDictionary/);
+  assert.doesNotMatch(main, /dictionaries:install-catalog/);
+  assert.doesNotMatch(preload, /installCatalogueDictionary|dictionaries:install-catalog/);
 });
 
 test('the two licence-file exceptions use bundled canonical GNU texts', async () => {
