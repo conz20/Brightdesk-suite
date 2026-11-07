@@ -63,6 +63,8 @@ module.exports = {
   },
   nsis: {
     oneClick: false,
+    // Keep the per-user settings, local packs and other app data when removing the program.
+    deleteAppDataOnUninstall: false,
     allowToChangeInstallationDirectory: true,
     createDesktopShortcut: true,
     createStartMenuShortcut: true,

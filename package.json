@@ -131,7 +131,8 @@
       "allowToChangeInstallationDirectory": true,
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
-      "license": "TERMS_AND_CONDITIONS.txt"
+      "license": "TERMS_AND_CONDITIONS.txt",
+      "deleteAppDataOnUninstall": false
     },
     "mac": {
       "target": [
