@@ -54,7 +54,7 @@ The following eleven private repositories have been confirmed to exist. Their na
 
 ### Permanent free and no-account requirement
 
-Brightdesk is free forever. No subscriptions, paid tiers, premium features or account-based restrictions may be introduced. Brightdesk Suite and none of its ten product areas will offer or require user accounts, passwords, customer profiles, sign-up, sign-in, email registration, cloud identity or account recovery. Customers must never have to log in, create an account, enter a password or pay to use Brightdesk. The optional Services layer may support device pairing and device-scoped credentials for synchronisation, but these identify devices only, not people or customer accounts. The service-operator secret is an owner configuration credential, not an end-user login. Every product must remain fully usable locally without Services, accounts or an internet connection.
+Brightdesk is free forever. No subscriptions, paid tiers, premium features or account-based restrictions may be introduced. Brightdesk Suite and none of its ten product areas will offer or require user accounts, passwords, customer profiles, sign-up, sign-in, email registration, cloud identity or account recovery. Customers must never have to log in, create an account, enter a password or pay to use Brightdesk. Brightdesk-Services is experimental, owner-operated infrastructure only; it is not a customer feature, identity provider, login service or product runtime dependency. Any device registration or scoped credentials in Services are for owner/operator maintenance and testing only, never for customer identity, customer documents or customer synchronisation. The service-operator secret is an owner configuration credential, not an end-user login. Every product must remain fully usable locally without Services, accounts or an internet connection.
 
 ## 3A. Brightdesk-Services — initial foundation under review
 
@@ -62,15 +62,15 @@ Brightdesk is free forever. No subscriptions, paid tiers, premium features or ac
 
 **Repository:** [Brightdesk-Services](https://github.com/connormolloy12/Brightdesk-Services) is now confirmed as a private repository and is included in the verified count of 23 existing private repositories. Its first implementation is in [PR #1](https://github.com/connormolloy12/Brightdesk-Services/pull/1).
 
-**Purpose:** an optional, self-hostable service layer that can support Brightdesk products without making a vendor-operated cloud, subscription, metered API or permanent internet connection mandatory.
+**Purpose:** experimental, owner-operated infrastructure for internal development, maintenance and validation only. Services is not a customer-facing product feature, must not be included in customer installers or product runtime dependencies, and must never be required for normal product use.
 
-Initial capability areas to design and implement in stages:
+Internal capability areas to evaluate for owner/operator maintenance and non-customer test data only. They are not customer features and must not be exposed as customer-facing product workflows:
 
 - **Device enrolment and administration:** optional device pairing, enrolment, revocation, device lists and device-scoped service credentials. Do not create person/customer identity, user accounts or sign-in sessions. Keep local-only use available.
-- **Encrypted synchronisation:** versioned sync protocol, per-product namespaces, conflict detection/resolution, tombstones, resumable transfers and end-to-end encrypted payload handling where the server cannot read user content.
-- **Storage:** user-controlled storage adapters, metadata and blob lifecycle, quotas as configurable policy rather than a commercial gate, backup/restore and integrity checks.
-- **Background work:** durable job queue, retries, idempotency, cancellation, status reporting and bounded worker execution.
-- **API gateway and contracts:** documented versioned HTTP/WebSocket APIs, schema validation, compatibility tests, rate limits and health/readiness endpoints.
+- **Internal protocol testing:** versioned device-scoped test payloads, revision/conflict handling and resumable test transfers using synthetic data only. Do not synchronise customer documents or product content.
+- **Internal test storage:** owner-controlled storage for synthetic maintenance/test data only, with backup/restore and integrity checks. This is not customer cloud storage.
+- **Owner maintenance jobs:** durable internal job queue, retries, idempotency, cancellation, status reporting and bounded worker execution; do not run customer product workflows.
+- **Internal API contracts:** documented versioned APIs for owner-operated administration and test harnesses, schema validation, compatibility tests, rate limits and health/readiness endpoints; do not expose customer sync/storage endpoints.
 - **Administration and deployment:** self-hosted setup, configuration validation, migrations, logs, diagnostics, backup and restore. No mandatory hosted control plane.
 
 **Brightdesk boundaries:**
@@ -79,11 +79,11 @@ Initial capability areas to design and implement in stages:
 - Brightdesk-Engine owns shared native/core code; Brightdesk-Common-Libs owns reusable contracts/utilities. Avoid duplicating these responsibilities in Services.
 - Brightdesk-AI owns models, prompts, provider adapters and AI orchestration. Services may expose a narrow integration boundary only when an explicit product workflow requires it; AI must remain optional.
 - Brightdesk-Release-Tools owns release manifests and artifact verification, not runtime services.
-- The Suite remains usable offline and without a Brightdesk-Services deployment. Sync and remote features should be opt-in and degrade safely when unavailable.
+- The Suite and all ten products must remain fully usable offline and without a Services deployment. Under the current customer policy, no customer-facing sync, cloud storage or other remote feature is permitted. Services must not be shipped, installed, launched or required by customer products.
 
-**Security and acceptance gates:** threat model before production endpoints; TLS in transit; strong credential hashing and scoped tokens; token rotation/revocation; secret redaction; input and resource limits; audit events without content leakage; encryption design reviewed before storing user data; migration/backup recovery tests; API compatibility tests; and integration tests against at least one real product consumer. Do not claim end-to-end encryption until key ownership, recovery and server-blindness are independently verified.
+**Security and acceptance gates:** threat model before production endpoints; TLS in transit; strong credential hashing and scoped tokens; token rotation/revocation; secret redaction; input and resource limits; audit events without content leakage; encryption design reviewed before storing any owner/operator test data; migration/backup recovery tests; API compatibility tests; and integration tests against at least one real product consumer. Do not claim end-to-end encryption until key ownership, recovery and server-blindness are independently verified.
 
-**Delivery status:** first implementation under review. PR #1 adds a Node.js 24.22.2-targeted, zero-third-party-dependency API foundation for device enrolment/listing/revocation, product scopes, workspace isolation and revision-checked opaque sync payload storage. Eleven regression tests and syntax checks passed locally on Node 22.16.0; exact Node 24.22.2 verification remains outstanding. Client-side encryption/key recovery, production database, backups, multi-process operation, security review and product integration remain unfinished. No user-account or person-identity system is planned. Do not deploy as production or connect products until the remaining gates pass.
+**Delivery status:** first implementation under review. PR #1 adds a Node.js 24.22.2-targeted, zero-third-party-dependency API foundation for device enrolment/listing/revocation, product scopes, workspace isolation and revision-checked opaque test-payload storage for owner/operator validation only, not customer content. Eleven regression tests and syntax checks passed locally on Node 22.16.0; exact Node 24.22.2 verification remains outstanding. Client-side encryption/key recovery, production database, backups, multi-process operation, security review and product integration remain unfinished. No user-account or person-identity system is planned. Do not deploy as production or connect products until the remaining gates pass.
 
 ## 4. Dependency and connection rules
 
