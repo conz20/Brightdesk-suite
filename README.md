@@ -79,7 +79,7 @@ This table describes the first-use scope represented in source code. It is not a
 
 The Suite includes a Rust engine exposed to the Electron main process through a Node-API 8 native module. Electron and JavaScript continue to own application orchestration, user-interface state, file access and provider selection. The renderer does not load native code directly.
 
-The engine provides bounded source chunking and analysis, embedding-vector normalisation, cosine similarity and vector ranking. The provider-neutral JavaScript bridge accepts an injected embedding provider; Rust processes vectors returned by that provider. The bridge is implemented and unit-tested, but no production semantic-embedding provider is currently configured or connected to product features or Brightdesk-AI.
+The engine provides bounded source chunking and analysis, embedding-vector normalisation, cosine similarity and vector ranking. The provider-neutral JavaScript bridge in this Suite repository is implemented and unit-tested, but is not currently connected to a customer-facing product feature. Separately, Brightdesk-AI already has an opt-in local Qwen3-Embedding 0.6B provider: its collaboration runtime exposes `embed()` and `rank()` through its own JavaScript bridge, with Rust performing vector normalization and ranking. That AI runtime is separate from the Suite process and is not a customer-product dependency. Its embedding provider is disabled by default and requires the local loopback model server to be started and explicitly enabled.
 
 **Important boundaries:**
 - Rust does not generate semantic embeddings or call language models. A separate embedding provider is required for semantic vectors.
