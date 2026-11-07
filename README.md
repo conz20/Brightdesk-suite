@@ -4,7 +4,7 @@
 
 <p align="center"><strong>Ten focused desktop products. One consistent Brightdesk experience.</strong></p>
 
-Brightdesk is an independent, local-first desktop productivity suite. It uses original product names, code, interface design and artwork. It is not affiliated with Microsoft, Adobe or ArtCraft.
+Brightdesk is an independent, local-first desktop productivity suite. Microsoft is its primary product and experience inspiration; Adobe Creative Suite may be used as a secondary reference for professional creative capabilities and workflows. Brightdesk uses original product names, code, interface design and artwork and is not affiliated with Microsoft, Adobe or ArtCraft. No Adobe applications, installers, plug-ins, runtimes or services are included, bundled, required or distributed.
 
 ## The ten approved products
 
