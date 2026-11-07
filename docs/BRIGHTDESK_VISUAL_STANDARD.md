@@ -1,6 +1,6 @@
 # Brightdesk visual and interaction standard
 
-This is the shared design contract for Brightdesk Office Suite and all ten approved applications. It draws on familiar productivity-software conventions while keeping Brightdesk's own brand, layout, icon artwork and interaction language. It must not copy proprietary Microsoft, Adobe or ArtCraft code, logos, screenshots or distinctive trade dress.
+This is the shared design contract for Brightdesk Office Suite and all ten approved products. Microsoft productivity software is the primary reference for the overall office-suite experience. Adobe Creative Suite is an allowed secondary reference for professional creative capabilities and workflows. Brightdesk must keep its own brand, code, product names, layout, icon artwork and interaction language; it must not copy proprietary source code, logos, protected artwork, fonts or distinctive interface assets. No Adobe application, installer, plug-in, runtime or required Adobe service may be included, bundled, installed, launched, distributed or required.
 
 ## Brand foundation
 
