@@ -20,7 +20,7 @@ test('catalogue entries not packaged with Brightdesk never trigger a live networ
   try {
     await assert.rejects(
       () => service.installCatalogueEntry('en-au'),
-      /not included in this build/
+      /not included in this Brightdesk build/
     );
     assert.equal(networkCalls, 0);
   } finally {
