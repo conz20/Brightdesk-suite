@@ -102,7 +102,7 @@ The Windows NSIS installer and macOS DMG/PKG present the Brightdesk Terms and Co
 
 ## Local-first desktop software
 
-Brightdesk is designed to keep product data on the current device. The first-use features described above do not require an account, cloud workspace or online collaboration. Some tasks such as downloads and update checks may use network access when explicitly requested.
+Brightdesk keeps product data and installed language resources on the current device. Normal product work, including spelling checks with installed dictionaries, remains available offline without an account or cloud service. The only permitted customer-facing internet activity is checking, downloading and installing official Brightdesk Suite and individual-product updates. Additional dictionary resources must be delivered inside a verified official Brightdesk update; products must not fetch dictionaries directly from third-party hosts at runtime.
 
 ## Product repositories
 
