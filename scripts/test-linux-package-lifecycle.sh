@@ -49,7 +49,7 @@ for package in "${debs[@]}"; do
     exit 1
   fi
 
-  mapfile -t installed_payloads < <(dpkg -L "$package_name" | grep '^/opt/.*[^/]$' || true)
+  mapfile -t installed_payloads < <(dpkg -L "$package_name" | while IFS= read -r candidate; do if [[ "$candidate" == /opt/* && -f "$candidate" ]]; then printf '%s\\n' "$candidate"; fi; done)
   if [[ "${#installed_payloads[@]}" -eq 0 ]]; then
     echo "No installed application payload was recorded for $package_name." >&2
     exit 1
