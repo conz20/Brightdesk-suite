@@ -124,6 +124,12 @@ jobs:
           if [ "${{ matrix.script }}" = "mac" ]; then npm run dist:mac; fi
           npm run release:prepare -- ${{ matrix.script }}
 
+      - name: Require and test native Rust engine on this platform
+        shell: bash
+        env:
+          BRIGHTDESK_REQUIRE_NATIVE_ENGINE: "1"
+        run: node --test test/rust-engine.test.mjs test/embedding-bridge.test.mjs
+
       - name: Verify Linux installer artifacts
         if: matrix.platform == 'Linux'
         run: npm run release:verify:linux
