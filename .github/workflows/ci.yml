@@ -15,8 +15,8 @@ concurrency:
 
 jobs:
   build:
-    # Reuse the already-configured private Mac runner; avoid paid hosted-runner usage.
-    runs-on: self-hosted
+    # Use standard hosted Linux; the account Actions budget caps usage.
+    runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
       - name: Check out Brightdesk
