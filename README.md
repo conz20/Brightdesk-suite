@@ -4,7 +4,7 @@
 
 <p align="center"><strong>Ten focused desktop products. One consistent Brightdesk experience.</strong></p>
 
-Brightdesk is an independent, local-first desktop productivity suite. It uses original product names, code, interface design and artwork. It is not affiliated with Microsoft, Adobe or ArtCraft.
+Brightdesk is an independent, local-first desktop productivity suite. Microsoft is its primary product and experience inspiration; Adobe Creative Suite may be used as a secondary reference for professional creative capabilities and workflows. Brightdesk uses original product names, code, interface design and artwork and is not affiliated with Microsoft, Adobe or ArtCraft. No Adobe applications, installers, plug-ins, runtimes or services are included, bundled, required or distributed.
 
 ## The ten approved products
 
@@ -102,7 +102,7 @@ The Windows NSIS installer and macOS DMG/PKG present the Brightdesk Terms and Co
 
 ## Local-first desktop software
 
-Brightdesk is designed to keep product data on the current device. The first-use features described above do not require an account, cloud workspace or online collaboration. Some tasks such as downloads and update checks may use network access when explicitly requested.
+Brightdesk is designed to keep product data on the current device. The first-use features described above do not require an account, cloud workspace or online collaboration. The only internet access permitted in customer-facing Brightdesk software is for checking, downloading and installing official Suite and individual-product updates.
 
 ## Product repositories
 
@@ -123,7 +123,7 @@ Each approved product has its own repository and product documentation:
 
 The Suite coordinates ten independently maintained product repositories: Pages, Sheets, Decks, Notes, Database, Forms, Lists, Planner, To Do and Workspace. The private [Brightdesk-AI](https://github.com/connormolloy12/Brightdesk-AI) repository supports engineering analysis and approved development workflows; it is not included in customer downloads and is not required to use the products.
 
-The ten existing shared infrastructure repositories are [Design System](https://github.com/connormolloy12/Brightdesk-Design-System), [Fonts](https://github.com/connormolloy12/Brightdesk-Fonts), [Localization](https://github.com/connormolloy12/Brightdesk-Localization), [Engine](https://github.com/connormolloy12/Brightdesk-Engine), [Common Libraries](https://github.com/connormolloy12/Brightdesk-Common-Libs), [Common Actions](https://github.com/connormolloy12/Brightdesk-Common-Actions), [Developer Tools](https://github.com/connormolloy12/Brightdesk-Developer-Tools), [Extensions](https://github.com/connormolloy12/Brightdesk-Extensions), [Wiki](https://github.com/connormolloy12/Brightdesk-Wiki) and [Release Tools](https://github.com/connormolloy12/Brightdesk-Release-Tools). Release Tools now exists as a private repository with an initial README; its release tooling implementation is still outstanding.
+The eleven existing shared infrastructure repositories are [Design System](https://github.com/connormolloy12/Brightdesk-Design-System), [Fonts](https://github.com/connormolloy12/Brightdesk-Fonts), [Localization](https://github.com/connormolloy12/Brightdesk-Localization), [Engine](https://github.com/connormolloy12/Brightdesk-Engine), [Common Libraries](https://github.com/connormolloy12/Brightdesk-Common-Libs), [Common Actions](https://github.com/connormolloy12/Brightdesk-Common-Actions), [Developer Tools](https://github.com/connormolloy12/Brightdesk-Developer-Tools), [Extensions](https://github.com/connormolloy12/Brightdesk-Extensions), [Wiki](https://github.com/connormolloy12/Brightdesk-Wiki), [Release Tools](https://github.com/connormolloy12/Brightdesk-Release-Tools) and [Services](https://github.com/connormolloy12/Brightdesk-Services). Release Tools has its first read-only implementation under review in PR #1. Services has its initial device/sync API foundation under review in [PR #1](https://github.com/connormolloy12/Brightdesk-Services/pull/1); it is not production-ready and is not yet connected to product consumers.
 
 Repository presence is not the same as completed integration. Shared packages and interfaces will be connected only after their source, tests, language compatibility and versioning are verified. Existing JavaScript, TypeScript, Rust and other languages remain supported; no language is being removed as part of this work. See the [developer ecosystem architecture](docs/DEVELOPER_ECOSYSTEM_ARCHITECTURE.md) for ownership, dependency direction and the safe integration sequence.
 
@@ -178,3 +178,8 @@ Brightdesk Pages and Sheets have reference studies based on the public [Wordcraf
 ## Documentation freshness
 
 The root README is maintained alongside the product, not as an end-of-project task. Every pull request and direct push to `main` that changes application code, tests, UI, design assets, screenshots, icons, configuration, dependencies, packaging, or build/release workflows must also update this README in the same change. The **README freshness** GitHub Actions check runs on pull requests and pushes to `main`; it requires a root `README.md` update whenever a non-Markdown file changes. A passing check confirms inclusion, not factual accuracy. Reviewers remain responsible for checking that feature status, screenshots, visual references, application icons, setup/build instructions, platform compatibility and repository links match the latest verified implementation.
+
+
+## Permanent free, no-account and internet-use rules
+
+Brightdesk is free forever: no paid tiers, subscriptions, billing, trials, activation fees or account-based restrictions. Customers never create an account, sign in, set a password or maintain a profile. All ten products remain usable locally and offline. The only internet access permitted in customer-facing Brightdesk software is for checking, downloading and installing official updates to Brightdesk Office Suite and its individual products. Do not add cloud sync, online storage, remote AI/model providers, telemetry, analytics, crash reporting, advertising, online collaboration or other network-dependent features. No internet connection is required for normal product use. GitHub repository access is an owner/developer maintenance activity, not a customer feature or login requirement. Brightdesk-Services remains experimental owner-operated infrastructure only; it is not a customer feature, login service or required product runtime dependency.

@@ -2,7 +2,7 @@
 
 Status: proposed architecture; implementation is tracked separately
 Verified repository inventory: 7 November 2026
-Visibility: the 22 existing Brightdesk repositories are private
+Visibility: the 23 existing Brightdesk repositories are private
 Compatibility rule: preserve each repository's existing implementation and programming languages, including Rust.
 
 ## 1. Customer product repositories
@@ -33,7 +33,7 @@ AI implementation, prompts, model/provider adapters, agent workflows, AI-specifi
 
 ## 3. Existing shared infrastructure repositories
 
-The following ten private repositories have been confirmed to exist. Their names and responsibilities are authoritative; repository existence does not mean a reusable package or service has already been implemented or connected.
+The following eleven private repositories have been confirmed to exist. Their names and responsibilities are authoritative; repository existence does not mean a reusable package or service has already been implemented or connected.
 
 | Repository | Intended ownership |
 |---|---|
@@ -47,8 +47,43 @@ The following ten private repositories have been confirmed to exist. Their names
 | [Brightdesk-Extensions](https://github.com/connormolloy12/Brightdesk-Extensions) | Extension manifests, permissions, lifecycle contracts, SDK and compatibility tests |
 | [Brightdesk-Wiki](https://github.com/connormolloy12/Brightdesk-Wiki) | Central technical documentation, developer guides, architecture and product knowledge |
 | [Brightdesk-Release-Tools](https://github.com/connormolloy12/Brightdesk-Release-Tools) | Release manifests, version consistency, platform artifact validation, checksums and release evidence |
+| [Brightdesk-Services](https://github.com/connormolloy12/Brightdesk-Services) | Optional self-hosted device management, workspace-scoped sync APIs, user-controlled storage and background services |
 
-**Implementation status:** the nine previously audited shared repositories were README-only bootstraps. Brightdesk-Release-Tools has now been created and its initial README committed, but its planned release scripts, schemas, tests and workflow integrations are not yet implemented or verified. Repository existence and documentation must not be reported as operational implementation.
+**Implementation status:** the nine earlier shared repositories remain README-only bootstraps. Brightdesk-Release-Tools has its first read-only implementation under review in PR #1. Brightdesk-Services now exists as a private repository; its first device and sync service foundation is under review in [Brightdesk-Services PR #1](https://github.com/connormolloy12/Brightdesk-Services/pull/1). Neither repository is production-ready or connected to product consumers. Repository existence and documentation must not be reported as completed operational infrastructure.
+
+
+### Permanent free and no-account requirement
+
+Brightdesk is free forever. No subscriptions, paid tiers, premium features or account-based restrictions may be introduced. Brightdesk Suite and none of its ten product areas will offer or require user accounts, passwords, customer profiles, sign-up, sign-in, email registration, cloud identity or account recovery. Customers must never have to log in, create an account, enter a password or pay to use Brightdesk. Brightdesk-Services is experimental, owner-operated infrastructure only; it is not a customer feature, identity provider, login service or product runtime dependency. Any device registration or scoped credentials in Services are for owner/operator maintenance and testing only, never for customer identity, customer documents or customer synchronisation. The service-operator secret is an owner configuration credential, not an end-user login. Every product must remain fully usable locally without Services, accounts or an internet connection.
+
+## 3A. Brightdesk-Services — initial foundation under review
+
+**Reference reviewed:** [storytold/artcraft-services](https://github.com/storytold/artcraft-services). This is a capability reference only. Brightdesk must implement its own code, interfaces, data model, security controls and user experience. Do not copy its source, assets or implementation. Its published licence is restrictive; obtain legal review before considering any reuse. The Brightdesk implementation should be original and independently licensed.
+
+**Repository:** [Brightdesk-Services](https://github.com/connormolloy12/Brightdesk-Services) is now confirmed as a private repository and is included in the verified count of 23 existing private repositories. Its first implementation is in [PR #1](https://github.com/connormolloy12/Brightdesk-Services/pull/1).
+
+**Purpose:** experimental, owner-operated infrastructure for internal development, maintenance and validation only. Services is not a customer-facing product feature, must not be included in customer installers or product runtime dependencies, and must never be required for normal product use.
+
+Internal capability areas to evaluate for owner/operator maintenance and non-customer test data only. They are not customer features and must not be exposed as customer-facing product workflows:
+
+- **Device enrolment and administration:** optional device pairing, enrolment, revocation, device lists and device-scoped service credentials. Do not create person/customer identity, user accounts or sign-in sessions. Keep local-only use available.
+- **Internal protocol testing:** versioned device-scoped test payloads, revision/conflict handling and resumable test transfers using synthetic data only. Do not synchronise customer documents or product content.
+- **Internal test storage:** owner-controlled storage for synthetic maintenance/test data only, with backup/restore and integrity checks. This is not customer cloud storage.
+- **Owner maintenance jobs:** durable internal job queue, retries, idempotency, cancellation, status reporting and bounded worker execution; do not run customer product workflows.
+- **Internal API contracts:** documented versioned APIs for owner-operated administration and test harnesses, schema validation, compatibility tests, rate limits and health/readiness endpoints; do not expose customer sync/storage endpoints.
+- **Administration and deployment:** self-hosted setup, configuration validation, migrations, logs, diagnostics, backup and restore. No mandatory hosted control plane.
+
+**Brightdesk boundaries:**
+
+- The ten product repositories remain the source of truth for product behaviour and local data models. They integrate through stable, documented service contracts.
+- Brightdesk-Engine owns shared native/core code; Brightdesk-Common-Libs owns reusable contracts/utilities. Avoid duplicating these responsibilities in Services.
+- Brightdesk-AI owns models, prompts, provider adapters and AI orchestration. Services may expose a narrow integration boundary only when an explicit product workflow requires it; AI must remain optional.
+- Brightdesk-Release-Tools owns release manifests and artifact verification, not runtime services.
+- The Suite and all ten products must remain fully usable offline and without a Services deployment. Under the current customer policy, no customer-facing sync, cloud storage or other remote feature is permitted. Services must not be shipped, installed, launched or required by customer products.
+
+**Security and acceptance gates:** threat model before production endpoints; TLS in transit; strong credential hashing and scoped tokens; token rotation/revocation; secret redaction; input and resource limits; audit events without content leakage; encryption design reviewed before storing any owner/operator test data; migration/backup recovery tests; API compatibility tests; and integration tests against at least one real product consumer. Do not claim end-to-end encryption until key ownership, recovery and server-blindness are independently verified.
+
+**Delivery status:** first implementation under review. PR #1 adds a Node.js 24.22.2-targeted, zero-third-party-dependency API foundation for device enrolment/listing/revocation, product scopes, workspace isolation and revision-checked opaque test-payload storage for owner/operator validation only, not customer content. Eleven regression tests and syntax checks passed locally on Node 22.16.0; exact Node 24.22.2 verification remains outstanding. Client-side encryption/key recovery, production database, backups, multi-process operation, security review and product integration remain unfinished. No user-account or person-identity system is planned. Do not deploy as production or connect products until the remaining gates pass.
 
 ## 4. Dependency and connection rules
 
@@ -64,7 +99,7 @@ Brightdesk Office Suite
   ├── Brightdesk-Planner
   ├── Brightdesk-To-Do
   ├── Brightdesk-Workspace
-  └── versioned shared interfaces/packages
+  └── shared interfaces and optional services
         ├── Design-System
         ├── Fonts
         ├── Localization
@@ -74,7 +109,8 @@ Brightdesk Office Suite
         ├── Developer-Tools
         ├── Extensions
         ├── Wiki
-        └── Release-Tools
+        ├── Release-Tools
+        └── Services (optional, self-hosted, device-scoped synchronisation)
 
 Brightdesk-AI
   └── private, scoped engineering access to the ecosystem
@@ -82,7 +118,7 @@ Brightdesk-AI
 
 - The Suite integrates and launches the ten products; each product remains the source of truth for its own implementation.
 - Products consume shared functionality through documented, versioned interfaces. Shared repositories must not depend on product repositories.
-- Brightdesk-AI can inspect and support the ecosystem through least-privilege access. It must not become a runtime dependency of customer products.
+- Brightdesk-AI can inspect and support the ecosystem through least-privilege access. It must not become a runtime dependency of customer products. Brightdesk-Services is an optional device-scoped synchronisation layer; it does not introduce customer accounts or sign-in, and products remain fully usable without it.
 - Shared CI actions are non-AI infrastructure. AI-specific orchestration and automation remain in Brightdesk-AI.
 - Release Tools coordinates release evidence and validation; it does not replace the Suite or product repositories as the source of versioned application code.
 - Do not create direct cross-repository source copies as a substitute for package/interface integration.
@@ -96,7 +132,7 @@ Use each repository's existing toolchain, lockfiles and test commands. Pin Node.
 ## 6. Safe integration sequence
 
 1. Correct and publish this canonical repository map through reviewed pull requests.
-2. Update Brightdesk-AI's inventory and audit rules to recognise all ten products, the Suite, AI and all ten shared repositories.
+2. Update Brightdesk-AI's inventory and audit rules to recognise all ten products, the Suite, AI and all eleven shared infrastructure repositories.
 3. Audit each shared repository's actual files, language, tests and package metadata before assigning implementation or extracting code.
 4. Define stable package names, ownership, versioning and compatibility contracts without moving existing source yet.
 5. Add contract tests to the shared interface and consuming repository before enabling each dependency.
@@ -118,8 +154,34 @@ Use each repository's existing toolchain, lockfiles and test commands. Pin Node.
 
 ## 8. Verified baseline and limitations
 
-As of 7 November 2026, GitHub contains **22 private repositories**: Brightdesk Office Suite, Brightdesk-AI, ten product repositories and ten shared infrastructure repositories.
+As of 7 November 2026, GitHub contains **23 private repositories**: Brightdesk Office Suite, Brightdesk-AI, ten product repositories and eleven shared infrastructure repositories.
 
-The nine shared repositories audited before Release Tools was created contained basic README descriptions; their intended packages or services were not verified as implemented. Brightdesk-Release-Tools now has an initial README bootstrap, but its operational tooling is not implemented or verified. Some product repositories already contain Rust integration work and active pull requests. Their existing language choices and changes must be preserved.
+Nine of the eleven shared repositories remain README-only. Brightdesk-Release-Tools and Brightdesk-Services have first implementation PRs under review, but neither has passed all verification gates or been connected to a product consumer. Some product repositories already contain Rust integration work and active pull requests. Their existing language choices and changes must be preserved.
 
 This document defines the target architecture and current repository map. It does not claim that every repository is already connected, every shared package has been published, or every product has passed integration and release testing.
+
+
+## Permanent customer connectivity and commercial boundary
+
+The customer product is free forever. No subscriptions, paid tiers, billing, trials, activation fees, user accounts, sign-in, passwords, customer profiles or account recovery may be introduced. The Suite and all ten products must work locally without internet access. The only permitted customer-runtime network activity is the official update path: check for, download and install updates for the Suite and its individual products. No cloud sync, online storage, remote AI/model provider, telemetry, analytics, crash reporting, advertising, online collaboration or other network-dependent customer feature is permitted. Access to private GitHub repositories is solely an owner/developer maintenance activity and is not part of the customer experience.
+
+## Product inspiration and application exclusions
+
+**Primary inspiration: Microsoft productivity software. Secondary capability reference: Adobe Creative Suite.** Brightdesk may study the general product capabilities, professional workflows, interaction patterns and depth offered by both ecosystems when deciding how to improve its own products. Microsoft remains the primary reference for the overall office-suite experience; Adobe Creative Suite is an allowed secondary reference for creative capabilities and workflows.
+
+This permission is about learning from general ideas and workflows. It does not authorise copying proprietary source code, artwork, icons, fonts, branding, trademarks, or distinctive protected interface assets. Brightdesk must implement its own code, visual identity, product names, interaction design and assets.
+
+**Absolute exclusion: zero Adobe applications.** No Adobe application may be included, bundled, installed, launched, distributed, required or treated as a product dependency anywhere in Brightdesk Suite or its ten products. This includes Adobe application installers, plug-ins, required Adobe desktop software, and dependencies on Adobe application runtimes. Brightdesk must not require an Adobe account, subscription, activation, licence, cloud service or other Adobe service to build, install or use its products. A design reference that mentions or depicts an Adobe product is not itself an application dependency; it must remain clearly identified as reference material only.
+
+The approved customer product scope remains exactly Pages, Sheets, Decks, Notes, Database, Forms, Lists, Planner, To Do and Workspace. Adobe-inspired capabilities may be considered inside an appropriate approved Brightdesk product, but must not silently create an eleventh product or expand the approved product list. Any scope expansion requires a separate owner decision.
+
+**Acceptance gates for every product and release:**
+
+- Review package manifests, lockfiles, native dependencies, plug-in declarations, installer configuration, bundled files, update manifests and runtime launch paths for Adobe application or service dependencies.
+- Confirm that no Adobe application is downloaded, installed, bundled, launched or needed at build time or customer runtime.
+- Check product UI, onboarding, help and release documentation for wording that incorrectly suggests an Adobe product is required or included.
+- Keep reference-board screenshots and research notes separate from production assets; ship only original Brightdesk artwork and licensed dependencies.
+- Record the results for Windows, macOS and Linux builds. A source-level search alone is not sufficient evidence of installer contents or runtime behaviour.
+- Run this audit as part of release readiness and repeat it whenever dependencies, packaging, extensions or product scope changes.
+
+The capability plan for each of the ten products should identify useful Microsoft-led office workflows and any relevant professional creative workflows that can be implemented natively in Brightdesk. Features must be scoped, implemented, documented and tested in the owning product repository before they are described as complete.
