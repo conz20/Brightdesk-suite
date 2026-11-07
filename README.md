@@ -102,7 +102,7 @@ The Windows NSIS installer and macOS DMG/PKG present the Brightdesk Terms and Co
 
 ## Local-first desktop software
 
-Brightdesk is designed to keep product data on the current device. The first-use features described above do not require an account, cloud workspace or online collaboration. Some tasks such as downloads and update checks may use network access when explicitly requested.
+Brightdesk is designed to keep product data on the current device. The first-use features described above do not require an account, cloud workspace or online collaboration. The only internet access permitted in customer-facing Brightdesk software is for checking, downloading and installing official Suite and individual-product updates.
 
 ## Product repositories
 
@@ -178,3 +178,8 @@ Brightdesk Pages and Sheets have reference studies based on the public [Wordcraf
 ## Documentation freshness
 
 The root README is maintained alongside the product, not as an end-of-project task. Every pull request and direct push to `main` that changes application code, tests, UI, design assets, screenshots, icons, configuration, dependencies, packaging, or build/release workflows must also update this README in the same change. The **README freshness** GitHub Actions check runs on pull requests and pushes to `main`; it requires a root `README.md` update whenever a non-Markdown file changes. A passing check confirms inclusion, not factual accuracy. Reviewers remain responsible for checking that feature status, screenshots, visual references, application icons, setup/build instructions, platform compatibility and repository links match the latest verified implementation.
+
+
+## Permanent free, no-account and internet-use rules
+
+Brightdesk is free forever: no paid tiers, subscriptions, billing, trials, activation fees or account-based restrictions. Customers never create an account, sign in, set a password or maintain a profile. All ten products remain usable locally and offline. The only internet access permitted in customer-facing Brightdesk software is for checking, downloading and installing official updates to Brightdesk Office Suite and its individual products. Do not add cloud sync, online storage, remote AI/model providers, telemetry, analytics, crash reporting, advertising, online collaboration or other network-dependent features. No internet connection is required for normal product use. GitHub repository access is an owner/developer maintenance activity, not a customer feature or login requirement.
