@@ -12,7 +12,6 @@ $RunnerDownloadUrl = "https://github.com/actions/runner/releases/download/v$Runn
 $ExpectedSha256 = 'a1f17aa987fc8158bc7521d284912267a0d01b7c2c4684b33c86783b5e8221cc'
 $InstallDirectory = 'C:\actions-runner'
 $RunnerName = 'Brightdesk-Windows-PC'
-$ExtraLabel = 'brightdesk-windows'
 
 function Test-IsAdministrator {
     $identity = [Security.Principal.WindowsIdentity]::GetCurrent()
@@ -106,7 +105,6 @@ try {
         '--url', $RepositoryUrl,
         '--name', $RunnerName,
         '--runnergroup', 'Default',
-        '--labels', $ExtraLabel,
         '--runasservice'
     )
 
@@ -141,7 +139,7 @@ try {
     Write-Host ''
     Write-Host 'SUCCESS: the Brightdesk Windows runner service is running.' -ForegroundColor Green
     Write-Host "Runner name: $RunnerName"
-    Write-Host "Extra label: $ExtraLabel"
+    Write-Host 'Default labels: self-hosted, Windows, X64'
     Write-Host 'Open GitHub Settings > Actions > Runners to confirm that it shows as Idle/Online.'
     Write-Host 'The Windows build workflow still needs to be pointed at this runner before it can use it.' -ForegroundColor Yellow
 }
