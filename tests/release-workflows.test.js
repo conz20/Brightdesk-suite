@@ -74,6 +74,17 @@ test('cross-build scripts use isolated Colima volumes and verify both container 
  assert.match(inner,/native Windows OS acceptance remains separate/);
 });
 
+test('Linux cross-build runs install/remove and data-preservation checks for all 11 Debian packages',()=>{
+ const script=read('scripts/test-linux-package-lifecycle.sh');
+ assert.match(script,/Expected 11 Debian packages/);
+ assert.match(script,/dpkg --install/);
+ assert.match(script,/dpkg --remove/);
+ assert.match(script,/brightdesk-uninstall-preservation/);
+ assert.match(script,/Preserve user settings and local data/);
+ assert.match(script,/--appimage-version/);
+ assert.match(read('scripts/build-cross-platform-installers.sh'),/test-linux-package-lifecycle\.sh release/);
+});
+
 test('native target regression suite covers target selection and binary headers',()=>{
  const tests=read('tests/native-build-target.test.js');
  for(const item of ["resolveNativeBuild('darwin')","resolveNativeBuild('linux')","resolveNativeBuild('win32')","resolveNativeBuild('linux','win32')","WINDOWS_GNU_TARGET","valid PE image","valid ELF image"]){

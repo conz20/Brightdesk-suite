@@ -14,6 +14,7 @@ npm run release:prepare -- linux
 npm run release:verify:linux
 npm run dist:products:linux
 npm run release:verify:products:linux
+bash scripts/test-linux-package-lifecycle.sh release
 npm run release:collect:linux
 
 echo "=== Windows x64: Suite and all ten products (Wine/NSIS cross-build) ==="
