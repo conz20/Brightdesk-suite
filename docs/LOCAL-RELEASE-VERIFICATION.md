@@ -43,3 +43,15 @@ GitHub assigns the standard operating-system and architecture labels when each r
 The existing Mac runner can handle the preparation, collection and macOS build jobs. A Windows runner is required for the native Windows installer, and a Linux x64 runner is required for the native Linux packages. Do not substitute a cross-build from another operating system and call it verified. The workflow does not publish a release unless the manual `publish_release` input is explicitly enabled; its default remains disabled.
 
 Runner setup requires access to each physical computer and a one-time registration from the repository settings. Never copy a runner registration token into source files, logs, issues or documentation. Keep all runners private to this repository and do not run untrusted fork pull-request code on them.
+
+
+### Windows runner setup
+
+The click-to-run Windows x64 setup source and exact instructions are in [tools/runner-setup/windows](../tools/runner-setup/windows/README.txt). The supplied ZIP contains the CMD launcher, PowerShell installer and README. It downloads the official runner, checks the published SHA-256 digest, installs under `C:\actions-runner`, and registers the runner only to this private repository. It retains GitHub's default labels: `self-hosted`, `Windows` and `X64`.
+
+1. Extract the supplied setup ZIP on the Windows PC.
+2. Open [the repository's New self-hosted runner page](https://github.com/connormolloy12/Brightdesk-suite/settings/actions/runners/new), select **Windows** and **x64**, and generate the one-time token.
+3. Double-click `Start-Brightdesk-Windows-Runner.cmd`, approve the Windows administrator prompt, and enter the token only into the official runner configuration prompt on the Windows PC.
+4. Confirm `Brightdesk-Windows-PC` appears as **Idle** in Settings → Actions → Runners.
+
+The token expires after one hour. Never paste it into chat, an issue, source code or logs. Registration does not switch any workflow to this runner; update the Windows job to use `[self-hosted, Windows, X64]` only after the runner appears online. The setup source stops rather than overwriting a non-empty existing runner folder.
