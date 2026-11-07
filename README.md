@@ -171,6 +171,10 @@ The customer-facing package version in the current main-branch manifest is **0.1
 
 The quality and Rust workflows are configured to use the repository's private self-hosted Mac runner. The native installer workflow is a separate manual workflow with Windows, macOS and Linux build jobs; release publication is opt-in and disabled by default. Workflow configuration is not evidence that a job has completed successfully. Do not describe the release as complete until current-head checks and native install/runtime acceptance have actually passed. No automatic update publishing provider is configured.
 
+## Reference-informed product development
+
+Brightdesk Pages and Sheets have reference studies based on the public [Wordcraft](https://github.com/storytold/wordcraft) and [GridCraft](https://github.com/storytold/gridcraft) projects. The [Brightdesk reference product integration map](docs/REFERENCE_PRODUCT_INTEGRATION_MAP.md) maps the research to all ten products, defines shared-repository boundaries, and records original-design, licensing, testing and README requirements. Reference features are not counted as Brightdesk features until independently implemented and verified.
+
 ## Documentation freshness
 
 The root README is maintained alongside the product, not as an end-of-project task. Every pull request and direct push to `main` that changes application code, tests, UI, design assets, screenshots, icons, configuration, dependencies, packaging, or build/release workflows must also update this README in the same change. The **README freshness** GitHub Actions check runs on pull requests and pushes to `main`; it requires a root `README.md` update whenever a non-Markdown file changes. A passing check confirms inclusion, not factual accuracy. Reviewers remain responsible for checking that feature status, screenshots, visual references, application icons, setup/build instructions, platform compatibility and repository links match the latest verified implementation.
