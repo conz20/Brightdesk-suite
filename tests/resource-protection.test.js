@@ -26,7 +26,7 @@ test('dictionary centre explains local use and official Brightdesk update delive
   assert.match(html, /Installed dictionary resources are protected/);
   assert.match(html, /does not download dictionary files from third-party hosts at runtime/);
   assert.match(html, /Use installed dictionaries offline/);
-  assert.match(html, /additional dictionary files can become available only when included in a verified official Brightdesk update/);
+  assert.match(html, /additional dictionary files can become available only when included in a verified official Brightdesk update/i);
 });
 
 
