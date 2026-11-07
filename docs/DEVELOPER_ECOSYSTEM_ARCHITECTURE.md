@@ -1,117 +1,121 @@
 # Brightdesk Developer Ecosystem
 
-Status: architecture and repository bootstrap plan  
-Visibility: private for every repository  
-Implementation rule: original Brightdesk code and assets; no copied project source without a compatible licence review.
+Status: proposed architecture; implementation is tracked separately
+Verified repository inventory: 7 November 2026
+Visibility: the 21 existing Brightdesk repositories are private
+Compatibility rule: preserve each repository's existing implementation and programming languages, including Rust.
 
-## 1. Product repositories
+## 1. Customer product repositories
 
-Each customer product has one source-of-truth repository:
+Each of the ten products has its own source-of-truth repository:
 
-- `Brightdesk-Pages`
-- `Brightdesk-Sheets`
-- `Brightdesk-Decks`
-- `Brightdesk-Notes`
-- `Brightdesk-Database`
-- `Brightdesk-Forms`
-- `Brightdesk-Lists`
-- `Brightdesk-Planner`
-- `Brightdesk-To-Do`
-- `Brightdesk-Workspace`
+| Product | Repository |
+|---|---|
+| Pages | [Brightdesk-Pages](https://github.com/connormolloy12/Brightdesk-Pages) |
+| Sheets | [Brightdesk-Sheets](https://github.com/connormolloy12/Brightdesk-Sheets) |
+| Decks | [Brightdesk-Decks](https://github.com/connormolloy12/Brightdesk-Decks) |
+| Notes | [Brightdesk-Notes](https://github.com/connormolloy12/Brightdesk-Notes) |
+| Database | [Brightdesk-Database](https://github.com/connormolloy12/Brightdesk-Database) |
+| Forms | [Brightdesk-Forms](https://github.com/connormolloy12/Brightdesk-Forms) |
+| Lists | [Brightdesk-Lists](https://github.com/connormolloy12/Brightdesk-Lists) |
+| Planner | [Brightdesk-Planner](https://github.com/connormolloy12/Brightdesk-Planner) |
+| To Do | [Brightdesk-To-Do](https://github.com/connormolloy12/Brightdesk-To-Do) |
+| Workspace | [Brightdesk-Workspace](https://github.com/connormolloy12/Brightdesk-Workspace) |
 
-The `Brightdesk-suite` repository owns the desktop shell, product catalogue, navigation, first-run experience, installer integration, and cross-product launch/update/uninstall surfaces. It should consume versioned product packages rather than becoming a second source tree for each product.
+The ten repositories remain independently buildable and maintain their own product code, tests, documentation and release evidence.
 
-## 2. Shared component repositories to create
+## 2. Suite and AI responsibilities
 
-These are separate private repositories. They are not created yet; create them before moving source out of existing repositories.
+- [Brightdesk-suite](https://github.com/connormolloy12/Brightdesk-suite) owns the customer desktop shell, product catalogue, navigation, first-run experience, integrated product packaging, and customer-facing launch, update and removal surfaces. It coordinates the ten products without replacing their source repositories.
+- [Brightdesk-AI](https://github.com/connormolloy12/Brightdesk-AI) is the private engineering control plane for repository inventory, AI-assisted analysis, planning, evaluations and approved development automation. It is not shipped to customers and is not required for ordinary product use.
 
-| Repository | Owns | Must not own |
-|---|---|---|
-| `Brightdesk-Engine` | Original Rust core, Node-API boundary, shared data and document primitives, stable native interfaces | AI models, prompts, agent workflows |
-| `Brightdesk-UI` | Original design tokens, component library, accessibility primitives, icon system, themes | Product-specific screens or AI logic |
-| `Brightdesk-Common` | Shared TypeScript/JavaScript contracts, validation, logging, configuration, IPC schemas and small utilities | Product features or AI runtime |
-| `Brightdesk-Localization` | Translation catalogues, locale rules, language selection and validation tooling | AI translation services |
-| `Brightdesk-Extensions` | Extension manifest, permission model, lifecycle hooks, SDK and compatibility tests | AI agents or model integrations |
-| `Brightdesk-Fonts` | Font metadata/catalogue, licensing records, preview service and font integration helpers | Unlicensed font binaries |
-| `Brightdesk-Documentation` | Product guides, developer documentation, help centre and versioned documentation site | AI-generated content pipeline |
-| `Brightdesk-DevOps` | Reusable non-AI GitHub Actions, release packaging helpers, signing/notarization checklists and CI templates | AI agent orchestration or secrets |
-| `Brightdesk-Status` | Read-only release/service status page and status data model | AI incident agents |
+AI implementation, prompts, model/provider adapters, agent workflows, AI-specific tests and AI credentials belong in Brightdesk-AI. Product repositories may expose a small documented integration boundary only where a product feature explicitly requires it. Customer software must continue working if Brightdesk-AI is unavailable.
 
-## 3. AI-only boundary
+## 3. Existing shared infrastructure repositories
 
-All AI-related implementation belongs in the private `Brightdesk-AI` repository:
+The following nine private repositories have been confirmed to exist. Their names and responsibilities are authoritative; repository existence does not mean a reusable package or service has already been implemented or connected.
 
-- model/provider adapters and model configuration
-- prompts, agent definitions, planning and orchestration
-- AI-assisted code review and repository analysis
-- autonomous maintenance and scheduled repository audits
-- AI release-readiness analysis and recommendations
-- AI skills, evaluation datasets, safety policies and AI-specific tests
-- AI service credentials and private integration workflows
+| Repository | Intended ownership |
+|---|---|
+| [Brightdesk-Design-System](https://github.com/connormolloy12/Brightdesk-Design-System) | Shared design tokens, original components, themes, icon rules and accessibility primitives |
+| [Brightdesk-Fonts](https://github.com/connormolloy12/Brightdesk-Fonts) | Font catalogue, metadata, licence records, previews and typography integration |
+| [Brightdesk-Localization](https://github.com/connormolloy12/Brightdesk-Localization) | Translation catalogues, locale rules, regional formats and language resources |
+| [Brightdesk-Engine](https://github.com/connormolloy12/Brightdesk-Engine) | Shared native/core capabilities, Rust implementation and stable Node-API boundary |
+| [Brightdesk-Common-Libs](https://github.com/connormolloy12/Brightdesk-Common-Libs) | Reusable language-specific contracts, validation, configuration, logging, IPC schemas and utilities |
+| [Brightdesk-Common-Actions](https://github.com/connormolloy12/Brightdesk-Common-Actions) | Reusable non-AI CI workflows and GitHub Actions |
+| [Brightdesk-Developer-Tools](https://github.com/connormolloy12/Brightdesk-Developer-Tools) | SDKs, command-line tools, templates and developer utilities |
+| [Brightdesk-Extensions](https://github.com/connormolloy12/Brightdesk-Extensions) | Extension manifests, permissions, lifecycle contracts, SDK and compatibility tests |
+| [Brightdesk-Wiki](https://github.com/connormolloy12/Brightdesk-Wiki) | Central technical documentation, developer guides, architecture and product knowledge |
 
-Product repositories may contain only a small, documented integration interface when a product explicitly needs to call a Brightdesk-AI service. They must not contain model weights, prompts, agent code, provider credentials, autonomous workflows, or AI service dependencies required for ordinary product operation. The suite and products must continue to work when Brightdesk-AI is unavailable.
+[Brightdesk-Release-Tools](https://github.com/connormolloy12/Brightdesk-Release-Tools) is the one planned shared repository still awaiting creation. Until then, release tooling stays in its current repositories; do not block other work on its creation.
 
-## 4. Dependency direction
+## 4. Dependency and connection rules
 
 ```text
-Brightdesk-Suite
-  ├── ten product repositories
-  ├── Brightdesk-UI
-  ├── Brightdesk-Common
-  ├── Brightdesk-Engine
-  ├── Brightdesk-Localization
-  ├── Brightdesk-Extensions
-  └── Brightdesk-Fonts
+Brightdesk Office Suite
+  ├── Brightdesk-Pages
+  ├── Brightdesk-Sheets
+  ├── Brightdesk-Decks
+  ├── Brightdesk-Notes
+  ├── Brightdesk-Database
+  ├── Brightdesk-Forms
+  ├── Brightdesk-Lists
+  ├── Brightdesk-Planner
+  ├── Brightdesk-To-Do
+  ├── Brightdesk-Workspace
+  └── versioned shared interfaces/packages
+        ├── Design-System
+        ├── Fonts
+        ├── Localization
+        ├── Engine
+        ├── Common-Libs
+        ├── Common-Actions
+        ├── Developer-Tools
+        ├── Extensions
+        └── Wiki
 
-Brightdesk-Documentation  (documents all supported releases)
-Brightdesk-DevOps          (reusable non-AI CI/release workflows)
-Brightdesk-Status          (release/service status)
-
-Brightdesk-AI              (private control plane; separate from installers)
-  ├── repository audit and maintenance agents
-  ├── AI code review and planning
-  ├── model/provider integrations
-  └── AI evaluations and safety checks
+Brightdesk-AI
+  └── private, scoped engineering access to the ecosystem
 ```
 
-Shared libraries must not depend on product repositories. Products may depend on released shared-library versions. Brightdesk-AI may inspect repositories through scoped credentials, but product builds must never require Brightdesk-AI.
+- The Suite integrates and launches the ten products; each product remains the source of truth for its own implementation.
+- Products consume shared functionality through documented, versioned interfaces. Shared repositories must not depend on product repositories.
+- Brightdesk-AI can inspect and support the ecosystem through least-privilege access. It must not become a runtime dependency of customer products.
+- Shared CI actions are non-AI infrastructure. AI-specific orchestration and automation remain in Brightdesk-AI.
+- Do not create direct cross-repository source copies as a substitute for package/interface integration.
 
-## 5. Required baseline in every repository
+## 5. Programming languages and native engine
 
-- Private visibility and least-privilege access
-- README with purpose, supported features, exclusions and setup steps
-- `LICENSE` and third-party notices reviewed before release
-- Node.js version pinned to the suite's supported Node 24 line where applicable
-- Rust toolchain pinned where Rust is used
-- lockfiles committed; generated output, caches and secrets ignored
-- unit tests plus integration/contract tests for public interfaces
-- format, lint, type-check, test, dependency/license and security checks
-- platform build checks appropriate to the repository
-- release notes and versioned releases
-- CODEOWNERS, issue templates and pull-request template
-- no automatic public release or installer publication without owner approval
+Preserve the programming languages already present in each repository. Do not remove, replace or rewrite an existing language to standardise the ecosystem. Rust remains a supported implementation language and must remain part of the engine and relevant product/AI workflows.
 
-## 6. Migration and implementation order
+Use each repository's existing toolchain, lockfiles and test commands. Pin Node.js to 24.22.2 where the repository already targets the Suite's Node runtime. Pin Rust toolchains where Rust is used. Native interfaces must have explicit compatibility tests and safe fallback behaviour where already supported.
 
-1. Stabilise repository inventory and CI in Brightdesk-AI; keep all AI implementation there.
-2. Create the nine shared private repositories listed above.
-3. Establish package names, versioning, ownership, compatibility policy and release process.
-4. Extract shared code only after tests prove the source and destination behave identically.
-5. Migrate the suite to consume released packages; remove duplicate product source snapshots only after verified replacements exist.
-6. Add conformance tests so all ten products use the same UI, accessibility, IPC, localization, installer and security contracts.
-7. Complete a feature-by-feature gap audit for every product and implement missing first-release requirements in that product's own repository.
-8. Verify Windows, macOS and Linux packaging before any public release.
+## 6. Safe integration sequence
 
-## 7. Safety rules for the migration
+1. Correct and publish this canonical repository map through reviewed pull requests.
+2. Update Brightdesk-AI's inventory and audit rules to recognise all ten products, the Suite, AI and the nine shared repositories.
+3. Audit each shared repository's actual files, language, tests and package metadata before assigning implementation or extracting code.
+4. Define stable package names, ownership, versioning and compatibility contracts without moving existing source yet.
+5. Add contract tests to the shared interface and consuming repository before enabling each dependency.
+6. Connect the ten products one at a time, retaining each product's independent build and tests.
+7. Update the Suite to consume the verified product/shared interfaces; preserve its existing product catalogue and customer experience.
+8. Verify the complete graph with current-head CI, native Rust checks and non-publishing platform builds.
 
-- Do not delete or rewrite existing product source during extraction.
-- Do not change customer-facing product behaviour as part of repository moves.
-- Do not copy Storytold implementation code; use it as architectural reference only and independently implement Brightdesk equivalents.
-- Check the source repository's licence and attribution requirements before reusing any code or assets.
-- Keep credentials out of Git history and logs.
-- Keep AI code and AI-specific workflows exclusively in Brightdesk-AI.
-- Keep release publication behind explicit owner approval.
+## 7. Safety, security and release gates
 
-## 8. Current verified baseline
+- Work in feature branches and submit pull requests; do not push integration work directly to main.
+- Never delete or rewrite existing product source during extraction until the replacement is integrated and independently verified.
+- Keep private repositories private and use least-privilege credentials; never commit tokens or secrets.
+- Review third-party licences and notices before reusing any code or assets.
+- Do not introduce paid services, paid runners or metered APIs without separate approval.
+- Do not automatically merge, publish installers or create public releases. Owner approval remains required.
+- A queued, cancelled, skipped, stale or inaccessible check is not a passing check.
+- Report repository existence, source implementation, package publication, dependency integration and runtime verification as separate statuses.
 
-The owner account currently has separate private repositories for the Suite, Brightdesk-AI and all ten products. The nine shared component repositories above are the remaining repository-creation work. This document is a plan, not evidence that those repositories or extracted packages already exist.
+## 8. Verified baseline and limitations
+
+As of 7 November 2026, GitHub contains 21 private repositories: the Suite, Brightdesk-AI, ten product repositories and nine shared infrastructure repositories. The separate Brightdesk-Release-Tools repository is still pending.
+
+The nine shared repositories currently have basic README descriptions; this inspection has not established that their intended packages or services are implemented. Some product repositories already contain Rust integration work and active pull requests. Their existing language choices and changes must be preserved.
+
+This document defines the target architecture and current repository map. It does not claim that every repository is already connected, every shared package has been published, or every product has passed integration and release testing.
