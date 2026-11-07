@@ -40,12 +40,12 @@ test('manual release workflow builds all platforms from the one Mac runner and k
  assert.match(workflow,/publish_release:[\s\S]*?default: false/);
  assert.match(workflow,macRunner);
  assert.doesNotMatch(workflow,/ubuntu-latest|windows-latest|macos-latest|actions\/(?:upload|download)-artifact/);
- for(const command of ['npm run lock:verify','npm ci --no-audit --no-fund','cargo fmt --manifest-path rust/Cargo.toml','cargo clippy --manifest-path rust/Cargo.toml','cargo test --manifest-path rust/Cargo.toml','npm test','npm run release:preflight','npm audit --audit-level=high','npm run dist:mac','npm run dist:products:mac','npm run release:cross-platform','npm run release:verify:complete -- release']){
+ for(const command of ['npm run lock:verify','npm ci --no-audit --no-fund','cargo fmt --manifest-path rust/Cargo.toml','cargo clippy --manifest-path rust/Cargo.toml','cargo test --manifest-path rust/Cargo.toml','npm test','npm run release:preflight','npm audit --audit-level=high','npm run dist:mac','npm run dist:products:mac','npm run release:cross-platform','npm run release:assemble','npm run release:verify:complete -- release/verified-bundle']){
   assert.ok(workflow.includes(command),'release workflow includes '+command);
  }
  assert.match(workflow,/inputs\.publish_release == true && github\.ref == 'refs\/heads\/main'/);
  assert.match(workflow,/softprops\/action-gh-release@[0-9a-f]{40}/);
- assert.match(workflow,/files: release\/\*\*\/\*/);
+ assert.match(workflow,/files: release\/verified-bundle\/\*\*\/\*/);
 });
 
 test('cross-build image and toolchain versions are pinned',()=>{
@@ -85,7 +85,7 @@ test('PR installer workflow uses the Mac runner and checks the complete bundle',
  const workflow=read('.github/workflows/verify-macos-installer.yml');
  assert.match(workflow,macRunner);
  assert.match(workflow,/release:cross-platform/);
- assert.match(workflow,/release:verify:complete -- release/);
+ assert.match(workflow,/release:assemble/);\n assert.match(workflow,/release:verify:complete -- release\/verified-bundle/);
  assert.match(workflow,/if: github\.event\.pull_request\.head\.repo\.full_name == github\.repository/);
  assert.doesNotMatch(workflow,/ubuntu-latest|windows-latest|macos-latest|actions\/(?:upload|download)-artifact|publish_release/);
  for(const p of ['scripts/build-native.js','scripts/run-cross-platform-installer-builds.sh','scripts/build-cross-platform-installers.sh','tools/release-cross-build/Dockerfile','tests/native-build-target.test.js']){

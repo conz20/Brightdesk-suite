@@ -81,7 +81,10 @@ jobs:
           cp package-lock.json release/build-metadata/package-lock.json
       - name: Build and verify Linux and Windows packages in the no-cost x86_64 container
         run: npm run release:cross-platform
+      - name: Assemble the clean verified release bundle
+        run: npm run release:assemble
+
       - name: Verify the complete 66-file cross-platform release bundle
-        run: npm run release:verify:complete -- release
+        run: npm run release:verify:complete -- release/verified-bundle
       - name: Audit dependencies for high severity vulnerabilities
         run: npm audit --audit-level=high

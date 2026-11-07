@@ -88,8 +88,11 @@ jobs:
           WIN_CSC_LINK: ${{ github.ref == 'refs/heads/main' && secrets.WIN_CSC_LINK || '' }}
           WIN_CSC_KEY_PASSWORD: ${{ github.ref == 'refs/heads/main' && secrets.WIN_CSC_KEY_PASSWORD || '' }}
         run: npm run release:cross-platform
+      - name: Assemble the clean verified release bundle
+        run: npm run release:assemble
+
       - name: Verify all 66 Suite and product installer/archive files and checksums
-        run: npm run release:verify:complete -- release
+        run: npm run release:verify:complete -- release/verified-bundle
       - name: Read the official product version
         id: release-version
         run: echo "version=$(node -p "require('./package.json').version")" >> "$GITHUB_OUTPUT"
@@ -100,4 +103,4 @@ jobs:
           tag_name: v${{ steps.release-version.outputs.version }}
           name: Brightdesk ${{ steps.release-version.outputs.version }}
           generate_release_notes: true
-          files: release/**/**
+          files: release/verified-bundle/**/**
