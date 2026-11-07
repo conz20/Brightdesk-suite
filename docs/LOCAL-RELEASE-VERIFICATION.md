@@ -41,18 +41,12 @@ The script does not upload artifacts, create a GitHub Release or publish anythin
 
 This command verifies only the operating system where it runs. It does not claim that other operating systems have passed, and it does not replace live installation, first-launch, upgrade, removal or data-preservation acceptance tests. The complete release workflow combines the three native outputs and runs the 66-file cross-platform integrity gate described in [CROSS-PLATFORM-RELEASE-VERIFICATION.md](CROSS-PLATFORM-RELEASE-VERIFICATION.md).
 
-## No-cost GitHub Actions runners
+## No-cost cross-platform GitHub Actions builds
 
-The manual installer workflow uses private self-hosted runners instead of GitHub-hosted runners. This avoids consuming paid hosted-runner minutes and keeps source code on computers controlled by the project owner.
+The automated installer workflow uses the existing private Apple-silicon Mac runner. It does not require a separate Windows or Linux computer or additional self-hosted runners.
 
-Register one runner for each required platform in the repository's **Settings → Actions → Runners** page:
+The Mac runner builds macOS packages natively. It then uses the free, open-source Colima virtual machine with QEMU and a pinned x86_64 Linux build container to produce Linux x64 AppImage/DEB packages and Windows x64 NSIS installers. The container uses the pinned Node.js 24.22.2 runtime and Rust 1.99.1 toolchain. Wine is used for Windows packaging tools such as NSIS.
 
-- **macOS:** labels `self-hosted`, `macOS`, `ARM64` (the existing Apple-silicon Mac runner).
-- **Windows:** labels `self-hosted`, `Windows`, `X64` (the project Windows PC).
-- **Linux:** labels `self-hosted`, `Linux`, `X64` (a Linux x64 computer).
+This is cross-platform packaging evidence, not a substitute for native Windows OS acceptance. The Windows installer still requires separate real-OS checks for installation, first launch, upgrades, repair, uninstallation and preservation of user documents/settings before the Windows acceptance gate can pass. Linux package builds and bundle verification run in the Linux container; no Linux hardware is required from the customer.
 
-GitHub assigns the standard operating-system and architecture labels when each runner is registered. Do not add a custom label in place of the standard labels above. Keep the runner service active while a build is queued. The installer workflow waits for all three matching runners; if a platform runner is offline or not registered, that platform's job remains queued and the full bundle cannot be collected.
-
-The existing Mac runner can handle the preparation, collection and macOS build jobs. A Windows runner is required for the native Windows installer, and a Linux x64 runner is required for the native Linux packages. Do not substitute a cross-build from another operating system and call it verified. The workflow does not publish a release unless the manual `publish_release` input is explicitly enabled; its default remains disabled.
-
-Runner setup requires access to each physical computer and a one-time registration from the repository settings. Never copy a runner registration token into source files, logs, issues or documentation. Keep all runners private to this repository and do not run untrusted fork pull-request code on them.
+Colima, Docker CLI and QEMU are installed through Homebrew when missing. Docker Desktop is not installed or required. Intermediate platform files remain in the Mac runner workspace; the build does not upload Actions artifacts, avoiding the repository's Actions artifact-storage quota. Release publication is a separate manual selection and remains disabled by default.

@@ -1,99 +1,87 @@
-name: Verify Brightdesk native installers
-
+name: Verify Brightdesk cross-platform installers on the Mac runner
 on:
   pull_request:
     branches: [main]
     paths:
       - "package.json"
       - "package-lock.json"
-      - "tests/dependency-security.test.js"
-      - "scripts/prepare-release-assets.js"
-      - "scripts/verify-release-artifacts.js"
-      - "electron-builder.app.config.js"
+      - "README.md"
+      - "docs/LOCAL-RELEASE-VERIFICATION.md"
+      - "scripts/build-native.js"
       - "scripts/build-app.js"
       - "scripts/build-apps.js"
+      - "scripts/prepare-release-assets.js"
+      - "scripts/verify-release-artifacts.js"
       - "scripts/verify-product-installers.js"
       - "scripts/verify-complete-release-bundle.js"
       - "scripts/collect-platform-build.js"
+      - "scripts/run-cross-platform-installer-builds.sh"
+      - "scripts/build-cross-platform-installers.sh"
+      - "tools/release-cross-build/Dockerfile"
+      - "tests/native-build-target.test.js"
       - "tests/ten-product-release-bundle.test.js"
       - "tests/release-workflows.test.js"
       - ".github/workflows/build-release.yml"
       - ".github/workflows/verify-macos-installer.yml"
-
 permissions:
   contents: read
-
 concurrency:
-  group: brightdesk-native-installers-pr-${{ github.event.pull_request.number }}
+  group: brightdesk-cross-platform-installers-pr-${{ github.event.pull_request.number }}
   cancel-in-progress: true
-
 jobs:
-  build-platform:
-    name: Build and verify ${{ matrix.platform }} Suite and product installers
+  build-and-verify:
+    name: Build Suite and ten products for all platforms on the existing Mac runner
     if: github.event.pull_request.head.repo.full_name == github.repository
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - platform: Linux
-            runner: ubuntu-latest
-            script: linux
-          - platform: Windows
-            runner: windows-latest
-            script: win
-          - platform: macOS
-            runner: ["self-hosted", "macOS", "ARM64"]
-            script: mac
-    runs-on: ${{ matrix.runner }}
-    timeout-minutes: 120
+    runs-on: [self-hosted, macOS, ARM64]
+    timeout-minutes: 360
     steps:
       - name: Check out Brightdesk
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-
+        with:
+          persist-credentials: false
       - name: Set up required Node.js version
         uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: 24.22.2
           cache: npm
-
       - name: Set up the pinned Rust toolchain
         uses: dtolnay/rust-toolchain@683b588c487a69d01f6c6ddf40f036ff682cc2c8 # pinned action revision
         with:
           toolchain: 1.99.1
           components: rustfmt, clippy
-
-      - name: Verify committed dependency lock
-        run: npm run lock:verify
-
-      - name: Install locked dependencies
-        run: npm ci --no-audit --no-fund
-
-      - name: Build Suite installer
-        if: matrix.platform != 'macOS'
+      - name: Verify lock and install dependencies
         run: |
-          npm run dist:${{ matrix.script }}
-          npm run release:prepare -- ${{ matrix.script }}
-
-      - name: Build macOS universal Suite installer
-        if: matrix.platform == 'macOS'
+          npm run lock:verify
+          npm ci --no-audit --no-fund
+          npm run verify:licenses
+      - name: Run Suite tests and release preflight
+        run: |
+          cargo fmt --manifest-path rust/Cargo.toml --all -- --check
+          cargo clippy --manifest-path rust/Cargo.toml --workspace --all-targets --locked -- -D warnings
+          cargo test --manifest-path rust/Cargo.toml --workspace --locked
+          npm test
+          npm run release:preflight
+      - name: Build and verify the universal macOS Suite installer
         env:
           CSC_IDENTITY_AUTO_DISCOVERY: "false"
         run: |
           npm run dist:mac
           npm run release:prepare -- mac
-
-      - name: Verify Suite installer files and generate SHA-256 checksums
-        run: npm run release:verify:${{ matrix.script }}
-
-      - name: Build all ten product installers on the native platform
-        if: matrix.platform != 'macOS'
-        run: npm run dist:products:${{ matrix.script }}
-
-      - name: Build all ten macOS product installers
-        if: matrix.platform == 'macOS'
+          npm run release:verify:mac
+      - name: Build and verify all ten macOS product installers
         env:
           CSC_IDENTITY_AUTO_DISCOVERY: "false"
-        run: npm run dist:products:mac
-
-      - name: Verify all ten product installers and their SHA-256 manifests
-        run: npm run release:verify:products:${{ matrix.script }}
+        run: |
+          npm run dist:products:mac
+          npm run release:verify:products:mac
+          npm run release:collect:mac
+      - name: Preserve the committed dependency lock
+        run: |
+          mkdir -p release/build-metadata
+          cp package-lock.json release/build-metadata/package-lock.json
+      - name: Build and verify Linux and Windows packages in the no-cost x86_64 container
+        run: npm run release:cross-platform
+      - name: Verify the complete 66-file cross-platform release bundle
+        run: npm run release:verify:complete -- release
+      - name: Audit dependencies for high severity vulnerabilities
+        run: npm audit --audit-level=high
