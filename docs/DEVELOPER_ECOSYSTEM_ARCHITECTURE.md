@@ -164,3 +164,24 @@ This document defines the target architecture and current repository map. It doe
 ## Permanent customer connectivity and commercial boundary
 
 The customer product is free forever. No subscriptions, paid tiers, billing, trials, activation fees, user accounts, sign-in, passwords, customer profiles or account recovery may be introduced. The Suite and all ten products must work locally without internet access. The only permitted customer-runtime network activity is the official update path: check for, download and install updates for the Suite and its individual products. No cloud sync, online storage, remote AI/model provider, telemetry, analytics, crash reporting, advertising, online collaboration or other network-dependent customer feature is permitted. Access to private GitHub repositories is solely an owner/developer maintenance activity and is not part of the customer experience.
+
+## Product inspiration and application exclusions
+
+**Primary inspiration: Microsoft productivity software. Secondary capability reference: Adobe Creative Suite.** Brightdesk may study the general product capabilities, professional workflows, interaction patterns and depth offered by both ecosystems when deciding how to improve its own products. Microsoft remains the primary reference for the overall office-suite experience; Adobe Creative Suite is an allowed secondary reference for creative capabilities and workflows.
+
+This permission is about learning from general ideas and workflows. It does not authorise copying proprietary source code, artwork, icons, fonts, branding, trademarks, or distinctive protected interface assets. Brightdesk must implement its own code, visual identity, product names, interaction design and assets.
+
+**Absolute exclusion: zero Adobe applications.** No Adobe application may be included, bundled, installed, launched, distributed, required or treated as a product dependency anywhere in Brightdesk Suite or its ten products. This includes Adobe application installers, plug-ins, required Adobe desktop software, and dependencies on Adobe application runtimes. Brightdesk must not require an Adobe account, subscription, activation, licence, cloud service or other Adobe service to build, install or use its products. A design reference that mentions or depicts an Adobe product is not itself an application dependency; it must remain clearly identified as reference material only.
+
+The approved customer product scope remains exactly Pages, Sheets, Decks, Notes, Database, Forms, Lists, Planner, To Do and Workspace. Adobe-inspired capabilities may be considered inside an appropriate approved Brightdesk product, but must not silently create an eleventh product or expand the approved product list. Any scope expansion requires a separate owner decision.
+
+**Acceptance gates for every product and release:**
+
+- Review package manifests, lockfiles, native dependencies, plug-in declarations, installer configuration, bundled files, update manifests and runtime launch paths for Adobe application or service dependencies.
+- Confirm that no Adobe application is downloaded, installed, bundled, launched or needed at build time or customer runtime.
+- Check product UI, onboarding, help and release documentation for wording that incorrectly suggests an Adobe product is required or included.
+- Keep reference-board screenshots and research notes separate from production assets; ship only original Brightdesk artwork and licensed dependencies.
+- Record the results for Windows, macOS and Linux builds. A source-level search alone is not sufficient evidence of installer contents or runtime behaviour.
+- Run this audit as part of release readiness and repeat it whenever dependencies, packaging, extensions or product scope changes.
+
+The capability plan for each of the ten products should identify useful Microsoft-led office workflows and any relevant professional creative workflows that can be implemented natively in Brightdesk. Features must be scoped, implemented, documented and tested in the owning product repository before they are described as complete.
