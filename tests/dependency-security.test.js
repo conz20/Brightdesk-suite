@@ -142,3 +142,18 @@ test('macOS installer pull-request verification does not upload the entire relea
   assert.equal(workflow.includes('actions/upload-artifact'), false);
   assert.equal(workflow.includes('path: release/**'), false);
 });
+
+test('third-party notices are regenerated on the latest main before an automatic push', () => {
+  const workflow = fs.readFileSync(
+    path.join(__dirname, '..', '.github', 'workflows', 'generate-third-party-notices.yml'),
+    'utf8'
+  );
+  const commitStep = workflow.slice(workflow.indexOf('- name: Commit generated notices'));
+
+  assert.match(commitStep, /for attempt in 1 2 3/);
+  assert.match(commitStep, /git fetch origin main/);
+  assert.ok(commitStep.includes('git reset --hard FETCH_HEAD'));
+  assert.match(commitStep, /npm ci --ignore-scripts --no-audit --no-fund/);
+  assert.match(commitStep, /npm run verify:licenses/);
+  assert.match(commitStep, /git push origin HEAD:main/);
+});
