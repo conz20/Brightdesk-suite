@@ -96,3 +96,30 @@ This does not prove that every product exposes every other product at runtime: t
 7. Verify each product package contains only its required runtime modules and assets, then build, install, launch, save/reopen and remove it on its target platforms.
 
 This is a source-structure finding, not a runtime failure diagnosis. No source was moved or deleted during this audit.
+
+## Suite workspace and shared UI audit — 7 November 2026
+
+A follow-up inspection of the Suite's actual workspace files found these additional gaps:
+
+- The root `package.json` declares workspaces for nine product folders plus `packages/*`; it does not declare an `apps/workspace` package.
+- The `apps` directory contains Pages, Sheets, Decks, Notes, Database, Forms, Lists, Planner, To Do and an extra `wiki` prototype. The Wiki folder is not one of the ten approved customer products and is not listed in the root workspace manifest.
+- The `apps/pages/index.js` prototype renders a title field, textarea and Save button whose handler only displays an alert. It does not persist a document.
+- The `apps/sheets/index.js` prototype renders a small editable grid and formula input, but the Export CSV handler only displays an alert. It does not calculate formulas or create a CSV file.
+- The root Electron entry point is `src/main.js`, while the prototype workspaces are Vite projects. The presence of a workspace folder is not proof that it is integrated into the shipped desktop runtime.
+- `packages/ui/package.json` points its main entry to `src/index.js`, while the package-root `index.js` exports only a storage helper. The source entry exports theme, Button, Card and Input. The build script only prints a readiness message; no component build or test suite is defined.
+- The UI theme currently contains a small set of generic colour and typography values. It is not yet the complete shared Brightdesk design system.
+
+### Required correction
+
+Treat the `apps/*` projects as early prototypes until their functionality and connection to the Electron Suite are demonstrated. Do not count their placeholder Save/Export alerts as completed persistence or file-export features.
+
+The next implementation sequence should be:
+
+1. Keep the working Suite runtime in `src/` intact while mapping each existing product workflow and its tests.
+2. Add the missing Workspace product workspace or explicitly document a different supported integration boundary; do not substitute the internal Wiki prototype.
+3. Replace placeholder actions in the product workspaces with real operations backed by the owning product service and persistence layer.
+4. Fix the shared UI package entry-point inconsistency, define actual design tokens/components and add component tests.
+5. Connect the workspaces to the Suite's real navigation and build pipeline, then verify packaged launch and data persistence.
+6. Keep all ten product IDs, original icons and current product scope unchanged.
+
+These are direct source observations. They do not establish whether the separate `src/` product modules already implement equivalent workflows; those modules require their own feature-specific tests and runtime checks.
