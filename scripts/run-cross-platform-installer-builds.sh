@@ -10,8 +10,14 @@ if [[ "$(uname -s)" != "Darwin" || "$(uname -m)" != "arm64" ]]; then
   exit 2
 fi
 if ! command -v brew >/dev/null 2>&1; then
-  echo "Homebrew is required to install the free Colima, Docker CLI and QEMU tools." >&2
-  exit 2
+  if [[ -x /opt/homebrew/bin/brew ]]; then
+    eval "$(/opt/homebrew/bin/brew shellenv)"
+  elif [[ -x /usr/local/bin/brew ]]; then
+    eval "$(/usr/local/bin/brew shellenv)"
+  else
+    echo "Homebrew is required to install the free Colima, Docker CLI and QEMU tools." >&2
+    exit 2
+  fi
 fi
 for formula in colima docker qemu; do
   if ! brew list --formula "$formula" >/dev/null 2>&1; then brew install "$formula"; fi
@@ -19,7 +25,7 @@ done
 
 status="$(colima status --profile "$PROFILE" 2>&1 || true)"
 if ! printf '%s' "$status" | grep -qi 'running'; then
-  colima start --profile "$PROFILE" --arch x86_64 --vm-type qemu --cpu 4 --memory 8 --disk 100
+  colima start --profile "$PROFILE" --arch x86_64 --vm-type qemu --cpus 4 --memory 8 --disk 100
 fi
 
 docker --context "$CONTEXT" info >/dev/null
