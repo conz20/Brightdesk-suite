@@ -2,7 +2,7 @@
 
 Status: proposed architecture; implementation is tracked separately
 Verified repository inventory: 7 November 2026
-Visibility: the 22 existing Brightdesk repositories are private
+Visibility: the 23 existing Brightdesk repositories are private
 Compatibility rule: preserve each repository's existing implementation and programming languages, including Rust.
 
 ## 1. Customer product repositories
@@ -33,7 +33,7 @@ AI implementation, prompts, model/provider adapters, agent workflows, AI-specifi
 
 ## 3. Existing shared infrastructure repositories
 
-The following ten private repositories have been confirmed to exist. Their names and responsibilities are authoritative; repository existence does not mean a reusable package or service has already been implemented or connected.
+The following eleven private repositories have been confirmed to exist. Their names and responsibilities are authoritative; repository existence does not mean a reusable package or service has already been implemented or connected.
 
 | Repository | Intended ownership |
 |---|---|
@@ -47,15 +47,16 @@ The following ten private repositories have been confirmed to exist. Their names
 | [Brightdesk-Extensions](https://github.com/connormolloy12/Brightdesk-Extensions) | Extension manifests, permissions, lifecycle contracts, SDK and compatibility tests |
 | [Brightdesk-Wiki](https://github.com/connormolloy12/Brightdesk-Wiki) | Central technical documentation, developer guides, architecture and product knowledge |
 | [Brightdesk-Release-Tools](https://github.com/connormolloy12/Brightdesk-Release-Tools) | Release manifests, version consistency, platform artifact validation, checksums and release evidence |
+| [Brightdesk-Services](https://github.com/connormolloy12/Brightdesk-Services) | Optional self-hosted device management, workspace-scoped sync APIs, user-controlled storage and background services |
 
-**Implementation status:** the nine previously audited shared repositories were README-only bootstraps. Brightdesk-Release-Tools has now been created and its initial README committed, but its planned release scripts, schemas, tests and workflow integrations are not yet implemented or verified. Repository existence and documentation must not be reported as operational implementation.
+**Implementation status:** the nine earlier shared repositories remain README-only bootstraps. Brightdesk-Release-Tools has its first read-only implementation under review in PR #1. Brightdesk-Services now exists as a private repository; its first device and sync service foundation is under review in [Brightdesk-Services PR #1](https://github.com/connormolloy12/Brightdesk-Services/pull/1). Neither repository is production-ready or connected to product consumers. Repository existence and documentation must not be reported as completed operational infrastructure.
 
 
-## 3A. Proposed Brightdesk-Services repository — not yet created
+## 3A. Brightdesk-Services — initial foundation under review
 
 **Reference reviewed:** [storytold/artcraft-services](https://github.com/storytold/artcraft-services). This is a capability reference only. Brightdesk must implement its own code, interfaces, data model, security controls and user experience. Do not copy its source, assets or implementation. Its published licence is restrictive; obtain legal review before considering any reuse. The Brightdesk implementation should be original and independently licensed.
 
-**Proposed repository:** [Brightdesk-Services](https://github.com/connormolloy12/Brightdesk-Services) (planned name; repository does not yet exist and is not included in the verified count of 22 existing private repositories).
+**Repository:** [Brightdesk-Services](https://github.com/connormolloy12/Brightdesk-Services) is now confirmed as a private repository and is included in the verified count of 23 existing private repositories. Its first implementation is in [PR #1](https://github.com/connormolloy12/Brightdesk-Services/pull/1).
 
 **Purpose:** an optional, self-hostable service layer that can support Brightdesk products without making a vendor-operated cloud, subscription, metered API or permanent internet connection mandatory.
 
@@ -78,7 +79,7 @@ Initial capability areas to design and implement in stages:
 
 **Security and acceptance gates:** threat model before production endpoints; TLS in transit; strong credential hashing and scoped tokens; token rotation/revocation; secret redaction; input and resource limits; audit events without content leakage; encryption design reviewed before storing user data; migration/backup recovery tests; API compatibility tests; and integration tests against at least one real product consumer. Do not claim end-to-end encryption until key ownership, recovery and server-blindness are independently verified.
 
-**Delivery status:** planned only. First create the private repository, then add an architecture/ADR and a minimal tested service skeleton. Do not connect any product or introduce a hosted dependency until the contracts and security gates pass review.
+**Delivery status:** first implementation under review. PR #1 adds a Node.js 24.22.2-targeted, zero-third-party-dependency API foundation for device enrolment/listing/revocation, product scopes, workspace isolation and revision-checked opaque sync payload storage. Eleven regression tests and syntax checks passed locally on Node 22.16.0; exact Node 24.22.2 verification remains outstanding. Client-side encryption/key recovery, full identity, production database, backups, multi-process operation, security review and product integration remain unfinished. Do not deploy as production or connect products until the remaining gates pass.
 
 ## 4. Dependency and connection rules
 
@@ -148,8 +149,8 @@ Use each repository's existing toolchain, lockfiles and test commands. Pin Node.
 
 ## 8. Verified baseline and limitations
 
-As of 7 November 2026, GitHub contains **22 private repositories**: Brightdesk Office Suite, Brightdesk-AI, ten product repositories and ten shared infrastructure repositories.
+As of 7 November 2026, GitHub contains **23 private repositories**: Brightdesk Office Suite, Brightdesk-AI, ten product repositories and eleven shared infrastructure repositories.
 
-The nine shared repositories audited before Release Tools was created contained basic README descriptions; their intended packages or services were not verified as implemented. Brightdesk-Release-Tools now has an initial README bootstrap, but its operational tooling is not implemented or verified. Some product repositories already contain Rust integration work and active pull requests. Their existing language choices and changes must be preserved.
+Nine of the eleven shared repositories remain README-only. Brightdesk-Release-Tools and Brightdesk-Services have first implementation PRs under review, but neither has passed all verification gates or been connected to a product consumer. Some product repositories already contain Rust integration work and active pull requests. Their existing language choices and changes must be preserved.
 
 This document defines the target architecture and current repository map. It does not claim that every repository is already connected, every shared package has been published, or every product has passed integration and release testing.
