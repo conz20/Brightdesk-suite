@@ -94,6 +94,13 @@ test('PR installer workflow uses the Mac runner and checks the complete bundle',
  }
 });
 
+test('manual Pages deployment reuses the private Mac runner and is never automatic',()=>{
+ const workflow=read('.github/workflows/deploy.yml');
+ assert.match(workflow,/workflow_dispatch:/);
+ assert.match(workflow,macRunner);
+ assert.doesNotMatch(workflow,/push:|pull_request:|ubuntu-latest|windows-latest|macos-latest/);
+});
+
 test('all third-party workflow actions are pinned to full commit SHAs',()=>{
  const directory=path.join(root,'.github','workflows');
  for(const file of fs.readdirSync(directory).filter(file=>file.endsWith('.yml'))){
