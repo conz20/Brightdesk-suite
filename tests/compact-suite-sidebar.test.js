@@ -28,3 +28,11 @@ test('Suite navigation stays compact while retaining original icons and readable
   assert.ok(standard.includes('641–1007 px'));
   assert.ok(standard.includes('640 px and below'));
 });
+
+test('mobile Suite navigation overrides the desktop rail width and minimum width', () => {
+  const css = read('src/styles.css');
+  assert.match(
+    css,
+    /@media\s*\(max-width:\s*720px\)\s*\{[^}]*\.sidebar\s*\{[^}]*width:\s*100%;[^}]*min-width:\s*0;[^}]*\}/s
+  );
+});
