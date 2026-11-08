@@ -160,8 +160,7 @@ The **Apps** sidebar entry uses the original four-tile launcher icon from `asset
 
 - The Suite shell uses a fixed compact 192 px left navigation rail. Keep the original SVG icon and the readable text label together for every visible navigation item; do not replace labels with icon-only navigation.
 - The Suite rail has no expand/collapse control. Keep secondary descriptions out of the rail so the ten-product workspace remains visible without wasting horizontal space.
-- Individual product windows adapt at the same breakpoints: expanded 232 px rail at 1008 px and wider; compact 76 px icon rail at 641–1007 px; and a menu button at 640 px and below that opens the navigation over the workspace. Users can toggle expanded/compact states in product windows. This control belongs to product windows only, never to the Suite shell.
-- In product windows, expanded navigation shows icon plus label; compact navigation keeps the original SVG icon visible and provides the full label through an accessible tooltip/title. Keep keyboard focus, visible focus rings, and reduced-motion support.
-- At narrow widths, preserve the product's responsive layout rather than forcing a desktop-width navigation rail over the work area.
-- The 192 px Suite width is an intentional density choice, not a copy of another vendor's dimensions or artwork.
-- The 76 px icon rail at medium widths is a Brightdesk-specific adaptation. Fluent 2's standard Nav guidance keeps labels in its drawer and changes to an overlay drawer at 640 px and below; Brightdesk uses that overlay pattern for narrow product windows.
+- All Suite and individual product sidebars use a slim 192 px rail whenever the sidebar is visible. Keep each original SVG icon and its readable text label together at every desktop and medium-width breakpoint; never replace labels with icon-only navigation or rely on tooltips as a substitute.
+- At 640 px and below, use the product's menu button to open the same labelled navigation over the workspace. The open navigation must still show each icon and its full text label.
+- Keep secondary descriptions out of the rail to save horizontal space. Preserve keyboard focus, visible focus rings, and reduced-motion support.
+- The 192 px width is an intentional density choice, not a copy of another vendor's dimensions or artwork. Fluent 2's standard Nav guidance keeps labels in its drawer and changes to an overlay drawer at 640 px and below; Brightdesk uses that overlay pattern for narrow product windows.
