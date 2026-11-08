@@ -24,15 +24,14 @@ find_uninstall_string() {
   local hive output value
   for hive in HKCU HKLM; do
     output="$(wine reg query "${hive}\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall" /s /v UninstallString 2>/dev/null || true)"
-    value="$(printf '%s\n' "$output" | sed -n 's/^[[:space:]]*UninstallString[[:space:]]*REG_SZ[[:space:]]*//p' | head -n 1)"
-    if [[ -n "$value" ]]; then
+    while IFS= read -r value; do
       value="${value#\"}"
       value="${value%\"}"
       if [[ "$value" == *"$product_name"* ]]; then
         printf '%s\n' "$value"
         return 0
       fi
-    fi
+    done < <(printf '%s\n' "$output" | sed -n 's/^[[:space:]]*UninstallString[[:space:]]*REG_SZ[[:space:]]*//p')
   done
   return 1
 }
