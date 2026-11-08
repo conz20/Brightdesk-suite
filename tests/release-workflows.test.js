@@ -86,6 +86,7 @@ test('Linux lifecycle launches installed packages and AppImages and preserves re
  assert.match(script,/--appimage-extract/);
  assert.doesNotMatch(script,/--appimage-version/);
  assert.match(script,/Preserve real Electron userData/);
+ assert.doesNotMatch(script,/\\\$\{/,'Linux lifecycle shell must expand variables rather than escape them');
  assert.match(read('scripts/build-cross-platform-installers.sh'),/test-linux-package-lifecycle\.sh release/);
 });test('Windows lifecycle launches installed NSIS packages and preserves real Electron userData through Wine',()=>{
  const script=read('scripts/test-windows-nsis-lifecycle.sh');
@@ -97,6 +98,7 @@ test('Linux lifecycle launches installed packages and AppImages and preserves re
  assert.ok(script.includes('Re-running same version to exercise repair/reinstall'));
  assert.match(script,/brightdesk-user-data-preservation/);
  assert.match(script,/not native Windows operating-system certification/);
+ assert.doesNotMatch(script,/\\\$\{/,'Windows lifecycle shell must expand variables rather than escape them');
  assert.match(read('scripts/build-cross-platform-installers.sh'),/test-windows-nsis-lifecycle\.sh release/);
 });
 

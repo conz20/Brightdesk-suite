@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-RELEASE_DIR="$(cd "\${1:-$ROOT/release}" && pwd)"
+RELEASE_DIR="$(cd "${1:-$ROOT/release}" && pwd)"
 VERSION="$(node -p "require('$ROOT/package.json').version")"
 PREFIX="$(mktemp -d)"
 export WINEPREFIX="$PREFIX"
@@ -12,7 +12,7 @@ xvfb-run -a wineboot --init
 APPDATA_WIN="$(xvfb-run -a wine cmd /c echo %APPDATA% | tail -n 1 | tr -d '\r')"
 USERPROFILE_WIN="$(xvfb-run -a wine cmd /c echo %USERPROFILE% | tail -n 1 | tr -d '\r')"
 APPDATA_UNIX="$(winepath -u "$APPDATA_WIN")"
-DOCUMENTS_UNIX="$(winepath -u "\${USERPROFILE_WIN}\\Documents")"
+DOCUMENTS_UNIX="$(winepath -u "${USERPROFILE_WIN}\\Documents")"
 mkdir -p "$APPDATA_UNIX" "$DOCUMENTS_UNIX"
 DOCUMENT_SENTINEL="$DOCUMENTS_UNIX/brightdesk-windows-uninstall-preservation.txt"
 printf 'Preserve this user document through every uninstall.\n' > "$DOCUMENT_SENTINEL"
@@ -21,10 +21,10 @@ find_uninstall_string() {
   local product_name="$1"
   local hive output value
   for hive in HKCU HKLM; do
-    output="$(wine reg query "\${hive}\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall" /s /v UninstallString 2>/dev/null | tr -d '\r' || true)"
+    output="$(wine reg query "${hive}\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall" /s /v UninstallString 2>/dev/null | tr -d '\r' || true)"
     while IFS= read -r value; do
-      value="\${value#\"}"
-      value="\${value%\"}"
+      value="${value#\"}"
+      value="${value%\"}"
       if [[ "$value" == *"$product_name"* ]]; then printf '%s\n' "$value"; return 0; fi
     done < <(printf '%s\n' "$output" | sed -n 's/^[[:space:]]*UninstallString[[:space:]]*REG_SZ[[:space:]]*//p')
   done
@@ -92,10 +92,10 @@ declare -A product_names=(
   [todo]="Brightdesk To Do" [loop]="Brightdesk Workspace"
 )
 for product_id in pages sheets slides notes database forms lists planner todo loop; do
-  slug="\${product_slugs[$product_id]}"
+  slug="${product_slugs[$product_id]}"
   installer="$RELEASE_DIR/apps/Windows/$product_id/Brightdesk-$slug-$VERSION-x64.exe"
   if [[ ! -s "$installer" ]]; then echo "Missing Windows product installer: $installer" >&2; exit 1; fi
-  run_lifecycle_test "$installer" "\${product_names[$product_id]}"
+  run_lifecycle_test "$installer" "${product_names[$product_id]}"
 done
 echo "Wine/NSIS startup, install/reinstall and uninstall smoke tests passed for the Suite and all ten products."
 echo "These are compatibility smoke tests, not native Windows operating-system certification."

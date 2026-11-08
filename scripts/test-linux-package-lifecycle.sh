@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-RELEASE_DIR="$(cd "\${1:-$ROOT/release}" && pwd)"
+RELEASE_DIR="$(cd "${1:-$ROOT/release}" && pwd)"
 TEST_HOME="$(mktemp -d)"
 trap 'rm -rf "$TEST_HOME"' EXIT
 export HOME="$TEST_HOME"
@@ -12,7 +12,7 @@ DOCUMENT_SENTINEL="$HOME/Documents/brightdesk-uninstall-preservation.txt"
 printf 'Brightdesk user document preservation fixture\n' > "$DOCUMENT_SENTINEL"
 
 app_name_for_artifact() {
-  local filename="\${1##*/}"
+  local filename="${1##*/}"
   case "$filename" in
     brightdesk-office-suite-*|Brightdesk-Office-Suite-*) printf '%s\n' 'Brightdesk Office Suite' ;;
     brightdesk-pages-*) printf '%s\n' 'Brightdesk Pages' ;;
@@ -31,16 +31,16 @@ app_name_for_artifact() {
 
 mapfile -d '' debs < <(find "$RELEASE_DIR" -type f -name '*.deb' -print0 | sort -z)
 mapfile -d '' appimages < <(find "$RELEASE_DIR" -type f -name '*.AppImage' -print0 | sort -z)
-if [[ "\${#debs[@]}" -ne 11 ]]; then echo "Expected 11 Debian packages, found \${#debs[@]}." >&2; exit 1; fi
-if [[ "\${#appimages[@]}" -ne 11 ]]; then echo "Expected 11 AppImages, found \${#appimages[@]}." >&2; exit 1; fi
+if [[ "${#debs[@]}" -ne 11 ]]; then echo "Expected 11 Debian packages, found ${#debs[@]}." >&2; exit 1; fi
+if [[ "${#appimages[@]}" -ne 11 ]]; then echo "Expected 11 AppImages, found ${#appimages[@]}." >&2; exit 1; fi
 
 declare -A seen_packages=()
 declare -A seen_app_names=()
-for package in "\${debs[@]}"; do
+for package in "${debs[@]}"; do
   package_name="$(dpkg-deb -f "$package" Package)"
   app_name="$(app_name_for_artifact "$package")"
-  if [[ -z "$package_name" || -n "\${seen_packages[$package_name]:-}" ]]; then echo "Missing or duplicate Debian package identity: $package_name" >&2; exit 1; fi
-  if [[ -n "\${seen_app_names[$app_name]:-}" ]]; then echo "Duplicate Brightdesk application identity: $app_name" >&2; exit 1; fi
+  if [[ -z "$package_name" || -n "${seen_packages[$package_name]:-}" ]]; then echo "Missing or duplicate Debian package identity: $package_name" >&2; exit 1; fi
+  if [[ -n "${seen_app_names[$app_name]:-}" ]]; then echo "Duplicate Brightdesk application identity: $app_name" >&2; exit 1; fi
   seen_packages[$package_name]=1
   seen_app_names[$app_name]=1
 
@@ -52,16 +52,16 @@ for package in "\${debs[@]}"; do
 
   echo "Installing Debian package: $package_name ($app_name)"
   if ! dpkg --install "$package"; then apt-get update; apt-get install --yes --no-install-recommends --fix-broken; fi
-  status="$(dpkg-query -W -f='\${Status}' "$package_name" 2>/dev/null || true)"
+  status="$(dpkg-query -W -f='${Status}' "$package_name" 2>/dev/null || true)"
   if [[ "$status" != "install ok installed" ]]; then echo "Debian package did not install: $package_name ($status)" >&2; exit 1; fi
 
   mapfile -t installed_payloads < <(dpkg -L "$package_name" | while IFS= read -r candidate; do if [[ "$candidate" == /opt/* && -f "$candidate" ]]; then printf '%s\n' "$candidate"; fi; done)
-  if [[ "\${#installed_payloads[@]}" -eq 0 ]]; then echo "No installed payload found for $package_name." >&2; exit 1; fi
+  if [[ "${#installed_payloads[@]}" -eq 0 ]]; then echo "No installed payload found for $package_name." >&2; exit 1; fi
 
   desktop_file="$(dpkg -L "$package_name" | awk '/\/usr\/share\/applications\/[^/]+\.desktop$/ { print; exit }')"
   if [[ -z "$desktop_file" || ! -s "$desktop_file" ]]; then echo "No desktop entry found for $app_name ($package_name)." >&2; exit 1; fi
   exec_entry="$(sed -n 's/^Exec=//p' "$desktop_file" | head -n 1)"
-  if [[ "$exec_entry" =~ ^\"([^\"]+)\" ]]; then app_binary="\${BASH_REMATCH[1]}"; else app_binary="\${exec_entry%% *}"; fi
+  if [[ "$exec_entry" =~ ^\"([^\"]+)\" ]]; then app_binary="${BASH_REMATCH[1]}"; else app_binary="${exec_entry%% *}"; fi
   if [[ -z "$app_binary" || ! -x "$app_binary" ]]; then echo "Desktop entry does not resolve to executable for $app_name: $exec_entry" >&2; exit 1; fi
 
   echo "Launching installed package in packaged-startup smoke mode: $app_name"
@@ -70,14 +70,14 @@ for package in "\${debs[@]}"; do
 
   echo "Reapplying package to exercise reinstall/repair: $package_name"
   if ! dpkg --install "$package"; then apt-get install --yes --no-install-recommends --fix-broken; fi
-  status="$(dpkg-query -W -f='\${Status}' "$package_name" 2>/dev/null || true)"
+  status="$(dpkg-query -W -f='${Status}' "$package_name" 2>/dev/null || true)"
   if [[ "$status" != "install ok installed" ]]; then echo "Package repair/reinstall failed: $package_name ($status)" >&2; exit 1; fi
 
   echo "Removing Debian package: $package_name"
   dpkg --remove "$package_name"
-  status="$(dpkg-query -W -f='\${Status}' "$package_name" 2>/dev/null || true)"
+  status="$(dpkg-query -W -f='${Status}' "$package_name" 2>/dev/null || true)"
   if [[ "$status" == "install ok installed" ]]; then echo "Package remains installed: $package_name" >&2; exit 1; fi
-  for installed_path in "\${installed_payloads[@]}"; do
+  for installed_path in "${installed_payloads[@]}"; do
     if [[ -e "$installed_path" ]]; then echo "Application payload remains after removal: $installed_path" >&2; exit 1; fi
   done
   if [[ ! -f "$DOCUMENT_SENTINEL" || ! -f "$data_sentinel" ]]; then echo "Uninstall removed a user document or actual userData for $app_name." >&2; exit 1; fi
@@ -87,7 +87,7 @@ done
 portable_dir="$HOME/PortableApps"
 mkdir -p "$portable_dir"
 appimage_index=0
-for appimage in "\${appimages[@]}"; do
+for appimage in "${appimages[@]}"; do
   appimage_index=$((appimage_index + 1))
   app_name="$(app_name_for_artifact "$appimage")"
   user_data_dir="$XDG_CONFIG_HOME/$app_name"
