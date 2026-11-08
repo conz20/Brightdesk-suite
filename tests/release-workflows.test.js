@@ -135,6 +135,13 @@ test('all third-party workflow actions are pinned to full commit SHAs',()=>{
  }
 });
 
+test('Suite and product NSIS installers include the Terms page',()=>{
+ const suite=JSON.parse(read('package.json'));
+ const products=read('electron-builder.app.config.js');
+ assert.equal(suite.build.nsis.license,'TERMS_AND_CONDITIONS.txt');
+ assert.match(products,/license: 'TERMS_AND_CONDITIONS\.txt'/);
+});
+
 test('Suite and product NSIS uninstallers preserve app data by default',()=>{
  const suite=JSON.parse(read('package.json'));
  const products=read('electron-builder.app.config.js');
