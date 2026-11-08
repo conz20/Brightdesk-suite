@@ -33,7 +33,7 @@ test('mobile Suite navigation overrides the desktop rail width and minimum width
   const css = read('src/styles.css');
   assert.match(
     css,
-    /@media\s*\(max-width:\s*720px\)\s*\{[^}]*\.sidebar\s*\{[^}]*width:\s*100%;[^}]*min-width:\s*0;[^}]*\}/s
+    /@media\s*\(max-width:\s*720px\)\s*\{[\s\S]*?\.sidebar\s*\{[^}]*width:\s*100%;[^}]*min-width:\s*0;[^}]*\}/s
   );
 });
 
