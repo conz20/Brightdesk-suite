@@ -16,6 +16,11 @@ test('Suite navigation stays compact while retaining original icons and readable
   assert.ok(css.includes('.sidebar > .nav b {'));
   assert.ok(css.includes('.sidebar .app-icon-image {'));
   assert.ok(css.includes('width: 28px;'));
+  assert.ok(html.includes('data-i18n="sidebar.homeDescription"'));
+  assert.ok(html.includes('data-i18n="sidebar.applicationsDescription"'));
+  assert.ok(html.includes('data-i18n="sidebar.filesDescription"'));
+  assert.match(css, /\.sidebar > \.nav small\s*\{[^}]*display:\s*block;[^}]*white-space:\s*normal;/s);
+  assert.match(css, /@media \(max-width: 720px\)\s*\{[^}]*\.sidebar > \.nav\s*\{[^}]*display:\s*flex;/s);
   assert.doesNotMatch(html, /id="sidebar-toggle"/);
   assert.ok(css.includes('@media (max-width: 700px)'));
   const readme = read('README.md');
