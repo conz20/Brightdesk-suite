@@ -8,8 +8,8 @@ const read = file => fs.readFileSync(path.join(__dirname, '..', file), 'utf8');
 test('Suite navigation stays compact while retaining original icons and readable labels', () => {
   const html = read('src/index.html');
   const css = read('src/styles.css');
-  for (const [label, icon] of [['Home','home'],['Apps','apps'],['Files','files']]) {
-    assert.ok(html.includes(`data-i18n="sidebar.${label.toLowerCase()}"`));
+  for (const [label, key, icon] of [['Home','home','home'],['Apps','applications','apps'],['Files','files','files']]) {
+    assert.ok(html.includes(`data-i18n="sidebar.${key}"`));
     assert.ok(html.includes(`assets/icons/${icon}.svg`));
   }
   assert.ok(css.includes('width: 192px;'));
