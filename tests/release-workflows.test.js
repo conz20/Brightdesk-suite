@@ -62,6 +62,10 @@ test('cross-build scripts use isolated Colima volumes and verify both container 
  const outer=read('scripts/run-cross-platform-installer-builds.sh');
  const inner=read('scripts/build-cross-platform-installers.sh');
  assert.match(outer,/brew install "\$formula"/);
+ assert.match(outer,/NONINTERACTIVE=1/);
+ assert.match(outer,/raw\.githubusercontent\.com\/Homebrew\/install/);
+ assert.match(outer,/sudo -n true/);
+ assert.match(outer,/brew shellenv/);
  assert.match(outer,/colima start --profile "\$PROFILE" --arch x86_64 --vm-type qemu/);
  assert.match(outer,/docker --context "\$CONTEXT" build/);
  assert.match(outer,/brightdesk-cross-node-modules/);
