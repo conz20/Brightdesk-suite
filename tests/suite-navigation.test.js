@@ -149,7 +149,7 @@ test('production Home artwork matches the live desktop headings and card layout'
   assert.ok(styles.includes('min-height: 240px;'));
   assert.ok(readme.includes('approved production Home screen design and the single visual source of truth'));
   assert.ok(readme.includes('top bar reads **Your apps**'));
-  assert.ok(readme.includes('238 px deep-navy sidebar'));
+  assert.ok(readme.includes('192 px deep-navy sidebar'));
   assert.ok(readme.includes('38 px circular Notifications and Settings controls'));
   assert.ok(guide.includes('top-bar eyebrow **YOUR WORKSPACE** and heading **Your apps**'));
 });
@@ -162,7 +162,7 @@ test('production Home activates its dedicated shell layout and circular utility 
   assert.ok(html.includes('width="46" height="46"'));
   assert.ok(!html.includes('<small data-i18n="sidebar.workspace">YOUR WORKSPACE</small>'));
   assert.ok(app.includes("document.body.classList.toggle('suite-home', home)"));
-  assert.ok(styles.includes('width: 238px;'));
+  assert.ok(styles.includes('width: 192px;'));
   assert.ok(styles.includes('width: 46px;'));
   assert.ok(styles.includes('font-size: 25px;'));
   assert.ok(styles.includes('width: 38px;'));
@@ -183,7 +183,7 @@ test('Home sidebar footer and navigation match the production artwork', () => {
   assert.ok(!app.includes("$('version-label').textContent ="));
   assert.ok(styles.includes('body.suite-home .sidebar > .nav small { display: none; }'));
   assert.ok(styles.includes('body.suite-home .main > footer { display: none; }'));
-  assert.ok(readme.includes('with no secondary captions'));
+  assert.ok(readme.includes('removes secondary captions'));
 });
 
 
