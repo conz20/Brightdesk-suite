@@ -625,3 +625,11 @@ body.suite-home .app-manager.home-view .manager-hero .eyebrow { display: none; }
     font-size: 11.5px;
   }
 }
+
+/* Preserve the stacked, full-width Suite navigation on small screens. */
+@media (max-width: 720px) {
+  .sidebar {
+    width: 100%;
+    min-width: 0;
+  }
+}
