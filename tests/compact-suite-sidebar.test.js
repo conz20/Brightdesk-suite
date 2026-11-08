@@ -15,7 +15,7 @@ test('Suite navigation stays compact while retaining original icons and readable
   assert.ok(css.includes('width: 192px;'));
   assert.ok(css.includes('.sidebar > .nav b {'));
   assert.ok(css.includes('.sidebar .app-icon-image {'));
-  assert.ok(css.includes('width: 30px;'));
+  assert.ok(css.includes('width: 28px;'));
   assert.doesNotMatch(html, /id="sidebar-toggle"/);
   assert.ok(css.includes('@media (max-width: 700px)'));
   const readme = read('README.md');
