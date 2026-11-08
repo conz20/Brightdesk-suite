@@ -32,6 +32,7 @@ npm run release:verify:win
 xvfb-run -a npm run dist:products:win
 npm run release:verify:products:win
 npm run release:collect:win
+bash scripts/test-windows-nsis-lifecycle.sh release
 
 echo "Cross-build files and SHA-256 manifests prepared:"
 echo "- Windows x64 (Wine/NSIS cross-build; native Windows OS acceptance remains separate)"

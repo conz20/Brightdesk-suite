@@ -85,6 +85,18 @@ test('Linux cross-build runs install/remove and data-preservation checks for all
  assert.match(read('scripts/build-cross-platform-installers.sh'),/test-linux-package-lifecycle\.sh release/);
 });
 
+test('Windows cross-build executes Wine/NSIS install and uninstall smoke tests for the Suite and ten products',()=>{
+ const script=read('scripts/test-windows-nsis-lifecycle.sh');
+ assert.match(script,/wineboot --init/);
+ assert.match(script,/wine "\$installer" \/S/);
+ assert.match(script,/wine "\$uninstaller" \/S/);
+ assert.match(script,/find_uninstall_string/);
+ assert.match(script,/brightdesk-user-data-preservation/);
+ assert.match(script,/brightdesk-windows-uninstall-preservation/);
+ assert.match(script,/not native Windows operating-system certification/);
+ assert.match(read('scripts/build-cross-platform-installers.sh'),/test-windows-nsis-lifecycle\.sh release/);
+});
+
 test('native target regression suite covers target selection and binary headers',()=>{
  const tests=read('tests/native-build-target.test.js');
  for(const item of ["resolveNativeBuild('darwin')","resolveNativeBuild('linux')","resolveNativeBuild('win32')","resolveNativeBuild('linux','win32')","WINDOWS_GNU_TARGET","valid PE image","valid ELF image"]){
