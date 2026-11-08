@@ -194,13 +194,32 @@ test('dependency-maintenance workflows use the existing self-hosted runner', () 
 });
 
 
-test('installer pipeline uses the private native runner for each operating system', () => {
+test('release orchestration uses the private Mac runner and reserves hosted runners for native Windows/Linux builds', () => {
   const workflow = read('.github/workflows/build-release.yml');
-  assert.match(workflow, /runner: \["self-hosted", "Linux", "X64"\]/);
-  assert.match(workflow, /runner: \["self-hosted", "Windows", "X64"\]/);
-  assert.match(workflow, /runner: \["self-hosted", "macOS", "ARM64"\]/);
-  assert.match(workflow, /runs-on: self-hosted/);
-  assert.doesNotMatch(workflow, /ubuntu-latest|windows-latest|macos-latest/);
+  for (const job of ['cleanup-artifacts', 'prepare', 'collect', 'publish-release']) {
+    const block = workflow.split(`  ${job}:`)[1]?.split(/\n  [a-z-]+:/)[0] || '';
+    assert.match(block, /runs-on: \["self-hosted", "macOS", "ARM64"\]/, `${job} uses the existing Mac runner`);
+  }
+  assert.match(workflow, /platform: Linux\s+runner: ubuntu-latest\s+script: linux/);
+  assert.match(workflow, /platform: Windows\s+runner: windows-latest\s+script: win/);
+  assert.match(workflow, /platform: macOS\s+runner: \["self-hosted", "macOS", "ARM64"\]\s+script: mac/);
+  assert.match(workflow, /runs-on: \$\{\{ matrix.runner \}\}/);
+  assert.doesNotMatch(workflow, /runs-on: ubuntu-latest/, 'release orchestration itself stays on the private Mac runner');
+  assert.doesNotMatch(workflow, /runs-on: windows-latest/);
+  assert.doesNotMatch(workflow, /macos-latest/);
+});
+
+test('routine CI, Rust and README checks use the existing self-hosted Mac runner', () => {
+  for (const file of [
+    '.github/workflows/ci.yml',
+    '.github/workflows/quality.yml',
+    '.github/workflows/rust-engine.yml',
+    '.github/workflows/readme-freshness.yml'
+  ]) {
+    const workflow = read(file);
+    assert.match(workflow, /runs-on: \["self-hosted", "macOS", "ARM64"\]/, `${file} must use the existing no-cost Mac runner`);
+    assert.doesNotMatch(workflow, /ubuntu-latest|windows-latest|macos-latest/);
+  }
 });
 
 test('README freshness check uses the existing self-hosted runner', () => {
@@ -242,25 +261,20 @@ test('all third-party workflow actions are pinned to full commit SHAs', () => {
   }
 });
 
-test('pull-request installer verification builds and verifies Suite plus all ten products on every native platform', () => {
+test('pull-request installer verification builds the macOS installers on the existing private runner', () => {
   const workflow = read('.github/workflows/verify-macos-installer.yml');
-  for (const platform of ['Linux', 'Windows', 'macOS']) {
-    assert.ok(workflow.includes(`platform: ${platform}`), `${platform} is included in PR installer verification`);
-  }
-  for (const runner of [
-    'runner: ["self-hosted", "Linux", "X64"]',
-    'runner: ["self-hosted", "Windows", "X64"]',
-    'runner: ["self-hosted", "macOS", "ARM64"]'
-  ]) assert.ok(workflow.includes(runner), `native runner configured: ${runner}`);
+  assert.match(workflow, /build-macos:/);
+  assert.match(workflow, /runs-on: \["self-hosted", "macOS", "ARM64"\]/);
+  assert.doesNotMatch(workflow, /platform: Linux|platform: Windows|ubuntu-latest|windows-latest|macos-latest/);
   for (const command of [
-    'npm run dist:${{ matrix.script }}',
-    'npm run release:verify:${{ matrix.script }}',
-    'npm run dist:products:${{ matrix.script }}',
-    'npm run release:verify:products:${{ matrix.script }}'
+    'npm run dist:mac',
+    'npm run release:verify:mac',
+    'npm run dist:products:mac',
+    'npm run release:verify:products:mac'
   ]) assert.ok(workflow.includes(command), `workflow includes ${command}`);
   assert.ok(
-    workflow.indexOf('npm run dist:products:${{ matrix.script }}') < workflow.indexOf('npm run release:verify:products:${{ matrix.script }}'),
-    'all ten product installers must be built before their manifests are verified'
+    workflow.indexOf('npm run dist:products:mac') < workflow.indexOf('npm run release:verify:products:mac'),
+    'all ten macOS product installers must be built before their manifests are verified'
   );
   assert.match(workflow, /if: github\.event\.pull_request\.head\.repo\.full_name == github\.repository/);
   for (const changedPath of [
@@ -274,8 +288,7 @@ test('pull-request installer verification builds and verifies Suite plus all ten
     '.github/workflows/build-release.yml',
     '.github/workflows/verify-macos-installer.yml'
   ]) {
-    assert.ok(workflow.includes(changedPath), 'native installer checks must run when ' + changedPath + ' changes');
+    assert.ok(workflow.includes(changedPath), 'macOS installer checks must run when ' + changedPath + ' changes');
   }
-  assert.doesNotMatch(workflow, /ubuntu-latest|windows-latest|macos-latest/);
   assert.doesNotMatch(workflow, /publish_release|gh release create|publish always/i);
 });
