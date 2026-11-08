@@ -65,7 +65,7 @@ for package in "\${debs[@]}"; do
   if [[ -z "$app_binary" || ! -x "$app_binary" ]]; then echo "Desktop entry does not resolve to executable for $app_name: $exec_entry" >&2; exit 1; fi
 
   echo "Launching installed package in packaged-startup smoke mode: $app_name"
-  BRIGHTDESK_STARTUP_SMOKE_TEST=1 timeout 90s xvfb-run -a "$app_binary" --no-sandbox
+  BRIGHTDESK_REQUIRE_NATIVE_ENGINE=1 BRIGHTDESK_STARTUP_SMOKE_TEST=1 timeout 90s xvfb-run -a "$app_binary" --no-sandbox
   if [[ ! -f "$data_sentinel" ]]; then echo "Packaged startup removed userData sentinel for $app_name." >&2; exit 1; fi
 
   echo "Reapplying package to exercise reinstall/repair: $package_name"
@@ -107,7 +107,7 @@ for appimage in "\${appimages[@]}"; do
     "$portable_copy" --appimage-extract >/dev/null
     if [[ ! -x squashfs-root/AppRun ]]; then echo "AppImage did not provide executable AppRun: $portable_copy" >&2; exit 1; fi
     echo "Launching extracted AppImage in packaged-startup smoke mode: $app_name"
-    BRIGHTDESK_STARTUP_SMOKE_TEST=1 timeout 90s xvfb-run -a squashfs-root/AppRun --no-sandbox
+    BRIGHTDESK_REQUIRE_NATIVE_ENGINE=1 BRIGHTDESK_STARTUP_SMOKE_TEST=1 timeout 90s xvfb-run -a squashfs-root/AppRun --no-sandbox
   )
   rm "$portable_copy"
   rm -rf "$appimage_workdir"

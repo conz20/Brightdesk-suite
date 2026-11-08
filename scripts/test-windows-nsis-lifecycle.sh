@@ -52,7 +52,7 @@ run_lifecycle_test() {
   if [[ ! -s "$app_executable" ]]; then echo "Installed application executable missing: $app_executable" >&2; exit 1; fi
 
   echo "Launching Windows package through Wine startup-smoke mode: $product_name"
-  BRIGHTDESK_STARTUP_SMOKE_TEST=1 timeout 90s xvfb-run -a wine "$app_executable" --no-sandbox
+  BRIGHTDESK_REQUIRE_NATIVE_ENGINE=1 BRIGHTDESK_STARTUP_SMOKE_TEST=1 timeout 90s xvfb-run -a wine "$app_executable" --no-sandbox
 
   # Electron app.getPath('userData') = %APPDATA%/<app name> after app.setName(productName).
   local user_data_dir="$APPDATA_UNIX/$product_name"

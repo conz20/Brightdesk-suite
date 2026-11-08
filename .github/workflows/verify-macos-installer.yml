@@ -7,6 +7,12 @@ on:
       - "package-lock.json"
       - "README.md"
       - "docs/LOCAL-RELEASE-VERIFICATION.md"
+      - "src/main.js"
+      - "src/rust-engine.js"
+      - "src/rust-engine-fallback.js"
+      - "src/embedding-bridge.js"
+      - "test/rust-engine.test.mjs"
+      - "test/embedding-bridge.test.mjs"
       - "scripts/build-native.js"
       - "scripts/build-app.js"
       - "scripts/build-apps.js"
@@ -79,6 +85,10 @@ jobs:
           npm run dist:products:mac
           npm run release:verify:products:mac
           npm run release:collect:mac
+      - name: Require and test the native macOS Rust engine
+        env:
+          BRIGHTDESK_REQUIRE_NATIVE_ENGINE: "1"
+        run: node --test test/rust-engine.test.mjs test/embedding-bridge.test.mjs
       - name: Preserve the committed dependency lock
         run: |
           mkdir -p release/build-metadata

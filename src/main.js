@@ -403,6 +403,12 @@ ipcMain.handle('updates:set-settings', async (event, payload) => {
 
 async function runPackagedStartupSmokeTest() {
   try {
+    if (process.env.BRIGHTDESK_REQUIRE_NATIVE_ENGINE === '1') {
+      const engineInfo = nativeEngine.engineInfo();
+      if (engineInfo.native !== true || engineInfo.nodeApiVersion !== 8 || !engineInfo.capabilities?.includes('vector-ranking')) {
+        throw new Error('The packaged Brightdesk native Rust engine did not report the required Node-API 8 vector-ranking capability.');
+      }
+    }
     assertPackagedVersion(app.getVersion(), packageConfig.version);
     await readTerms();
     await readBundledLanguagePack('en-AU');

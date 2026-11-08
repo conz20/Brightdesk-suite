@@ -57,3 +57,10 @@ The pull-request verification workflow uses the private Mac runner and checks th
 The workflow does not claim a build, install, upgrade or uninstall has passed unless its current-head run records that evidence. A Windows Wine pass is not described as a native Windows pass. A same-version reinstall is not described as an upgrade. The interactive Windows Terms page is not described as tested by a silent installer run.
 
 The release remains blocked until the latest PR head passes its Mac-runner build and automated tests, all 66 output checks succeed, the Linux package/AppImage smoke tests pass, the Windows Wine/NSIS smoke tests pass, and native macOS install/upgrade/repair/uninstall/data-preservation acceptance is complete. Older-to-newer upgrade tests and the Windows interactive Terms flow remain explicit acceptance items; no package should be described as published or fully verified before they pass.
+
+
+## Native Rust engine checks
+
+The platform build must prove that the Node-API addon loads, not merely that a PE or ELF file exists. The macOS runner executes `node --test test/rust-engine.test.mjs test/embedding-bridge.test.mjs` with `BRIGHTDESK_REQUIRE_NATIVE_ENGINE=1` after the universal addon has been built. The Linux x86_64 container runs the same native-required tests after building the Linux addon. The Debian and AppImage packaged-startup smoke tests also set the flag, so every installed Linux package must load the real engine.
+
+For Windows, the Linux container cross-compiles the x64 GNU addon and verifies its PE header. The Wine/NSIS lifecycle test then launches each installed Windows package with `BRIGHTDESK_REQUIRE_NATIVE_ENGINE=1`. The packaged Electron process fails if the addon cannot load or does not report Node-API 8 and the vector-ranking capability. This is Windows package/runtime compatibility evidence under Wine; it is not native Windows operating-system certification.

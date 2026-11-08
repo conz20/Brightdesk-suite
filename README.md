@@ -79,16 +79,16 @@ This table describes the first-use scope represented in source code. It is not a
 
 The Suite includes a Rust engine exposed to the Electron main process through a Node-API 8 native module. Electron and JavaScript continue to own application orchestration, user-interface state, file access and provider selection. The renderer does not load native code directly.
 
-The engine provides bounded source chunking and analysis, embedding-vector normalisation, cosine similarity and vector ranking. The provider-neutral JavaScript bridge accepts an injected embedding provider; Rust processes vectors returned by that provider.
+The engine provides bounded source chunking and analysis, embedding-vector normalisation, cosine similarity and vector ranking. The provider-neutral JavaScript bridge in this Suite repository is implemented and unit-tested, but is not currently connected to a customer-facing product feature. Separately, Brightdesk-AI already has an opt-in local Qwen3-Embedding 0.6B provider: its collaboration runtime exposes `embed()` and `rank()` through its own JavaScript bridge, with Rust performing vector normalization and ranking. That AI runtime is separate from the Suite process and is not a customer-product dependency. Its embedding provider is disabled by default and requires the local loopback model server to be started and explicitly enabled.
 
 **Important boundaries:**
 - Rust does not generate semantic embeddings or call language models. A separate embedding provider is required for semantic vectors.
 - No remote model provider, paid API, credential or remote source upload is enabled by this engine.
-- The native binary is generated during the build and is not committed to the repository.
-- Ordinary development can use a bounded JavaScript fallback when the native module is unavailable. The dedicated Rust verification workflow requires the native module to load successfully.
+- The native binary is generated during the build and is not committed to the repository. The ten product installers built from this Suite repository package the shared engine. Separately maintained product repositories are on a staged Rust rollout: Lists, Planner, To Do and Workspace already have the six-operation Rust loader and Electron IPC bridge on `main`; Pages, Sheets, Decks, Notes, Database and Forms have equivalent implementation in open draft Rust rollout PRs. Those six proposed integrations are not merged or fully CI-verified yet, so do not describe all ten independent repository releases as complete.
+- Ordinary development can use a bounded JavaScript fallback when the native module is unavailable. Native release checks require the module to load successfully on each target: macOS on the private Mac runner, Linux in the x86_64 build container, and Windows by launching the packaged app with native-required mode under Wine. Wine remains compatibility evidence, not native Windows OS certification.
 - Native calls are made through the trusted Electron main-process/preload boundary; renderer code does not receive direct Node.js or native-module access.
 
-The Rust toolchain is pinned to **1.99.1**. macOS native builds produce both Apple Silicon and Intel libraries and combine them for the universal desktop package. See [Rust engine integration](docs/RUST_ENGINE_INTEGRATION.md) for the API, safety limits, provider boundary and build details.
+The Rust toolchain is pinned to **1.99.1**. macOS native builds produce both Apple Silicon and Intel libraries and combine them for the universal desktop package. The integrated Suite and its ten product installers package the shared `brightdesk_engine.node` binary. The independently maintained product repositories are at different rollout stages: four have the six-operation Rust integration on `main`, while six have equivalent implementation in open draft PRs awaiting merge and native CI execution. Each product repository builds its own binary from the common engine contract; this does not mean one physical binary is shared across separate installations. See [Rust engine integration](docs/RUST_ENGINE_INTEGRATION.md) for the API, safety limits, provider boundary and rollout status.
 
 ## Product screenshots and verification
 
@@ -119,6 +119,14 @@ Each approved product has its own repository and product documentation:
 - [Brightdesk To Do](https://github.com/connormolloy12/Brightdesk-To-Do)
 - [Brightdesk Workspace](https://github.com/connormolloy12/Brightdesk-Workspace)
 
+## Connected developer ecosystem
+
+The Suite coordinates ten independently maintained product repositories: Pages, Sheets, Decks, Notes, Database, Forms, Lists, Planner, To Do and Workspace. The private [Brightdesk-AI](https://github.com/connormolloy12/Brightdesk-AI) repository supports engineering analysis and approved development workflows; it is not included in customer downloads and is not required to use the products.
+
+The ten existing shared infrastructure repositories are [Design System](https://github.com/connormolloy12/Brightdesk-Design-System), [Fonts](https://github.com/connormolloy12/Brightdesk-Fonts), [Localization](https://github.com/connormolloy12/Brightdesk-Localization), [Engine](https://github.com/connormolloy12/Brightdesk-Engine), [Common Libraries](https://github.com/connormolloy12/Brightdesk-Common-Libs), [Common Actions](https://github.com/connormolloy12/Brightdesk-Common-Actions), [Developer Tools](https://github.com/connormolloy12/Brightdesk-Developer-Tools), [Extensions](https://github.com/connormolloy12/Brightdesk-Extensions), [Wiki](https://github.com/connormolloy12/Brightdesk-Wiki) and [Release Tools](https://github.com/connormolloy12/Brightdesk-Release-Tools). Release Tools now exists as a private repository with an initial README; its release tooling implementation is still outstanding.
+
+Repository presence is not the same as completed integration. Shared packages and interfaces will be connected only after their source, tests, language compatibility and versioning are verified. Existing JavaScript, TypeScript, Rust and other languages remain supported; no language is being removed as part of this work. See the [developer ecosystem architecture](docs/DEVELOPER_ECOSYSTEM_ARCHITECTURE.md) for ownership, dependency direction and the safe integration sequence.
+
 ## Development
 
 Use Node.js **24.22.2** for development, tests and release builds. Customers do not need to install Node.js; the desktop package includes its Electron runtime.
@@ -129,10 +137,10 @@ Install the locked dependencies and run the main checks:
 npm ci
 npm run check:node
 npm test
-npm run build
-```
 
 The catalogue and shell tests also check the shared release-version source, the current Home footer wording, and the bundled original SVG icon artwork. The customer-facing package version is shown in the product footer outside Home; the Home sidebar keeps its local-first message.
+npm run build
+```
 
 Build and verify the Rust engine:
 
@@ -162,6 +170,10 @@ See [installation guidance](docs/INSTALLATION.md), [local release verification](
 The customer-facing package version in the current main-branch manifest is **0.1.0**. Product integration, automated tests, live desktop acceptance and installer release are separate checkpoints. The integrated source includes all ten approved product areas and the Rust Node-API engine, but that does not by itself establish complete product workflows, accessibility acceptance, local persistence/recovery, upgrade and uninstall behaviour, or verified installers on all three operating systems.
 
 The CI, quality, Rust, README and installer workflows use the existing private Apple-silicon Mac runner. The installer check builds macOS natively and produces Linux and Windows packages in a pinned x86_64 Linux container, with Wine used for NSIS. This cross-build does not certify native Windows OS installation or uninstallation acceptance. No additional Windows/Linux hardware or hosted Windows/Linux runners are required. Release publication is opt-in and disabled by default. Workflow configuration is not evidence that a job has completed successfully. No automatic update publishing provider is configured.
+
+## Reference-informed product development
+
+Brightdesk Pages and Sheets have reference studies based on the public [Wordcraft](https://github.com/storytold/wordcraft) and [GridCraft](https://github.com/storytold/gridcraft) projects. The [Brightdesk reference product integration map](docs/REFERENCE_PRODUCT_INTEGRATION_MAP.md) maps the research to all ten products, defines shared-repository boundaries, and records original-design, licensing, testing and README requirements. Reference features are not counted as Brightdesk features until independently implemented and verified.
 
 ## Documentation freshness
 

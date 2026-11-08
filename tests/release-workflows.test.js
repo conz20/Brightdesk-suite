@@ -118,6 +118,23 @@ test('lifecycle sentinels match Electron app-specific userData naming',()=>{
  assert.doesNotMatch(linux,/brightdesk-user-data-\$package_name/);
 });
 
+test('cross-platform packaged startup requires the native Rust engine on every target',()=>{
+ const main=read('src/main.js');
+ assert.match(main,/BRIGHTDESK_REQUIRE_NATIVE_ENGINE/);
+ assert.match(main,/engineInfo\.native !== true/);
+ assert.match(main,/nodeApiVersion !== 8/);
+ const linux=read('scripts/test-linux-package-lifecycle.sh');
+ const windows=read('scripts/test-windows-nsis-lifecycle.sh');
+ const cross=read('scripts/build-cross-platform-installers.sh');
+ assert.match(linux,/BRIGHTDESK_REQUIRE_NATIVE_ENGINE=1 BRIGHTDESK_STARTUP_SMOKE_TEST=1/);
+ assert.match(windows,/BRIGHTDESK_REQUIRE_NATIVE_ENGINE=1 BRIGHTDESK_STARTUP_SMOKE_TEST=1/);
+ assert.match(cross,/BRIGHTDESK_REQUIRE_NATIVE_ENGINE=1 node --test test\/rust-engine\.test\.mjs test\/embedding-bridge\.test\.mjs/);
+ for(const file of ['.github/workflows/verify-macos-installer.yml','.github/workflows/build-release.yml']){
+  const workflow=read(file);
+  assert.match(workflow,/name: Require and test the native macOS Rust engine/);
+  assert.match(workflow,/BRIGHTDESK_REQUIRE_NATIVE_ENGINE: "1"/);
+ }
+});
 test('native target regression suite covers target selection and binary headers',()=>{
  const tests=read('tests/native-build-target.test.js');
  for(const item of ["resolveNativeBuild('darwin')","resolveNativeBuild('linux')","resolveNativeBuild('win32')","resolveNativeBuild('linux','win32')","WINDOWS_GNU_TARGET","valid PE image","valid ELF image"]){

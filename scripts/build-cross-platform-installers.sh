@@ -14,6 +14,7 @@ npm run release:prepare -- linux
 npm run release:verify:linux
 npm run dist:products:linux
 npm run release:verify:products:linux
+BRIGHTDESK_REQUIRE_NATIVE_ENGINE=1 node --test test/rust-engine.test.mjs test/embedding-bridge.test.mjs
 bash scripts/test-linux-package-lifecycle.sh release
 npm run release:collect:linux
 
