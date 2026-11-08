@@ -1,6 +1,6 @@
 # Local release verification
 
-The local release command builds and verifies the Brightdesk Office Suite and all ten approved products on the computer where it runs. The automated and manual installer workflows use private self-hosted GitHub Actions runners; this local command does not upload artifacts or publish a release.
+The local release command builds and verifies the Brightdesk Office Suite and all ten approved products on the computer where it runs. Routine automated checks and macOS installer verification use the existing private self-hosted Mac runner. The manual cross-platform release workflow uses standard GitHub-hosted Windows and Linux runners plus that Mac runner; this local command does not upload artifacts or publish a release.
 
 ## Requirements
 
@@ -43,16 +43,17 @@ This command verifies only the operating system where it runs. It does not claim
 
 ## No-cost GitHub Actions runners
 
-The manual installer workflow uses private self-hosted runners instead of GitHub-hosted runners. This avoids consuming paid hosted-runner minutes and keeps source code on computers controlled by the project owner.
+Routine PR CI, quality, Rust and README checks run on the existing private self-hosted Mac runner (labels `self-hosted`, `macOS`, `ARM64`). The PR installer workflow also builds the Suite and all ten macOS product packages on that runner.
 
-Register one runner for each required platform in the repository's **Settings → Actions → Runners** page:
+The manual cross-platform installer workflow uses:
+- **macOS:** the existing private self-hosted Mac runner.
+- **Windows:** the standard GitHub-hosted `windows-latest` runner.
+- **Linux:** the standard GitHub-hosted `ubuntu-latest` runner.
 
-- **macOS:** labels `self-hosted`, `macOS`, `ARM64` (the existing Apple-silicon Mac runner).
-- **Windows:** labels `self-hosted`, `Windows`, `X64` (the project Windows PC).
-- **Linux:** labels `self-hosted`, `Linux`, `X64` (a Linux x64 computer).
+The workflow's preparation, artifact cleanup, collection and optional publishing jobs also run on the private Mac runner. Only the two native Windows/Linux build jobs consume GitHub-hosted compute. No larger runners are configured.
 
-GitHub assigns the standard operating-system and architecture labels when each runner is registered. Do not add a custom label in place of the standard labels above. Keep the runner service active while a build is queued. The installer workflow waits for all three matching runners; if a platform runner is offline or not registered, that platform's job remains queued and the full bundle cannot be collected.
+For private repositories, GitHub-hosted runner usage draws from the account's included Actions allowance. Usage beyond that allowance can be billed if a valid payment method is available; without one, GitHub blocks usage when the included quota is exhausted. Check the account's Actions usage and spending controls before manually dispatching a cross-platform build. Do not enable paid usage to make a build pass. See [GitHub Actions billing](https://docs.github.com/en/billing/concepts/product-billing/github-actions).
 
-The existing Mac runner can handle the preparation, collection and macOS build jobs. A Windows runner is required for the native Windows installer, and a Linux x64 runner is required for the native Linux packages. Do not substitute a cross-build from another operating system and call it verified. The workflow does not publish a release unless the manual `publish_release` input is explicitly enabled; its default remains disabled.
+The customer does not need to own, borrow, register or operate a Windows or Linux computer. All Windows/Linux packaging jobs execute automatically on GitHub's standard hosted runners when the manual release workflow is deliberately dispatched. If the account cannot run those jobs within its included allowance, keep the cross-platform release blocked rather than switch to paid runners or claim the platforms have passed.
 
-Runner setup requires access to each physical computer and a one-time registration from the repository settings. Never copy a runner registration token into source files, logs, issues or documentation. Keep all runners private to this repository and do not run untrusted fork pull-request code on them.
+The workflow does not publish a release unless the manual `publish_release` input is explicitly enabled; its default remains disabled.
