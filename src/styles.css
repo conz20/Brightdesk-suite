@@ -636,3 +636,34 @@ body.suite-home .app-manager.home-view .manager-hero .eyebrow { display: none; }
     min-width: 0;
   }
 }
+
+
+/* Compact sidebars retain both the original icon and readable label. */
+.sidebar {
+  width: 192px;
+  min-width: 192px;
+  padding-inline: 10px;
+}
+.sidebar > .nav {
+  gap: 9px;
+  padding: 8px 9px;
+}
+.sidebar > .nav b {
+  display: block;
+  font-size: 12px;
+}
+@media (max-width: 900px) and (min-width: 701px) {
+  .sidebar {
+    width: 192px;
+    min-width: 192px;
+  }
+}
+@media (max-width: 720px) {
+  .sidebar {
+    width: 100%;
+    min-width: 0;
+  }
+  .sidebar > .nav b {
+    display: block;
+  }
+}
