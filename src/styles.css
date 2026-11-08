@@ -628,6 +628,9 @@ body.suite-home .app-manager.home-view .manager-hero .eyebrow { display: none; }
 
 /* Preserve the stacked, full-width Suite navigation on small screens. */
 @media (max-width: 720px) {
+  body {
+    display: block;
+  }
   .sidebar {
     width: 100%;
     min-width: 0;
