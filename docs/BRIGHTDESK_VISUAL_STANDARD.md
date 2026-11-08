@@ -159,8 +159,8 @@ The **Apps** sidebar entry uses the original four-tile launcher icon from `asset
 ## Navigation density and responsive behaviour
 
 - The Suite shell uses a fixed compact 192 px left navigation rail. Keep the original SVG icon and the readable text label together for every visible navigation item; do not replace labels with icon-only navigation.
-- The Suite rail has no expand/collapse control. Keep secondary descriptions out of the rail so the ten-product workspace remains visible without wasting horizontal space.
+- The Suite rail has no expand/collapse control. Keep every explanatory caption visible beneath its navigation label; allow natural wrapping within the slim rail.
 - All Suite and individual product sidebars use a slim 192 px rail whenever the sidebar is visible. Keep each original SVG icon and its readable text label together at every desktop and medium-width breakpoint; never replace labels with icon-only navigation or rely on tooltips as a substitute.
 - At 640 px and below, use the product's menu button to open the same labelled navigation over the workspace. The open navigation must still show each icon and its full text label.
-- Keep secondary descriptions out of the rail to save horizontal space. Preserve keyboard focus, visible focus rings, and reduced-motion support.
+- Keep explanatory captions visible and allow them to wrap naturally; slim sizing must not remove navigation context. Preserve keyboard focus, visible focus rings, and reduced-motion support.
 - The 192 px width is an intentional density choice, not a copy of another vendor's dimensions or artwork. Fluent 2's standard Nav guidance keeps labels in its drawer and changes to an overlay drawer at 640 px and below; Brightdesk uses that overlay pattern for narrow product windows.
