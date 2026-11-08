@@ -23,7 +23,7 @@ find_uninstall_string() {
   local product_name="$1"
   local hive output value
   for hive in HKCU HKLM; do
-    output="$(wine reg query "${hive}\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall" /s /v UninstallString 2>/dev/null || true)"
+    output="$(wine reg query "${hive}\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall" /s /v UninstallString 2>/dev/null | tr -d '\r' || true)"
     while IFS= read -r value; do
       value="${value#\"}"
       value="${value%\"}"
