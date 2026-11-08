@@ -74,29 +74,45 @@ test('cross-build scripts use isolated Colima volumes and verify both container 
  assert.match(inner,/native Windows OS acceptance remains separate/);
 });
 
-test('Linux cross-build runs install/remove and data-preservation checks for all 11 Debian packages',()=>{
+test('Linux lifecycle launches installed packages and AppImages and preserves real Electron userData',()=>{
  const script=read('scripts/test-linux-package-lifecycle.sh');
- assert.match(script,/Expected 11 Debian packages/);
  assert.match(script,/dpkg --install/);
  assert.match(script,/dpkg --remove/);
- assert.ok(script.includes('Reapplying package to exercise reinstall/repair'));
- assert.match(script,/brightdesk-uninstall-preservation/);
- assert.match(script,/Preserve user settings and local data/);
- assert.match(script,/--appimage-version/);
+ assert.match(script,/export XDG_CONFIG_HOME="\$HOME\/.config"/);
+ assert.match(script,/app_name_for_artifact/);
+ assert.match(script,/user_data_dir="\$XDG_CONFIG_HOME\/\$app_name"/);
+ assert.match(script,/desktop_file=/);
+ assert.match(script,/BRIGHTDESK_STARTUP_SMOKE_TEST=1 timeout 90s xvfb-run -a/);
+ assert.match(script,/--appimage-extract/);
+ assert.doesNotMatch(script,/--appimage-version/);
+ assert.match(script,/Preserve real Electron userData/);
  assert.match(read('scripts/build-cross-platform-installers.sh'),/test-linux-package-lifecycle\.sh release/);
-});
-
-test('Windows cross-build executes Wine/NSIS install and uninstall smoke tests for the Suite and ten products',()=>{
+});test('Windows lifecycle launches installed NSIS packages and preserves real Electron userData through Wine',()=>{
  const script=read('scripts/test-windows-nsis-lifecycle.sh');
  assert.match(script,/wineboot --init/);
- assert.match(script,/wine "\$installer" \/S/);
- assert.match(script,/wine "\$uninstaller" \/S/);
  assert.match(script,/find_uninstall_string/);
- assert.ok(script.includes('Re-running installer to exercise the repair/reinstall path'));
+ assert.match(script,/app_executable="\$install_directory\/\$product_name\.exe"/);
+ assert.match(script,/BRIGHTDESK_STARTUP_SMOKE_TEST=1 timeout 90s xvfb-run -a wine/);
+ assert.match(script,/user_data_dir="\$APPDATA_UNIX\/\$product_name"/);
+ assert.ok(script.includes('Re-running same version to exercise repair/reinstall'));
  assert.match(script,/brightdesk-user-data-preservation/);
- assert.match(script,/brightdesk-windows-uninstall-preservation/);
  assert.match(script,/not native Windows operating-system certification/);
  assert.match(read('scripts/build-cross-platform-installers.sh'),/test-windows-nsis-lifecycle\.sh release/);
+});
+
+test('lifecycle sentinels match Electron app-specific userData naming',()=>{
+ const main=read('src/main.js');
+ const suite=JSON.parse(read('package.json'));
+ const productConfig=read('electron-builder.app.config.js');
+ assert.match(main,/app\.setName\(packageConfig\.productName \|\| 'Brightdesk'\)/);
+ assert.match(main,/new DictionaryService\(app\.getPath\('userData'\)\)/);
+ assert.equal(suite.build.productName,'Brightdesk Office Suite');
+ assert.match(productConfig,/productName: 'Brightdesk ' \+ appName/);
+ const linux=read('scripts/test-linux-package-lifecycle.sh');
+ const windows=read('scripts/test-windows-nsis-lifecycle.sh');
+ assert.match(linux,/user_data_dir="\$XDG_CONFIG_HOME\/\$app_name"/);
+ assert.match(windows,/user_data_dir="\$APPDATA_UNIX\/\$product_name"/);
+ assert.doesNotMatch(linux,/brightdesk-user-data-\$package_name/);
 });
 
 test('native target regression suite covers target selection and binary headers',()=>{

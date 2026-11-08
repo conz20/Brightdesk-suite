@@ -1,61 +1,59 @@
 # Cross-platform release verification
 
-This document defines the final installer-bundle checks for a Brightdesk release. The approved scope remains the ten named products: Pages, Sheets, Decks, Notes, Database, Forms, Lists, Planner, To Do and Workspace.
+This document defines how Brightdesk builds and verifies the Suite plus all ten approved products without requiring the customer to own or operate Windows or Linux hardware.
 
-## Native build matrix
+## Build architecture
 
-The release workflow builds each target on its native operating-system runner, from the same candidate commit and the same dependency lock:
+All automated builds run on the existing private Apple-silicon Mac runner. No GitHub-hosted runner, separate Windows computer or separate Linux computer is required.
 
-| Platform | Suite outputs | Individual product outputs |
+| Target | Build method | Outputs |
 | --- | --- | --- |
-| Windows | Brightdesk Office Suite x64 NSIS installer (.exe) | 10 x64 NSIS installers (.exe) |
-| macOS | Universal DMG, PKG and ZIP | 10 × universal DMG, PKG and ZIP |
-| Linux | AppImage and Debian package (.deb) | 10 × AppImage and Debian package (.deb) |
+| macOS | Native build on the Mac runner | Suite plus ten products; universal DMG, PKG and ZIP packages |
+| Linux x64 | Pinned x86_64 Linux container inside Colima/QEMU | Suite plus ten products; AppImage and Debian (.deb) packages |
+| Windows x64 | Windows GNU Rust cross-compilation and Electron Builder/NSIS inside the same Linux container, using Wine | Suite plus ten x64 NSIS (.exe) installers |
 
-The intended output count is 66: one Windows Suite file, three macOS Suite files, two Linux Suite files, plus 60 individual-product files. This count is an acceptance target, not evidence of completed builds.
+The Colima profile uses the open-source QEMU virtual-machine backend. The Docker CLI talks to the profile-specific Colima context. The build container image is pinned by digest and uses Node.js 24.22.2, Rust 1.99.1, the Windows GNU target, MinGW and Wine. Node.js is downloaded only after its published SHA-256 checksum is verified. Docker Desktop is not installed or required.
 
-## Per-platform checks
+Separate persistent container volumes keep Linux dependencies, Electron downloads, Electron Builder caches and the Cargo registry away from the Mac host's `node_modules`. The workflow does not upload intermediate Actions artifacts, avoiding additional use of the repository's exhausted Actions artifact-storage quota.
 
-For each platform, the workflow must:
+## Installer and package checks
 
-1. Verify the Suite installer names, required legal files and non-empty files.
-2. Generate a Suite SHA-256 manifest.
-3. Build each of the ten product installers using the product-specific Electron identity and launch restriction.
-4. Verify each expected product filename and non-empty file.
-5. Generate and re-read a SHA-256 manifest for every product output folder.
-6. Preserve the same Terms and Conditions agreement in every Windows NSIS installer and macOS DMG/PKG installer; the Linux packages use the shared first-launch agreement in the product shell.
-7. Collect Suite output files and the ten product folders into the platform-specific bundle.
-8. Upload the platform bundle only when all preceding commands succeed.
+For each platform, the workflow verifies:
 
-The local `npm run verify:local-release` command follows this sequence on the machine's native operating system. It verifies only that one platform.
+1. Expected versioned filenames, legal documents and non-empty installer files.
+2. SHA-256 manifests for the Suite and each of the ten products.
+3. The exact ten product identities and all 66 Suite/product installer/archive outputs.
+4. Clean release assembly that copies only the three platform folders, ten product folders per platform and the committed dependency lock. Temporary unpacked build folders and symlinks are excluded.
+5. Final version, lockfile, folder, filename and checksum consistency in `release/verified-bundle`.
 
-## Final combined-bundle checks
+File and checksum checks prove that the correct build outputs were produced and transferred; they do not by themselves prove installation or removal.
 
-After the Linux, Windows and macOS platform artifacts are downloaded into one release directory, the collector runs `npm run release:verify:complete -- release`. The workflow does not upload a second combined Actions artifact. If publishing was explicitly selected, the publish job downloads the three platform artifacts again and repeats the complete verification before attaching the files to the GitHub Release.
+## Install, repair, removal and data-preservation smoke tests
 
-The final verifier checks:
+### Linux
 
-- The requested release version matches the root `package.json` and the downloaded lock's root version.
-- The downloaded dependency lock is valid JSON and uses lockfile version 3.
-- The exact versioned Suite installers and required legal documents exist for each operating system.
-- Each platform has exactly the ten approved product folders, with no missing or unapproved folders.
-- Every expected product installer/archive is present, non-empty and has the correct product, version and platform filename.
-- All three Suite checksum manifests and all thirty product checksum manifests contain exactly the expected file names.
-- Every SHA-256 value matches the actual bytes after the platform artifacts have been transferred to the final collector.
-- The combined total is exactly 66 installer/archive outputs.
+Inside the x86_64 Linux container, the lifecycle suite installs all eleven Debian packages with `dpkg`, verifies package registration, launches the installed app in packaged-startup smoke mode under Xvfb, reapplies the same package to exercise repair/reinstall, removes the package and checks that the application payload is gone. It also places a preservation sentinel under the app's actual Electron user-data directory.
 
-The final combined bundle is not uploaded when any check fails. These file and checksum checks do not replace live installation, first launch, upgrade, removal, code-signing, macOS notarisation, accessibility or local-data-preservation acceptance tests.
+Each AppImage is extracted using the AppImage runtime's `--appimage-extract` option and its packaged `AppRun` is launched in the same startup-smoke mode. The temporary portable file and extracted test directory are removed, while the document and per-product settings sentinels must remain. No FUSE device or privileged Docker capability is required for this extracted test path. See [AppImage no-FUSE guidance](https://docs.appimage.org/user-guide/troubleshooting/fuse.html).
 
-## Release and update controls
+Electron's Linux `userData` path is based on `$XDG_CONFIG_HOME` (or `~/.config`) plus the application name; Brightdesk sets that name from each package's `productName`. The test uses this real per-product path rather than an unrelated placeholder folder. See [Electron app path documentation](https://www.electronjs.org/docs/latest/api/app).
 
-The installer workflow runs only when manually dispatched. At the start of the run, a cleanup job paginates the repository's Actions artifact list and removes only the Brightdesk platform bundles and versioned aggregate installer bundles that are at least 24 hours old. It never selects unrelated artifacts and excludes artifacts belonging to the current workflow run. The job uses the built-in workflow token and is the only job granted `actions: write`; preparation, platform builds, verification and publication retain their existing read-only permissions. If the GitHub API denies cleanup, the workflow stops before consuming more artifact storage.
+### Windows
 
-Platform artifacts are retained for one day. Their storage is reused for final verification and, when separately authorised, release publication; no second combined Actions artifact is created. This is a quota-reduction measure, not a guarantee that the repository has enough capacity if other artifacts or caches remain stored.
+Inside the Linux build container, Wine/NSIS installs the Suite and each of the ten products in an isolated temporary Windows prefix. The test locates the registered uninstaller and installed executable, launches the packaged app in startup-smoke mode, creates a preservation sentinel beneath the actual `%APPDATA%/<product name>` Electron user-data folder, reinstalls the same package version, and runs the uninstaller. It verifies that the program executable, remaining program files and uninstall registry entry are removed while the user's document and product user-data sentinel remain.
 
-Publishing a GitHub Release is a separate manual input and defaults to false. A release is not published by this verification task.
+This is Windows packaging and compatibility smoke evidence under Wine. It is **not native Windows operating-system certification**. Wine does not prove every Windows-specific integration or the interactive NSIS Terms acceptance/decline experience. Those remain separate acceptance requirements.
 
-The electron-builder publishing provider remains unconfigured (`publish: []`). A manually published GitHub Release download bundle is not the same as a working in-product update channel. Do not claim automatic update availability until the provider, versioned channel, signed metadata and update/download/install/rollback flows have passed acceptance for Suite and all ten products on Windows, macOS and Linux.
+The second install of the same version tests a reinstall/repair path; it is not an older-version-to-newer-version upgrade test.
 
-## Evidence status
+### macOS
 
-The scripts and workflow define the checks to be executed. Their existence is not a CI pass. A candidate is release-ready only after the latest commit has successful test and quality gates, all three native builds and the final combined verification, followed by the required real installation and upgrade acceptance checks. No package should be described as published or verified without that evidence.
+The Mac runner builds the universal packages natively. Real installation, first-launch Terms acceptance/decline, older-to-newer upgrade, repair, uninstall and data-preservation checks must still be completed on macOS before release acceptance.
+
+## Release controls and acceptance boundaries
+
+The pull-request verification workflow uses the private Mac runner and checks the current PR source. The manual release workflow uses the same runner and does not automatically publish. GitHub Release publication is separately gated by the manual `publish_release` input, which defaults to false and is allowed only from `main`.
+
+The workflow does not claim a build, install, upgrade or uninstall has passed unless its current-head run records that evidence. A Windows Wine pass is not described as a native Windows pass. A same-version reinstall is not described as an upgrade. The interactive Windows Terms page is not described as tested by a silent installer run.
+
+The release remains blocked until the latest PR head passes its Mac-runner build and automated tests, all 66 output checks succeed, the Linux package/AppImage smoke tests pass, the Windows Wine/NSIS smoke tests pass, and native macOS install/upgrade/repair/uninstall/data-preservation acceptance is complete. Older-to-newer upgrade tests and the Windows interactive Terms flow remain explicit acceptance items; no package should be described as published or fully verified before they pass.
