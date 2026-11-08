@@ -19,7 +19,7 @@ test('one consolidated quality gate uses the self-hosted runner and verifies the
   const workflow = read('.github/workflows/quality.yml');
   assert.match(workflow, /pull_request:\s*\n\s*branches: \[main\]/);
   assert.match(workflow, /cron:/);
-  assert.match(workflow, /runs-on: self-hosted/);
+  assert.match(workflow, /runs-on: \["self-hosted", "macOS", "ARM64"\]/);
   assert.match(workflow, /node-version: 24\.22\.2/);
   for (const command of [
     'npm run check:node',
@@ -224,7 +224,7 @@ test('routine CI, Rust and README checks use the existing self-hosted Mac runner
 
 test('README freshness check uses the existing self-hosted runner', () => {
   const workflow = read('.github/workflows/readme-freshness.yml');
-  assert.match(workflow, /runs-on: self-hosted/);
+  assert.match(workflow, /runs-on: \["self-hosted", "macOS", "ARM64"\]/);
   assert.doesNotMatch(workflow, /ubuntu-latest|windows-latest|macos-latest/);
 });
 
@@ -243,7 +243,7 @@ test('README freshness workflow protects the private runner from forked pull req
   const workflow = read('.github/workflows/readme-freshness.yml');
   const guard = /if:\s*github\.event_name != 'pull_request' \|\| github\.event\.pull_request\.head\.repo\.full_name == github\.repository/;
   assert.match(workflow, /pull_request:/);
-  assert.match(workflow, /runs-on:\s*self-hosted/);
+  assert.match(workflow, /runs-on:\s*(?:self-hosted|\["self-hosted")/);
   assert.match(workflow, guard);
 });
 
