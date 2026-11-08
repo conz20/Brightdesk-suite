@@ -112,7 +112,7 @@ test('PR installer workflow uses the Mac runner and checks the complete bundle',
  assert.match(workflow,/release:verify:complete -- release\/verified-bundle/);
  assert.match(workflow,/if: github\.event\.pull_request\.head\.repo\.full_name == github\.repository/);
  assert.doesNotMatch(workflow,/ubuntu-latest|windows-latest|macos-latest|actions\/(?:upload|download)-artifact|publish_release/);
- for(const p of ['scripts/build-native.js','scripts/run-cross-platform-installer-builds.sh','scripts/build-cross-platform-installers.sh','tools/release-cross-build/Dockerfile','tests/native-build-target.test.js']){
+ for(const p of ['scripts/build-native.js','scripts/run-cross-platform-installer-builds.sh','scripts/build-cross-platform-installers.sh','scripts/assemble-complete-release-bundle.js','scripts/test-linux-package-lifecycle.sh','scripts/test-windows-nsis-lifecycle.sh','tools/release-cross-build/Dockerfile','tests/native-build-target.test.js','tests/release-bundle-assembly.test.js']){
   assert.ok(workflow.includes(p),'PR installer check watches '+p);
  }
 });
