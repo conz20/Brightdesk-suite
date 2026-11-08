@@ -41,6 +41,6 @@ test('the 720px full-width sidebar breakpoint also stacks the Suite body', () =>
   const css = read('src/styles.css');
   assert.match(
     css,
-    /@media\\s*\\(max-width:\\s*720px\\)\\s*\\{\\s*body\\s*\\{\\s*display:\\s*block;\\s*\\}\\s*\\.sidebar\\s*\\{[^}]*width:\\s*100%;[^}]*min-width:\\s*0;/s
+    /@media\s*\(max-width:\s*720px\)\s*\{\s*body\s*\{\s*display:\s*block;\s*\}\s*\.sidebar\s*\{[^}]*width:\s*100%;[^}]*min-width:\s*0;/s
   );
 });
