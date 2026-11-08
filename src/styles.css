@@ -667,3 +667,23 @@ body.suite-home .app-manager.home-view .manager-hero .eyebrow { display: none; }
     display: block;
   }
 }
+
+
+/* Keep every sidebar caption visible: compact width must not remove navigation context. */
+.sidebar > .nav small {
+  display: block;
+  white-space: normal;
+  line-height: 1.35;
+}
+.sidebar > .nav > span {
+  min-width: 0;
+}
+@media (max-width: 720px) {
+  .sidebar > .nav {
+    display: flex;
+    width: 100%;
+  }
+  .sidebar > .nav small {
+    display: block;
+  }
+}
