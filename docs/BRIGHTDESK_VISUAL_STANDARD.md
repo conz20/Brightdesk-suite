@@ -164,3 +164,4 @@ The **Apps** sidebar entry uses the original four-tile launcher icon from `asset
 - In product windows, expanded navigation shows icon plus label; compact navigation keeps the original SVG icon visible and provides the full label through an accessible tooltip/title. Keep keyboard focus, visible focus rings, and reduced-motion support.
 - At narrow widths, preserve the product's responsive layout rather than forcing a desktop-width navigation rail over the work area.
 - The 192 px Suite width is an intentional density choice, not a copy of another vendor's dimensions or artwork.
+- The 76 px icon rail at medium widths is a Brightdesk-specific adaptation. Fluent 2's standard Nav guidance keeps labels in its drawer and changes to an overlay drawer at 640 px and below; Brightdesk uses that overlay pattern for narrow product windows.
