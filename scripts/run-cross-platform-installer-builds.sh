@@ -15,8 +15,25 @@ if ! command -v brew >/dev/null 2>&1; then
   elif [[ -x /usr/local/bin/brew ]]; then
     eval "$(/usr/local/bin/brew shellenv)"
   else
-    echo "Homebrew is required to install the free Colima, Docker CLI and QEMU tools." >&2
-    exit 2
+    echo "Homebrew is missing. Installing the free Homebrew package manager for this self-hosted Mac runner." >&2
+    if ! command -v curl >/dev/null 2>&1; then
+      echo "curl is required to install Homebrew." >&2
+      exit 2
+    fi
+    if ! sudo -n true >/dev/null 2>&1; then
+      echo "Homebrew installation needs non-interactive administrator access on this Mac runner." >&2
+      echo "No paid service is required; grant the runner account administrator access, then retry." >&2
+      exit 2
+    fi
+    NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+    if [[ -x /opt/homebrew/bin/brew ]]; then
+      eval "$(/opt/homebrew/bin/brew shellenv)"
+    elif [[ -x /usr/local/bin/brew ]]; then
+      eval "$(/usr/local/bin/brew shellenv)"
+    else
+      echo "Homebrew installation completed without a usable brew executable." >&2
+      exit 2
+    fi
   fi
 fi
 for formula in colima docker qemu; do
