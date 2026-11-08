@@ -20,6 +20,7 @@ DOCUMENT_SENTINEL="$DOCUMENTS_UNIX/brightdesk-windows-uninstall-preservation.txt
 printf 'Preserve this user document through every uninstall.\n' > "$DOCUMENT_SENTINEL"
 
 find_uninstall_string() {
+  local product_name="$1"
   local hive output value
   for hive in HKCU HKLM; do
     output="$(wine reg query "${hive}\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall" /s /v UninstallString 2>/dev/null || true)"
@@ -46,7 +47,7 @@ run_lifecycle_test() {
 
   local uninstall_string=""
   for attempt in {1..15}; do
-    uninstall_string="$(find_uninstall_string || true)"
+    uninstall_string="$(find_uninstall_string "$product_name" || true)"
     [[ -n "$uninstall_string" ]] && break
     sleep 1
   done
@@ -79,7 +80,7 @@ run_lifecycle_test() {
     echo "Uninstall removed user settings or documents for $product_name." >&2
     exit 1
   fi
-  if find_uninstall_string >/dev/null 2>&1; then
+  if find_uninstall_string "$product_name" >/dev/null 2>&1; then
     echo "Windows uninstall registry entry remains after removing $product_name." >&2
     exit 1
   fi
