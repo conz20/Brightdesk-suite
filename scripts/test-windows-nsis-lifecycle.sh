@@ -28,8 +28,10 @@ find_uninstall_string() {
     if [[ -n "$value" ]]; then
       value="${value#\"}"
       value="${value%\"}"
-      printf '%s\n' "$value"
-      return 0
+      if [[ "$value" == *"$product_name"* ]]; then
+        printf '%s\n' "$value"
+        return 0
+      fi
     fi
   done
   return 1
