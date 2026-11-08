@@ -183,7 +183,7 @@ test('Home sidebar footer and navigation match the production artwork', () => {
   assert.ok(!app.includes("$('version-label').textContent ="));
   assert.ok(styles.includes('body.suite-home .sidebar > .nav small { display: none; }'));
   assert.ok(styles.includes('body.suite-home .main > footer { display: none; }'));
-  assert.ok(readme.includes('removes secondary captions'));
+  assert.ok(readme.includes('their explanatory captions visible'));
 });
 
 
