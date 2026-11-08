@@ -687,3 +687,11 @@ body.suite-home .app-manager.home-view .manager-hero .eyebrow { display: none; }
     display: block;
   }
 }
+
+
+/* Keep captions visible in the Suite Home rail as well as product navigation. */
+body.suite-home .sidebar > .nav small {
+  display: block;
+  white-space: normal;
+  line-height: 1.35;
+}
