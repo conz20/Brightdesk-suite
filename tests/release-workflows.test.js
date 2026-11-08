@@ -79,7 +79,7 @@ test('Linux cross-build runs install/remove and data-preservation checks for all
  assert.match(script,/Expected 11 Debian packages/);
  assert.match(script,/dpkg --install/);
  assert.match(script,/dpkg --remove/);
- assert.match(script,/Reapplying package to exercise reinstall\\/repair/);
+ assert.ok(script.includes('Reapplying package to exercise reinstall/repair'));
  assert.match(script,/brightdesk-uninstall-preservation/);
  assert.match(script,/Preserve user settings and local data/);
  assert.match(script,/--appimage-version/);
@@ -92,7 +92,7 @@ test('Windows cross-build executes Wine/NSIS install and uninstall smoke tests f
  assert.match(script,/wine "\$installer" \/S/);
  assert.match(script,/wine "\$uninstaller" \/S/);
  assert.match(script,/find_uninstall_string/);
- assert.match(script,/Re-running installer to exercise the repair\\/reinstall path/);
+ assert.ok(script.includes('Re-running installer to exercise the repair/reinstall path'));
  assert.match(script,/brightdesk-user-data-preservation/);
  assert.match(script,/brightdesk-windows-uninstall-preservation/);
  assert.match(script,/not native Windows operating-system certification/);
