@@ -1,5 +1,6 @@
 const { app, BrowserWindow, Menu, ipcMain, dialog, Notification } = require('electron');
 const packageConfig = require('../package.json');
+app.setName(packageConfig.productName || 'Brightdesk');
 const nativeEngine = require('./rust-engine');
 const { assertPackagedVersion, assertMainWindowReady } = require('./startup-smoke');
 const path = require('node:path');
@@ -423,7 +424,6 @@ async function runPackagedStartupSmokeTest() {
 }
 
 app.whenReady().then(async () => {
-  app.setName(packageConfig.productName || 'Brightdesk');
   dictionaryService = new DictionaryService(app.getPath('userData'));
   Menu.setApplicationMenu(null);
   if (process.env.BRIGHTDESK_STARTUP_SMOKE_TEST === '1') {

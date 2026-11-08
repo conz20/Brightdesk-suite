@@ -105,6 +105,9 @@ test('lifecycle sentinels match Electron app-specific userData naming',()=>{
  const suite=JSON.parse(read('package.json'));
  const productConfig=read('electron-builder.app.config.js');
  assert.match(main,/app\.setName\(packageConfig\.productName \|\| 'Brightdesk'\)/);
+ const setNamePosition=main.indexOf("app.setName(packageConfig.productName || 'Brightdesk')");
+ const firstUserDataLookupPosition=main.indexOf("app.getPath('userData')");
+ assert.ok(setNamePosition>=0 && setNamePosition<firstUserDataLookupPosition,'set the product name before any userData path is resolved');
  assert.match(main,/new DictionaryService\(app\.getPath\('userData'\)\)/);
  assert.equal(suite.build.productName,'Brightdesk Office Suite');
  assert.match(productConfig,/productName: 'Brightdesk ' \+ appName/);
