@@ -23,8 +23,8 @@ concurrency:
 jobs:
   quality:
     name: Validate Brightdesk Office Suite
-    # Use standard hosted Linux; the account Actions budget caps usage.
-    runs-on: ubuntu-latest
+    # Reuse the existing private Mac runner; keep routine checks within the no-cost runner setup.
+    runs-on: ["self-hosted", "macOS", "ARM64"]
     timeout-minutes: 45
     steps:
       - name: Check out Brightdesk
