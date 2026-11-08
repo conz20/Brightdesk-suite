@@ -567,6 +567,7 @@ body.suite-home .app-manager.home-view .manager-hero .eyebrow { display: none; }
   min-width: 192px;
   padding: 20px 10px 16px;
   overflow-x: hidden;
+  min-height: 0;
 }
 .sidebar .brand {
   gap: 9px;
