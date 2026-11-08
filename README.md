@@ -34,7 +34,7 @@ The SVG above is the approved production Home screen design and the single visua
 
 <p align="center"><img src="https://raw.githubusercontent.com/connormolloy12/Brightdesk-Design-System/design/product-window-system-2026-11-08/assets/navigation-states.svg" alt="Brightdesk navigation reference showing the fixed compact Suite sidebar and optional product navigation states" width="100%"></p>
 
-Individual product windows use a 232 px expanded navigation rail with an optional 76 px compact icon rail. Their navigation control is not shown in the Suite shell.
+Individual product windows use a 232 px expanded rail at 1008 px and wider, a 76 px compact icon rail at 641–1007 px, and a menu button at 640 px and below that opens the navigation over the workspace. Their navigation control is not shown in the Suite shell.
 
 The approved Suite sidebar is a fixed, compact 192 px rail: it keeps the original icons and readable **Home**, **Apps** and **Files** labels visible, removes secondary captions, and has no expand/collapse control; the **Files** icon is a recognisable open folder with a visible stack of documents, matching the local file-opening and project-saving actions rather than an unexplained rectangle. There is no Create button, no online-service navigation and no cloud storage. The sidebar footer reinforces that Brightdesk is local-first; the current software version remains available in the product footer outside Home. Installed products belong in the **Switch product** group only while a product workspace is open. The original product icons remain consistent across the Home cards and product workspaces. The four-panel mark beside the Brightdesk wordmark is the Suite logo; the separate four-tile launcher icon identifies Apps.
 
