@@ -55,6 +55,16 @@ for package in "${debs[@]}"; do
     exit 1
   fi
 
+  echo "Reapplying package to exercise reinstall/repair: $package_name"
+  if ! dpkg --install "$package"; then
+    apt-get install --yes --no-install-recommends --fix-broken
+  fi
+  status="$(dpkg-query -W -f='${Status}' "$package_name" 2>/dev/null || true)"
+  if [[ "$status" != "install ok installed" ]]; then
+    echo "Debian package repair/reinstall did not remain installed: $package_name ($status)" >&2
+    exit 1
+  fi
+
   echo "Removing Debian package: $package_name"
   dpkg --remove "$package_name"
 

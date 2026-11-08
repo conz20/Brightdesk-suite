@@ -57,6 +57,14 @@ run_lifecycle_test() {
     exit 1
   fi
 
+  echo "Re-running installer to exercise the repair/reinstall path: $product_name"
+  xvfb-run -a wine "$installer" /S
+  uninstall_string="$(find_uninstall_string "$product_name" || true)"
+  if [[ -z "$uninstall_string" ]]; then
+    echo "Repair/reinstall lost the NSIS uninstall registration for $product_name." >&2
+    exit 1
+  fi
+
   local uninstaller
   uninstaller="$(winepath -u "$uninstall_string")"
   if [[ ! -f "$uninstaller" ]]; then
