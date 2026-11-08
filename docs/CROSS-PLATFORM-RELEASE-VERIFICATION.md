@@ -4,7 +4,7 @@ This document defines the final installer-bundle checks for a Brightdesk release
 
 ## Native build matrix
 
-The release workflow builds each target on its native operating-system runner, from the same candidate commit and the same dependency lock:
+The manual release workflow builds each target from the same candidate commit and dependency lock. Windows and Linux use GitHub's standard hosted runners; macOS uses the existing private self-hosted Mac runner. Preparation, final collection and optional publishing also use the private Mac runner:
 
 | Platform | Suite outputs | Individual product outputs |
 | --- | --- | --- |
@@ -13,6 +13,8 @@ The release workflow builds each target on its native operating-system runner, f
 | Linux | AppImage and Debian package (.deb) | 10 × AppImage and Debian package (.deb) |
 
 The intended output count is 66: one Windows Suite file, three macOS Suite files, two Linux Suite files, plus 60 individual-product files. This count is an acceptance target, not evidence of completed builds.
+
+Routine pull-request CI and macOS installer verification run on the private Mac runner. Windows and Linux package builds are reserved for the manual cross-platform release workflow to avoid repeatedly consuming hosted compute on every pull-request update. Standard GitHub-hosted runner use in private repositories consumes the account's included Actions allowance; usage beyond the allowance may be billed or blocked depending on billing setup. Do not dispatch unless the included allowance and account spending controls permit a no-charge run. The customer is never required to supply Windows or Linux hardware.
 
 ## Per-platform checks
 
