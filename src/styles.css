@@ -588,13 +588,13 @@ body.suite-home .app-manager.home-view .manager-hero .eyebrow { display: none; }
 }
 .sidebar > .nav {
   min-height: 40px;
-  gap: 8px;
-  padding: 5px 7px;
+  gap: 6px;
+  padding: 5px 6px;
   margin: 2px 0;
   border-radius: 8px;
 }
 .sidebar > .nav b {
-  font-size: 12px;
+  font-size: 11px;
   line-height: 1.25;
   white-space: nowrap;
 }
@@ -602,9 +602,9 @@ body.suite-home .app-manager.home-view .manager-hero .eyebrow { display: none; }
   display: none;
 }
 .sidebar .app-icon-image {
-  width: 30px;
-  height: 30px;
-  flex: 0 0 30px;
+  width: 28px;
+  height: 28px;
+  flex: 0 0 28px;
   border-radius: 8px;
 }
 .sidebar .sidebar-bottom {
