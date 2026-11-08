@@ -20,8 +20,11 @@ test('Suite navigation stays compact while retaining original icons and readable
   assert.ok(css.includes('@media (max-width: 700px)'));
   const readme = read('README.md');
   const standard = read('docs/BRIGHTDESK_VISUAL_STANDARD.md');
-  assert.ok(readme.includes('232 px expanded navigation rail'));
-  assert.ok(readme.includes('76 px compact icon rail'));
+  assert.ok(readme.includes('232 px expanded rail at 1008 px and wider'));
+  assert.ok(readme.includes('76 px compact icon rail at 641–1007 px'));
+  assert.ok(readme.includes('menu button at 640 px and below'));
   assert.ok(standard.includes('232 px expanded rail'));
   assert.ok(standard.includes('76 px icon rail'));
+  assert.ok(standard.includes('641–1007 px'));
+  assert.ok(standard.includes('640 px and below'));
 });
