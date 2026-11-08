@@ -160,7 +160,7 @@ The **Apps** sidebar entry uses the original four-tile launcher icon from `asset
 
 - The Suite shell uses a fixed compact 192 px left navigation rail. Keep the original SVG icon and the readable text label together for every visible navigation item; do not replace labels with icon-only navigation.
 - The Suite rail has no expand/collapse control. Keep secondary descriptions out of the rail so the ten-product workspace remains visible without wasting horizontal space.
-- Individual product windows use a 232 px expanded rail and may provide an accessible control to collapse it to a 76 px icon rail when their own navigation needs it. That control belongs to the product window only, never to the Suite shell.
+- Individual product windows adapt at the same breakpoints: expanded 232 px rail at 1008 px and wider; compact 76 px icon rail at 641–1007 px; and a menu button at 640 px and below that opens the navigation over the workspace. Users can toggle expanded/compact states in product windows. This control belongs to product windows only, never to the Suite shell.
 - In product windows, expanded navigation shows icon plus label; compact navigation keeps the original SVG icon visible and provides the full label through an accessible tooltip/title. Keep keyboard focus, visible focus rings, and reduced-motion support.
 - At narrow widths, preserve the product's responsive layout rather than forcing a desktop-width navigation rail over the work area.
 - The 192 px Suite width is an intentional density choice, not a copy of another vendor's dimensions or artwork.
