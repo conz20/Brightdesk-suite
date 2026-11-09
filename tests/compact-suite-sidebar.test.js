@@ -28,6 +28,6 @@ test('Suite desktop navigation keeps original icons, labels and explanatory capt
   assert.ok(readme.includes('Mobile and tablet versions are not part of the product scope'));
   assert.ok(standard.includes('desktop-only suite'));
   assert.ok(standard.includes('Windows, macOS and Linux'));
-  assert.ok(standard.includes('never replace labels with icon-only navigation'));
+  assert.ok(standard.includes('Never replace labels with icon-only navigation'));
   assert.ok(!standard.includes('At 640 px and below'));
 });
