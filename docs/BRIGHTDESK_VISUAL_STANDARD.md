@@ -73,7 +73,7 @@ Product-specific controls must use the same visual language:
 - Semantic labels, accessible names and logical reading order.
 - High contrast for normal text; never communicate state by colour alone.
 - Respect reduced-motion preferences.
-- At narrow sizes, navigation and grids must adapt without clipping controls or hiding essential actions. Every sidebar must remain compact while preserving all original icons, clickable text labels and explanatory captions across the Suite and all ten products.
+- When a supported desktop window is resized, navigation and grids may adapt without clipping controls or hiding essential actions. Every sidebar must remain compact while preserving all original icons, clickable text labels and explanatory captions across the Suite and all ten products.
 - Keep touch/click targets comfortable and avoid tiny three-dot menus.
 
 ## Cross-platform parity (Windows, macOS and Linux)
@@ -160,7 +160,6 @@ The **Apps** sidebar entry uses the original four-tile launcher icon from `asset
 
 - The Suite shell uses a fixed compact 192 px left navigation rail. Keep the original SVG icon and the readable text label together for every visible navigation item; do not replace labels with icon-only navigation.
 - The Suite rail has no expand/collapse control. Keep every explanatory caption visible beneath its navigation label; allow natural wrapping within the slim rail.
-- All Suite and individual product sidebars use a slim 192 px rail whenever the sidebar is visible. Keep each original SVG icon and its readable text label together at every desktop and medium-width breakpoint; never replace labels with icon-only navigation or rely on tooltips as a substitute.
-- At 640 px and below, use the product's menu button to open the same labelled navigation over the workspace. The open navigation must still show each icon and its full text label.
+- Brightdesk is desktop-only software for Windows, macOS and Linux. All Suite and individual product sidebars use a slim 192 px rail in the desktop interface. Keep each original SVG icon, readable text label and explanatory caption visible together; captions may wrap naturally inside the desktop rail. Mobile and tablet versions are not part of the product scope. Never replace labels with icon-only navigation or rely on tooltips as a substitute.
 - Keep explanatory captions visible and allow them to wrap naturally; slim sizing must not remove navigation context. Preserve keyboard focus, visible focus rings, and reduced-motion support.
-- The 192 px width is an intentional density choice, not a copy of another vendor's dimensions or artwork. Fluent 2's standard Nav guidance keeps labels in its drawer and changes to an overlay drawer at 640 px and below; Brightdesk uses that overlay pattern for narrow product windows.
+- The 192 px width is an intentional desktop density choice, not a copy of another vendor's dimensions or artwork.
