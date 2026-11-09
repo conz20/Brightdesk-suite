@@ -48,3 +48,12 @@ test('the 720px full-width sidebar breakpoint also stacks the Suite body', () =>
     /@media\s*\(max-width:\s*720px\)\s*\{\s*body\s*\{\s*display:\s*block;\s*\}\s*\.sidebar\s*\{[^}]*width:\s*100%;[^}]*min-width:\s*0;/s
   );
 });
+
+
+test('mobile Suite navigation retains its section heading and bottom explanatory labels', () => {
+  const css = read('src/styles.css');
+  const mobileRule = css.slice(css.lastIndexOf('@media (max-width: 700px)'));
+  assert.match(mobileRule, /\.sidebar \.section-label\s*\{\s*display:\s*block;/);
+  assert.match(mobileRule, /\.sidebar-bottom\s*\{\s*display:\s*flex;/);
+  assert.match(mobileRule, /\.sidebar-bottom small\s*\{\s*display:\s*block;/);
+});
