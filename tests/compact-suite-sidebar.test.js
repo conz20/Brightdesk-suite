@@ -23,7 +23,7 @@ test('Suite desktop navigation keeps original icons, labels and explanatory capt
 
   const readme = read('README.md');
   const standard = read('docs/BRIGHTDESK_VISUAL_STANDARD.md');
-  assert.ok(readme.includes('desktop-only Brightdesk suite'));
+  assert.ok(readme.includes('desktop-only suite for Windows, macOS and Linux'));
   assert.ok(readme.includes('icon and readable text label together'));
   assert.ok(readme.includes('Mobile and tablet versions are not part of the product scope'));
   assert.ok(standard.includes('desktop-only suite'));
