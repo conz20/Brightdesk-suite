@@ -626,16 +626,6 @@ body.suite-home .app-manager.home-view .manager-hero .eyebrow { display: none; }
   }
 }
 
-/* Preserve the stacked, full-width Suite navigation on small screens. */
-@media (max-width: 720px) {
-  body {
-    display: block;
-  }
-  .sidebar {
-    width: 100%;
-    min-width: 0;
-  }
-}
 
 
 /* Compact sidebars retain both the original icon and readable label. */
@@ -658,15 +648,6 @@ body.suite-home .app-manager.home-view .manager-hero .eyebrow { display: none; }
     min-width: 192px;
   }
 }
-@media (max-width: 720px) {
-  .sidebar {
-    width: 100%;
-    min-width: 0;
-  }
-  .sidebar > .nav b {
-    display: block;
-  }
-}
 
 
 /* Keep every sidebar caption visible: compact width must not remove navigation context. */
@@ -678,15 +659,6 @@ body.suite-home .app-manager.home-view .manager-hero .eyebrow { display: none; }
 .sidebar > .nav > span {
   min-width: 0;
 }
-@media (max-width: 720px) {
-  .sidebar > .nav {
-    display: flex;
-    width: 100%;
-  }
-  .sidebar > .nav small {
-    display: block;
-  }
-}
 
 
 /* Keep captions visible in the Suite Home rail as well as product navigation. */
@@ -697,18 +669,3 @@ body.suite-home .sidebar > .nav small {
 }
 
 
-/* Mobile Suite navigation keeps every heading and explanatory label visible. */
-@media (max-width: 700px) {
-  .sidebar .section-label {
-    display: block;
-  }
-  .sidebar-bottom {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 6px;
-  }
-  .sidebar-bottom small {
-    display: block;
-  }
-}
