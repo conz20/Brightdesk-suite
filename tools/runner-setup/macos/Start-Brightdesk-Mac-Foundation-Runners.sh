@@ -81,7 +81,7 @@ say ''
 say 'BRIGHTDESK PRIVATE MAC RUNNER SETUP'
 say 'This will prepare up to eight repository-scoped runners on this Apple-silicon Mac.'
 say 'The runners can execute workflows from their matching private Brightdesk repositories.'
-say 'No repository settings, branches, source files, or release settings will be changed.'
+say 'This adds repository-scoped Actions runners only; it does not change permissions, secrets, workflows, visibility, branch protection or releases.'
 say 'The runner registrations are local to this Mac and will not auto-start after a reboot.'
 say ''
 say 'Repositories:'
@@ -97,8 +97,8 @@ printf 'Type REGISTER to continue, or press Enter to cancel: '
 read -r confirmation
 [[ "$confirmation" == 'REGISTER' ]] || { say 'Setup cancelled. No runner was registered.'; exit 0; }
 
-mkdir -p "$RUNNER_ROOT"
 [[ ! -L "$RUNNER_ROOT" ]] || fail 'The runner root is a symbolic link; inspect it before continuing.'
+mkdir -p "$RUNNER_ROOT"
 chmod 700 "$RUNNER_ROOT"
 
 temp_directory="$(mktemp -d "${TMPDIR:-/tmp}/brightdesk-mac-runners.XXXXXX")"
