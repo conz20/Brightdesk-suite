@@ -236,8 +236,9 @@ test('private Mac runner bootstrap is pinned, repository-scoped and token-safe',
   assert.ok(!setup.includes('RUNNER_CFG_PAT="$github_pat" ./config.sh'));
   assert.ok(setup.includes('Reusing previously verified runner files:'));
   assert.ok(setup.includes('--unattended'));
-  assert.ok(setup.includes("config_args=(--url \"$repository_url\" --name \"$runner_name\" --runnergroup 'Default' --work '_work' --unattended)"));
-  assert.ok(setup.includes(') > /dev/null 2>&1; then'));
+  assert.ok(setup.includes('config_args=(--url "$repository_url" --token "$registration_token" --name "$runner_name" --runnergroup \'Default\' --work \'_work\' --unattended)'));
+  assert.ok(setup.includes('./config.sh "${config_args[@]}"'));
+  assert.ok(!setup.includes(') > /dev/null 2>&1; then'));
   assert.ok(!setup.includes('configure.log'));
   assert.ok(!setup.includes('launchctl'));
   assert.ok(!setup.includes('sudo'));
@@ -258,7 +259,6 @@ test('Mac runner setup documentation explains scope, token handling and no-servi
   const releaseGuide = read('docs/LOCAL-RELEASE-VERIFICATION.md');
 
   assert.match(instructions, /Apple-silicon Mac only/);
-  assert.match(instructions, /RUNNER_CFG_PAT/);
   assert.ok(instructions.includes('The GitHub CLI credential is used only by gh api to request a short-lived registration token.'));
   assert.ok(instructions.includes('The temporary registration token is passed to the official config.sh --token option.'));
   assert.ok(instructions.includes('The temporary token is not printed or saved to a file and is cleared immediately after configuration.'));
