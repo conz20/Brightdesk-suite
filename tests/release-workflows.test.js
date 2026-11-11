@@ -1,6 +1,7 @@
 'use strict';
 
 const test = require('node:test');
+const { execFileSync } = require('node:child_process');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
@@ -207,4 +208,57 @@ test('Windows self-hosted runner setup targets the correct private repository an
   assert.match(setup, /already contains files\. Nothing was overwritten/);
   assert.match(setup, /Type REGISTER to continue/);
   assert.match(setup, /The token is not included in this script/);
+});
+
+
+test('private Mac runner bootstrap is pinned, repository-scoped and token-safe', () => {
+  const setupPath = path.join(root, 'tools/runner-setup/macos/Start-Brightdesk-Mac-Foundation-Runners.sh');
+  const setup = read('tools/runner-setup/macos/Start-Brightdesk-Mac-Foundation-Runners.sh');
+  const repositories = [
+    'Brightdesk-Common-Actions',
+    'Brightdesk-Developer-Tools',
+    'Brightdesk-Extensions',
+    'Brightdesk-Wiki',
+    'Brightdesk-Release-Tools',
+    'Brightdesk-Services',
+    'Brightdesk-Assets',
+    'Brightdesk-Lists'
+  ];
+
+  assert.ok(setup.includes("RUNNER_VERSION='2.338.2'"));
+  assert.ok(setup.includes("ARCHIVE_SHA256='25a065af409ffa317ab4d5a3b614dd15fc9c40f2172bc1b35a1b1258e919a388'"));
+  assert.ok(setup.includes('actions-runner-osx-arm64-'));
+  assert.ok(setup.includes('shasum -a 256'));
+  assert.ok(setup.includes('gh auth token --hostname github.com'));
+  assert.ok(setup.includes('RUNNER_CFG_PAT="$github_pat" ./config.sh'));
+  assert.ok(setup.includes('--unattended'));
+  assert.ok(setup.includes("config_args=(--url \"$repository_url\" --name \"$runner_name\" --runnergroup 'Default' --work '_work' --unattended)"));
+  assert.ok(setup.includes(') > /dev/null 2>&1; then'));
+  assert.ok(!setup.includes('configure.log'));
+  assert.ok(!setup.includes('--token'));
+  assert.ok(!setup.includes('launchctl'));
+  assert.ok(!setup.includes('sudo'));
+  assert.ok(setup.includes('nohup ./run.sh'));
+  assert.ok(setup.includes('Type REGISTER to continue'));
+  assert.ok(setup.includes('The local folder already exists'));
+  assert.ok(setup.includes('A compatible Mac runner is already registered but offline'));
+  assert.ok(setup.includes('brightdesk-product-ci'));
+  for (const repository of repositories) assert.ok(setup.includes("'" + repository + "'"), repository);
+  assert.ok(!setup.includes('ubuntu-latest'));
+  assert.ok(!setup.includes('windows-latest'));
+  assert.ok(!setup.includes('macos-latest'));
+  execFileSync('bash', ['-n', setupPath], { stdio: 'pipe' });
+});
+
+test('Mac runner setup documentation explains scope, token handling and no-service operation', () => {
+  const instructions = read('tools/runner-setup/macos/README.txt');
+  const releaseGuide = read('docs/LOCAL-RELEASE-VERIFICATION.md');
+
+  assert.match(instructions, /Apple-silicon Mac only/);
+  assert.match(instructions, /RUNNER_CFG_PAT/);
+  assert.ok(instructions.includes('The credential is not placed in a command-line argument, printed, or saved by this script.'));
+  assert.ok(instructions.includes('The script does not store registration tokens or PATs in a file or pass them as command-line arguments.'));
+  assert.ok(instructions.includes('They do not auto-start after logout or reboot.'));
+  assert.ok(releaseGuide.includes('Start-Brightdesk-Mac-Foundation-Runners.sh'));
+  assert.match(releaseGuide, /Brightdesk-Common-Actions/);
 });

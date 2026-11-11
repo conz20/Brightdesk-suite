@@ -45,6 +45,26 @@ The existing Mac runner can handle the preparation, collection and macOS build j
 Runner setup requires access to each physical computer and a one-time registration from the repository settings. Never copy a runner registration token into source files, logs, issues or documentation. Keep all runners private to this repository and do not run untrusted fork pull-request code on them.
 
 
+### Mac foundation runner setup
+
+The private Mac setup helper in [tools/runner-setup/macos](../tools/runner-setup/macos/README.txt) registers repository-scoped runners for the eight infrastructure repositories whose quality checks require a Mac runner: Brightdesk-Common-Actions, Brightdesk-Developer-Tools, Brightdesk-Extensions, Brightdesk-Wiki, Brightdesk-Release-Tools, Brightdesk-Services, Brightdesk-Assets and Brightdesk-Lists. Lists receives the additional `brightdesk-product-ci` label required by its quality workflow.
+
+On the Apple-silicon Mac, first sign in to GitHub CLI as `conz20` with administrator access to those repositories:
+
+```sh
+gh auth login --hostname github.com
+```
+
+Then, from the Brightdesk-suite repository root, run:
+
+```sh
+bash tools/runner-setup/macos/Start-Brightdesk-Mac-Foundation-Runners.sh
+```
+
+The helper downloads the official GitHub Actions runner v2.338.2 macOS ARM64 archive, verifies its published SHA-256 digest, checks existing registrations before creating any, and starts configured runners with `nohup`. It uses the signed-in GitHub CLI credential through the runner's documented `RUNNER_CFG_PAT` environment variable. It does not place the credential in a command-line argument or save it to a file. It does not use launchd or require administrator elevation. It adds repository-scoped Actions runner registrations only; it does not change repository permissions, secrets, variables, workflows, visibility, branch protection or release settings.
+
+Type `REGISTER` only after reviewing the eight-repository list shown by the script. Confirm the runners show as **Idle/Online** under Settings → Actions → Runners in each repository. The processes continue after closing the terminal, but do not auto-start after logout or reboot. Rerun the helper after signing in to restart an existing local runner if it is offline. If the helper reports a registration/folder mismatch, inspect it manually; do not delete a runner registration or local folder blindly.
+
 ### Windows runner setup
 
 The click-to-run Windows x64 setup source and exact instructions are in [tools/runner-setup/windows](../tools/runner-setup/windows/README.txt). The supplied ZIP contains the CMD launcher, PowerShell installer and README. It downloads the official runner, checks the published SHA-256 digest, installs under `C:\actions-runner`, and registers the runner only to this private repository. It retains GitHub's default labels: `self-hosted`, `Windows` and `X64`.
