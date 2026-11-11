@@ -254,7 +254,7 @@ test('Mac runner setup documentation explains scope, token handling and no-servi
   assert.match(instructions, /RUNNER_CFG_PAT/);
   assert.ok(instructions.includes('The credential is not placed in a command-line argument, printed, or saved by this script.'));
   assert.ok(instructions.includes('The script does not store registration tokens or PATs in a file or pass them as command-line arguments.'));
-  assert.match(instructions, /does not auto-start after logout or reboot/i);
+  assert.ok(instructions.includes('They do not auto-start after logout or reboot.'));
   assert.ok(releaseGuide.includes('Start-Brightdesk-Mac-Foundation-Runners.sh'));
   assert.match(releaseGuide, /Brightdesk-Common-Actions/);
 });
