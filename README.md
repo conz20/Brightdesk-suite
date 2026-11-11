@@ -108,16 +108,16 @@ Brightdesk is designed to keep product data on the current device. The first-use
 
 Each approved product has its own repository and product documentation:
 
-- [Brightdesk Pages](https://github.com/connormolloy12/Brightdesk-Pages)
-- [Brightdesk Sheets](https://github.com/connormolloy12/Brightdesk-Sheets)
-- [Brightdesk Decks](https://github.com/connormolloy12/Brightdesk-Decks)
-- [Brightdesk Notes](https://github.com/connormolloy12/Brightdesk-Notes)
-- [Brightdesk Database](https://github.com/connormolloy12/Brightdesk-Database)
-- [Brightdesk Forms](https://github.com/connormolloy12/Brightdesk-Forms)
-- [Brightdesk Lists](https://github.com/connormolloy12/Brightdesk-Lists)
-- [Brightdesk Planner](https://github.com/connormolloy12/Brightdesk-Planner)
-- [Brightdesk To Do](https://github.com/connormolloy12/Brightdesk-To-Do)
-- [Brightdesk Workspace](https://github.com/connormolloy12/Brightdesk-Workspace)
+- [Brightdesk Pages](https://github.com/conz20/Brightdesk-Pages)
+- [Brightdesk Sheets](https://github.com/conz20/Brightdesk-Sheets)
+- [Brightdesk Decks](https://github.com/conz20/Brightdesk-Decks)
+- [Brightdesk Notes](https://github.com/conz20/Brightdesk-Notes)
+- [Brightdesk Database](https://github.com/conz20/Brightdesk-Database)
+- [Brightdesk Forms](https://github.com/conz20/Brightdesk-Forms)
+- [Brightdesk Lists](https://github.com/conz20/Brightdesk-Lists)
+- [Brightdesk Planner](https://github.com/conz20/Brightdesk-Planner)
+- [Brightdesk To Do](https://github.com/conz20/Brightdesk-To-Do)
+- [Brightdesk Workspace](https://github.com/conz20/Brightdesk-Workspace)
 
 ## Development
 
