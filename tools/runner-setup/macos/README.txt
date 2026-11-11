@@ -47,7 +47,7 @@ AFTER SETUP
 -----------
 Open Settings > Actions > Runners in each repository and confirm the matching runner appears as Idle/Online.
 
-Runner files and private logs are kept under:
+Runner files and runtime logs are kept under:
 
    ~/.brightdesk-product-ci-runners/<repository>/
 
@@ -61,7 +61,7 @@ SECURITY AND SCOPE
 ------------------
 A self-hosted runner executes workflow code from the private repository to which it is registered. These runners are limited to the eight named Brightdesk repositories. Do not attach them to public repositories or run untrusted fork code on them.
 
-The runner's registration credentials are handled by the official GitHub runner configuration program. The script does not store registration tokens or PATs in a file or pass them as command-line arguments.
+The runner's registration credentials are handled by the official GitHub runner configuration program. The script does not store registration tokens or PATs in a file or pass them as command-line arguments. Runner configuration output is discarded rather than saved; only the normal runner runtime log remains under the private local runner folder.
 
 The runners are owner-operated development infrastructure. They do not run as part of Brightdesk customer products and do not create a customer network dependency.
 
