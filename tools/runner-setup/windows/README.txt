@@ -4,7 +4,7 @@ BRIGHTDESK WINDOWS RUNNER SETUP
 Purpose
 -------
 Register your Windows 64-bit PC as a private GitHub Actions runner for:
-https://github.com/connormolloy12/Brightdesk-suite
+https://github.com/conz20/Brightdesk-suite
 
 This allows Brightdesk's Windows build checks to run on your own PC instead of a paid GitHub-hosted Windows machine.
 
@@ -25,7 +25,7 @@ BEFORE YOU START
 1. Download and extract this ZIP on your Windows gaming PC.
 2. Sign in to GitHub in your browser.
 3. Open this exact page:
-   https://github.com/connormolloy12/Brightdesk-suite/settings/actions/runners/new
+   https://github.com/conz20/Brightdesk-suite/settings/actions/runners/new
 4. Select Windows and x64.
 5. Leave that page open. GitHub will show a short-lived registration token as part of its setup instructions. It expires after one hour.
 
@@ -72,4 +72,4 @@ https://github.com/actions/runner/releases/tag/v2.338.2
 
 Package version: 1.0
 Runner version: 2.338.2
-Repository: connormolloy12/Brightdesk-suite
+Repository: conz20/Brightdesk-suite
