@@ -68,6 +68,8 @@ test('cross-build scripts use isolated Colima volumes and verify both container 
  assert.match(outer,/brew shellenv/);
  assert.match(outer,/colima start --profile "\$PROFILE" --arch x86_64 --vm-type qemu/);
  assert.match(outer,/docker --context "\$CONTEXT" build/);
+ assert.match(outer,/docker context show/);
+ assert.match(outer,/Using an existing Docker engine context/);
  assert.match(outer,/brightdesk-cross-node-modules/);
  assert.match(outer,/brightdesk-cross-electron-cache/);
  assert.doesNotMatch(outer,/Docker Desktop/i);
