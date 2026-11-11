@@ -50,7 +50,7 @@ Runner setup requires access to each physical computer and a one-time registrati
 The click-to-run Windows x64 setup source and exact instructions are in [tools/runner-setup/windows](../tools/runner-setup/windows/README.txt). The supplied ZIP contains the CMD launcher, PowerShell installer and README. It downloads the official runner, checks the published SHA-256 digest, installs under `C:\actions-runner`, and registers the runner only to this private repository. It retains GitHub's default labels: `self-hosted`, `Windows` and `X64`.
 
 1. Extract the supplied setup ZIP on the Windows PC.
-2. Open [the repository's New self-hosted runner page](https://github.com/connormolloy12/Brightdesk-suite/settings/actions/runners/new), select **Windows** and **x64**, and generate the one-time token.
+2. Open [the repository's New self-hosted runner page](https://github.com/conz20/Brightdesk-suite/settings/actions/runners/new), select **Windows** and **x64**, and generate the one-time token.
 3. Double-click `Start-Brightdesk-Windows-Runner.cmd`, approve the Windows administrator prompt, and enter the token only into the official runner configuration prompt on the Windows PC.
 4. Confirm `Brightdesk-Windows-PC` appears as **Idle** in Settings → Actions → Runners.
 
