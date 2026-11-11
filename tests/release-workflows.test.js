@@ -229,13 +229,16 @@ test('private Mac runner bootstrap is pinned, repository-scoped and token-safe',
   assert.ok(setup.includes("ARCHIVE_SHA256='25a065af409ffa317ab4d5a3b614dd15fc9c40f2172bc1b35a1b1258e919a388'"));
   assert.ok(setup.includes('actions-runner-osx-arm64-'));
   assert.ok(setup.includes('shasum -a 256'));
-  assert.ok(setup.includes('gh auth token --hostname github.com'));
-  assert.ok(setup.includes('RUNNER_CFG_PAT="$github_pat" ./config.sh'));
+  assert.ok(setup.includes('registration_endpoint="repos/$OWNER/$repository/actions/runners/registration-token"'));
+  assert.ok(setup.includes("registration_token=\"$(gh api --method POST \"$registration_endpoint\" --jq '.token')\""));
+  assert.ok(setup.includes('--token "$registration_token"'));
+  assert.ok(!setup.includes('gh auth token --hostname github.com'));
+  assert.ok(!setup.includes('RUNNER_CFG_PAT="$github_pat" ./config.sh'));
+  assert.ok(setup.includes('Reusing previously verified runner files:'));
   assert.ok(setup.includes('--unattended'));
   assert.ok(setup.includes("config_args=(--url \"$repository_url\" --name \"$runner_name\" --runnergroup 'Default' --work '_work' --unattended)"));
   assert.ok(setup.includes(') > /dev/null 2>&1; then'));
   assert.ok(!setup.includes('configure.log'));
-  assert.ok(!setup.includes('--token'));
   assert.ok(!setup.includes('launchctl'));
   assert.ok(!setup.includes('sudo'));
   assert.ok(setup.includes('nohup ./run.sh'));
@@ -256,8 +259,9 @@ test('Mac runner setup documentation explains scope, token handling and no-servi
 
   assert.match(instructions, /Apple-silicon Mac only/);
   assert.match(instructions, /RUNNER_CFG_PAT/);
-  assert.ok(instructions.includes('The credential is not placed in a command-line argument, printed, or saved by this script.'));
-  assert.ok(instructions.includes('The script does not store registration tokens or PATs in a file or pass them as command-line arguments.'));
+  assert.ok(instructions.includes('The GitHub CLI credential is used only by gh api to request a short-lived registration token.'));
+  assert.ok(instructions.includes('The temporary registration token is passed to the official config.sh --token option.'));
+  assert.ok(instructions.includes('The temporary token is not printed or saved to a file and is cleared immediately after configuration.'));
   assert.ok(instructions.includes('They do not auto-start after logout or reboot.'));
   assert.ok(releaseGuide.includes('Start-Brightdesk-Mac-Foundation-Runners.sh'));
   assert.match(releaseGuide, /Brightdesk-Common-Actions/);
