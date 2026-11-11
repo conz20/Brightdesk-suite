@@ -38,10 +38,10 @@ The script:
 - Downloads the official GitHub Actions runner v2.338.2 for macOS ARM64.
 - Verifies the archive against the SHA-256 digest published with the official GitHub release.
 - Checks existing runner registrations and required labels before adding anything.
-- Uses GitHub CLI's credential through the official runner's RUNNER_CFG_PAT environment setting. The credential is not placed in a command-line argument, printed, or saved by this script.
+- Uses the authenticated GitHub CLI to request a short-lived registration token separately for each repository. The GitHub CLI credential itself is never passed to the runner configurator.
 - Registers each runner only to its matching private Brightdesk repository.
 - Starts each configured runner with nohup in the background. No launchd service or administrator elevation is used.
-- Refuses to overwrite an existing local runner directory and does not create a duplicate when a matching runner is already online.
+- Reuses the verified, previously extracted runner files left by an interrupted first setup only when they are unconfigured and complete. It refuses to overwrite unexpected or already-configured files and does not create a duplicate when a matching runner is already online.
 
 AFTER SETUP
 -----------
@@ -61,7 +61,7 @@ SECURITY AND SCOPE
 ------------------
 A self-hosted runner executes workflow code from the private repository to which it is registered. These runners are limited to the eight named Brightdesk repositories. Do not attach them to public repositories or run untrusted fork code on them.
 
-The runner's registration credentials are handled by the official GitHub runner configuration program. The script does not store registration tokens or PATs in a file or pass them as command-line arguments. Runner configuration output is discarded rather than saved; only the normal runner runtime log remains under the private local runner folder.
+The GitHub CLI credential is used only by `gh api` to request a short-lived registration token for the specific repository. The temporary registration token is passed to the official `config.sh --token` option, as required by the runner configurator. It is not printed or saved to a file and is cleared from the setup script immediately after configuration. The temporary token is present in the configurator process arguments while that command runs.
 
 The runners are owner-operated development infrastructure. They do not run as part of Brightdesk customer products and do not create a customer network dependency.
 

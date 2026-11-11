@@ -90,8 +90,8 @@ for repository in "${REPOSITORIES[@]}"; do
 done
 say ''
 say 'GitHub CLI must be authenticated as conz20 with administrator access to these repositories.'
-say 'The GitHub CLI credential is passed to the official runner configurator through RUNNER_CFG_PAT.'
-say 'It is not written to a file, printed, or supplied as a command-line argument.'
+say 'GitHub CLI requests a short-lived registration token for each repository.'
+say 'The GitHub CLI credential itself is never passed to the runner configurator.'
 say ''
 printf 'Type REGISTER to continue, or press Enter to cancel: '
 read -r confirmation
@@ -102,7 +102,7 @@ mkdir -p "$RUNNER_ROOT"
 chmod 700 "$RUNNER_ROOT"
 
 temp_directory="$(mktemp -d "${TMPDIR:-/tmp}/brightdesk-mac-runners.XXXXXX")"
-trap 'rm -rf -- "$temp_directory"; unset RUNNER_CFG_PAT 2>/dev/null || true' EXIT
+trap 'rm -rf -- "$temp_directory"; unset registration_token config_args 2>/dev/null || true' EXIT
 archive_path="$temp_directory/$ARCHIVE_NAME"
 
 say ''
@@ -172,29 +172,45 @@ for repository in "${REPOSITORIES[@]}"; do
   fi
 
   if [[ -e "$runner_home" || -L "$runner_home" ]]; then
-    fail "The local folder already exists but no matching runner registration was found: $runner_home. Nothing was overwritten."
+    [[ ! -L "$runner_home" && -d "$runner_home" ]] || fail "The existing runner path is not a normal directory: $runner_home."
+    [[ ! -e "$runner_home/.runner" && ! -L "$runner_home/.runner" ]] || fail "The existing runner folder already contains runner configuration: $runner_home. Inspect it before continuing."
+    [[ ! -e "$runner_home/.credentials" && ! -L "$runner_home/.credentials" &&
+       ! -e "$runner_home/.credentials_rsaparams" && ! -L "$runner_home/.credentials_rsaparams" ]] ||
+      fail "The existing runner folder contains credential files: $runner_home. Inspect it before continuing."
+    [[ -f "$runner_home/config.sh" && ! -L "$runner_home/config.sh" && -x "$runner_home/config.sh" &&
+       -f "$runner_home/run.sh" && ! -L "$runner_home/run.sh" && -x "$runner_home/run.sh" &&
+       -d "$runner_home/bin" && ! -L "$runner_home/bin" &&
+       -d "$runner_home/externals" && ! -L "$runner_home/externals" ]] ||
+      fail "The existing runner folder is incomplete or unexpected: $runner_home. Nothing was overwritten."
+    say "Reusing previously verified runner files: $runner_home"
+  else
+    say "Preparing $repository..."
+    mkdir -m 700 "$runner_home"
+    tar -xzf "$archive_path" -C "$runner_home"
+    [[ -f "$runner_home/config.sh" && -x "$runner_home/config.sh" &&
+       -f "$runner_home/run.sh" && -x "$runner_home/run.sh" ]] ||
+      fail "The extracted runner files are incomplete for $repository."
   fi
 
-  say "Preparing $repository..."
-  mkdir -m 700 "$runner_home"
-  tar -xzf "$archive_path" -C "$runner_home"
+  registration_endpoint="repos/$OWNER/$repository/actions/runners/registration-token"
+  registration_token="$(gh api --method POST "$registration_endpoint" --jq '.token')" ||
+    fail "GitHub could not issue a registration token for $repository. Check repository administration access and try again."
+  [[ -n "$registration_token" && "$registration_token" != 'null' ]] ||
+    fail "GitHub returned no registration token for $repository."
 
-  github_pat="$(gh auth token --hostname github.com 2>/dev/null)" || fail 'Could not read the GitHub CLI credential.'
-  [[ -n "$github_pat" ]] || fail 'GitHub CLI returned an empty credential.'
-
-  config_args=(--url "$repository_url" --name "$runner_name" --runnergroup 'Default' --work '_work' --unattended)
+  config_args=(--url "$repository_url" --token "$registration_token" --name "$runner_name" --runnergroup 'Default' --work '_work' --unattended)
   if [[ -n "$extra_label" ]]; then
     config_args+=(--labels "$extra_label")
   fi
 
   if ! (
     cd "$runner_home"
-    RUNNER_CFG_PAT="$github_pat" ./config.sh "${config_args[@]}"
-  ) > /dev/null 2>&1; then
-    unset github_pat
-    fail "Runner configuration failed for $repository. No registration log or credential file was saved; existing files were left in place for inspection."
+    ./config.sh "${config_args[@]}"
+  ); then
+    unset registration_token config_args
+    fail "Runner configuration failed for $repository. Review the configurator message above; the short-lived registration token was not printed or saved."
   fi
-  unset github_pat
+  unset registration_token config_args
 
   start_runner "$runner_home" || fail "Could not start $runner_name."
   started_count=$((started_count + 1))
