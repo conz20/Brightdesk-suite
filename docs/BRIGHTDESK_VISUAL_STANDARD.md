@@ -34,7 +34,7 @@ The product-specific accents should help recognition, not create ten unrelated d
 The suite home should make each product immediately recognisable and manageable:
 
 - Use one clear Settings cog in the top-right as the suite-wide entry point for local app, language and update management; do not repeat it as a sidebar item.
-- Use a clean, professional suite sidebar with only **Home**, **Apps** and **Files**. The Files icon must visibly communicate a folder containing documents (an open folder plus a visible document stack), not a generic rectangle or ambiguous box. Do not add secondary captions under these three entries; use the original navigation icons and labels only. The footer should identify Brightdesk Office Suite and reinforce that files stay on this device. The README must show one unified Home image, not separate competing screen designs. **Apps** is the plain-language destination for all ten installed desktop products; do not use the technical label “App Centre”. Do not add a **Create** navigation item. Keep the ten product choices in the main Apps grid, not repeated as sidebar shortcuts.
+- Use a clean, professional suite sidebar with only **Home**, **Apps** and **Files**. The Files icon must visibly communicate a folder containing documents (an open folder plus a visible document stack), not a generic rectangle or ambiguous box. Keep every navigation icon, primary text label and explanatory caption visible. A narrower sidebar must never hide labels or icons, replace text with icon-only navigation, or remove explanatory wording to save space. Allow captions to wrap naturally within the compact rail. The footer should identify Brightdesk Office Suite and reinforce that files stay on this device. The README must show one unified Home image, not separate competing screen designs. **Apps** is the plain-language destination for all ten installed desktop products; do not use the technical label “App Centre”. Do not add a **Create** navigation item. Keep the ten product choices in the main Apps grid, not repeated as sidebar shortcuts.
 - Inside an active product workspace, show only installed products in a **Switch product** sidebar group for quick navigation. Hide that group on the Apps and language/settings screens; the sidebar should reflect the current context rather than duplicate the page content.
 - After first-use setup, Home is the landing screen and displays all ten product cards. Apps opens the product-management screen. Files provides local **Open file** and **Save project** actions; do not describe it as a full file browser or recent-files list until that functionality exists.
 - Label product-card options **Product settings** in the three-dot menu so they are clearly distinct from suite-wide Settings. The current menu lets users hide or restore an installed product in **Switch product** without uninstalling it; save this preference locally.
@@ -73,7 +73,7 @@ Product-specific controls must use the same visual language:
 - Semantic labels, accessible names and logical reading order.
 - High contrast for normal text; never communicate state by colour alone.
 - Respect reduced-motion preferences.
-- At narrow sizes, navigation and grids must adapt without clipping controls or hiding essential actions.
+- When a supported desktop window is resized, navigation and grids may adapt without clipping controls or hiding essential actions. Every sidebar must remain compact while preserving all original icons, clickable text labels and explanatory captions across the Suite and all ten products.
 - Keep touch/click targets comfortable and avoid tiny three-dot menus.
 
 ## Cross-platform parity (Windows, macOS and Linux)
@@ -154,3 +154,12 @@ The **Apps** sidebar entry uses the original four-tile launcher icon from `asset
 - Pass each copied SVG to Windows, macOS and Linux Electron Builder targets. Electron Builder performs the platform conversion; do not maintain a second manually edited icon set.
 - Decks and Workspace use the `decks.svg` and `workspace.svg` build-resource names while retaining internal product IDs `slides` and `loop`.
 - Icon configuration is not proof of a verified installed icon. Check real Windows shortcuts and taskbar, macOS Dock and Finder, and Linux desktop launcher after each platform installer has been installed.
+
+
+## Navigation density and responsive behaviour
+
+- The Suite shell uses a fixed compact 192 px left navigation rail. Keep the original SVG icon and the readable text label together for every visible navigation item; do not replace labels with icon-only navigation.
+- The Suite rail has no expand/collapse control. Keep every explanatory caption visible beneath its navigation label; allow natural wrapping within the slim rail.
+- Brightdesk is a desktop-only suite for Windows, macOS and Linux. All Suite and individual product sidebars use a slim 192 px rail in the desktop interface. Keep each original SVG icon, readable text label and explanatory caption visible together; captions may wrap naturally inside the desktop rail. Mobile and tablet versions are not part of the product scope. Never replace labels with icon-only navigation or rely on tooltips as a substitute.
+- Keep explanatory captions visible and allow them to wrap naturally; slim sizing must not remove navigation context. Preserve keyboard focus, visible focus rings, and reduced-motion support.
+- The 192 px width is an intentional desktop density choice, not a copy of another vendor's dimensions or artwork.
