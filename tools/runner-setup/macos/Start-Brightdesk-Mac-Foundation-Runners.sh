@@ -182,7 +182,7 @@ for repository in "${REPOSITORIES[@]}"; do
   github_pat="$(gh auth token --hostname github.com 2>/dev/null)" || fail 'Could not read the GitHub CLI credential.'
   [[ -n "$github_pat" ]] || fail 'GitHub CLI returned an empty credential.'
 
-  config_args=(--url "$repository_url" --name "$runner_name" --runnergroup 'Default' --work '_work' --unattended')
+  config_args=(--url "$repository_url" --name "$runner_name" --runnergroup 'Default' --work '_work' --unattended)
   if [[ -n "$extra_label" ]]; then
     config_args+=(--labels "$extra_label")
   fi
