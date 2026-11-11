@@ -5,7 +5,7 @@ Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 $ProgressPreference = 'SilentlyContinue'
 
-$RepositoryUrl = 'https://github.com/connormolloy12/Brightdesk-suite'
+$RepositoryUrl = 'https://github.com/conz20/Brightdesk-suite'
 $RunnerVersion = '2.338.2'
 $RunnerFileName = "actions-runner-win-x64-$RunnerVersion.zip"
 $RunnerDownloadUrl = "https://github.com/actions/runner/releases/download/v$RunnerVersion/$RunnerFileName"
@@ -37,6 +37,7 @@ if (-not (Test-IsAdministrator)) {
 }
 
 $exitCode = 0
+$archivePath = $null
 try {
     Write-Host ''
     Write-Host 'BRIGHTDESK WINDOWS RUNNER SETUP' -ForegroundColor Cyan
@@ -70,10 +71,8 @@ try {
         New-Item -ItemType Directory -Path $InstallDirectory -Force | Out-Null
     }
 
-    $archivePath = Join-Path $env:TEMP $RunnerFileName
-    if (Test-Path -LiteralPath $archivePath) {
-        Remove-Item -LiteralPath $archivePath -Force
-    }
+    $temporaryDirectory = [System.IO.Path]::GetTempPath()
+    $archivePath = Join-Path $temporaryDirectory ("actions-runner-win-x64-$RunnerVersion-" + [guid]::NewGuid().ToString('N') + '.zip')
 
     Write-Host "Downloading the official GitHub Actions runner v$RunnerVersion..."
     Invoke-WebRequest -Uri $RunnerDownloadUrl -OutFile $archivePath -UseBasicParsing
@@ -145,6 +144,9 @@ try {
 }
 catch {
     $exitCode = 1
+    if ($null -ne $archivePath -and (Test-Path -LiteralPath $archivePath)) {
+        Remove-Item -LiteralPath $archivePath -Force -ErrorAction SilentlyContinue
+    }
     Write-Host ''
     Write-Host "SETUP STOPPED: $($_.Exception.Message)" -ForegroundColor Red
     Write-Host 'No existing runner folder was overwritten. Review the message above before trying again.' -ForegroundColor Yellow
