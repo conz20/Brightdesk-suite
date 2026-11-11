@@ -48,6 +48,22 @@ test('manual release workflow builds all platforms from the one Mac runner and k
  assert.match(workflow,/files: release\/verified-bundle\/\*\*\/\*/);
 });
 
+test('cross-platform prerequisites are checked before expensive macOS packaging without mutating the runner',()=>{
+ const workflow=read('.github/workflows/verify-macos-installer.yml');
+ const manifest=JSON.parse(read('package.json'));
+ const preflight=read('scripts/check-cross-platform-build-prerequisites.sh');
+ assert.equal(manifest.scripts['release:cross-platform:preflight'],'bash scripts/check-cross-platform-build-prerequisites.sh');
+ const preflightStep=workflow.indexOf('npm run release:cross-platform:preflight');
+ const suiteBuild=workflow.indexOf('npm run dist:mac');
+ const productBuild=workflow.indexOf('npm run dist:products:mac');
+ assert.ok(preflightStep>=0 && preflightStep<suiteBuild && preflightStep<productBuild,'check cross-build prerequisites before spending time on macOS installers');
+ assert.match(preflight,/docker info/);
+ assert.match(preflight,/command -v colima/);
+ assert.match(preflight,/command -v qemu-system-x86_64/);
+ assert.match(preflight,/sudo -n true/);
+ assert.doesNotMatch(preflight,/brew install|NONINTERACTIVE|curl -fsSL|colima start/,'preflight must not install software or start services');
+});
+
 test('cross-build image and toolchain versions are pinned',()=>{
  const dockerfile=read('tools/release-cross-build/Dockerfile');
  assert.match(dockerfile,/^FROM --platform=linux\/amd64 electronuserland\/builder:24-wine-chrome@sha256:[0-9a-f]{64}/);

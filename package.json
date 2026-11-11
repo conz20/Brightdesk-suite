@@ -86,6 +86,7 @@
     "release:collect:mac": "node scripts/collect-platform-build.js mac",
     "release:collect:linux": "node scripts/collect-platform-build.js linux",
     "release:cross-platform": "bash scripts/run-cross-platform-installer-builds.sh",
+    "release:cross-platform:preflight": "bash scripts/check-cross-platform-build-prerequisites.sh",
     "release:assemble": "node scripts/assemble-complete-release-bundle.js release release/verified-bundle"
   },
   "devDependencies": {
