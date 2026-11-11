@@ -225,20 +225,23 @@ test('private Mac runner bootstrap is pinned, repository-scoped and token-safe',
     'Brightdesk-Lists'
   ];
 
-  assert.match(setup, /RUNNER_VERSION='2\\.338\\.2'/);
-  assert.match(setup, /ARCHIVE_SHA256='25a065af409ffa317ab4d5a3b614dd15fc9c40f2172bc1b35a1b1258e919a388'/);
-  assert.match(setup, /actions-runner-osx-arm64-/);
-  assert.match(setup, /shasum -a 256/);
-  assert.match(setup, /gh auth token --hostname github\\.com/);
-  assert.match(setup, /RUNNER_CFG_PAT="\\$github_pat" \.\/config\\.sh/);
-  assert.doesNotMatch(setup, /--token\\b/);
-  assert.doesNotMatch(setup, /launchctl|sudo/);
-  assert.match(setup, /nohup \.\/run\\.sh/);
-  assert.match(setup, /Type REGISTER to continue/);
-  assert.match(setup, /The local folder already exists/);
-  assert.match(setup, /brightdesk-product-ci/);
+  assert.ok(setup.includes("RUNNER_VERSION='2.338.2'"));
+  assert.ok(setup.includes("ARCHIVE_SHA256='25a065af409ffa317ab4d5a3b614dd15fc9c40f2172bc1b35a1b1258e919a388'"));
+  assert.ok(setup.includes('actions-runner-osx-arm64-'));
+  assert.ok(setup.includes('shasum -a 256'));
+  assert.ok(setup.includes('gh auth token --hostname github.com'));
+  assert.ok(setup.includes('RUNNER_CFG_PAT="$github_pat" ./config.sh'));
+  assert.ok(!setup.includes('--token'));
+  assert.ok(!setup.includes('launchctl'));
+  assert.ok(!setup.includes('sudo'));
+  assert.ok(setup.includes('nohup ./run.sh'));
+  assert.ok(setup.includes('Type REGISTER to continue'));
+  assert.ok(setup.includes('The local folder already exists'));
+  assert.ok(setup.includes('brightdesk-product-ci'));
   for (const repository of repositories) assert.ok(setup.includes("'" + repository + "'"), repository);
-  assert.doesNotMatch(setup, /ubuntu-latest|windows-latest|macos-latest/);
+  assert.ok(!setup.includes('ubuntu-latest'));
+  assert.ok(!setup.includes('windows-latest'));
+  assert.ok(!setup.includes('macos-latest'));
   execFileSync('bash', ['-n', setupPath], { stdio: 'pipe' });
 });
 
@@ -250,6 +253,6 @@ test('Mac runner setup documentation explains scope, token handling and no-servi
   assert.match(instructions, /RUNNER_CFG_PAT/);
   assert.match(instructions, /not written to a file, printed, or supplied as a command-line argument/i);
   assert.match(instructions, /does not auto-start after logout or reboot/i);
-  assert.match(releaseGuide, /Start-Brightdesk-Mac-Foundation-Runners\\.sh/);
+  assert.ok(releaseGuide.includes('Start-Brightdesk-Mac-Foundation-Runners.sh'));
   assert.match(releaseGuide, /Brightdesk-Common-Actions/);
 });
