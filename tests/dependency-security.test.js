@@ -53,6 +53,18 @@ test('ExcelJS resolves patched CommonJS uuid and still round-trips an XLSX workb
   assert.equal(restored.getWorksheet('Security check').getCell('A2').value, 42);
 });
 
+test('@electron/asar resolves a CommonJS-compatible minimatch 3 implementation for ASAR packaging', () => {
+  const appBuilderEntry = require.resolve('app-builder-lib');
+  const asarEntry = require.resolve('@electron/asar', { paths: [path.dirname(appBuilderEntry)] });
+  const minimatchEntry = require.resolve('minimatch', { paths: [path.dirname(asarEntry)] });
+  const minimatchPackage = packageAt(minimatchEntry);
+  const minimatch = require(minimatchEntry);
+
+  assert.ok(minimatchPackage.version.startsWith('3.'), `@electron/asar must resolve minimatch 3.x, received ${minimatchPackage.version}`);
+  assert.equal(typeof minimatch, 'function');
+  assert.equal(minimatch('src/main.js', 'src/**/*.js'), true);
+});
+
 test('electron-builder resolves patched minimatch with the API its packaging code uses', () => {
   const appBuilderEntry = require.resolve('app-builder-lib');
   const minimatchEntry = require.resolve('minimatch', { paths: [path.dirname(appBuilderEntry)] });
@@ -110,6 +122,7 @@ test('root overrides stay scoped to their compatible dependency parents', () => 
   assert.equal(manifest.overrides.pptxgenjs['image-size'], '2.0.4');
   assert.equal(manifest.overrides.exceljs.uuid, '^11.1.1');
   assert.equal(manifest.overrides['app-builder-lib'].minimatch, '^11.0.1');
+  assert.equal(manifest.overrides['@electron/asar'].minimatch, '^3.1.5');
   assert.equal(manifest.overrides['archiver@5.3.2']['readdir-glob@^1.1.2'].minimatch, '^11.0.1');
   assert.equal(manifest.overrides['archiver@5.3.2']['readdir-glob@^1.1.2']['.'], '^3.0.0');
 });
@@ -117,4 +130,15 @@ test('root overrides stay scoped to their compatible dependency parents', () => 
 test('Vitest keeps the previous mock-history default after the major upgrade', () => {
   const config = fs.readFileSync(path.join(__dirname, '..', 'vitest.config.js'), 'utf8');
   assert.match(config, /clearMocks:\s*false/);
+});
+
+test('macOS installer pull-request verification does not upload the entire release workspace', () => {
+  const workflow = fs.readFileSync(
+    path.join(__dirname, '..', '.github', 'workflows', 'verify-macos-installer.yml'),
+    'utf8'
+  );
+
+  assert.match(workflow, /npm run release:verify:mac/);
+  assert.equal(workflow.includes('actions/upload-artifact'), false);
+  assert.equal(workflow.includes('path: release/**'), false);
 });

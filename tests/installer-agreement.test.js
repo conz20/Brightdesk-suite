@@ -123,3 +123,27 @@ test('Linux installer accepts the prefixed terms filename used by release prepar
     assert.doesNotMatch(result.stderr, /terms file is missing/i);
   } finally { fs.rmSync(temp, { recursive: true, force: true }); }
 });
+
+test('Windows NSIS, macOS DMG and macOS PKG all display the Terms during installation', () => {
+  const manifest = require('../package.json');
+  assert.equal(manifest.build?.nsis?.license, 'TERMS_AND_CONDITIONS.txt');
+  assert.equal(manifest.build?.dmg?.license, 'TERMS_AND_CONDITIONS.txt');
+  assert.equal(manifest.build?.pkg?.license, 'TERMS_AND_CONDITIONS.txt');
+});
+
+test('the macOS DMG presents explicit Accept and Decline choices', () => {
+  const labels = JSON.parse(fs.readFileSync(path.join(root, 'build', 'licenseButtons_en.json'), 'utf8'));
+  assert.equal(labels.agree, 'Accept');
+  assert.equal(labels.disagree, 'Decline');
+  assert.equal(labels.message, 'Please read the Brightdesk Terms and Conditions before continuing.');
+});
+
+test('the first-launch fallback allows a direct Accept click without an extra checkbox', () => {
+  const html = fs.readFileSync(path.join(root, 'src', 'terms.html'), 'utf8');
+  const script = fs.readFileSync(path.join(root, 'src', 'terms.js'), 'utf8');
+  assert.doesNotMatch(html, /id="agree"/);
+  assert.match(html, /id="accept"/);
+  assert.doesNotMatch(html, /id="accept"[^>]*disabled/);
+  assert.doesNotMatch(script, /agree\.checked/);
+  assert.match(script, /brightdeskTerms\.accept\(\)/);
+});

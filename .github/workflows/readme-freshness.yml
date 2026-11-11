@@ -1,0 +1,87 @@
+name: README freshness
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  readme-freshness:
+    name: Require README updates for product changes
+    # Never execute fork-controlled pull-request code on the private self-hosted machine.
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    # Reuse the private runner; keep this required check outside paid hosted billing.
+    runs-on: self-hosted
+    steps:
+      - name: Check out the change
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 0
+
+      - name: Require a root README update for non-Markdown changes
+        shell: bash
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          BASE_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event.before }}
+        run: |
+          set -euo pipefail
+
+          if [[ "$EVENT_NAME" == "pull_request" ]]; then
+            DIFF_RANGE="${BASE_SHA}...HEAD"
+          elif [[ "$EVENT_NAME" == "push" ]]; then
+            if [[ -z "${BASE_SHA:-}" || "${BASE_SHA}" =~ ^0+$ ]]; then
+              echo "No previous commit exists for this push; README freshness check skipped."
+              exit 0
+            fi
+            DIFF_RANGE="${BASE_SHA}..HEAD"
+          else
+            echo "Unsupported event: $EVENT_NAME"
+            exit 1
+          fi
+
+          if [[ ! -f README.md ]]; then
+            echo "::error::The repository root README.md is missing."
+            exit 1
+          fi
+
+          changed_files="$(git diff --name-only "$DIFF_RANGE")"
+
+          if [[ -z "$changed_files" ]]; then
+            echo "No changed files were found. README freshness check passed."
+            exit 0
+          fi
+
+          printf 'Changed files:\n%s\n' "$changed_files"
+
+          readme_changed=false
+          non_markdown_changed=false
+
+          while IFS= read -r file; do
+            if [[ "$file" == "README.md" ]]; then
+              readme_changed=true
+            fi
+
+            case "$file" in
+              *.md|*.mdx|.github/workflows/readme-freshness.yml)
+                ;;
+              *)
+                non_markdown_changed=true
+                ;;
+            esac
+          done <<EOF
+          $changed_files
+          EOF
+
+          if [[ "$non_markdown_changed" == "true" && "$readme_changed" != "true" ]]; then
+            echo "::error::This change includes code, tests, UI, assets, icons, configuration, dependencies, or build/release files but does not update the repository root README.md."
+            echo "Add an accurate README.md update in this same pull request or direct-push batch, including affected feature status, screenshots, visual references, icons, setup/build instructions, or platform support."
+            exit 1
+          fi
+
+          echo "README freshness check passed."
+          echo "This check verifies README.md is included; reviewers must still verify factual accuracy and current visuals."

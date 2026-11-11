@@ -1,4 +1,4 @@
-:root{font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#202338;background:#f5f6fa;font-synthesis:none;color-scheme:light}*{box-sizing:border-box}body{margin:0;display:flex;min-height:100vh}.sidebar{width:248px;background:#fff;border-right:1px solid #e9eaf0;padding:27px 17px;display:flex;flex-direction:column;flex-shrink:0}.brand{display:flex;align-items:center;gap:11px;padding:0 10px 38px}.brand-mark-image{width:38px;height:38px;display:block;flex:0 0 38px;border-radius:12px;box-shadow:0 3px 8px #17264a2b}.brand b{font-size:18px;letter-spacing:-.6px}.brand small,.nav small{display:block;color:#9699aa;font-size:9px;letter-spacing:1.2px;margin-top:3px}.section-label,.eyebrow{font-size:10px;letter-spacing:1.5px;color:#9295a7;font-weight:700}.section-label{padding:0 11px 12px}.nav{border:0;background:transparent;width:100%;display:flex;align-items:center;text-align:left;gap:12px;padding:11px;border-radius:12px;margin:3px 0;color:#45485c;cursor:pointer}.nav.active{background:#f0efff;color:#514bc8}.nav b{font-size:13px}.nav small{font-size:10px;letter-spacing:0}.app-icon{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;font-weight:800}.app-icon-image{width:34px;height:34px;display:block;object-fit:contain;border-radius:11px;flex:0 0 auto;filter:drop-shadow(0 2px 3px #17264a18)}.pages{background:#e8e7ff;color:#5c56d5}.sheets{background:#e1f5e9;color:#25985b}.slides{background:#fff0df;color:#d9852c}.notes{background:#e5f2fb;color:#3285b7}.sidebar-bottom{margin-top:auto;padding:15px 10px 0;display:flex;flex-direction:column;gap:12px}.free-pill{background:#f5f4ff;color:#5c56d5;border-radius:20px;padding:9px 12px;font-size:11px;font-weight:700;width:max-content}.sidebar-bottom small{color:#a0a2b0;font-size:10px}.text-button{border:0;background:transparent;color:#5b57d9;font:inherit;font-size:11px;font-weight:650;text-align:left;padding:0;cursor:pointer}.main{flex:1;min-width:0;padding:32px 4vw 20px;display:flex;flex-direction:column}.topbar{display:flex;align-items:center;justify-content:space-between;gap:15px}.topbar h1{font-size:25px;margin:5px 0 0;letter-spacing:-.8px}.top-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end}.save-status,.local-tag{font-size:11px;color:#85899b}.primary,.secondary{border:0;border-radius:9px;padding:10px 16px;font-weight:650;cursor:pointer;font-size:12px}.primary{background:#5b57d9;color:#fff}.secondary{background:#fff;border:1px solid #e5e6ee;color:#4a4d60}.welcome{margin:27px 0 22px;background:linear-gradient(110deg,#eae9ff,#f2f1ff 65%,#e8f4ff);border-radius:17px;padding:24px 30px;min-height:128px;display:flex;justify-content:space-between;align-items:center;overflow:hidden}.welcome h2{font-size:23px;letter-spacing:-.8px;margin:8px 0}.welcome p{color:#73768b;font-size:12px;margin:0}.welcome-orb{font-size:73px;color:#7973df;opacity:.65;margin-right:25px}.workspace{background:#fff;border:1px solid #e8e9ef;border-radius:14px;flex:1;min-height:350px;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 5px 25px #25264a08}.document-bar{height:55px;flex-shrink:0;border-bottom:1px solid #eeeef3;display:flex;align-items:center;justify-content:space-between;padding:0 22px}.document-bar input{border:0;outline:0;font-size:13px;font-weight:650;color:#33364b;width:60%}.local-tag{font-size:10px;color:#309b69}.toolbar{min-height:48px;border-bottom:1px solid #eeeef3;display:flex;align-items:center;gap:5px;padding:7px 17px;flex-wrap:wrap}.tool{border:0;background:#fff;border-radius:6px;padding:7px 10px;color:#55596c;cursor:pointer;font-size:12px}.tool:hover{background:#f0efff}.tool:focus-visible,.primary:focus-visible,.secondary:focus-visible,.nav:focus-visible{outline:2px solid #7771e6;outline-offset:2px}.editor{outline:0;padding:34px max(35px,8%);font-size:14px;line-height:1.75;color:#303348;flex:1;min-height:280px;overflow:auto}.editor:empty:before{content:attr(data-placeholder);color:#b3b5c2}.editor h1{font-size:28px}.editor h2{font-size:22px}.editor blockquote{border-left:3px solid #aaa5f2;padding-left:15px;color:#77758f;margin-left:0}.sheet-wrap{padding:18px;overflow:auto;flex:1}.sheet{border-collapse:collapse;font-size:12px;min-width:100%;white-space:nowrap}.sheet th,.sheet td{border:1px solid #e5e7ee;min-width:100px;height:35px;padding:0}.sheet th{background:#f4f5f9;color:#666a7d;min-width:45px;font-weight:650}.grid-cell{width:100%;height:35px;border:0;background:transparent;outline:0;padding:7px;font:inherit;color:#303348}.grid-cell:focus{background:#f4f3ff;box-shadow:inset 0 0 0 2px #8079e8}.cell-ref{font-size:11px;background:#f4f5f9;border:1px solid #e5e7ee;border-radius:5px;padding:7px 10px;min-width:45px;text-align:center}.formula-input{height:31px;min-width:220px;flex:1;border:1px solid #e5e7ee;border-radius:6px;padding:6px 9px;font:inherit;font-size:12px}.slide-wrap{padding:24px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:15px;flex:1;min-height:0}.slide-stage{width:min(100%,820px);aspect-ratio:16/9;background:#f1efff;border-radius:8px;display:flex;flex-direction:column;justify-content:center;padding:8%;box-shadow:0 4px 18px #20204012}.slide-title,.slide-body{width:100%;background:transparent;border:0;outline:0;resize:none;text-align:center}.slide-title{font-size:clamp(24px,3.5vw,42px);font-weight:750;color:#38356f;min-height:1.4em}.slide-body{font-size:clamp(15px,2vw,21px);color:#66658a;min-height:5em;margin-top:15px}.slide-controls{display:flex;align-items:center;gap:14px;color:#77798a;font-size:12px}.slide-controls button{border:1px solid #e4e4ee;background:#fff;border-radius:7px;padding:8px 12px;cursor:pointer}.slide-controls button:disabled{opacity:.4;cursor:default}.notes-wrap{display:flex;flex-direction:column;flex:1;padding:25px 8%;gap:10px}.notes-wrap textarea{border:0;outline:0;resize:none;flex:1;min-height:260px;font-family:inherit;font-size:14px;line-height:1.8;color:#303348}.notes-hint{font-size:10px;color:#a0a2b0}.update-message{margin-top:10px;padding:10px 13px;border:1px solid #e5e4f8;border-radius:9px;color:#555477;background:#fafaff;font-size:11px}.presentation-overlay{position:fixed;inset:0;background:#171729;z-index:5;display:grid;place-items:center;padding:4vw}.presentation-slide{width:min(100%,1200px);aspect-ratio:16/9;background:#f4f2ff;border-radius:8px;display:flex;flex-direction:column;justify-content:center;padding:9%;position:relative}.presentation-slide h1{font-size:clamp(36px,6vw,72px);color:#38356f;margin:0 0 3vh}.presentation-slide p{font-size:clamp(20px,3vw,34px);color:#66658a;white-space:pre-wrap}.presentation-footer{position:absolute;bottom:18px;right:25px;font-size:10px;color:#999}.main footer{text-align:center;color:#a2a4b1;font-size:10px;padding:17px 0 0}@media(max-width:1050px){.sidebar{width:210px}.main{padding-left:22px;padding-right:22px}.topbar{align-items:flex-start;flex-direction:column}.top-actions{justify-content:flex-start}}@media(max-width:720px){body{display:block}.sidebar{width:100%;padding:12px;display:block}.brand{padding:0 8px 12px}.section-label,.sidebar-bottom{display:none}.nav{width:auto;display:inline-flex;margin:0 2px;padding:7px}.nav small{display:none}.app-icon{width:29px;height:29px}.app-icon-image{width:30px;height:30px}.main{padding:18px 12px}.welcome{padding:18px}.welcome-orb{display:none}}
+:root{font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#202338;background:#F2F5FA;font-synthesis:none;color-scheme:light}*{box-sizing:border-box}body{margin:0;display:flex;min-height:100vh}.sidebar{width:248px;background:#fff;border-right:1px solid #e9eaf0;padding:27px 17px;display:flex;flex-direction:column;flex-shrink:0}.brand{display:flex;align-items:center;gap:11px;padding:0 10px 38px}.brand-mark-image{width:38px;height:38px;display:block;flex:0 0 38px;border-radius:12px;box-shadow:0 3px 8px #17264a2b}.brand b{font-size:18px;letter-spacing:-.6px}.brand small,.nav small{display:block;color:#9699aa;font-size:9px;letter-spacing:1.2px;margin-top:3px}.section-label,.eyebrow{font-size:10px;letter-spacing:1.5px;color:#9295a7;font-weight:700}.section-label{padding:0 11px 12px}.nav{border:0;background:transparent;width:100%;display:flex;align-items:center;text-align:left;gap:12px;padding:11px;border-radius:12px;margin:3px 0;color:#45485c;cursor:pointer}.nav.active{background:#f0efff;color:#514bc8}.nav b{font-size:13px}.nav small{font-size:10px;letter-spacing:0}.app-icon{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;font-weight:800}.app-icon-image{width:34px;height:34px;display:block;object-fit:contain;border-radius:11px;flex:0 0 auto;filter:drop-shadow(0 2px 3px #17264a18)}.pages{background:#e8e7ff;color:#5c56d5}.sheets{background:#e1f5e9;color:#25985b}.slides{background:#fff0df;color:#d9852c}.notes{background:#e5f2fb;color:#3285b7}.sidebar-bottom{margin-top:auto;padding:15px 10px 0;display:flex;flex-direction:column;gap:12px}.free-pill{background:#f5f4ff;color:#5c56d5;border-radius:20px;padding:9px 12px;font-size:11px;font-weight:700;width:max-content}.sidebar-bottom small{color:#a0a2b0;font-size:10px}.text-button{border:0;background:transparent;color:#5b57d9;font:inherit;font-size:11px;font-weight:650;text-align:left;padding:0;cursor:pointer}.main{flex:1;min-width:0;padding:32px 4vw 20px;display:flex;flex-direction:column}.topbar{display:flex;align-items:center;justify-content:space-between;gap:15px}.topbar h1{font-size:25px;margin:5px 0 0;letter-spacing:-.8px}.top-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end}.save-status,.local-tag{font-size:11px;color:#85899b}.primary,.secondary{border:0;border-radius:9px;padding:10px 16px;font-weight:650;cursor:pointer;font-size:12px}.primary{background:#5b57d9;color:#fff}.secondary{background:#fff;border:1px solid #e5e6ee;color:#4a4d60}.welcome{margin:27px 0 22px;background:linear-gradient(110deg,#eae9ff,#f2f1ff 65%,#e8f4ff);border-radius:17px;padding:24px 30px;min-height:128px;display:flex;justify-content:space-between;align-items:center;overflow:hidden}.welcome h2{font-size:23px;letter-spacing:-.8px;margin:8px 0}.welcome p{color:#73768b;font-size:12px;margin:0}.welcome-orb{font-size:73px;color:#7973df;opacity:.65;margin-right:25px}.workspace{background:#fff;border:1px solid #e8e9ef;border-radius:14px;flex:1;min-height:350px;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 5px 25px #25264a08}.document-bar{height:55px;flex-shrink:0;border-bottom:1px solid #eeeef3;display:flex;align-items:center;justify-content:space-between;padding:0 22px}.document-bar input{border:0;outline:0;font-size:13px;font-weight:650;color:#33364b;width:60%}.local-tag{font-size:10px;color:#309b69}.toolbar{min-height:48px;border-bottom:1px solid #eeeef3;display:flex;align-items:center;gap:5px;padding:7px 17px;flex-wrap:wrap}.tool{border:0;background:#fff;border-radius:6px;padding:7px 10px;color:#55596c;cursor:pointer;font-size:12px}.tool:hover{background:#f0efff}.tool:focus-visible,.primary:focus-visible,.secondary:focus-visible,.nav:focus-visible{outline:2px solid #7771e6;outline-offset:2px}.editor{outline:0;padding:34px max(35px,8%);font-size:14px;line-height:1.75;color:#303348;flex:1;min-height:280px;overflow:auto}.editor:empty:before{content:attr(data-placeholder);color:#b3b5c2}.editor h1{font-size:28px}.editor h2{font-size:22px}.editor blockquote{border-left:3px solid #aaa5f2;padding-left:15px;color:#77758f;margin-left:0}.sheet-wrap{padding:18px;overflow:auto;flex:1}.sheet{border-collapse:collapse;font-size:12px;min-width:100%;white-space:nowrap}.sheet th,.sheet td{border:1px solid #e5e7ee;min-width:100px;height:35px;padding:0}.sheet th{background:#f4f5f9;color:#666a7d;min-width:45px;font-weight:650}.grid-cell{width:100%;height:35px;border:0;background:transparent;outline:0;padding:7px;font:inherit;color:#303348}.grid-cell:focus{background:#f4f3ff;box-shadow:inset 0 0 0 2px #8079e8}.cell-ref{font-size:11px;background:#f4f5f9;border:1px solid #e5e7ee;border-radius:5px;padding:7px 10px;min-width:45px;text-align:center}.formula-input{height:31px;min-width:220px;flex:1;border:1px solid #e5e7ee;border-radius:6px;padding:6px 9px;font:inherit;font-size:12px}.slide-wrap{padding:24px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:15px;flex:1;min-height:0}.slide-stage{width:min(100%,820px);aspect-ratio:16/9;background:#f1efff;border-radius:8px;display:flex;flex-direction:column;justify-content:center;padding:8%;box-shadow:0 4px 18px #20204012}.slide-title,.slide-body{width:100%;background:transparent;border:0;outline:0;resize:none;text-align:center}.slide-title{font-size:clamp(24px,3.5vw,42px);font-weight:750;color:#38356f;min-height:1.4em}.slide-body{font-size:clamp(15px,2vw,21px);color:#66658a;min-height:5em;margin-top:15px}.slide-controls{display:flex;align-items:center;gap:14px;color:#77798a;font-size:12px}.slide-controls button{border:1px solid #e4e4ee;background:#fff;border-radius:7px;padding:8px 12px;cursor:pointer}.slide-controls button:disabled{opacity:.4;cursor:default}.notes-wrap{display:flex;flex-direction:column;flex:1;padding:25px 8%;gap:10px}.notes-wrap textarea{border:0;outline:0;resize:none;flex:1;min-height:260px;font-family:inherit;font-size:14px;line-height:1.8;color:#303348}.notes-hint{font-size:10px;color:#a0a2b0}.update-message{margin-top:10px;padding:10px 13px;border:1px solid #e5e4f8;border-radius:9px;color:#555477;background:#fafaff;font-size:11px}.presentation-overlay{position:fixed;inset:0;background:#171729;z-index:5;display:grid;place-items:center;padding:4vw}.presentation-slide{width:min(100%,1200px);aspect-ratio:16/9;background:#f4f2ff;border-radius:8px;display:flex;flex-direction:column;justify-content:center;padding:9%;position:relative}.presentation-slide h1{font-size:clamp(36px,6vw,72px);color:#38356f;margin:0 0 3vh}.presentation-slide p{font-size:clamp(20px,3vw,34px);color:#66658a;white-space:pre-wrap}.presentation-footer{position:absolute;bottom:18px;right:25px;font-size:10px;color:#999}.main footer{text-align:center;color:#a2a4b1;font-size:10px;padding:17px 0 0}@media(max-width:1050px){.sidebar{width:210px}.main{padding-left:22px;padding-right:22px}.topbar{align-items:flex-start;flex-direction:column}.top-actions{justify-content:flex-start}}@media(max-width:720px){body{display:block}.sidebar{width:100%;padding:12px;display:block}.brand{padding:0 8px 12px}.section-label,.sidebar-bottom{display:none}.nav{width:auto;display:inline-flex;margin:0 2px;padding:7px}.nav small{display:none}.app-icon{width:29px;height:29px}.app-icon-image{width:30px;height:30px}.main{padding:18px 12px}.welcome{padding:18px}.welcome-orb{display:none}}
 
 @media print{body{display:block;background:#fff}.sidebar,.topbar,.welcome,.toolbar,.document-bar,.main>footer,.update-message{display:none!important}.main{display:block;padding:0}.workspace{display:block;border:0;box-shadow:none;overflow:visible;min-height:0}.editor{padding:0;min-height:0;overflow:visible}.sheet-wrap,.slide-wrap,.notes-wrap{overflow:visible;padding:0}.slide-stage{box-shadow:none;page-break-after:always}.sheet{width:100%}}
 
@@ -106,7 +106,7 @@
 .page-setting{display:flex;flex-direction:column;gap:3px;padding:0 5px;color:#77798a;font-size:9px;white-space:nowrap}.page-setting-select{max-width:115px;border:1px solid #e5e7ee;border-radius:5px;background:#fff;color:#45485c;padding:5px 6px;font:inherit;font-size:10px}.page-setting-select:focus-visible{outline:2px solid #7771e6;outline-offset:2px}@media(max-width:720px){.page-setting-select{max-width:95px}}
 
 /* Original app preview artwork for the complete Brightdesk catalogue. */
-.app-preview{display:block;width:100%;height:116px;object-fit:cover;border:1px solid #e8eaf1;border-radius:7px;background:#f5f6fa}.app-card{min-height:230px}.app-card-header{margin-top:1px}
+.app-card{min-height:230px}.app-card-header{margin-top:1px}
 
 
 /* Brightdesk To Do — dedicated local task workspace */
@@ -220,7 +220,6 @@ textarea:focus-visible, [contenteditable="true"]:focus-visible, [tabindex]:focus
 .app-card:hover { transform: translateY(-2px); border-color: #c2cfe0; box-shadow: var(--bd-ui-shadow-hover); }
 .app-card-heading b { color: var(--bd-ui-ink); }
 .app-card-heading small, .app-card p { color: var(--bd-ui-muted); line-height: 1.55; }
-.app-preview { width: 100%; border: 1px solid var(--bd-ui-line); border-radius: 9px; background: #f7f9fc; }
 .app-card-footer { border-color: var(--bd-ui-line); }
 .todo-sidebar, .lists-sidebar, .forms-sidebar, .planner-sidebar, .database-sidebar, .workspace-sidebar { background: #f8f9fc; border-color: var(--bd-ui-line); }
 .todo-task-card, .planner-task-card, .forms-question-card, .forms-response-card, .workspace-block { border-color: var(--bd-ui-line); border-radius: 10px; }
@@ -244,8 +243,7 @@ input:disabled, select:disabled, textarea:disabled, button:disabled { cursor: no
   .welcome { min-height: 0; padding: 20px; }
   .welcome h2 { font-size: clamp(21px, 5vw, 27px); }
   .manager-grid { grid-template-columns: 1fr; }
-  .app-preview { height: auto; min-height: 120px; }
-  .toolbar { overflow-x: auto; flex-wrap: nowrap; align-items: center; }
+    .toolbar { overflow-x: auto; flex-wrap: nowrap; align-items: center; }
   .ribbon-group { flex: 0 0 auto; }
 }
 @media (prefers-reduced-motion: reduce) {
@@ -254,15 +252,8 @@ input:disabled, select:disabled, textarea:disabled, button:disabled { cursor: no
 
 
 /* Brightdesk management and product-card finish */
-.settings-nav { margin-top: 8px; border: 1px solid transparent; }
-.settings-nav .manager-gear {
-  width: 36px; height: 36px; border: 1px solid #dce3ed; border-radius: 11px;
-  background: linear-gradient(145deg,#f8fafc,#edf1f7); color: #31425b;
-  font-size: 21px; line-height: 1;
-}
-.settings-nav.active .manager-gear { border-color: #d2dced; background: #eaf0f8; color: #294e83; }
-.settings-sidebar-meta { padding-top: 14px; border-top: 1px solid #e8edf3; }
-.settings-sidebar-meta small { color: #8390a3; font-size: 10px; }
+.sidebar-meta { padding-top: 14px; border-top: 1px solid #e8edf3; }
+.sidebar-meta small { color: #8390a3; font-size: 10px; }
 .settings-toolbar {
   display: flex; align-items: center; justify-content: space-between; gap: 18px;
   padding: 17px 19px; margin: 0 0 15px; border: 1px solid #dfe6ef;
@@ -294,12 +285,7 @@ input:disabled, select:disabled, textarea:disabled, button:disabled { cursor: no
 .app-card[data-app-id="planner"] { --app-card-accent:#4667bf; --app-card-tint:#eef2fc; }
 .app-card[data-app-id="todo"] { --app-card-accent:#27834f; --app-card-tint:#edf7f0; }
 .app-card[data-app-id="loop"] { --app-card-accent:#4b68a8; --app-card-tint:#eff2f9; }
-.app-card .app-preview {
-  display: block; width: calc(100% + 30px); height: 142px; max-height: 142px;
-  margin: 0 -15px 13px; border: 0; border-bottom: 1px solid #e6ebf2;
-  border-radius: 0; object-fit: cover; object-position: top center; background: var(--app-card-tint);
-}
-.app-card-header { display: flex; align-items: center; gap: 11px; min-width: 0; }
+.app-card .app-card-header { display: flex; align-items: center; gap: 11px; min-width: 0; }
 .app-card-header .app-icon-image { flex: 0 0 42px; width: 42px; height: 42px; padding: 5px; border-radius: 12px; background: var(--app-card-tint); }
 .app-card-heading { min-width: 0; flex: 1; }
 .app-card-heading b { display: block; color: #1f2d43; font-size: 13px; letter-spacing: -.015em; }
@@ -329,12 +315,9 @@ input:disabled, select:disabled, textarea:disabled, button:disabled { cursor: no
   .settings-toolbar { padding: 14px; }
   .settings-actions { display: grid; grid-template-columns: 1fr; }
   .settings-actions button { width: 100%; }
-  .app-card .app-preview { height: 132px; max-height: 132px; }
-  .app-card > p { min-height: 0; }
+  .app-card   .app-card > p { min-height: 0; }
 }
 
-.settings-gear-icon { display: block; width: 19px; height: 19px; object-fit: contain; }
-.settings-nav .manager-gear { display: grid; place-items: center; }
 .app-card-actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 7px; }
 .app-card-footer .app-install-action { min-width: 78px; }
 @media (max-width: 700px) {
@@ -350,3 +333,229 @@ input:disabled, select:disabled, textarea:disabled, button:disabled { cursor: no
 .top-settings-button img{width:18px;height:18px;display:block}
 .top-settings-button:hover{background:#f4f3ff;border-color:#d8d5fb}
 .top-settings-button:focus-visible{outline:2px solid #7771e6;outline-offset:2px}
+
+
+/* Refined topbar actions: unmistakable save, notifications and Settings controls. */
+.top-actions{position:relative;gap:8px}
+.top-save-button{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:36px;padding:8px 13px;border:1px solid #4d49c5;border-radius:8px;background:#514dc9;color:#fff;font-size:12px;font-weight:650;letter-spacing:.005em}
+.top-save-button img{width:15px;height:15px;display:block;filter:brightness(0) invert(1)}
+.top-save-button:hover{background:#433fae}
+.top-notifications-button,.top-settings-button{width:38px;height:38px;display:inline-grid;place-items:center;flex:0 0 38px;padding:0;border:1px solid #dfe4ed;border-radius:10px;background:#fff;color:#53627b;cursor:pointer;transition:background .16s ease,border-color .16s ease,color .16s ease,box-shadow .16s ease}
+.top-notifications-button img,.top-settings-button img{width:19px;height:19px;display:block}
+.top-notifications-button:hover,.top-settings-button:hover{background:#f3f2ff;border-color:#d5d2fb;color:#4e49bd}
+.top-notifications-button:focus-visible,.top-settings-button:focus-visible,.top-save-button:focus-visible{outline:3px solid #b8b4ff;outline-offset:2px}
+.top-notifications-button[aria-expanded="true"]{background:#efeeff;border-color:#c9c5f7;color:#4944b8;box-shadow:inset 0 0 0 1px #dedbff}
+.notification-popover{position:absolute;z-index:20;top:calc(100% + 10px);right:46px;width:min(320px,calc(100vw - 32px));padding:17px 18px;border:1px solid #dfe4ed;border-radius:12px;background:#fff;box-shadow:0 14px 36px #1e2d481c;color:#29364d}
+.notification-popover[hidden]{display:none}
+.notification-popover b{display:block;font-size:13px;font-weight:700;letter-spacing:-.01em}
+.notification-popover p{margin:14px 0 5px;color:#34445d;font-size:12px;font-weight:650}
+.notification-popover small{display:block;color:#7b879a;font-size:11px;line-height:1.5}
+@media(max-width:700px){.top-actions{width:100%;justify-content:flex-start}.notification-popover{right:0}}
+
+
+/* Keep the App Centre rail distinct from product switching; hidden wins at every width. */
+#dynamic-app-nav[hidden]{display:none!important}
+.manager-nav{cursor:pointer}
+.manager-nav .app-icon-image{filter:none}
+
+/* Persistent update notifications: an unread badge, readable history and a dismissible alert. */
+.top-notifications-button{position:relative}
+.notification-count{position:absolute;top:-5px;right:-5px;min-width:17px;height:17px;padding:0 4px;border:2px solid #fff;border-radius:10px;background:#c74754;color:#fff;font-size:9px;font-weight:750;line-height:13px;text-align:center}
+.notification-count[hidden]{display:none}
+.notification-popover{width:min(390px,calc(100vw - 32px));max-height:min(70vh,520px);display:flex;flex-direction:column;gap:12px}
+.notification-panel-header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding-bottom:10px;border-bottom:1px solid #edf0f5}
+.notification-list{display:grid;gap:8px;overflow:auto;min-height:0}
+.notification-empty{margin:4px 0;color:#7b879a;font-size:12px;font-weight:500}
+.notification-item{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:11px 10px;border:1px solid #edf0f5;border-radius:10px;background:#fff}
+.notification-item.unread{border-color:#dbe4f7;background:#f7f9ff}
+.notification-item-copy{min-width:0}
+.notification-item-copy b{font-size:12px}
+.notification-item-copy p{margin:5px 0;color:#53627a;font-size:11px;font-weight:450;line-height:1.5;overflow-wrap:anywhere}
+.notification-item-copy small{font-size:10px}
+.notification-action{flex:0 0 auto;white-space:nowrap;padding:8px 10px}
+.notification-toast{position:fixed;z-index:1000;top:22px;right:22px;width:min(390px,calc(100vw - 32px))}
+.notification-toast[hidden]{display:none}
+.notification-toast-card{display:flex;align-items:flex-start;gap:13px;padding:15px 15px 15px 17px;border:1px solid #dce4f1;border-radius:13px;background:#fff;box-shadow:0 14px 38px #182b481f;color:#27364e}
+.notification-toast-copy{flex:1;min-width:0}
+.notification-toast-copy b{display:block;font-size:13px}
+.notification-toast-copy p{margin:5px 0 0;color:#617087;font-size:11px;line-height:1.5}
+.notification-toast-dismiss{border:0;background:transparent;color:#8994a5;font-size:20px;line-height:1;cursor:pointer;padding:0 3px}
+@media(max-width:700px){.notification-toast{top:12px;right:12px;width:calc(100vw - 24px)}.notification-popover{right:0;max-height:65vh}}
+
+
+/* Approved Brightdesk Apps layout: responsive, icon-first product cards. */
+.manager-grid{grid-template-columns:repeat(auto-fit,minmax(min(100%,230px),1fr));gap:18px;margin:24px 0 18px}
+.app-card{min-height:220px;padding:20px;border:1px solid #e1e6ef;border-radius:16px;box-shadow:0 5px 18px #1a2b4b0a;gap:15px;transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease}
+.app-card:hover{transform:translateY(-2px);border-color:#cfd8e8;box-shadow:0 12px 28px #1a2b4b12}
+.app-card-header{align-items:flex-start;gap:14px}
+.app-card-header .app-icon-image{width:64px;height:64px;border-radius:17px;filter:drop-shadow(0 5px 8px #17264a20)}
+.app-card-heading b{font-size:15px;letter-spacing:-.2px}
+.app-card-heading small{font-size:11px;line-height:1.4}
+.app-card p{font-size:12px;line-height:1.55;min-height:36px;color:#68758a}
+.app-card-footer{padding-top:12px;border-top:1px solid #edf0f5}
+.app-card:focus-within{outline:2px solid #7771e6;outline-offset:3px}
+@media(max-width:720px){.manager-grid{grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:12px}.app-card{padding:16px}}
+
+.app-card-header{position:relative;padding-right:38px}
+.app-card-menu-wrap{position:absolute;top:-4px;right:-5px;z-index:3}
+.app-card-menu-trigger{width:34px;height:34px;display:grid;place-items:center;padding:0;border:1px solid transparent;border-radius:10px;background:transparent;cursor:pointer}
+.app-card-menu-trigger:hover,.app-card-menu-trigger[aria-expanded=true]{background:#f2f5fa;border-color:#e4e9f1}
+.app-card-menu-trigger img{width:19px;height:19px;display:block}
+.app-card-menu{position:absolute;top:39px;right:0;min-width:190px;padding:6px;background:#fff;border:1px solid #e1e6ef;border-radius:11px;box-shadow:0 12px 30px #1a2b4b20}
+.app-card-menu[hidden]{display:none}
+.app-card-menu-item{width:100%;padding:9px 11px;border:0;border-radius:7px;background:transparent;color:#36445b;text-align:left;font:inherit;font-size:11px;cursor:pointer}
+.app-card-menu-item:hover:not(:disabled){background:#f2f5fa}
+.app-card-menu-item:disabled{color:#a0a8b6;cursor:not-allowed}
+.app-card-menu-trigger:focus-visible,.app-card-menu-item:focus-visible{outline:2px solid #7771e6;outline-offset:2px}
+
+/* Home and Files destinations from the approved Brightdesk shell. */
+.app-manager.home-view .manager-hero{margin:18px 0 0;padding:0;border:0;border-radius:0;background:transparent}
+.app-manager.home-view .manager-hero h2{margin:0 0 5px;font-size:20px;letter-spacing:-.35px;color:#1b2941}
+.app-manager.home-view .manager-hero p{font-size:12px;color:#77859b}
+.app-manager.home-view .manager-grid{margin-top:16px}
+.files-manager{width:100%;max-width:1180px;flex:1;margin:24px auto 10px}
+.files-hero{padding:28px 30px;border:1px solid #e2e8f1;border-radius:16px;background:linear-gradient(115deg,#edf3ff 0%,#f5f3ff 62%,#f1f8ff 100%)}
+.files-hero .eyebrow{color:#667995}
+.files-hero h2{margin:8px 0;font-size:26px;letter-spacing:-.65px;color:#1b2941}
+.files-hero p{max-width:650px;margin:0;color:#68778f;font-size:13px;line-height:1.6}
+.files-actions{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:18px;margin-top:20px}
+.files-action-card{display:flex;min-height:220px;flex-direction:column;align-items:flex-start;padding:24px;border:1px solid #e1e6ef;border-radius:15px;background:#fff;box-shadow:0 5px 18px #1a2b4b0a}
+.files-action-icon{width:46px;height:46px;display:grid;place-items:center;border-radius:13px;background:#f0f3fa}
+.files-action-icon img{width:23px;height:23px;display:block}
+.files-action-card h3{margin:16px 0 7px;color:#27364d;font-size:16px}
+.files-action-card p{flex:1;margin:0 0 18px;color:#68778f;font-size:12px;line-height:1.6}
+.files-action-card button{min-width:126px}
+.files-note{margin:18px 2px;color:#8995a7;font-size:11px}
+@media(max-width:700px){.files-hero{padding:20px}.files-hero h2{font-size:22px}.files-action-card{min-height:190px;padding:19px}}
+
+/* The production sidebar follows the approved deep-navy Brightdesk shell. */
+.sidebar{background:linear-gradient(180deg,#14233f 0%,#0d1930 100%);border-right:1px solid #253957;color:#fff}
+.brand b{color:#fff}
+.brand small{color:#8292b2}
+.brand-mark-image{border-radius:12px;box-shadow:none;object-fit:contain}
+.section-label{color:#8292b2}
+.nav{color:#c4cfe2}
+.nav b{color:inherit}
+.nav small{color:#9aaac4}
+.nav:hover{background:#203654;color:#fff}
+.nav.active{background:#293e65;color:#fff;box-shadow:none}
+.sidebar-divider{background:#344766}
+.sidebar-meta{border-top:1px solid #344766}
+.sidebar-bottom small{color:#a8b6d0}
+
+/* Allow the product settings popover to extend beyond its card without clipping. */
+.app-card{overflow:visible}
+.app-card-menu{z-index:20}
+
+
+/* Production Home geometry: keep the live product grid aligned with brightdesk-home.svg. */
+.app-manager.home-view .manager-grid {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
+  gap: 16px;
+  margin: 16px 0 18px;
+}
+.app-manager.home-view .app-card {
+  min-height: 240px;
+  padding: 20px;
+  border-radius: 16px;
+}
+.app-manager.home-view .app-card-header .app-card-app-icon {
+  width: 64px;
+  height: 64px;
+}
+@media (max-width: 700px) {
+  .app-manager.home-view .manager-grid { grid-template-columns: 1fr; gap: 12px; }
+  .app-manager.home-view .app-card { min-height: 220px; }
+}
+
+
+/* Production shell proportions from the approved 1600 × 900 Home artwork. */
+.sidebar {
+  width: 238px;
+  padding: 27px 15px;
+}
+.brand {
+  gap: 13px;
+  padding: 0 10px 28px;
+}
+.brand-mark-image {
+  width: 46px;
+  height: 46px;
+  flex-basis: 46px;
+}
+.brand b {
+  font-size: 25px;
+  letter-spacing: -.6px;
+}
+.sidebar .section-label {
+  padding: 0 11px 16px 13px;
+}
+.nav {
+  min-height: 48px;
+  padding: 7px 11px;
+}
+.nav b { font-size: 14px; }
+.icon-button {
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 1px solid #DCE3ED;
+  border-radius: 50%;
+  background: #FFFFFF;
+  color: #53627B;
+  cursor: pointer;
+  transition: background .16s ease, border-color .16s ease, box-shadow .16s ease;
+}
+.icon-button img { width: 18px; height: 18px; display: block; }
+.icon-button:hover { background: #F7F9FC; border-color: #BFCADD; }
+.icon-button:focus-visible { outline: 2px solid #526FE0; outline-offset: 3px; }
+body.suite-home .main {
+  padding: 56px 4.125vw 20px 2vw;
+}
+body.suite-home .topbar h1 {
+  margin-top: 11px;
+  font-size: 34px;
+  line-height: 1.15;
+  letter-spacing: -.035em;
+}
+body.suite-home .top-actions {
+  gap: 12px;
+  padding-right: 25px;
+}
+body.suite-home .app-manager.home-view .manager-hero {
+  margin-top: 46px;
+}
+body.suite-home .app-manager.home-view .manager-grid {
+  margin-top: 24px;
+  column-gap: 16px;
+  row-gap: 18px;
+}
+@media (max-width: 900px) and (min-width: 701px) {
+  .sidebar { width: 210px; }
+  body.suite-home .main { padding: 40px 20px 20px; }
+  body.suite-home .topbar h1 { font-size: 30px; }
+  body.suite-home .app-manager.home-view .manager-hero { margin-top: 40px; }
+  body.suite-home .top-actions { padding-right: 0; }
+}
+@media (max-width: 700px) {
+  .sidebar { width: 100%; min-height: 0; padding: 12px; }
+  .brand { gap: 11px; padding: 0 8px 12px; }
+  .brand-mark-image { width: 38px; height: 38px; flex-basis: 38px; }
+  .brand b { font-size: 21px; }
+  .sidebar .section-label, .sidebar-bottom { display: none; }
+  .nav { min-height: 42px; padding: 6px 8px; }
+  .nav b { font-size: 13px; }
+  body.suite-home .main { padding: 16px 12px; }
+  body.suite-home .topbar h1 { margin-top: 5px; font-size: 26px; }
+  body.suite-home .top-actions { gap: 8px; padding-right: 0; }
+  body.suite-home .app-manager.home-view .manager-hero { margin-top: 24px; }
+}
+
+
+/* Keep the Home sidebar as clean as the production artwork. */
+body.suite-home .sidebar > .nav small { display: none; }
+body.suite-home .main > footer { display: none; }
+
+body.suite-home .app-manager.home-view .manager-hero .eyebrow { display: none; }

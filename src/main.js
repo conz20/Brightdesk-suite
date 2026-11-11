@@ -1,4 +1,4 @@
-const { app, BrowserWindow, Menu, ipcMain, dialog } = require('electron');
+const { app, BrowserWindow, Menu, ipcMain, dialog, Notification } = require('electron');
 const packageConfig = require('../package.json');
 const nativeEngine = require('./rust-engine');
 const { assertPackagedVersion, assertMainWindowReady } = require('./startup-smoke');
@@ -48,7 +48,19 @@ async function writeUpdateSettings(settings = {}) {
   return next;
 }
 
-function sendUpdateState(state) { if (mainWindow && !mainWindow.isDestroyed()) mainWindow.webContents.send('updates:state', state); }
+function sendUpdateState(state) {
+  if (mainWindow && !mainWindow.isDestroyed()) mainWindow.webContents.send('updates:state', state);
+  if (!['available', 'downloaded'].includes(state?.status) || (mainWindow && mainWindow.isFocused()) || !Notification.isSupported()) return;
+  const title = state.status === 'available' ? 'Brightdesk update available' : 'Brightdesk update ready';
+  const notification = new Notification({ title, body: state.message || 'A Brightdesk Office Suite update is ready.', silent: false });
+  notification.on('click', () => {
+    if (!mainWindow || mainWindow.isDestroyed()) return;
+    if (mainWindow.isMinimized()) mainWindow.restore();
+    mainWindow.show();
+    mainWindow.focus();
+  });
+  notification.show();
+}
 function createWindow({ show = true } = {}) {
   mainWindow = new BrowserWindow({
     width: 1440, height: 920, minWidth: 980, minHeight: 680, show,
@@ -320,10 +332,10 @@ async function initUpdater() {
     Object.assign(autoUpdater, getUpdaterPreferences());
     autoUpdater.allowUnverifiedLinuxPackages = false;
     autoUpdater.on('checking-for-update', () => sendUpdateState({ status: 'checking', message: 'Checking for updates…' }));
-    autoUpdater.on('update-available', info => sendUpdateState({ status: 'available', message: `Brightdesk ${info.version} is available. Download from the update settings or let the app continue to recommend updates.` }));
+    autoUpdater.on('update-available', info => sendUpdateState({ status: 'available', message: `Brightdesk ${info.version} is available to download.` }));
     autoUpdater.on('update-not-available', () => sendUpdateState({ status: 'current', message: 'Brightdesk is up to date.' }));
     autoUpdater.on('download-progress', p => sendUpdateState({ status: 'downloading', message: `Downloading update: ${Math.round(p.percent)}%` }));
-    autoUpdater.on('update-downloaded', info => sendUpdateState({ status: 'downloaded', message: `Brightdesk ${info.version} is ready to install. Use Install now when you are ready.` }));
+    autoUpdater.on('update-downloaded', info => sendUpdateState({ status: 'downloaded', message: `Brightdesk ${info.version} has downloaded and is ready to install when you are ready.` }));
     autoUpdater.on('error', err => sendUpdateState({ status: 'error', message: err.message || 'Update check failed.' }));
     configureAutomaticUpdateChecks(settings.autoCheck !== false);
   } catch (error) { sendUpdateState({ status: 'unavailable', message: 'Update service is not configured in this build.' }); }

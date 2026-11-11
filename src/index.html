@@ -10,27 +10,31 @@
 </head>
 <body>
   <aside class="sidebar">
-    <div class="brand"><img class="brand-mark-image" src="assets/brand/brightdesk-mark.svg" alt="" aria-hidden="true" width="38" height="38" /><div><b>brightdesk</b><small data-i18n="sidebar.workspace">YOUR WORKSPACE</small></div></div>
-    <div class="section-label" data-i18n="sidebar.yourApps">YOUR APPS</div>
-    <button class="nav active" data-app="pages"><img class="app-icon-image" src="assets/icons/pages.svg" alt="" aria-hidden="true" /><span><b>Brightdesk Pages</b><small data-i18n="sidebar.documents">Documents</small></span></button>
-    <button class="nav" data-app="sheets"><img class="app-icon-image" src="assets/icons/sheets.svg" alt="" aria-hidden="true" /><span><b>Brightdesk Sheets</b><small data-i18n="sidebar.spreadsheets">Spreadsheets</small></span></button>
-    <button class="nav" data-app="slides"><img class="app-icon-image" src="assets/icons/decks.svg" alt="" aria-hidden="true" /><span><b>Brightdesk Decks</b><small data-i18n="sidebar.presentations">Presentations</small></span></button>
-    <button class="nav" data-app="notes"><img class="app-icon-image" src="assets/icons/notes.svg" alt="" aria-hidden="true" /><span><b>Brightdesk Notes</b><small data-i18n="sidebar.quickNotes">Quick notes</small></span></button>
+    <div class="brand"><img class="brand-mark-image" src="assets/brand/brightdesk-suite-mark.svg" alt="" aria-hidden="true" width="46" height="46" /><div><b>brightdesk</b></div></div>
+    <div class="section-label" id="sidebar-section-label">YOUR WORKSPACE</div>
+    <button type="button" class="nav suite-nav active" id="home-nav" aria-current="page">
+      <img class="app-icon-image" src="assets/icons/home.svg" alt="" aria-hidden="true" />
+      <span><b data-i18n="sidebar.home">Home</b><small data-i18n="sidebar.homeDescription">Your work in one place</small></span>
+    </button>
+    <button type="button" class="nav manager-nav" id="app-centre-nav" hidden>
+      <img class="app-icon-image" src="assets/icons/apps.svg" alt="" aria-hidden="true" />
+      <span><b data-i18n="sidebar.applications">Apps</b><small data-i18n="sidebar.applicationsDescription">All your desktop applications</small></span>
+    </button>
+    <button type="button" class="nav suite-nav" id="files-nav">
+      <img class="app-icon-image" src="assets/icons/files.svg" alt="" aria-hidden="true" />
+      <span><b data-i18n="sidebar.files">Files</b><small data-i18n="sidebar.filesDescription">Open and save files on this device</small></span>
+    </button>
     <div id="dynamic-app-nav"></div>
     <div class="sidebar-divider"></div>
-    <button class="nav manager-nav settings-nav" id="manage-apps" aria-label="Open Brightdesk settings">
-      <span class="app-icon manager-icon manager-gear" aria-hidden="true"><img class="settings-gear-icon" src="assets/icons/settings.svg" alt="" aria-hidden="true"></span>
-      <span><b>Settings</b><small>Apps, languages and updates</small></span>
-    </button>
-    <div class="sidebar-bottom settings-sidebar-meta">
-      <small id="platform">Desktop app</small>
-      <small id="version-label">Version</small>
+    <div class="sidebar-bottom sidebar-meta">
+      <small id="platform">Brightdesk Office Suite</small>
+      <small id="version-label">Local-first · Your files stay here</small>
     </div>
   </aside>
   <main class="main">
     <header class="topbar">
-      <div><div class="eyebrow" data-i18n="sidebar.workspace">YOUR WORKSPACE</div><h1 id="app-title">Brightdesk Pages</h1></div>
-      <div class="top-actions" id="top-actions"><span class="save-status" id="save-status" data-i18n="top.savedOnDevice">Saved on this device</span><button class="secondary" id="open-button" data-i18n="top.open">Open</button><button class="primary" id="save-project" data-i18n="top.saveProject">Save project</button><button type="button" id="open-settings" class="icon-button top-settings-button" aria-label="Open Brightdesk settings" title="Settings"><img src="assets/icons/settings.svg" alt="" aria-hidden="true" /></button></div>
+      <div><div class="eyebrow" data-i18n="sidebar.workspace">YOUR WORKSPACE</div><h1 id="app-title">Your apps</h1></div>
+      <div class="top-actions" id="top-actions"><span class="save-status" id="save-status" data-i18n="top.savedOnDevice">Saved on this device</span><button class="secondary" id="open-button" data-i18n="top.open">Open</button><button class="primary top-save-button" id="save-project"><img src="assets/icons/save.svg" alt="" aria-hidden="true" /><span data-i18n="top.saveProject">Save project</span></button><button type="button" id="open-notifications" class="icon-button top-notifications-button" aria-label="Open notifications" title="Notifications" aria-controls="notification-panel" aria-expanded="false"><img src="assets/icons/notifications.svg" alt="" aria-hidden="true" /><span id="notification-count" class="notification-count" hidden></span></button><section class="notification-popover" id="notification-panel" role="region" aria-label="Notifications" hidden><div class="notification-panel-header"><b>Notifications</b><button type="button" class="text-button" id="clear-notifications">Clear all</button></div><div class="notification-list" id="notification-list"><p class="notification-empty">No notifications yet.</p></div></section><div class="notification-toast" id="notification-toast" role="status" aria-live="polite" hidden></div><button type="button" id="open-settings" class="icon-button top-settings-button" aria-label="Open Brightdesk settings" title="Settings"><img src="assets/icons/settings.svg" alt="" aria-hidden="true" /></button></div>
     </header>
     <section class="welcome" id="welcome"><div><div class="eyebrow" data-i18n="welcome.eyebrow">YOUR WORK. ONE DESKTOP SUITE.</div><h2 id="welcome-title">Make room for your ideas.</h2><p id="welcome-copy">Write letters, reports and documents with Brightdesk Pages.</p></div></section>
     <section class="workspace" id="workspace">
@@ -347,9 +351,31 @@
           <button class="secondary settings-action" id="update-settings-button" type="button">Update settings</button>
         </div>
       </div>
-      <div class="manager-hero"><div><div class="eyebrow" data-i18n="manager.eyebrow">BRIGHTDESK APP CENTRE</div><h2 id="manager-title">Choose the apps you need</h2><p id="manager-description">Set up your Brightdesk workspace.</p></div></div>
+      <div class="manager-hero"><div><div class="eyebrow" data-i18n="manager.eyebrow">MY APPS</div><h2 id="manager-title">Choose the apps you need</h2><p id="manager-description">Manage the applications available on this computer.</p></div></div>
       <div class="manager-grid" id="app-manager-grid"></div>
       <div class="manager-bottom"><p id="manager-note">Choose one or more apps. Your documents stay on this device, even if you remove an app from your workspace.</p><button class="primary" id="finish-app-setup" data-i18n="manager.done">Done</button></div>
+    </section>
+    <section class="files-manager" id="files-manager" hidden>
+      <div class="files-hero">
+        <span class="eyebrow" data-i18n="files.eyebrow">YOUR FILES</span>
+        <h2 data-i18n="files.title">Files on this device</h2>
+        <p data-i18n="files.description">Open a supported file or save your current Brightdesk project. Your work stays on this computer.</p>
+      </div>
+      <div class="files-actions">
+        <article class="files-action-card">
+          <div class="files-action-icon"><img src="assets/icons/files.svg" alt="" aria-hidden="true" /></div>
+          <h3 data-i18n="files.openTitle">Open a file</h3>
+          <p data-i18n="files.openDescription">Choose a supported document, spreadsheet, presentation or Brightdesk project from this device.</p>
+          <button type="button" class="primary" id="files-open-button" data-i18n="files.openButton">Open file</button>
+        </article>
+        <article class="files-action-card">
+          <div class="files-action-icon"><img src="assets/icons/save.svg" alt="" aria-hidden="true" /></div>
+          <h3 data-i18n="files.saveTitle">Save your project</h3>
+          <p data-i18n="files.saveDescription">Save your current Brightdesk work to a location you choose on this device.</p>
+          <button type="button" class="secondary" id="files-save-button" data-i18n="files.saveButton">Save project</button>
+        </article>
+      </div>
+      <p class="files-note" data-i18n="files.note">Brightdesk does not upload your files to an online storage service.</p>
     </section>
     <section class="language-manager" id="language-manager" hidden>
       <div class="manager-hero"><div><div class="eyebrow" data-i18n="language.eyebrow">BRIGHTDESK LANGUAGE CENTRE</div><h2 data-i18n="language.title">Language settings</h2><p data-i18n="language.description">Choose how Brightdesk displays and checks language.</p></div></div>

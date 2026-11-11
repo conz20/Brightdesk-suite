@@ -39,7 +39,7 @@ test('first release version is consistently 0.1.0 across package, available apps
   const html = fs.readFileSync(path.join(root, 'src', 'index.html'), 'utf8');
   assert.equal(pkg.version, '0.1.0');
   for (const app of catalog.filter(item => item.availability === 'available')) assert.equal(app.moduleVersion, pkg.version);
-  assert.ok(html.includes('id="version-label">Version</small>'));
+  assert.ok(html.includes('id="version-label">Local-first · Your files stay here</small>'));
   assert.ok(html.includes('id="footer-version">Brightdesk</span>'));
   assert.doesNotMatch(html, /\d+\.\d+\.\d+/);
 });
@@ -65,11 +65,11 @@ test('the customer-facing release version has one authoritative source across th
   assert.match(catalogSource, /window\.brightdesk\?\.version/);
   assert.match(preload, /ipcRenderer\.sendSync\('app:version-sync'\)/);
   assert.match(main, /ipcMain\.on\('app:version-sync'.*app\.getVersion\(\)/);
-  assert.ok(html.includes('id="version-label">Version</small>'));
+  assert.ok(html.includes('id="version-label">Local-first · Your files stay here</small>'));
   assert.ok(html.includes('id="footer-version">Brightdesk</span>'));
   assert.doesNotMatch(html, /\d+\.\d+\.\d+/);
-  assert.match(app, /version-label/);
-  assert.match(app, /footer-version/);
+  assert.doesNotMatch(app, /version-label/);
+  assert.match(app, /if \(version\) \{ \$\('footer-version'\)\.textContent = `Brightdesk \$\{version\}`; \}/);
   assert.match(versioning, /package\.json.*single source of truth/i);
   assert.match(versioning, /Brightdesk-AI.*no Brightdesk customer release number/i);
   assert.doesNotMatch(workflow, /Brightdesk-0\.1\.0-Installers|default: 'v0\.1\.0'/);
@@ -93,13 +93,7 @@ test('automatic updates stay clearly disabled until a real GitHub owner is confi
   assert.match(main, /Automatic updates will be available after the Brightdesk GitHub release repository is configured/);
 });
 
-test('the main app rail keeps the four core apps as the permanent base rail', () => {
-  const fs = require('node:fs');
-  const path = require('node:path');
-  const html = fs.readFileSync(path.join(__dirname, '..', 'src', 'index.html'), 'utf8');
-  for (const name of ['Brightdesk Pages', 'Brightdesk Sheets', 'Brightdesk Decks', 'Brightdesk Notes']) assert.match(html, new RegExp(`<b>${name}</b>`));
-  for (const oldName of ['<b>Word</b>', '<b>Excel</b>', '<b>PowerPoint</b>', '<b>OneNote</b>']) assert.doesNotMatch(html, new RegExp(oldName));
-});
+test('workspace navigation is generated from the installed catalogue and respects product visibility settings',()=>{const fs=require('node:fs');const path=require('node:path');const root=path.join(__dirname,'..');const html=fs.readFileSync(path.join(root,'src','index.html'),'utf8');const app=fs.readFileSync(path.join(root,'src','app.js'),'utf8');assert.match(html,/id="dynamic-app-nav"/);assert.match(html,/id="app-centre-nav"/);assert.match(html,/id="home-nav"/);assert.match(html,/id="files-nav"/);assert.doesNotMatch(html,/data-app="(?:pages|sheets|slides|notes)"/);assert.match(app,/catalog\.filter\(item => installedApp\(item\.id\) && !state\.hiddenProducts\.includes\(item\.id\)\)/);assert.match(app,/\$\('dynamic-app-nav'\)\.hidden = suitePage \|\| languages \|\| Boolean\(launchAppId\)/);assert.match(app,/\$\('app-centre-nav'\)\.hidden = !suitePage \|\| Boolean\(launchAppId\)/);});
 
 test('catalog is hard-limited to the ten approved Brightdesk apps', () => {
   assert.deepEqual(catalog.map(item => item.id), ['pages','sheets','slides','notes','database','forms','lists','planner','todo','loop']);
@@ -224,20 +218,20 @@ test('the standalone build scripts reject unknown app and platform identifiers',
 });
 
 
-test('every first-release app has its own original preview artwork and the launcher displays it', () => {
+test('all first-release product cards use the original icons without concept preview images', () => {
   const fs = require('node:fs');
   const path = require('node:path');
   const root = path.join(__dirname, '..');
   for (const app of catalog) {
-    const artwork = path.join(root, 'src', 'assets', 'apps', `${app.id}.svg`);
-    assert.ok(fs.existsSync(artwork), `missing artwork for ${app.name}`);
-    assert.ok(fs.readFileSync(artwork, 'utf8').trimStart().startsWith('<svg'), `invalid SVG artwork for ${app.name}`);
+    const artwork = path.join(root, 'src', 'assets', 'icons', app.iconAsset);
+    assert.ok(fs.existsSync(artwork), `missing icon for ${app.name}`);
+    assert.ok(/^<\?xml[\s\S]*?\?>\s*<svg\b/.test(fs.readFileSync(artwork, 'utf8').trimStart()), `invalid SVG icon for ${app.name}`);
   }
   const renderer = fs.readFileSync(path.join(root, 'src', 'app.js'), 'utf8');
-  assert.ok(renderer.includes('assets/apps/${item.id}.svg'));
-  assert.ok(renderer.includes('`${item.name} example screen`'));
+  assert.ok(renderer.includes('return `assets/icons/${item.iconAsset}`'));
+  assert.ok(!renderer.includes('assets/apps/${item.id}.svg'));
+  assert.ok(!renderer.includes('app-preview'));
 });
-
 test('README presents all ten apps as the integrated first-release lineup', () => {
   const fs = require('node:fs');
   const readme = fs.readFileSync(require('node:path').join(__dirname, '..', 'README.md'), 'utf8');

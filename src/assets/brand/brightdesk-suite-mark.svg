@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="160" height="160" viewBox="0 0 160 160" role="img" aria-labelledby="title desc">
+<title id="title">Brightdesk Office Suite</title>
+<desc id="desc">The original Brightdesk four-panel brand mark.</desc>
+<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#53C8E8"/><stop offset="1" stop-color="#7868E8"/></linearGradient></defs>
+<rect x="6" y="6" width="148" height="148" rx="38" fill="#101B35"/>
+<path d="M40 40h31a13 13 0 0 1 13 13v31H53a13 13 0 0 1-13-13z" fill="url(#g)"/>
+<path d="M88 40h16a13 13 0 0 1 13 13v16H88z" fill="#8C7CF0"/>
+<path d="M88 88h29v16a13 13 0 0 1-13 13H88z" fill="#43B9A7"/>
+<path d="M40 88h31v29H53a13 13 0 0 1-13-13z" fill="#4B8DE8"/>
+</svg>

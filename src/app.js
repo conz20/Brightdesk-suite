@@ -33,8 +33,8 @@ const installableCatalog = catalog.filter(item => item.availability === 'availab
 const state = {
   app: launchAppId || 'pages', view: 'workspace', docs: structuredClone(defaults),
   todoView: 'my-day', todoQuery: '',
-  selectedCell: { row: 0, col: 0 }, update: null, ribbonTab: 'home',
-  installedApps: [], setupComplete: false, firstRunSelection: new Set(installableCatalog.map(item => item.id)),
+  selectedCell: { row: 0, col: 0 }, update: null, notifications: [], ribbonTab: 'home',
+  installedApps: [], hiddenProducts: [], setupComplete: false, firstRunSelection: new Set(installableCatalog.map(item => item.id)),
   slideTheme: 'lavender', focusMode: false, editorZoom: 100, sheetZoom: 100,
   languageCatalog: [], installedLanguagePacks: [], spellCheckerLanguages: [], usesNativeMacSpellChecker: false,
   displayLanguage: 'en-AU', proofingLanguage: 'en-AU',
@@ -57,17 +57,22 @@ function loadLocal() {
     const appSetup = JSON.parse(localStorage.getItem('brightdesk-app-setup-v1') || 'null');
     const resolvedSetup = resolveAppSetup(appSetup, launchAppId, installableCatalog.map(item => item.id));
     state.installedApps = resolvedSetup.installedApps;
+    state.hiddenProducts = Array.isArray(appSetup?.hiddenProducts) ? appSetup.hiddenProducts.filter(id => state.installedApps.includes(id)) : [];
     state.setupComplete = resolvedSetup.setupComplete;
     if (!launchAppId && appSetup?.schemaVersion !== resolvedSetup.schemaVersion) saveAppSetup();
     if (launchAppId) { state.app = launchAppId; state.view = 'workspace'; }
     else if (!state.setupComplete) state.view = 'manager';
-    else if (!installedApp(state.app)) state.app = state.installedApps[0] || 'pages';
+    else { state.view = 'home'; if (!installedApp(state.app)) state.app = state.installedApps[0] || 'pages'; }
     state.displayLanguage = localStorage.getItem('brightdesk-display-language') || 'en-AU';
     state.proofingLanguage = localStorage.getItem('brightdesk-proofing-language') || state.displayLanguage;
+    try {
+      const history = JSON.parse(localStorage.getItem('brightdesk-notifications-v1') || '[]');
+      state.notifications = Array.isArray(history) ? history.filter(item => item && typeof item.title === 'string' && typeof item.message === 'string').slice(0, 30) : [];
+    } catch { state.notifications = []; }
   } catch (error) { console.warn('Local project or app settings could not be read.', error); state.view = 'manager'; }
 }
 function saveAppSetup() {
-  localStorage.setItem('brightdesk-app-setup-v1', JSON.stringify({ schemaVersion: 2, installedApps: state.installedApps, setupComplete: state.setupComplete }));
+  localStorage.setItem('brightdesk-app-setup-v1', JSON.stringify({ schemaVersion: 2, installedApps: state.installedApps, hiddenProducts: state.hiddenProducts, setupComplete: state.setupComplete }));
 }
 function installedApp(id) { return state.installedApps.includes(id); }
 function appLabel(id) { return catalog.find(item => item.id === id)?.name || id; }
@@ -458,10 +463,9 @@ function renderGenericWorkspace() {
 
 function renderAppManager() {
   const grid = $('app-manager-grid'); grid.innerHTML = '';
-  $('manager-title').textContent = state.setupComplete ? t('manager.manageTitle') : t('manager.chooseTitle');
-  $('manager-description').textContent = state.setupComplete
-    ? t('manager.manageDesc')
-    : t('manager.chooseDesc');
+  const homeView = state.view === 'home';
+  $('manager-title').textContent = homeView ? t('home.productsTitle') : (state.setupComplete ? t('manager.manageTitle') : t('manager.chooseTitle'));
+  $('manager-description').textContent = homeView ? t('home.productsDescription') : (state.setupComplete ? t('manager.manageDesc') : t('manager.chooseDesc'));
   $('manager-note').textContent = t('manager.note');
   $('finish-app-setup').textContent = state.setupComplete ? t('manager.done') : t('manager.installSelected');
   catalog.forEach(item => {
@@ -469,7 +473,6 @@ function renderAppManager() {
     const selected = state.firstRunSelection.has(item.id);
     const isInstalled = installedApp(item.id);
     const card = document.createElement('article'); card.className = 'app-card'; card.dataset.appId = item.id;
-    const preview = document.createElement('img'); preview.className = 'app-preview'; preview.src = `assets/apps/${item.id}.svg`; preview.alt = `${item.name} example screen`;
     const header = document.createElement('div'); header.className = 'app-card-header';
     const icon = document.createElement('img'); icon.className = 'app-icon-image app-card-app-icon'; icon.src = appIconPath(item); icon.alt = `${item.name} icon`; icon.width = 48; icon.height = 48;
     const heading = document.createElement('div'); heading.className = 'app-card-heading';
@@ -477,7 +480,28 @@ function renderAppManager() {
     const subtitle = document.createElement('small'); subtitle.textContent = item.subtitle;
     const stateChip = document.createElement('span'); stateChip.className = `app-status-chip ${!canInstall ? 'development' : (isInstalled ? 'installed' : 'available')}`;
     stateChip.textContent = !canInstall ? 'In development' : (isInstalled ? 'Installed' : 'Available to install');
-    heading.append(name, subtitle, stateChip); header.append(icon, heading);
+    heading.append(name, subtitle, stateChip);
+    const menuWrap = document.createElement('div'); menuWrap.className = 'app-card-menu-wrap';
+    const menuTrigger = document.createElement('button'); menuTrigger.type = 'button'; menuTrigger.className = 'app-card-menu-trigger'; menuTrigger.title = 'Product settings'; menuTrigger.setAttribute('aria-label', `More options for ${item.name}`); menuTrigger.setAttribute('aria-haspopup', 'menu'); menuTrigger.setAttribute('aria-expanded', 'false');
+    const menuIcon = document.createElement('img'); menuIcon.src = 'assets/icons/more.svg'; menuIcon.alt = ''; menuIcon.setAttribute('aria-hidden', 'true'); menuTrigger.append(menuIcon);
+    const menu = document.createElement('div'); menu.className = 'app-card-menu'; menu.setAttribute('role', 'menu'); menu.hidden = true;
+    const hiddenFromSidebar = state.hiddenProducts.includes(item.id);
+    const visibilityAction = document.createElement('button'); visibilityAction.type = 'button'; visibilityAction.className = 'app-card-menu-item'; visibilityAction.setAttribute('role', 'menuitemcheckbox'); visibilityAction.setAttribute('aria-checked', String(!hiddenFromSidebar)); visibilityAction.textContent = hiddenFromSidebar ? 'Show in Switch product' : 'Hide from Switch product'; visibilityAction.disabled = !isInstalled;
+    visibilityAction.addEventListener('click', () => {
+      if (!isInstalled) return;
+      const visibleProducts = state.installedApps.filter(id => !state.hiddenProducts.includes(id));
+      if (!hiddenFromSidebar && visibleProducts.length <= 1) { alert('Keep at least one product visible in Switch product.'); return; }
+      state.hiddenProducts = hiddenFromSidebar ? state.hiddenProducts.filter(id => id !== item.id) : [...state.hiddenProducts, item.id];
+      saveAppSetup(); render();
+    });
+    menu.append(visibilityAction);
+    menuTrigger.addEventListener('click', () => {
+      const shouldOpen = menu.hidden;
+      document.querySelectorAll('.app-card-menu').forEach(openMenu => { openMenu.hidden = true; openMenu.closest('.app-card-menu-wrap')?.querySelector('.app-card-menu-trigger')?.setAttribute('aria-expanded', 'false'); });
+      menu.hidden = !shouldOpen;
+      menuTrigger.setAttribute('aria-expanded', String(shouldOpen));
+    });
+    menuWrap.append(menuTrigger, menu); header.append(icon, heading, menuWrap);
     const description = document.createElement('p'); description.textContent = item.description;
     const footer = document.createElement('div'); footer.className = 'app-card-footer app-card-actions';
     const version = document.createElement('span'); version.className = 'module-version'; version.textContent = `Module ${item.moduleVersion}`;
@@ -502,14 +526,17 @@ function renderAppManager() {
       action.setAttribute('aria-label', `${isInstalled ? 'Uninstall' : 'Install'} ${item.name}`);
       action.addEventListener('click', () => toggleAppInstall(item.id)); footer.append(action);
     }
-    card.append(preview, header, description, footer); grid.append(card);
+    card.append(header, description, footer); grid.append(card);
   });
 }
 function toggleAppInstall(id) {
   if (!installableCatalog.some(item => item.id === id) || launchAppId) return;
   if (installedApp(id)) {
     if (state.installedApps.length === 1) { alert('Keep at least one app installed in your Brightdesk workspace.'); return; }
+    const product = catalog.find(item => item.id === id);
+    if (!window.confirm(`Uninstall ${product?.name || 'this product'}? Your documents and project files will remain on this device.`)) return;
     state.installedApps = state.installedApps.filter(appId => appId !== id);
+    state.hiddenProducts = state.hiddenProducts.filter(appId => appId !== id);
     if (state.app === id) { state.app = state.installedApps[0]; state.ribbonTab = 'home'; }
   } else { state.installedApps.push(id); }
   saveAppSetup(); render();
@@ -517,7 +544,7 @@ function toggleAppInstall(id) {
 function completeAppSetup() {
   const selected = [...state.firstRunSelection].filter(id => installableCatalog.some(item => item.id === id));
   if (!selected.length) { alert('Choose at least one app to install.'); return; }
-  state.installedApps = selected; state.setupComplete = true; state.app = selected[0]; state.view = 'workspace';
+  state.installedApps = selected; state.setupComplete = true; state.app = selected[0]; state.view = 'home';
   saveAppSetup(); render();
 }
 
@@ -532,10 +559,10 @@ function updateDocumentLanguage() {
 function syncAppNavigation() {
   const host = $('dynamic-app-nav'); if (!host) return;
   host.innerHTML = '';
-  catalog.filter(item => !['pages','sheets','slides','notes'].includes(item.id) && installedApp(item.id)).forEach(item => {
-    const button=document.createElement('button'); button.className='nav'; button.dataset.app=item.id;
+  catalog.filter(item => installedApp(item.id) && !state.hiddenProducts.includes(item.id)).forEach(item => {
+    const button=document.createElement('button'); button.type='button'; button.className='nav'; button.dataset.app=item.id;
     const icon=document.createElement('img'); icon.className='app-icon-image'; icon.src=appIconPath(item); icon.alt=''; icon.setAttribute('aria-hidden','true');
-    const label=document.createElement('span'); const name=document.createElement('b'); name.textContent=item.name; const sub=document.createElement('small'); sub.textContent=item.subtitle;
+    const label=document.createElement('span'); const name=document.createElement('b'); name.textContent=t(`apps.${item.id}`); const sub=document.createElement('small'); sub.textContent=item.subtitle;
     label.append(name,sub); button.append(icon,label);
     button.addEventListener('click',()=>setApp(item.id)); host.append(button);
   });
@@ -757,14 +784,42 @@ function render() {
     const appId = btn.dataset.app;
     const name = btn.querySelector('b'); if (name) name.textContent = t(`apps.${appId}`);
   });
+  const home = state.view === 'home';
+  document.body.classList.toggle('suite-home', home);
   const manager = state.view === 'manager';
+  const files = state.view === 'files';
   const languages = state.view === 'languages';
-  $('app-manager').hidden = !manager; $('language-manager').hidden = !languages;
-  $('workspace').hidden = manager || languages; $('welcome').hidden = manager || languages || ['todo','lists','forms','planner','database','loop'].includes(state.app);
-  $('app-title').textContent = manager ? 'Settings' : (languages ? t('language.title') : (catalog.find(item => item.id === state.app)?.name || state.app));
-  $('top-actions').hidden = manager || languages;
-  if (manager) {
-    $('save-status').textContent = t('manager.manageTitle'); renderAppManager();
+  const suitePage = home || manager || files;
+  $('sidebar-section-label').textContent = languages ? t('sidebar.settings') : (suitePage ? t('sidebar.workspace') : t('sidebar.yourApps'));
+  $('sidebar-section-label').hidden = Boolean(launchAppId);
+  $('home-nav').hidden = !suitePage || Boolean(launchAppId);
+  $('app-centre-nav').hidden = !suitePage || Boolean(launchAppId);
+  $('files-nav').hidden = !suitePage || Boolean(launchAppId);
+  $('home-nav').classList.toggle('active', home);
+  $('app-centre-nav').classList.toggle('active', manager);
+  $('files-nav').classList.toggle('active', files);
+  $('home-nav').setAttribute('aria-current', home ? 'page' : 'false');
+  $('app-centre-nav').setAttribute('aria-current', manager ? 'page' : 'false');
+  $('files-nav').setAttribute('aria-current', files ? 'page' : 'false');
+  $('dynamic-app-nav').hidden = suitePage || languages || Boolean(launchAppId);
+  $('app-manager').hidden = !(home || manager);
+  $('app-manager').classList.toggle('home-view', home);
+  $('app-manager').querySelector('.settings-toolbar').hidden = home;
+  $('app-manager').querySelector('.manager-bottom').hidden = home;
+  $('files-manager').hidden = !files;
+  $('language-manager').hidden = !languages;
+  $('workspace').hidden = suitePage || files || languages;
+  $('welcome').hidden = suitePage || files || languages || ['todo','lists','forms','planner','database','loop'].includes(state.app);
+  $('app-title').textContent = home ? t('home.title') : (manager ? t('sidebar.applications') : (files ? 'Files' : (languages ? t('language.title') : (catalog.find(item => item.id === state.app)?.name || state.app))));
+  $('top-actions').hidden = languages;
+  $('save-status').hidden = suitePage || files || languages;
+  $('open-button').hidden = suitePage || files || languages;
+  $('save-project').hidden = suitePage || files || languages;
+  if (home || manager) {
+    $('save-status').textContent = home ? t('home.title') : t('manager.manageTitle');
+    renderAppManager();
+  } else if (files) {
+    $('save-status').textContent = t('files.title');
   } else if (languages) {
     $('save-status').textContent = t('language.title'); renderLanguageManager();
   } else {
@@ -799,13 +854,108 @@ function render() {
     $('workspace').classList.toggle('focus-mode', state.focusMode);
   }
   syncAppNavigation();
+  renderNotifications();
   document.querySelectorAll('.nav[data-app]').forEach(btn => {
-    const visible = launchAppId ? btn.dataset.app === launchAppId : installedApp(btn.dataset.app); btn.hidden = !visible; btn.classList.toggle('active', !manager && !languages && btn.dataset.app === state.app);
+    const visible = launchAppId ? btn.dataset.app === launchAppId : installedApp(btn.dataset.app); btn.hidden = !visible; btn.classList.toggle('active', !suitePage && !languages && btn.dataset.app === state.app);
   });
-  $('manage-apps').hidden = Boolean(launchAppId);
   $('open-settings').hidden = Boolean(launchAppId);
-  $('manage-apps').classList.toggle('active', manager || languages);
+  $('open-notifications').hidden = Boolean(launchAppId);
+  if (launchAppId) $('notification-panel').hidden = true;
   $('manage-languages').classList.toggle('active', languages);
+}
+let notificationToastTimer = null;
+function saveNotificationHistory() {
+  try { localStorage.setItem('brightdesk-notifications-v1', JSON.stringify(state.notifications.slice(0, 30))); }
+  catch (error) { console.warn('Notification history could not be saved locally.', error); }
+}
+function renderNotifications() {
+  const list = $('notification-list');
+  const button = $('open-notifications');
+  const count = $('notification-count');
+  if (!list || !button || !count) return;
+  list.replaceChildren();
+  const unread = state.notifications.filter(item => !item.read).length;
+  count.textContent = unread > 9 ? '9+' : String(unread);
+  count.hidden = unread === 0;
+  button.setAttribute('aria-label', unread ? `Open notifications, ${unread} unread` : 'Open notifications');
+  if (!state.notifications.length) {
+    const empty = document.createElement('p'); empty.className = 'notification-empty'; empty.textContent = 'No notifications yet.'; list.append(empty); return;
+  }
+  state.notifications.forEach(item => {
+    const card = document.createElement('article'); card.className = `notification-item${item.read ? '' : ' unread'}`;
+    const heading = document.createElement('b'); heading.textContent = item.title;
+    const message = document.createElement('p'); message.textContent = item.message;
+    const time = document.createElement('small'); time.textContent = new Date(item.createdAt).toLocaleString();
+    const content = document.createElement('div'); content.className = 'notification-item-copy'; content.append(heading, message, time); card.append(content);
+    if (item.action === 'download-update' || item.action === 'install-update') {
+      const action = document.createElement('button'); action.type = 'button'; action.className = 'secondary small-action notification-action';
+      action.textContent = item.action === 'download-update' ? 'Download update' : 'Install update';
+      action.addEventListener('click', () => runNotificationAction(item.id)); card.append(action);
+    }
+    list.append(card);
+  });
+}
+function showNotificationToast(item) {
+  const host = $('notification-toast');
+  if (!host) return;
+  host.replaceChildren();
+  const card = document.createElement('div'); card.className = 'notification-toast-card';
+  const copy = document.createElement('div'); copy.className = 'notification-toast-copy';
+  const heading = document.createElement('b'); heading.textContent = item.title;
+  const message = document.createElement('p'); message.textContent = item.message;
+  copy.append(heading, message);
+  const view = document.createElement('button'); view.type = 'button'; view.className = 'text-button'; view.textContent = 'View';
+  view.addEventListener('click', () => { host.hidden = true; $('open-notifications').click(); });
+  const dismiss = document.createElement('button'); dismiss.type = 'button'; dismiss.className = 'notification-toast-dismiss'; dismiss.setAttribute('aria-label', 'Dismiss notification'); dismiss.textContent = '×';
+  dismiss.addEventListener('click', () => { host.hidden = true; });
+  card.append(copy, view, dismiss); host.append(card); host.hidden = false;
+  if (notificationToastTimer) clearTimeout(notificationToastTimer);
+  notificationToastTimer = window.setTimeout(() => { host.hidden = true; }, 9000);
+}
+function addNotification({ title, message, status, action = null }) {
+  const duplicate = state.notifications.find(item => item.status === status && item.message === message && Date.now() - new Date(item.createdAt).getTime() < 60000);
+  if (duplicate) return duplicate;
+  const item = { id: `notification-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`, title, message, status, action, createdAt: new Date().toISOString(), read: false };
+  state.notifications.unshift(item);
+  state.notifications = state.notifications.slice(0, 30);
+  saveNotificationHistory(); renderNotifications(); showNotificationToast(item);
+  return item;
+}
+function markNotificationsRead() {
+  state.notifications = state.notifications.map(item => ({ ...item, read: true }));
+  saveNotificationHistory(); renderNotifications();
+}
+function clearNotifications() {
+  state.notifications = [];
+  saveNotificationHistory(); renderNotifications();
+}
+async function runNotificationAction(id) {
+  const item = state.notifications.find(entry => entry.id === id);
+  if (!item || !['download-update', 'install-update'].includes(item.action)) return;
+  try {
+    const result = item.action === 'download-update'
+      ? await window.brightdesk.downloadUpdate()
+      : await window.brightdesk.installUpdate();
+    if (result?.ok === false) addNotification({ title: 'Update action needs attention', message: result.message || 'The update action could not be completed.', status: 'error' });
+    else if (item.action === 'download-update') {
+      item.action = null; item.message = 'The Brightdesk update is downloading.'; item.read = true;
+      saveNotificationHistory(); renderNotifications();
+    }
+  } catch (error) {
+    addNotification({ title: 'Update action failed', message: error.message || 'The update action could not be completed.', status: 'error' });
+  }
+}
+function handleUpdateState(updateState) {
+  if (!updateState) return;
+  const message = $('update-message');
+  if (message) { message.hidden = false; message.textContent = updateState.message || 'Update status is available.'; }
+  if (updateState.status === 'available') {
+    addNotification({ title: 'Brightdesk update available', message: updateState.message || 'A new Brightdesk update is available.', status: 'available', action: 'download-update' });
+  } else if (updateState.status === 'downloaded') {
+    addNotification({ title: 'Brightdesk update ready', message: updateState.message || 'The Brightdesk update is ready to install.', status: 'downloaded', action: 'install-update' });
+  } else if (updateState.status === 'error') {
+    addNotification({ title: 'Brightdesk update check failed', message: updateState.message || 'Brightdesk could not check for updates.', status: 'error' });
+  }
 }
 function collectDocxBlocks() {
   const blocks=[];
@@ -854,16 +1004,31 @@ async function saveProject(){try{const result=await window.brightdesk.saveProjec
 function setApp(app){if((launchAppId && app !== launchAppId) || !(configs[app] || genericConfigs[app]) || !installedApp(app))return;state.app=app;state.view='workspace';state.ribbonTab='home';render();persist();}
 
 document.querySelectorAll('.nav[data-app]').forEach(btn=>btn.addEventListener('click',()=>setApp(btn.dataset.app)));
-$('manage-apps').addEventListener('click',()=>{if (launchAppId) return; state.view='manager';render();});
-$('open-settings').addEventListener('click',()=> $('manage-apps').click());
+document.addEventListener('click', event => {
+  if (event.target.closest('.app-card-menu-wrap')) return;
+  document.querySelectorAll('.app-card-menu').forEach(menu => { menu.hidden = true; menu.closest('.app-card-menu-wrap')?.querySelector('.app-card-menu-trigger')?.setAttribute('aria-expanded', 'false'); });
+});
+document.addEventListener('keydown', event => {
+  if (event.key !== 'Escape') return;
+  document.querySelectorAll('.app-card-menu').forEach(menu => { menu.hidden = true; menu.closest('.app-card-menu-wrap')?.querySelector('.app-card-menu-trigger')?.setAttribute('aria-expanded', 'false'); });
+});
+$('home-nav').addEventListener('click',()=>{if(launchAppId)return;state.view = 'home';render();});
+$('app-centre-nav').addEventListener('click',()=>{if(launchAppId)return;state.view = 'manager';render();});
+$('files-nav').addEventListener('click',()=>{if(launchAppId)return;state.view = 'files';render();});
+$('files-open-button').addEventListener('click', openFile);
+$('files-save-button').addEventListener('click', saveProject);
+$('open-settings').addEventListener('click',()=>{if (launchAppId) return; state.view='manager';render();});
+$('open-notifications').addEventListener('click',()=>{const panel=$('notification-panel');panel.hidden=!panel.hidden;$('open-notifications').setAttribute('aria-expanded',String(!panel.hidden));if(!panel.hidden)markNotificationsRead();});
+$('clear-notifications').addEventListener('click',clearNotifications);
+document.addEventListener('keydown',event=>{if(event.key==='Escape'&&!$('notification-panel').hidden){$('notification-panel').hidden=true;$('open-notifications').setAttribute('aria-expanded','false');}});
 $('manage-languages').addEventListener('click',openLanguageManager);
 $('display-language').addEventListener('change',event=>changeDisplayLanguage(event.target.value));
 $('proofing-language').addEventListener('change',event=>changeProofingLanguage(event.target.value));
 $('dictionary-search').addEventListener('input',renderAvailableDictionaryCatalogue);
 $('proofing-dictionary').addEventListener('change',event=>{state.selectedDictionary=event.target.value;localStorage.setItem('brightdesk-selected-dictionary',state.selectedDictionary);renderToolbar();});
 $('check-current-document').addEventListener('click',checkCurrentDocumentSpelling);
-$('back-to-apps').addEventListener('click',()=>{state.view=state.setupComplete?'workspace':'manager';render();});
-$('finish-app-setup').addEventListener('click',()=>{if(state.setupComplete){state.view='workspace';render();}else completeAppSetup();});
+$('back-to-apps').addEventListener('click',()=>{state.view='manager';render();});
+$('finish-app-setup').addEventListener('click',()=>{if(state.setupComplete){state.view='home';render();}else completeAppSetup();});
 $('doc-title').addEventListener('change',()=>{activeDoc().title=$('doc-title').value;persist();});
 editor.addEventListener('input',()=>{activeDoc().html=editor.innerHTML;persist();});
 $('notes-editor').addEventListener('input',()=>{activeDoc().text=$('notes-editor').value;persist();});
@@ -882,12 +1047,12 @@ $('lists-delete').addEventListener('click',deleteCurrentList);
 $('lists-column-type').addEventListener('change',()=>{$('lists-column-options-wrap').hidden=$('lists-column-type').value!=='choice';});
 $('export-button').addEventListener('click',exportCurrent);$('open-button').addEventListener('click',openFile);$('save-project').addEventListener('click',saveProject);
 $('updates-button').addEventListener('click',async()=>{const msg=$('update-message');msg.hidden=false;msg.textContent=t('common.updateChecking');try{const r=await window.brightdesk.checkForUpdates();if(!r?.ok)msg.textContent=r?.message||'Update checks are not configured yet.';}catch(e){msg.textContent=`Update check failed: ${e.message}`;}});
-window.brightdesk.onUpdateState?.(updateState=>{const msg=$('update-message');msg.hidden=false;msg.textContent=updateState.message;if(updateState.status==='available'){msg.textContent=updateState.message;}if(updateState.status==='downloaded'){const button=document.createElement('button');button.className='text-button';button.textContent=t('common.restartInstall');button.onclick=()=>window.brightdesk.installUpdate();msg.append(' ',button);}});
-loadLocal();$('platform').textContent=`Desktop app · ${window.brightdesk.platform}`;
+window.brightdesk.onUpdateState?.(handleUpdateState);
+loadLocal();
 (async()=>{
   try {
     const version = await window.brightdesk.getVersion();
-    if (version) { $('version-label').textContent = `Version ${version}`; $('footer-version').textContent = `Brightdesk ${version}`; }
+    if (version) { $('footer-version').textContent = `Brightdesk ${version}`; }
   } catch (error) { console.warn('The desktop version could not be read.', error); }
   try { await refreshLanguageData(); } catch(error) { console.error('Language packs could not be loaded.',error); }
   try { await refreshDictionaries(); } catch(error) { console.error('Spelling dictionaries could not be loaded.',error); }
