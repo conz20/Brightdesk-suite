@@ -182,8 +182,7 @@ for repository in "${REPOSITORIES[@]}"; do
   github_pat="$(gh auth token --hostname github.com 2>/dev/null)" || fail 'Could not read the GitHub CLI credential.'
   [[ -n "$github_pat" ]] || fail 'GitHub CLI returned an empty credential.'
 
-  config_log="$runner_home/configure.log"
-  config_args=(--url "$repository_url" --name "$runner_name" --runnergroup 'Default' --work '_work')
+  config_args=(--url "$repository_url" --name "$runner_name" --runnergroup 'Default' --work '_work' --unattended')
   if [[ -n "$extra_label" ]]; then
     config_args+=(--labels "$extra_label")
   fi
@@ -191,11 +190,9 @@ for repository in "${REPOSITORIES[@]}"; do
   if ! (
     cd "$runner_home"
     RUNNER_CFG_PAT="$github_pat" ./config.sh "${config_args[@]}"
-  ) > "$config_log" 2>&1; then
+  ) > /dev/null 2>&1; then
     unset github_pat
-    say "Runner configuration failed for $repository. No token was printed or saved."
-    say "Inspect the local configuration log: $config_log"
-    fail "Could not register $runner_name. Existing files were left in place for inspection."
+    fail "Runner configuration failed for $repository. No registration log or credential file was saved; existing files were left in place for inspection."
   fi
   unset github_pat
 
