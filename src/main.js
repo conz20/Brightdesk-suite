@@ -1,5 +1,6 @@
 const { app, BrowserWindow, Menu, ipcMain, dialog, Notification } = require('electron');
 const packageConfig = require('../package.json');
+app.setName(packageConfig.productName || 'Brightdesk');
 const nativeEngine = require('./rust-engine');
 const { assertPackagedVersion, assertMainWindowReady } = require('./startup-smoke');
 const path = require('node:path');
@@ -402,6 +403,12 @@ ipcMain.handle('updates:set-settings', async (event, payload) => {
 
 async function runPackagedStartupSmokeTest() {
   try {
+    if (process.env.BRIGHTDESK_REQUIRE_NATIVE_ENGINE === '1') {
+      const engineInfo = nativeEngine.engineInfo();
+      if (engineInfo.native !== true || engineInfo.nodeApiVersion !== 8 || !engineInfo.capabilities?.includes('vector-ranking')) {
+        throw new Error('The packaged Brightdesk native Rust engine did not report the required Node-API 8 vector-ranking capability.');
+      }
+    }
     assertPackagedVersion(app.getVersion(), packageConfig.version);
     await readTerms();
     await readBundledLanguagePack('en-AU');
@@ -423,7 +430,6 @@ async function runPackagedStartupSmokeTest() {
 }
 
 app.whenReady().then(async () => {
-  app.setName(packageConfig.productName || 'Brightdesk');
   dictionaryService = new DictionaryService(app.getPath('userData'));
   Menu.setApplicationMenu(null);
   if (process.env.BRIGHTDESK_STARTUP_SMOKE_TEST === '1') {

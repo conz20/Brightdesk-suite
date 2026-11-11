@@ -63,6 +63,7 @@ module.exports = {
   },
   nsis: {
     oneClick: false,
+    deleteAppDataOnUninstall: false,
     allowToChangeInstallationDirectory: true,
     createDesktopShortcut: true,
     createStartMenuShortcut: true,
@@ -74,6 +75,7 @@ module.exports = {
     category: 'public.app-category.productivity',
     artifactName: 'Brightdesk-' + appSlug + '-${version}-${arch}.${ext}'
   },
+  dmg: { sign: false, license: 'TERMS_AND_CONDITIONS.txt' },
   pkg: {
     license: 'TERMS_AND_CONDITIONS.txt',
     welcome: 'installer/mac-welcome.txt',

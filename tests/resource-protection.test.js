@@ -48,23 +48,31 @@ test('Windows installer displays the Brightdesk licence and offers a normal setu
   assert.equal(pkg.build.nsis.createStartMenuShortcut, true);
 });
 
-test('release workflow has working install and release permissions', () => {
+test('release workflow uses the Mac runner, verified cross-build scripts and manual publishing gate', () => {
   const workflow = read('.github/workflows/build-release.yml');
+  const crossBuild = read('scripts/build-cross-platform-installers.sh');
   assert.match(workflow, /node-version: 24\.22\.2/);
   assert.match(workflow, /run: npm ci/);
   assert.match(workflow, /npm run verify:licenses/);
   assert.match(workflow, /npm run release:preflight/);
-  assert.match(workflow, /npm run release:verify:win/);
+  assert.match(workflow, /runs-on: \[self-hosted, macOS, ARM64\]/);
+  assert.match(workflow, /npm run release:cross-platform/);
   assert.match(workflow, /npm run release:verify:mac/);
+  assert.match(crossBuild, /npm run release:verify:win/);
+  assert.match(crossBuild, /npm run release:verify:linux/);
+  assert.match(crossBuild, /npm run dist:products:win/);
+  assert.match(crossBuild, /npm run dist:products:linux/);
   assert.match(workflow, /WIN_CSC_LINK/);
   assert.match(workflow, /MAC_INSTALLER_CSC_LINK/);
   assert.match(workflow, /APPLE_APP_SPECIFIC_PASSWORD/);
-  assert.match(workflow, /npm run release:verify:linux/);
   assert.ok(workflow.includes('dtolnay/rust-toolchain@683b588c487a69d01f6c6ddf40f036ff682cc2c8'));
   assert.ok(workflow.includes('toolchain: 1.99.1'));
   assert.ok(workflow.includes('cargo fmt --manifest-path rust/Cargo.toml'));
   assert.ok(workflow.includes('cargo clippy --manifest-path rust/Cargo.toml'));
   assert.ok(workflow.includes('cargo test --manifest-path rust/Cargo.toml'));
   assert.doesNotMatch(workflow, /dist:apps:/);
-  assert.match(workflow, /publish-release:[\s\S]*?permissions:\s*contents: write/);
+  assert.match(workflow, /default: false/);
+  assert.match(workflow, /if: github\.event_name == 'workflow_dispatch' && inputs\.publish_release == true && github\.ref == 'refs\/heads\/main'/);
+  assert.match(workflow, /files: release\/verified-bundle\/\*\*\/\*\*/);
+  assert.match(workflow, /permissions:\s*contents: write/);
 });

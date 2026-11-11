@@ -1,54 +1,104 @@
-name: Verify Brightdesk macOS installer
-
+name: Verify Brightdesk cross-platform installers on the Mac runner
 on:
   pull_request:
     branches: [main]
     paths:
       - "package.json"
       - "package-lock.json"
-      - "tests/dependency-security.test.js"
+      - "README.md"
+      - "docs/LOCAL-RELEASE-VERIFICATION.md"
+      - "src/main.js"
+      - "src/rust-engine.js"
+      - "src/rust-engine-fallback.js"
+      - "src/embedding-bridge.js"
+      - "test/rust-engine.test.mjs"
+      - "test/embedding-bridge.test.mjs"
+      - "scripts/build-native.js"
+      - "scripts/build-app.js"
+      - "scripts/build-apps.js"
       - "scripts/prepare-release-assets.js"
       - "scripts/verify-release-artifacts.js"
+      - "scripts/verify-product-installers.js"
+      - "scripts/verify-complete-release-bundle.js"
+      - "scripts/collect-platform-build.js"
+      - "scripts/assemble-complete-release-bundle.js"
+      - "scripts/test-linux-package-lifecycle.sh"
+      - "scripts/test-windows-nsis-lifecycle.sh"
+      - "tests/release-bundle-assembly.test.js"
+      - "scripts/run-cross-platform-installer-builds.sh"
+      - "scripts/build-cross-platform-installers.sh"
+      - "tools/release-cross-build/Dockerfile"
+      - "tests/native-build-target.test.js"
+      - "tests/ten-product-release-bundle.test.js"
+      - "tests/release-workflows.test.js"
+      - ".github/workflows/build-release.yml"
       - ".github/workflows/verify-macos-installer.yml"
-
 permissions:
   contents: read
-
 concurrency:
-  group: brightdesk-macos-installer-pr-${{ github.event.pull_request.number }}
+  group: brightdesk-cross-platform-installers-pr-${{ github.event.pull_request.number }}
   cancel-in-progress: true
-
 jobs:
-  build-macos:
-    name: Build and verify macOS universal installer
-    runs-on: ["self-hosted", "macOS", "ARM64"]
-    timeout-minutes: 90
+  build-and-verify:
+    name: Build Suite and ten products for all platforms on the existing Mac runner
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: [self-hosted, macOS, ARM64]
+    timeout-minutes: 360
     steps:
       - name: Check out Brightdesk
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-
+        with:
+          persist-credentials: false
       - name: Set up required Node.js version
         uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: 24.22.2
           cache: npm
-
       - name: Set up the pinned Rust toolchain
         uses: dtolnay/rust-toolchain@683b588c487a69d01f6c6ddf40f036ff682cc2c8 # pinned action revision
         with:
           toolchain: 1.99.1
           components: rustfmt, clippy
-
-      - name: Install locked dependencies
-        run: npm ci --no-audit --no-fund
-
-      - name: Build macOS universal DMG, PKG and ZIP
+      - name: Verify lock and install dependencies
+        run: |
+          npm run lock:verify
+          npm ci --no-audit --no-fund
+          npm run verify:licenses
+      - name: Run Suite tests and release preflight
+        run: |
+          cargo fmt --manifest-path rust/Cargo.toml --all -- --check
+          cargo clippy --manifest-path rust/Cargo.toml --workspace --all-targets --locked -- -D warnings
+          cargo test --manifest-path rust/Cargo.toml --workspace --locked
+          npm test
+          npm run release:preflight
+      - name: Build and verify the universal macOS Suite installer
         env:
           CSC_IDENTITY_AUTO_DISCOVERY: "false"
         run: |
           npm run dist:mac
           npm run release:prepare -- mac
+          npm run release:verify:mac
+      - name: Build and verify all ten macOS product installers
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: "false"
+        run: |
+          npm run dist:products:mac
+          npm run release:verify:products:mac
+          npm run release:collect:mac
+      - name: Require and test the native macOS Rust engine
+        env:
+          BRIGHTDESK_REQUIRE_NATIVE_ENGINE: "1"
+        run: node --test test/rust-engine.test.mjs test/embedding-bridge.test.mjs
+      - name: Preserve the committed dependency lock
+        run: |
+          mkdir -p release/build-metadata
+          cp package-lock.json release/build-metadata/package-lock.json
+      - name: Build and verify Linux and Windows packages in the no-cost x86_64 container
+        run: npm run release:cross-platform
+      - name: Assemble the clean verified release bundle
+        run: npm run release:assemble
 
-      - name: Verify installer files and generate SHA-256 checksums
-        run: npm run release:verify:mac
-
+      - name: Verify the complete 66-file cross-platform release bundle
+        run: npm run release:verify:complete -- release/verified-bundle
+      - name: Audit dependencies for high severity vulnerabilities
+        run: npm audit --audit-level=high

@@ -73,8 +73,14 @@ test('the customer-facing release version has one authoritative source across th
   assert.match(versioning, /package\.json.*single source of truth/i);
   assert.match(versioning, /Brightdesk-AI.*no Brightdesk customer release number/i);
   assert.doesNotMatch(workflow, /Brightdesk-0\.1\.0-Installers|default: 'v0\.1\.0'/);
-  assert.match(workflow, /Brightdesk-\$\{\{ steps\.release-version\.outputs\.version \}\}-Installers/);
-  assert.match(workflow, /tag_name: v\$\{\{ needs\.collect\.outputs\.version \}\}/);
+  assert.match(workflow, /runs-on: \[self-hosted, macOS, ARM64\]/);
+  assert.match(workflow, /npm run release:cross-platform/);
+  assert.match(workflow, /npm run release:assemble/);
+  assert.match(workflow, /npm run release:verify:complete -- release\/verified-bundle/);
+  assert.match(workflow, /id: release-version/);
+  assert.match(workflow, /node -p \"require\('\.\/package\.json'\)\.version\"/);
+  assert.doesNotMatch(workflow, /Brightdesk-\$\{\{ steps\.release-version\.outputs\.version \}\}-Installers/);
+  assert.match(workflow, /tag_name: v\$\{\{ steps\.release-version\.outputs\.version \}\}/);
 });
 
 test('Brightdesk keeps its own identity and does not claim Microsoft affiliation', () => {

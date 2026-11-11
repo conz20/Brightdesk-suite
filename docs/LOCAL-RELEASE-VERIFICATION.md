@@ -1,45 +1,52 @@
 # Local release verification
 
-GitHub-hosted workflow runs are currently failing before their first runner step. This script provides a no-cost way to test and build Brightdesk on a computer you already own.
+The local release command builds and verifies the Brightdesk Office Suite and all ten approved products on the computer where it runs. The automated and manual installer workflows use private self-hosted GitHub Actions runners; this local command does not upload artifacts or publish a release.
 
 ## Requirements
 
-- macOS, Windows or Linux
-- Exactly Node.js 24.22.2
-- Internet access to install the project's public npm dependencies and run the npm security audit
-- No GitHub payment method, paid subscription or signing certificate is required for an unsigned local build
+- macOS, Windows or Linux.
+- Exactly Node.js 24.22.2.
+- Internet access for the locked npm dependencies and the npm security audit.
+- A native build host matching the output platform.
+- No GitHub-hosted runner, release upload or signing certificate is required for an unsigned local build.
 
 ## Run
 
-From the Brightdesk repository folder, run:
+From the Brightdesk Suite repository root:
 
 ```sh
 npm run verify:local-release
 ```
 
-The script checks the Node.js version and dependency lock, installs the locked dependencies, verifies licence notices, runs the full test suite, refreshes the static source inventory with `npm run rea:inspect`, runs release preflight and the high-severity npm audit, builds for the current operating system, prepares the legal/checksum assets and verifies the installer files.
+The script checks the Node.js runtime and dependency lock, installs the locked dependencies, verifies third-party notices, runs the automated tests and source inspection, checks release preflight and high-severity npm advisories, then:
 
-The script builds only for the operating system where it is run:
-- macOS: universal DMG, PKG and ZIP
-- Windows: x64 EXE
-- Linux: x64 AppImage and DEB
+1. Builds the Brightdesk Office Suite for the current operating system.
+2. Prepares the operating-system-specific Terms and Conditions, MIT licence and third-party notices.
+3. Verifies the Suite installer/archive names, non-empty files and SHA-256 checksums.
+4. Builds all ten approved product installers for the same operating system.
+5. Verifies each product's versioned installer names and creates/re-reads its SHA-256 manifest.
+6. Collects the Suite and ten product outputs into the native platform folder.
 
-Build output is kept in the local `release/` folder. The script does not upload artifacts, create a GitHub Release or publish anything. Review the generated files and checksum report before sharing them. Local builds are unsigned unless signing credentials are already configured. Unsigned macOS apps may show a Gatekeeper warning, and unsigned Windows installers may show a SmartScreen warning. A successful unsigned build is not the same as a signed, notarised production release.
+## Expected local output
 
-Run it separately on each operating system you intend to distribute Brightdesk for. A successful build on one platform does not verify the other platforms.
+| Host | Suite outputs | Ten product outputs |
+| --- | --- | --- |
+| Windows | x64 NSIS installer (.exe) | 10 x64 NSIS installers (.exe) |
+| macOS | Universal DMG, PKG and ZIP | 10 × universal DMG, PKG and ZIP |
+| Linux | AppImage and Debian package (.deb) | 10 × AppImage and Debian package (.deb) |
 
-## No-cost GitHub Actions runners
+Files are collected under `release/Windows`, `release/macOS` or `release/Linux`. Product folders and their individual checksum manifests are under `release/apps/<platform>/<product-id>`.
 
-The manual installer workflow uses private self-hosted runners instead of GitHub-hosted runners. This avoids consuming paid hosted-runner minutes and keeps source code on computers controlled by the project owner.
+The script does not upload artifacts, create a GitHub Release or publish anything. Review the generated files and checksums before sharing them. Local builds are unsigned unless signing credentials are already configured. Unsigned macOS applications may show a Gatekeeper warning, and unsigned Windows installers may show a SmartScreen warning. A successful unsigned build is not the same as a signed and notarised production release.
 
-Register one runner for each required platform in the repository's **Settings → Actions → Runners** page:
+This command verifies only the operating system where it runs. It does not claim that other operating systems have passed, and it does not replace live installation, first-launch, upgrade, removal or data-preservation acceptance tests. The complete release workflow combines the three native outputs and runs the 66-file cross-platform integrity gate described in [CROSS-PLATFORM-RELEASE-VERIFICATION.md](CROSS-PLATFORM-RELEASE-VERIFICATION.md).
 
-- **macOS:** labels `self-hosted`, `macOS`, `ARM64` (the existing Apple-silicon Mac runner).
-- **Windows:** labels `self-hosted`, `Windows`, `X64` (the project Windows PC).
-- **Linux:** labels `self-hosted`, `Linux`, `X64` (a Linux x64 computer).
+## No-cost cross-platform GitHub Actions builds
 
-GitHub assigns the standard operating-system and architecture labels when each runner is registered. Do not add a custom label in place of the standard labels above. Keep the runner service active while a build is queued. The installer workflow waits for all three matching runners; if a platform runner is offline or not registered, that platform's job remains queued and the full bundle cannot be collected.
+The automated installer workflow uses the existing private Apple-silicon Mac runner. It does not require a separate Windows or Linux computer or additional self-hosted runners.
 
-The existing Mac runner can handle the preparation, collection and macOS build jobs. A Windows runner is required for the native Windows installer, and a Linux x64 runner is required for the native Linux packages. Do not substitute a cross-build from another operating system and call it verified. The workflow does not publish a release unless the manual `publish_release` input is explicitly enabled; its default remains disabled.
+The Mac runner builds macOS packages natively. It then uses the free, open-source Colima virtual machine with QEMU and a pinned x86_64 Linux build container to produce Linux x64 AppImage/DEB packages and Windows x64 NSIS installers. The container uses the pinned Node.js 24.22.2 runtime and Rust 1.99.1 toolchain. Wine is used for Windows packaging tools such as NSIS.
 
-Runner setup requires access to each physical computer and a one-time registration from the repository settings. Never copy a runner registration token into source files, logs, issues or documentation. Keep all runners private to this repository and do not run untrusted fork pull-request code on them.
+The Linux container also runs lifecycle smoke checks for all eleven Debian packages: install with `dpkg`, confirm the package is registered, remove it, verify application payload files are gone, and confirm document/settings sentinels remain. Each of the eleven AppImages is checked in portable mode. This is Linux container evidence; no Linux hardware is required from the customer. The Windows container uses Wine/NSIS to install and silently uninstall the Suite and ten products, checks the uninstall registry entry and program files, and confirms document/settings sentinels remain. This is Wine compatibility evidence, not native Windows OS certification, and the silent smoke test does not exercise the interactive Terms page. Native Windows-specific behaviours that Wine cannot prove remain unverified. The packaged application startup checks also require the native Rust Node-API addon: the Mac runner and Linux container run the native-required Rust tests, while Wine starts each Windows package with `BRIGHTDESK_REQUIRE_NATIVE_ENGINE=1`. This does not replace native Windows OS acceptance.
+
+Colima, Docker CLI and QEMU are installed through Homebrew when missing. Docker Desktop is not installed or required. Intermediate platform files remain in the Mac runner workspace; the build does not upload Actions artifacts, avoiding the repository's Actions artifact-storage quota. Release publication is a separate manual selection and remains disabled by default.

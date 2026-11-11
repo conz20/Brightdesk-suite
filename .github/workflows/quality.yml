@@ -23,8 +23,8 @@ concurrency:
 jobs:
   quality:
     name: Validate Brightdesk Office Suite
-    # Use the existing private Mac runner; do not consume paid GitHub-hosted minutes.
-    runs-on: self-hosted
+    # Use standard hosted Linux; the account Actions budget caps usage.
+    runs-on: [self-hosted, macOS, ARM64]
     timeout-minutes: 45
     steps:
       - name: Check out Brightdesk
