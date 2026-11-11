@@ -237,6 +237,7 @@ test('private Mac runner bootstrap is pinned, repository-scoped and token-safe',
   assert.ok(setup.includes('nohup ./run.sh'));
   assert.ok(setup.includes('Type REGISTER to continue'));
   assert.ok(setup.includes('The local folder already exists'));
+  assert.ok(setup.includes('A compatible Mac runner is already registered but offline'));
   assert.ok(setup.includes('brightdesk-product-ci'));
   for (const repository of repositories) assert.ok(setup.includes("'" + repository + "'"), repository);
   assert.ok(!setup.includes('ubuntu-latest'));
