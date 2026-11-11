@@ -232,6 +232,7 @@ test('private Mac runner bootstrap is pinned, repository-scoped and token-safe',
   assert.ok(setup.includes('gh auth token --hostname github.com'));
   assert.ok(setup.includes('RUNNER_CFG_PAT="$github_pat" ./config.sh'));
   assert.ok(setup.includes('--unattended'));
+  assert.ok(setup.includes("config_args=(--url \"$repository_url\" --name \"$runner_name\" --runnergroup 'Default' --work '_work' --unattended)"));
   assert.ok(setup.includes(') > /dev/null 2>&1; then'));
   assert.ok(!setup.includes('configure.log'));
   assert.ok(!setup.includes('--token'));
