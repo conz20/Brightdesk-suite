@@ -179,6 +179,12 @@ Brightdesk Pages and Sheets have reference studies based on the public [Wordcraf
 
 The root README is maintained alongside the product, not as an end-of-project task. Every pull request and direct push to `main` that changes application code, tests, UI, design assets, screenshots, icons, configuration, dependencies, packaging, or build/release workflows must also update this README in the same change. The **README freshness** GitHub Actions check runs on pull requests and pushes to `main`; it requires a root `README.md` update whenever a non-Markdown file changes. A passing check confirms inclusion, not factual accuracy. Reviewers remain responsible for checking that feature status, screenshots, visual references, application icons, setup/build instructions, platform compatibility and repository links match the latest verified implementation.
 
+## Private Mac runner setup
+
+The owner-operated setup for the eight infrastructure repositories waiting on private Mac checks is in [tools/runner-setup/macos](tools/runner-setup/macos/README.txt). It verifies the official GitHub Actions runner v2.338.2 macOS ARM64 archive against its published SHA-256 digest, registers only the named private repositories, and starts the runner processes without installing launchd services or changing repository settings. It uses the signed-in GitHub CLI credential through the runner's documented `RUNNER_CFG_PAT` environment variable; the credential is not placed in command arguments or saved by the script.
+
+The helper covers Common Actions, Developer Tools, Extensions, Wiki, Release Tools, Services, Assets and Lists. Lists receives its additional `brightdesk-product-ci` label. Run it only on the owner's Apple-silicon Mac after signing in to GitHub CLI as `conz20` with repository administration access. Confirm every runner is Idle/Online on its repository page. Runner processes do not auto-start after logout or reboot.
+
 ## Repository hygiene
 
 Generated build output and Cargo `target` directories are excluded from the tracked source tree. Build products are recreated by the local build and CI workflows; they are not committed as product source.
