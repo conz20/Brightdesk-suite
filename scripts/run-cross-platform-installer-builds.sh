@@ -9,11 +9,9 @@ if [[ "$(uname -s)" != "Darwin" || "$(uname -m)" != "arm64" ]]; then
   echo "Brightdesk cross-platform packaging must run on the existing Apple-silicon Mac runner." >&2
   exit 2
 fi
-USE_EXISTING_DOCKER=0
 if command -v docker >/dev/null 2>&1 && docker info >/dev/null 2>&1; then
   CONTEXT="${DOCKER_CONTEXT:-$(docker context show)}"
   echo "Using an existing Docker engine context: $CONTEXT"
-  USE_EXISTING_DOCKER=1
 else
   if ! command -v colima >/dev/null 2>&1 || ! command -v docker >/dev/null 2>&1 || ! command -v qemu-system-x86_64 >/dev/null 2>&1; then
     if ! command -v brew >/dev/null 2>&1; then
@@ -26,6 +24,10 @@ else
         echo "Homebrew is missing and cannot install the missing tools without non-interactive administrator access." >&2
         if ! command -v sudo >/dev/null 2>&1 || ! sudo -n true >/dev/null 2>&1; then
           echo "No paid runner is required; make the free cross-build tools available to this Mac runner, then retry." >&2
+          exit 2
+        fi
+        if ! command -v curl >/dev/null 2>&1; then
+          echo "curl is required to install Homebrew." >&2
           exit 2
         fi
         NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
