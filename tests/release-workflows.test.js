@@ -61,7 +61,10 @@ test('cross-build image and toolchain versions are pinned',()=>{
 test('cross-build scripts use isolated Colima volumes and verify both container platforms',()=>{
  const outer=read('scripts/run-cross-platform-installer-builds.sh');
  const inner=read('scripts/build-cross-platform-installers.sh');
- assert.match(outer,/brew install "\$formula"/);
+ assert.match(outer,/brew install colima/);
+ assert.match(outer,/brew install docker/);
+ assert.match(outer,/brew install qemu/);
+ assert.match(outer,/command -v docker[\s\S]*docker info/);
  assert.match(outer,/NONINTERACTIVE=1/);
  assert.match(outer,/raw\.githubusercontent\.com\/Homebrew\/install/);
  assert.match(outer,/sudo -n true/);
