@@ -162,6 +162,15 @@ for repository in "${REPOSITORIES[@]}"; do
     continue
   fi
 
+  offline_compatible_runner="$(gh api "$runners_endpoint" --jq "[.runners[]? | select(.status == \"offline\") | ([.labels[].name] | contains($required_labels))] | any" 2>/dev/null)" ||
+    fail "Cannot inspect offline runner registrations for $repository."
+  if [[ "$offline_compatible_runner" == 'true' ]]; then
+    say "A compatible Mac runner is already registered but offline for $repository."
+    say "No duplicate registration was created. Inspect the existing runner in Settings > Actions > Runners."
+    manual_recovery_count=$((manual_recovery_count + 1))
+    continue
+  fi
+
   if [[ -e "$runner_home" || -L "$runner_home" ]]; then
     fail "The local folder already exists but no matching runner registration was found: $runner_home. Nothing was overwritten."
   fi
