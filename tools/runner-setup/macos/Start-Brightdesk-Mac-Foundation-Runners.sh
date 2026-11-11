@@ -42,6 +42,13 @@ start_runner() {
     fi
   fi
 
+  runner_pid="$(ps -axo pid=,command= | awk -v runner_home="$runner_home" 'index($0, runner_home) && /Runner.Listener/ {print $1; exit}' | tr -d '[:space:]')"
+  if [[ "$runner_pid" =~ ^[0-9]+$ ]] && kill -0 "$runner_pid" 2>/dev/null; then
+    printf '%s\n' "$runner_pid" > "$runner_pid_file"
+    say "Already running: $(basename "$runner_home") (PID $runner_pid)"
+    return 0
+  fi
+
   (
     cd "$runner_home"
     nohup ./run.sh > "$runner_home/runner.log" 2>&1 < /dev/null &
@@ -140,13 +147,16 @@ for repository in "${REPOSITORIES[@]}"; do
     fail "Cannot inspect runner '$runner_name' in $repository."
 
   if [[ -n "$registered_status" ]]; then
-    if [[ "$registered_status" == 'offline' && -f "$runner_home/.runner" && -x "$runner_home/run.sh" ]]; then
+    registered_labels_match="$(gh api "$runners_endpoint" --jq ".runners[]? | select(.name == \"$runner_name\") | ([.labels[].name] | contains($required_labels))" 2>/dev/null | head -n 1)" ||
+      fail "Cannot inspect labels for runner '$runner_name'."
+    if [[ "$registered_status" == 'offline' && "$registered_labels_match" == 'true' &&
+          ! -L "$runner_home" && -f "$runner_home/.runner" && ! -L "$runner_home/.runner" && -x "$runner_home/run.sh" ]]; then
       say "Restarting the already-registered runner for $repository..."
       start_runner "$runner_home" || fail "Could not restart $runner_name."
       started_count=$((started_count + 1))
     else
-      say "Registered runner '$runner_name' is $registered_status, but its existing local installation needs inspection."
-      say "No duplicate registration was created. Local folder expected: $runner_home"
+      say "Registered runner '$runner_name' is $registered_status or has different labels."
+      say "No duplicate registration was created. Inspect its labels and local folder: $runner_home"
       manual_recovery_count=$((manual_recovery_count + 1))
     fi
     continue
