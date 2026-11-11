@@ -9,40 +9,46 @@ if [[ "$(uname -s)" != "Darwin" || "$(uname -m)" != "arm64" ]]; then
   echo "Brightdesk cross-platform packaging must run on the existing Apple-silicon Mac runner." >&2
   exit 2
 fi
-if ! command -v brew >/dev/null 2>&1; then
-  if [[ -x /opt/homebrew/bin/brew ]]; then
-    eval "$(/opt/homebrew/bin/brew shellenv)"
-  elif [[ -x /usr/local/bin/brew ]]; then
-    eval "$(/usr/local/bin/brew shellenv)"
-  else
-    echo "Homebrew is missing. Installing the free Homebrew package manager for this self-hosted Mac runner." >&2
-    if ! command -v curl >/dev/null 2>&1; then
-      echo "curl is required to install Homebrew." >&2
-      exit 2
+USE_EXISTING_DOCKER=0
+if command -v docker >/dev/null 2>&1 && docker info >/dev/null 2>&1; then
+  CONTEXT="${DOCKER_CONTEXT:-$(docker context show)}"
+  echo "Using an existing Docker engine context: $CONTEXT"
+  USE_EXISTING_DOCKER=1
+else
+  if ! command -v colima >/dev/null 2>&1 || ! command -v docker >/dev/null 2>&1 || ! command -v qemu-system-x86_64 >/dev/null 2>&1; then
+    if ! command -v brew >/dev/null 2>&1; then
+      if [[ -x /opt/homebrew/bin/brew ]]; then
+        eval "$(/opt/homebrew/bin/brew shellenv)"
+      elif [[ -x /usr/local/bin/brew ]]; then
+        eval "$(/usr/local/bin/brew shellenv)"
+      else
+        echo "Cross-platform packaging needs Docker with a running engine, or Colima, Docker CLI and QEMU." >&2
+        echo "Homebrew is missing and cannot install the missing tools without non-interactive administrator access." >&2
+        if ! command -v sudo >/dev/null 2>&1 || ! sudo -n true >/dev/null 2>&1; then
+          echo "No paid runner is required; make the free cross-build tools available to this Mac runner, then retry." >&2
+          exit 2
+        fi
+        NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+        if [[ -x /opt/homebrew/bin/brew ]]; then
+          eval "$(/opt/homebrew/bin/brew shellenv)"
+        elif [[ -x /usr/local/bin/brew ]]; then
+          eval "$(/usr/local/bin/brew shellenv)"
+        else
+          echo "Homebrew installation completed without a usable brew executable." >&2
+          exit 2
+        fi
+      fi
     fi
-    if ! sudo -n true >/dev/null 2>&1; then
-      echo "Homebrew installation needs non-interactive administrator access on this Mac runner." >&2
-      echo "No paid service is required; grant the runner account administrator access, then retry." >&2
-      exit 2
-    fi
-    NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-    if [[ -x /opt/homebrew/bin/brew ]]; then
-      eval "$(/opt/homebrew/bin/brew shellenv)"
-    elif [[ -x /usr/local/bin/brew ]]; then
-      eval "$(/usr/local/bin/brew shellenv)"
-    else
-      echo "Homebrew installation completed without a usable brew executable." >&2
-      exit 2
-    fi
+    if ! command -v colima >/dev/null 2>&1; then brew install colima; fi
+    if ! command -v docker >/dev/null 2>&1; then brew install docker; fi
+    if ! command -v qemu-system-x86_64 >/dev/null 2>&1; then brew install qemu; fi
   fi
-fi
-for formula in colima docker qemu; do
-  if ! brew list --formula "$formula" >/dev/null 2>&1; then brew install "$formula"; fi
-done
 
-status="$(colima status --profile "$PROFILE" 2>&1 || true)"
-if ! printf '%s' "$status" | grep -qi 'running'; then
-  colima start --profile "$PROFILE" --arch x86_64 --vm-type qemu --cpus 4 --memory 8 --disk 100
+  status="$(colima status --profile "$PROFILE" 2>&1 || true)"
+  if ! printf '%s' "$status" | grep -qi 'running'; then
+    colima start --profile "$PROFILE" --arch x86_64 --vm-type qemu --cpus 4 --memory 8 --disk 100
+  fi
+  CONTEXT="colima-$PROFILE"
 fi
 
 docker --context "$CONTEXT" info >/dev/null
