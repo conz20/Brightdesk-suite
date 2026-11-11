@@ -50,7 +50,7 @@ The ten original SVG application icons remain the single source of truth. The Su
 
 These are configured targets, not proof that current installers are published or verified. A complete cross-platform release requires successful native build, install, first launch, upgrade and removal checks for every supported operating system, using the same approved suite version and source commit.
 
-The manual installer workflow is configured to use private self-hosted GitHub Actions runners, avoiding paid GitHub-hosted minutes. GitHub Actions dependencies are pinned to full commit SHAs where required by the repository's security policy. The existing Apple-silicon Mac runner handles preparation, collection and macOS packaging. Native Windows x64 and Linux x64 packaging each require their own registered, online self-hosted runner; until those runners are registered and all platform jobs pass, a complete three-platform installer bundle is not available. See [no-cost runner setup](docs/LOCAL-RELEASE-VERIFICATION.md#no-cost-github-actions-runners). Release publishing remains off by default and requires an explicit manual selection.
+The manual installer workflow is configured to use private self-hosted GitHub Actions runners, avoiding paid GitHub-hosted minutes. GitHub Actions dependencies are pinned to full commit SHAs where required by the repository's security policy. The existing Apple-silicon Mac runner handles preparation, collection and macOS packaging. Native Windows x64 and Linux x64 packaging each require their own registered, online self-hosted runner; until those runners are registered and all platform jobs pass, a complete three-platform installer bundle is not available. See [no-cost runner setup](docs/LOCAL-RELEASE-VERIFICATION.md#no-cost-github-actions-runners) and the [click-to-run Windows runner setup](docs/LOCAL-RELEASE-VERIFICATION.md#windows-runner-setup). Release publishing remains off by default and requires an explicit manual selection.
 
 **Terms and first launch:** Windows NSIS and macOS DMG/PKG installers present the Terms and Conditions before installation continues. Linux uses the same blocking agreement in the packaged product on first launch, because AppImage has no installer agreement page. The workspace remains unavailable until the user explicitly accepts; declining or closing the agreement exits the product.
 
@@ -108,16 +108,16 @@ Brightdesk is designed to keep product data on the current device. The first-use
 
 Each approved product has its own repository and product documentation:
 
-- [Brightdesk Pages](https://github.com/connormolloy12/Brightdesk-Pages)
-- [Brightdesk Sheets](https://github.com/connormolloy12/Brightdesk-Sheets)
-- [Brightdesk Decks](https://github.com/connormolloy12/Brightdesk-Decks)
-- [Brightdesk Notes](https://github.com/connormolloy12/Brightdesk-Notes)
-- [Brightdesk Database](https://github.com/connormolloy12/Brightdesk-Database)
-- [Brightdesk Forms](https://github.com/connormolloy12/Brightdesk-Forms)
-- [Brightdesk Lists](https://github.com/connormolloy12/Brightdesk-Lists)
-- [Brightdesk Planner](https://github.com/connormolloy12/Brightdesk-Planner)
-- [Brightdesk To Do](https://github.com/connormolloy12/Brightdesk-To-Do)
-- [Brightdesk Workspace](https://github.com/connormolloy12/Brightdesk-Workspace)
+- [Brightdesk Pages](https://github.com/conz20/Brightdesk-Pages)
+- [Brightdesk Sheets](https://github.com/conz20/Brightdesk-Sheets)
+- [Brightdesk Decks](https://github.com/conz20/Brightdesk-Decks)
+- [Brightdesk Notes](https://github.com/conz20/Brightdesk-Notes)
+- [Brightdesk Database](https://github.com/conz20/Brightdesk-Database)
+- [Brightdesk Forms](https://github.com/conz20/Brightdesk-Forms)
+- [Brightdesk Lists](https://github.com/conz20/Brightdesk-Lists)
+- [Brightdesk Planner](https://github.com/conz20/Brightdesk-Planner)
+- [Brightdesk To Do](https://github.com/conz20/Brightdesk-To-Do)
+- [Brightdesk Workspace](https://github.com/conz20/Brightdesk-Workspace)
 
 ## Connected developer ecosystem
 
