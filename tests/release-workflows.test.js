@@ -260,8 +260,8 @@ test('Mac runner setup documentation explains scope, token handling and no-servi
 
   assert.match(instructions, /Apple-silicon Mac only/);
   assert.ok(instructions.includes('The GitHub CLI credential is used only by gh api to request a short-lived registration token.'));
-  assert.ok(instructions.includes('The temporary registration token is passed to the official config.sh --token option.'));
-  assert.ok(instructions.includes('The temporary token is not printed or saved to a file and is cleared immediately after configuration.'));
+  assert.ok(instructions.includes('The temporary registration token is passed to the official `config.sh --token` option, as required by the runner configurator.'));
+  assert.ok(instructions.includes('It is not printed or saved to a file and is cleared from the setup script immediately after configuration.'));
   assert.ok(instructions.includes('They do not auto-start after logout or reboot.'));
   assert.ok(releaseGuide.includes('Start-Brightdesk-Mac-Foundation-Runners.sh'));
   assert.match(releaseGuide, /Brightdesk-Common-Actions/);
