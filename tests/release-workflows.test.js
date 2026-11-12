@@ -3,6 +3,7 @@
 const test = require('node:test');
 const { execFileSync } = require('node:child_process');
 const assert = require('node:assert/strict');
+const { createHash } = require('node:crypto');
 const fs = require('node:fs');
 const path = require('node:path');
 
@@ -380,7 +381,9 @@ test('Windows runner can be started from one verified download', () => {
   assert.ok(instructions.includes('downloads the PowerShell installer automatically'));
   assert.ok(instructions.includes('There is no setup ZIP.'));
   assert.ok(launcher.includes('https://raw.githubusercontent.com/conz20/Brightdesk-suite/3689b07316e2c700cf868a895ad5b66843c2aca2/tools/runner-setup/windows/Install-Brightdesk-Windows-Runner.ps1'));
-  assert.ok(launcher.includes('24f51d6510002ef70e08af4df92f7f5254684c6127cb7c2cb754b0566c4f573e'));
+  const expectedInstallerHash = /^set "INSTALLER_SHA256=([a-f0-9]{64})"$/m.exec(launcher)?.[1];
+  assert.ok(expectedInstallerHash, 'launcher pins the PowerShell installer SHA-256');
+  assert.equal(expectedInstallerHash, createHash('sha256').update(installer, 'utf8').digest('hex'));
   assert.ok(launcher.includes('Invoke-WebRequest'));
   assert.ok(launcher.includes('Get-FileHash'));
   assert.ok(launcher.includes('powershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -File "%INSTALLER_PATH%"'));
