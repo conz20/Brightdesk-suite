@@ -75,3 +75,16 @@ The click-to-run Windows x64 setup source and exact instructions are in [tools/r
 4. Confirm `Brightdesk-Windows-PC` appears as **Idle** in Settings → Actions → Runners.
 
 The token expires after one hour. Never paste it into chat, an issue, source code or logs. Registration does not switch any workflow to this runner; update the Windows job to use `[self-hosted, Windows, X64]` only after the runner appears online. The setup source stops rather than overwriting a non-empty existing runner folder.
+
+
+### Optional Linux x64 runner using Windows Subsystem for Linux
+
+A separate Linux computer is not necessarily required for the first Linux build attempt. A Windows x64 computer with WSL 2 and a supported Ubuntu distribution can be evaluated as a no-cost Linux runner:
+
+1. Confirm the Windows machine supports WSL 2. Microsoft's current install guidance supports Windows 11 and Windows 10 version 2004 (build 19041) or later. See [Install WSL](https://learn.microsoft.com/en-us/windows/wsl/install).
+2. Install or open an Ubuntu distribution under WSL 2. Check it from PowerShell with `wsl --list --verbose`; the distribution must show version `2`.
+3. In the Ubuntu environment, install and register a GitHub Actions Linux x64 self-hosted runner for this private repository. Use the repository's generated one-time registration token; never save it in the repository.
+4. Run the Linux runner as an interactive WSL process using its `run.sh` launcher. Do **not** install it as a Windows service. Ubuntu's WSL guidance explains that current Store-based WSL requires a logged-in user session and cannot be started by a Windows service; see [Running WSL workflows](https://ubuntu.com/wsl/docs/stable/howto/run-workflows-azure/).
+5. Confirm GitHub shows the runner as **Idle/Online** with the labels `self-hosted`, `Linux` and `X64`. Keep the Windows user session and WSL runner active while the manual installer workflow is running.
+
+**Verification status:** this is an optional route to evaluate, not an already verified Brightdesk build environment. The runner must first complete the Linux Suite build, all ten product builds, artifact checks and checksum generation. WSL package creation does not by itself prove that the DEB or AppImage works in a native Linux desktop session; test installation, first launch, window behaviour and removal on a real Linux desktop before release acceptance. A WSL runner also stores a temporary Actions checkout in its runner workspace during the job; use the configured cleanup policy and do not treat that temporary checkout as the canonical repository.
