@@ -51,7 +51,7 @@ async function writeUpdateSettings(settings = {}) {
 
 function sendUpdateState(state) {
   BrowserWindow.getAllWindows().forEach(window => { if (!window.isDestroyed()) window.webContents.send('updates:state', state); });
-  if (!['available', 'downloaded'].includes(state?.status) || (mainWindow && mainWindow.isFocused()) || !Notification.isSupported()) return;
+  if (!['available', 'downloaded'].includes(state?.status) || (mainWindow && !mainWindow.isDestroyed() && mainWindow.isFocused()) || !Notification.isSupported()) return;
   const title = state.status === 'available' ? 'Brightdesk update available' : 'Brightdesk update ready';
   const notification = new Notification({ title, body: state.message || 'A Brightdesk Office Suite update is ready.', silent: false });
   notification.on('click', () => {
