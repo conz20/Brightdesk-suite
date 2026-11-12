@@ -524,7 +524,10 @@ function renderAppManager() {
       if (isInstalled) {
         const open = document.createElement('button'); open.className = 'primary small-action app-install-action';
         open.textContent = 'Open'; open.setAttribute('aria-label', `Open ${item.name}`);
-        open.addEventListener('click', () => window.brightdesk.openApplication(item.id)); footer.append(open);
+        open.addEventListener('click', async () => {
+          try { await window.brightdesk.openApplication(item.id); }
+          catch (error) { alert(error.message || `Could not open ${item.name}.`); }
+        }); footer.append(open);
       }
       const action = document.createElement('button'); action.className = isInstalled ? 'secondary small-action app-install-action' : 'primary small-action app-install-action';
       action.textContent = t(isInstalled ? 'manager.remove' : 'manager.install');
@@ -579,12 +582,19 @@ function updateDocumentLanguage() {
 function syncAppNavigation() {
   const host = $('dynamic-app-nav'); if (!host) return;
   host.innerHTML = '';
-  catalog.filter(item => installedApp(item.id) && !state.hiddenProducts.includes(item.id)).forEach(item => {
+  const navigationProducts = launchAppId
+    ? catalog.filter(item => item.id !== launchAppId)
+    : catalog.filter(item => installedApp(item.id) && !state.hiddenProducts.includes(item.id));
+  navigationProducts.forEach(item => {
     const button=document.createElement('button'); button.type='button'; button.className='nav'; button.dataset.app=item.id;
     const icon=document.createElement('img'); icon.className='app-icon-image'; icon.src=appIconPath(item); icon.alt=''; icon.setAttribute('aria-hidden','true');
     const label=document.createElement('span'); const name=document.createElement('b'); name.textContent=t(`apps.${item.id}`); const sub=document.createElement('small'); sub.textContent=item.subtitle;
     label.append(name,sub); button.append(icon,label);
-    button.addEventListener('click',()=>window.brightdesk.openApplication(item.id)); host.append(button);
+    button.addEventListener('click', async () => {
+      try { await window.brightdesk.openApplication(item.id); }
+      catch (error) { alert(error.message || `Could not open ${item.name}.`); }
+    });
+    host.append(button);
   });
 }
 
