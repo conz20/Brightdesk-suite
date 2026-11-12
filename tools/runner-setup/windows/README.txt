@@ -3,7 +3,7 @@ BRIGHTDESK WINDOWS RUNNER SETUP
 
 Purpose
 -------
-Register your Windows 64-bit PC as a private GitHub Actions runner for:
+Register your 64-bit Windows 10 or Windows 11 PC as a private GitHub Actions runner for:
 https://github.com/conz20/Brightdesk-suite
 
 This allows Brightdesk's Windows build checks to run on your own PC instead of a paid GitHub-hosted Windows machine.
