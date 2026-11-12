@@ -314,3 +314,14 @@ test('Suite product management labels workspace inclusion instead of implying na
   assert.equal(en['manager.remove'], 'Remove from Suite');
   assert.equal(en['manager.installSelected'], 'Add selected apps');
 });
+
+test('standalone product runtimes share protected language and dictionary resources', () => {
+  const fs = require('node:fs');
+  const path = require('node:path');
+  const main = fs.readFileSync(path.join(__dirname, '..', 'src', 'main.js'), 'utf8');
+  assert.match(main, /function sharedResourcesDirectory\(\)[\s\S]*?app\.getPath\('appData'\), 'Brightdesk'/);
+  assert.match(main, /function ensureSharedResourcesDirectory\([\s\S]*?for \(const folder of \['dictionaries', 'language-packs'\]\)/);
+  assert.match(main, /new DictionaryService\(sharedResources\)/);
+  assert.match(main, /function languagePackDirectory\(\)[\s\S]*?sharedResourcesDirectory\(\), 'language-packs'/);
+  assert.match(main, /fsNative\.constants\.COPYFILE_EXCL/);
+});
