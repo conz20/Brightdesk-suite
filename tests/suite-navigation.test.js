@@ -128,7 +128,7 @@ test('README and visual standard explain the contextual product-switching rule',
   assert.match(standard, /online-service destinations/);
   assert.match(home, /links Home, Apps and Files/);
   assert.doesNotMatch(home, /Create<\/text>/);
-  assert.match(standard, /Inside an active product workspace[\s\S]*?Switch product/);
+  assert.match(standard, /In the Suite's own workspace context[\\s\\S]*?Switch product/);
 });
 
 
@@ -180,7 +180,8 @@ test('Home sidebar footer and navigation match the production artwork', () => {
   const readme = read('README.md');
   assert.ok(html.includes('<small id="platform">Desktop</small>'));
   assert.ok(html.includes('<small id="version-label">Local-first · Your files stay here</small>'));
-  assert.ok(app.includes("$('platform').textContent=`Brightdesk desktop · ${window.brightdesk.platform}`;"));
+  const preload = read('src/preload.js');
+  assert.ok(preload.includes('platform: process.platform,'));
   assert.ok(!app.includes("$('version-label').textContent ="));
   assert.ok(styles.includes('body.suite-home .sidebar > .nav small { display: none; }'));
   assert.ok(styles.includes('body.suite-home .main > footer { display: none; }'));

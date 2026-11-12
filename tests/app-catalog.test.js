@@ -167,7 +167,7 @@ test('standalone app packaging has independent product IDs and all three platfor
   const builder = fs.readFileSync(path.join(root, 'electron-builder.app.config.js'), 'utf8');
   assert.match(builder, /org\.brightdesk\.\$\{appId\}/);
   assert.match(builder, /brightdeskAppId: appId/);
-  assert.match(builder, /extraMetadata: \\{[^}]*brightdeskAppId: appId[^}]*productName:/s);
+  assert.ok(builder.includes("extraMetadata: { name: 'brightdesk-' + appId, brightdeskAppId: appId, productName: 'Brightdesk ' + appName"));
   const configPath = path.join(root, 'electron-builder.app.config.js');
   const previousAppId = process.env.BRIGHTDESK_APP_ID;
   const products = [];
