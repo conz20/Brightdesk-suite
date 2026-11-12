@@ -47,13 +47,20 @@ function clone(value) { return JSON.parse(JSON.stringify(value)); }
 function activeDoc() { return state.docs[state.app]; }
 function setStatus(message) { $('save-status').textContent = message; }
 function persist() {
-  try { localStorage.setItem('brightdesk-docs-v3', JSON.stringify(state.docs)); setStatus('Saved on this device'); return true; }
+  try {
+    if (launchAppId) localStorage.setItem(`brightdesk-doc-${launchAppId}-v1`, JSON.stringify(state.docs[launchAppId]));
+    else localStorage.setItem('brightdesk-docs-v3', JSON.stringify(state.docs));
+    setStatus('Saved on this device'); return true;
+  }
   catch (error) { setStatus('Could not save locally'); console.error(error); return false; }
 }
 function loadLocal() {
   try {
     const stored = JSON.parse(localStorage.getItem('brightdesk-docs-v3') || localStorage.getItem('brightdesk-docs-v2') || 'null');
     if (stored && typeof stored === 'object') state.docs = { ...clone(defaults), ...stored };
+    for (const id of Object.keys(defaults)) {
+      try { const separate = JSON.parse(localStorage.getItem(`brightdesk-doc-${id}-v1`) || 'null'); if (separate && typeof separate === 'object') state.docs[id] = separate; } catch { /* Keep the last valid document data. */ }
+    }
     const appSetup = JSON.parse(localStorage.getItem('brightdesk-app-setup-v1') || 'null');
     const resolvedSetup = resolveAppSetup(appSetup, launchAppId, installableCatalog.map(item => item.id));
     state.installedApps = resolvedSetup.installedApps;
@@ -519,7 +526,7 @@ function renderAppManager() {
       if (isInstalled) {
         const open = document.createElement('button'); open.className = 'primary small-action app-install-action';
         open.textContent = 'Open'; open.setAttribute('aria-label', `Open ${item.name}`);
-        open.addEventListener('click', () => setApp(item.id)); footer.append(open);
+        open.addEventListener('click', () => window.brightdesk.openApplication(item.id)); footer.append(open);
       }
       const action = document.createElement('button'); action.className = isInstalled ? 'secondary small-action app-install-action' : 'primary small-action app-install-action';
       action.textContent = isInstalled ? 'Uninstall' : 'Install';
@@ -564,7 +571,7 @@ function syncAppNavigation() {
     const icon=document.createElement('img'); icon.className='app-icon-image'; icon.src=appIconPath(item); icon.alt=''; icon.setAttribute('aria-hidden','true');
     const label=document.createElement('span'); const name=document.createElement('b'); name.textContent=t(`apps.${item.id}`); const sub=document.createElement('small'); sub.textContent=item.subtitle;
     label.append(name,sub); button.append(icon,label);
-    button.addEventListener('click',()=>setApp(item.id)); host.append(button);
+    button.addEventListener('click',()=>window.brightdesk.openApplication(item.id)); host.append(button);
   });
 }
 
@@ -801,7 +808,7 @@ function render() {
   $('home-nav').setAttribute('aria-current', home ? 'page' : 'false');
   $('app-centre-nav').setAttribute('aria-current', manager ? 'page' : 'false');
   $('files-nav').setAttribute('aria-current', files ? 'page' : 'false');
-  $('dynamic-app-nav').hidden = suitePage || languages || Boolean(launchAppId);
+  $('dynamic-app-nav').hidden = suitePage || languages;
   $('app-manager').hidden = !(home || manager);
   $('app-manager').classList.toggle('home-view', home);
   $('app-manager').querySelector('.settings-toolbar').hidden = home;
