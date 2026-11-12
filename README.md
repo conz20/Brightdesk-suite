@@ -73,6 +73,12 @@ All ten approved product areas are integrated into the main suite source and hav
 
 This table describes the first-use scope represented in source code. It is not a claim of complete feature parity with other office suites, final accessibility sign-off or release acceptance. Each product has explicit boundaries and acceptance checks in its documentation.
 
+## Shared printing
+
+The Suite's ten product windows now share one local printing adapter. Pages, Sheets, Decks, Notes, Database, Forms, Lists, Planner, To Do and Workspace each expose **Print** and **Printer settings** actions. Print uses the operating system's configured queues and its visible print dialog; Printer settings opens the operating system's own setup screen. Brightdesk does not silently create queues, install drivers or upload document content. A successful submission means the operating system accepted the job, not that a physical page was confirmed.
+
+The shared adapter is bundled from the reviewed private `Brightdesk-Printing` source snapshot recorded in `src/printing-package/UPSTREAM.json`. It has no runtime npm dependencies, package registry requirement or build-time network fetch. Virtual-printer tests exercise queue listing, capability reporting, successful submission, removed queues and spooler rejection without requiring physical hardware. Native macOS and Windows network-discovery helpers are not yet built and bundled by the Suite packaging workflow; Linux network discovery depends on the host's `ippfind` utility. Until that packaging work is completed, network discovery can report unavailable while configured system queues and the visible print dialog remain the supported first integration path.
+
 ## Rust Node-API engine
 
 The Suite includes a Rust engine exposed to the Electron main process through a Node-API 8 native module. Electron and JavaScript continue to own application orchestration, user-interface state, file access and provider selection. The renderer does not load native code directly.
