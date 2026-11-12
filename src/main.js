@@ -10,8 +10,8 @@ const { BUILTIN_LANGUAGES, validateLanguagePack, getBuiltinLanguage } = require(
 const { DictionaryService } = require('./dictionary-service');
 const { DEFAULT_UPDATE_SETTINGS, normalizeUpdateSettings, getUpdaterPreferences } = require('./update-policy');
 const { shouldRequireFirstLaunchTerms } = require('./installer-terms-policy');
+const { launchProduct, PRODUCT_MANIFEST } = require('./product-launcher');
 let mainWindow;
-const productWindows = new Map();
 let agreementWindow;
 let termsAccepted = false;
 let autoUpdater;
@@ -22,7 +22,21 @@ let updateCheckTimeout = null;
 let updateCheckInterval = null;
 let automaticUpdateChecksEnabled = DEFAULT_UPDATE_SETTINGS.autoCheck;
 let dictionaryService;
-const supportedApplications = new Set(['pages', 'sheets', 'slides', 'notes', 'database', 'forms', 'lists', 'planner', 'todo', 'loop']);
+const supportedApplications = new Set(Object.keys(PRODUCT_MANIFEST));
+const hasSingleInstanceLock = app.requestSingleInstanceLock();
+if (!hasSingleInstanceLock) {
+  app.quit();
+} else {
+  app.on('second-instance', () => {
+    const target = mainWindow && !mainWindow.isDestroyed()
+      ? mainWindow
+      : (agreementWindow && !agreementWindow.isDestroyed() ? agreementWindow : null);
+    if (!target) return;
+    if (target.isMinimized()) target.restore();
+    target.show();
+    target.focus();
+  });
+}
 const applicationId = packageConfig.brightdeskAppId || null;
 if (applicationId && !supportedApplications.has(applicationId)) {
   throw new Error(`Unsupported Brightdesk application: ${applicationId}`);
@@ -66,7 +80,9 @@ function sendUpdateState(state) {
 function createWindow({ show = true } = {}) {
   mainWindow = new BrowserWindow({
     width: 1440, height: 920, minWidth: 980, minHeight: 680, show,
-    title: applicationId ? `Brightdesk ${({ pages: 'Pages', sheets: 'Sheets', slides: 'Decks', notes: 'Notes', database: 'Database', forms: 'Forms', lists: 'Lists', planner: 'Planner', todo: 'To Do', loop: 'Workspace' })[applicationId]}` : 'Brightdesk Office Suite', backgroundColor: '#f5f6fa',
+    title: applicationId ? `Brightdesk ${PRODUCT_MANIFEST[applicationId].name}` : 'Brightdesk Office Suite',
+    icon: applicationId ? path.join(__dirname, 'assets', 'icons', PRODUCT_MANIFEST[applicationId].iconAsset) : undefined,
+    backgroundColor: '#f5f6fa',
     webPreferences: { preload: path.join(__dirname, 'preload.js'), contextIsolation: true, nodeIntegration: false, sandbox: true, additionalArguments: applicationId ? [`--brightdesk-app=${applicationId}`] : [] }
   });
   mainWindow.webContents.setWindowOpenHandler(() => ({ action: 'deny' }));
@@ -74,46 +90,17 @@ function createWindow({ show = true } = {}) {
   mainWindow.on('focus', () => { if (autoUpdater && automaticUpdateChecksEnabled) checkForUpdates({ quiet: true }); });
   return mainWindow.loadFile(path.join(__dirname, 'index.html'));
 }
-const applicationNames = { pages: 'Pages', sheets: 'Sheets', slides: 'Decks', notes: 'Notes', database: 'Database', forms: 'Forms', lists: 'Lists', planner: 'Planner', todo: 'To Do', loop: 'Workspace' };
-const applicationIcons = { pages: 'pages.svg', sheets: 'sheets.svg', slides: 'decks.svg', notes: 'notes.svg', database: 'database.svg', forms: 'forms.svg', lists: 'lists.svg', planner: 'planner.svg', todo: 'to-do.svg', loop: 'workspace.svg' };
-function openProductWindow(applicationId) {
-  if (!supportedApplications.has(applicationId)) throw new Error('Unsupported Brightdesk application.');
-  const existing = productWindows.get(applicationId);
-  if (existing && !existing.isDestroyed()) {
-    if (existing.isMinimized()) existing.restore();
-    existing.show();
-    existing.focus();
-    return { ok: true, alreadyOpen: true };
-  }
-  const window = new BrowserWindow({
-    width: 1440, height: 920, minWidth: 980, minHeight: 680,
-    title: `Brightdesk ${applicationNames[applicationId]}`,
-    icon: path.join(__dirname, 'assets', 'icons', applicationIcons[applicationId]),
-    backgroundColor: '#f5f6fa',
-    webPreferences: {
-      preload: path.join(__dirname, 'preload.js'),
-      contextIsolation: true, nodeIntegration: false, sandbox: true,
-      additionalArguments: [`--brightdesk-app=${applicationId}`, '--brightdesk-suite-window=1']
-    }
-  });
-  productWindows.set(applicationId, window);
-  window.webContents.setWindowOpenHandler(() => ({ action: 'deny' }));
-  window.webContents.on('will-navigate', event => event.preventDefault());
-  window.on('focus', () => { if (autoUpdater && automaticUpdateChecksEnabled) checkForUpdates({ quiet: true }); });
-  window.on('closed', () => { if (productWindows.get(applicationId) === window) productWindows.delete(applicationId); });
-  window.loadFile(path.join(__dirname, 'index.html')).catch(error => {
-    productWindows.delete(applicationId);
-    console.error(`Could not open Brightdesk ${applicationNames[applicationId]}.`, error);
-  });
-  return { ok: true, alreadyOpen: false };
-}
 function senderIsMain(event) {
-  if (mainWindow && !mainWindow.isDestroyed() && event.sender === mainWindow.webContents) return true;
-  return [...productWindows.values()].some(window => !window.isDestroyed() && event.sender === window.webContents);
+  return Boolean(mainWindow && !mainWindow.isDestroyed() && event.sender === mainWindow.webContents);
 }
-ipcMain.handle('apps:open', (event, applicationId) => {
+ipcMain.handle('apps:open', async (event, requestedApplicationId) => {
   if (!senderIsMain(event)) throw new Error('Invalid sender.');
-  return openProductWindow(applicationId);
+  if (!supportedApplications.has(requestedApplicationId)) throw new Error('Unsupported Brightdesk application.');
+  return launchProduct(requestedApplicationId, {
+    platform: process.platform,
+    env: process.env,
+    homeDir: app.getPath('home')
+  });
 });
 ipcMain.handle('native:engine-info', event => {
   if (!senderIsMain(event)) throw new Error('Unauthorized native engine request.');
@@ -465,7 +452,9 @@ async function runPackagedStartupSmokeTest() {
 }
 
 app.whenReady().then(async () => {
+  if (!hasSingleInstanceLock) return;
   app.setName(packageConfig.productName || 'Brightdesk');
+  app.setAppUserModelId(applicationId ? `org.brightdesk.${applicationId}` : 'org.brightdesk.suite');
   dictionaryService = new DictionaryService(app.getPath('userData'));
   Menu.setApplicationMenu(null);
   if (process.env.BRIGHTDESK_STARTUP_SMOKE_TEST === '1') {
