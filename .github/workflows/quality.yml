@@ -27,6 +27,9 @@ jobs:
     runs-on: self-hosted
     timeout-minutes: 45
     steps:
+      - name: Register post-job workspace cleanup
+        uses: conz20/Brightdesk-suite/.github/actions/runner-workspace-cleanup@7727da85c4e6e660f3376b5b330d78b6782c1976
+
       - name: Check out Brightdesk
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -73,7 +76,3 @@ jobs:
 
       - name: Audit dependencies for high severity vulnerabilities
         run: npm audit --audit-level=high
-
-      - name: Erase checked-out source and build workspace
-        if: always()
-        run: node scripts/cleanup-runner-workspace.js
