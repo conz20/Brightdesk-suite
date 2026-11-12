@@ -161,6 +161,8 @@
     "language.allInstalled": "Todos los paquetes de idioma de este catálogo están instalados.",
     "common.words": "palabras",
     "common.zoomIn": "Ampliar",
-    "common.zoomOut": "Reducir"
+    "common.zoomOut": "Reducir",
+    "top.print": "Imprimir",
+    "top.printerSettings": "Configuración de impresora"
   }
 }
