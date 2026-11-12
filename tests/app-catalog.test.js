@@ -241,7 +241,7 @@ test('README presents all ten apps as the integrated first-release lineup', () =
   assert.doesNotMatch(readme, /other six.*not yet working apps/i);
 });
 
-test('Suite Open actions launch dedicated product windows instead of changing the Suite workspace', () => {
+test('Suite Open actions launch registered standalone product applications', () => {
   const fs = require('node:fs');
   const path = require('node:path');
   const root = path.join(__dirname, '..');
