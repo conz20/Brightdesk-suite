@@ -44,5 +44,14 @@
     return { installedApps: remaining, hiddenProducts: visibleHidden, activeAppId: nextActiveAppId };
   }
 
-  return { resolveAppSetup, removeAppSelection };
+  function setProductVisibility(hiddenProducts, installedApps, productId, shouldHide) {
+    const installed = new Set(Array.isArray(installedApps) ? installedApps : []);
+    const hidden = new Set(Array.isArray(hiddenProducts) ? hiddenProducts.filter(id => installed.has(id)) : []);
+    if (!installed.has(productId)) return [...hidden];
+    if (shouldHide) hidden.add(productId);
+    else hidden.delete(productId);
+    return [...hidden];
+  }
+
+  return { resolveAppSetup, removeAppSelection, setProductVisibility };
 });
