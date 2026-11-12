@@ -476,7 +476,7 @@ app.whenReady().then(async () => {
   termsAccepted = requireFirstLaunchTerms ? await hasCurrentTermsAcceptance() : true;
   if (termsAccepted) { createWindow(); initUpdater(); } else { createAgreementWindow(); }
   app.on('activate', () => {
-    if (BrowserWindow.getAllWindows().length === 0) {
+    if (!mainWindow || mainWindow.isDestroyed()) {
       if (termsAccepted) createWindow(); else createAgreementWindow();
     }
   });
