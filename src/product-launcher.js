@@ -121,7 +121,7 @@ function launchProduct(applicationId, options = {}) {
     });
     child.once('close', code => {
       if (code === 0) finish(null, { ok: true, applicationId, kind: request.kind });
-      else finish(new Error(`The operating system could not open Brightdesk ${entry.name} (launcher exit code ${code}).`));
+      else finish(productNotInstalledError(entry, request.kind === 'linux-desktop-entry' ? 'linux' : request.kind === 'macos-bundle' ? 'darwin' : 'win32'));
     });
   });
 }
