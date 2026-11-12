@@ -51,6 +51,12 @@ The suite home should make each product immediately recognisable and manageable:
 
 The suite is local-first desktop software. Do not add account creation, sign-in, cloud storage, online workspace or cloud-sync imagery or language. Keep navigation focused on local desktop work: Home, Apps and Files. Do not add online-service destinations or a Create sidebar button. Settings must describe controls and resources on this device. Local save states should be explicit and truthful.
 
+## Microsoft-level completeness and individual product windows
+
+Microsoft productivity applications are the completeness and usability benchmark for the corresponding Brightdesk product. Before a product is considered complete, compare its workflows against the current relevant Microsoft application and record missing, applicable capabilities. Add every missing capability that fits the approved Brightdesk product scope, local-first architecture, accessibility requirements and supported platforms. Do not omit a useful, established productivity feature merely because it was not in the first-use prototype. Do not copy Microsoft branding, proprietary assets, code or distinctive trade dress.
+
+The Suite is the launcher and product manager, not a substitute workspace for the ten products. Selecting **Open** must launch or focus that product's own top-level application window, with its own product name, icon, navigation, workspace and window lifecycle. It must never silently replace the Suite renderer's selected product. Selecting another product from a product's **Switch product** control must open or focus that product's window. Users may keep any number of product windows open or closed. Closing a product window must not close the Suite or another product window; closing the Suite must not silently discard or close other product windows. Preserve local files and settings when windows close.
+
 ## Application workspaces
 
 Each application should use a predictable layout: brand and product navigation, page title and context, task-specific toolbar or controls, a generous working canvas, clear saved/local status and consistent empty/loading/error states. The workspace should put the core task first rather than fill space with decoration.
