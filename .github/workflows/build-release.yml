@@ -102,7 +102,7 @@ jobs:
       - name: Install locked dependencies
         run: npm ci --no-audit --no-fund
 
-      - name: Build suite installer
+      - name: Build Suite and all ten standalone product installers
         env:
           WIN_CSC_LINK: ${{ github.ref == 'refs/heads/main' && matrix.platform == 'Windows' && secrets.WIN_CSC_LINK || '' }}
           MAC_APP_CSC_LINK: ${{ github.ref == 'refs/heads/main' && matrix.platform == 'macOS' && secrets.MAC_APP_CSC_LINK || '' }}
@@ -119,9 +119,9 @@ jobs:
           if [ -z "${CSC_LINK:-}" ]; then unset CSC_LINK CSC_KEY_PASSWORD; fi
           if [ -z "${CSC_INSTALLER_LINK:-}" ]; then unset CSC_INSTALLER_LINK CSC_INSTALLER_KEY_PASSWORD; fi
           if [ "${{ matrix.platform }}" = "macOS" ] && [ -z "${CSC_LINK:-}" ]; then export CSC_IDENTITY_AUTO_DISCOVERY=false; fi
-          if [ "${{ matrix.script }}" = "linux" ]; then npm run dist:linux; fi
-          if [ "${{ matrix.script }}" = "win" ]; then npm run dist:win; fi
-          if [ "${{ matrix.script }}" = "mac" ]; then npm run dist:mac; fi
+          if [ "${{ matrix.script }}" = "linux" ]; then npm run dist:linux && npm run dist:apps:linux; fi
+          if [ "${{ matrix.script }}" = "win" ]; then npm run dist:win && npm run dist:apps:win; fi
+          if [ "${{ matrix.script }}" = "mac" ]; then npm run dist:mac && npm run dist:apps:mac; fi
           npm run release:prepare -- ${{ matrix.script }}
 
       - name: Require and test native Rust engine on this platform
@@ -130,17 +130,23 @@ jobs:
           BRIGHTDESK_REQUIRE_NATIVE_ENGINE: "1"
         run: node --test test/rust-engine.test.mjs test/embedding-bridge.test.mjs
 
-      - name: Verify Linux installer artifacts
+      - name: Verify Linux suite and product installers
         if: matrix.platform == 'Linux'
-        run: npm run release:verify:linux
+        run: |
+          npm run release:verify:linux
+          npm run release:verify:products:linux
 
-      - name: Verify Windows installer artifacts
+      - name: Verify Windows suite and product installers
         if: matrix.platform == 'Windows'
-        run: npm run release:verify:win
+        run: |
+          npm run release:verify:win
+          npm run release:verify:products:win
 
-      - name: Verify macOS installer artifacts
+      - name: Verify macOS suite and product installers
         if: matrix.platform == 'macOS'
-        run: npm run release:verify:mac
+        run: |
+          npm run release:verify:mac
+          npm run release:verify:products:mac
 
       - name: Place verified files in platform folder
         shell: bash
