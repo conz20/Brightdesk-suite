@@ -199,14 +199,14 @@ test('all third-party workflow actions are pinned to full commit SHAs', () => {
 test('Windows self-hosted runner setup targets the correct private repository and isolates its download', () => {
   const setup = read('tools/runner-setup/windows/Install-Brightdesk-Windows-Runner.ps1');
 
-  assert.match(setup, /\$RepositoryUrl = "https:\/\/github\.com\/conz20\/Brightdesk-suite"/);
+  assert.match(setup, /\$RepositoryUrl = "https:\/\/github\.com\/\$Owner\/\$RepositoryName"/);
   assert.doesNotMatch(setup, /connormolloy12/);
   assert.match(setup, /RunnerVersion = '2\.338\.2'/);
   assert.match(setup, /ExpectedSha256 = '[a-f0-9]{64}'/);
   assert.match(setup, /\[guid\]::NewGuid\(\)/);
   assert.match(setup, /\[System\.IO\.Path\]::GetTempPath\(\)/);
   assert.doesNotMatch(setup, /if \(Test-Path -LiteralPath \$archivePath\)/);
-  assert.match(setup, /already contains files\. Nothing was overwritten/);
+  assert.match(setup, /already contains files[\s\S]*Nothing was overwritten/);
   assert.match(setup, /Type REGISTER to continue/);
   assert.match(setup, /winget install --id Git\.Git/);
   assert.match(setup, /winget install --id GitHub\.cli/);
