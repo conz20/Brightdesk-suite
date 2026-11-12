@@ -300,8 +300,7 @@ test('Suite product management labels workspace inclusion instead of implying na
   const app = fs.readFileSync(path.join(root, 'src', 'app.js'), 'utf8');
   const en = JSON.parse(fs.readFileSync(path.join(root, 'src', 'languages', 'en-AU.json'), 'utf8')).translations;
   assert.doesNotMatch(app, /Available to install|Uninstall/);
-  assert.match(app, /In your workspace/);
-  assert.match(app, /Available to add/);
+  assert.match(app, /t\(isInstalled \? 'manager\.inWorkspace' : 'manager\.notInstalled'\)/);
   assert.equal(en['manager.install'], 'Add to Suite');
   assert.equal(en['manager.remove'], 'Remove from Suite');
   assert.equal(en['manager.installSelected'], 'Add selected apps');
