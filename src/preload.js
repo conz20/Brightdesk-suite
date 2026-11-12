@@ -19,6 +19,7 @@ const supportedApps = new Set([
 
 contextBridge.exposeInMainWorld('brightdesk', {
   launchAppId: supportedApps.has(launchAppId) ? launchAppId : null,
+  openApplication: (applicationId) => ipcRenderer.invoke('apps:open', applicationId),
   platform: process.platform,
   version: ipcRenderer.sendSync('app:version-sync'),
   getVersion: () => ipcRenderer.invoke('app:version'),
