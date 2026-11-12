@@ -32,12 +32,15 @@ function removeRunnerWorkspace({ workspace, runnerWorkspace }) {
     return { removed: false, workspace: requestedWorkspace };
   }
 
+  if (fs.lstatSync(requestedWorkspace).isSymbolicLink()) {
+    throw new Error('The checkout workspace must not be a symbolic link.');
+  }
   const realWorkspace = fs.realpathSync(requestedWorkspace);
   if (!isChildPath(realRoot, realWorkspace)) {
     throw new Error('The resolved checkout workspace must remain inside the runner work root.');
   }
 
-  fs.rmSync(realWorkspace, { recursive: true, force: false, maxRetries: 3, retryDelay: 250 });
+  fs.rmSync(requestedWorkspace, { recursive: true, force: false, maxRetries: 3, retryDelay: 250 });
   return { removed: true, workspace: requestedWorkspace };
 }
 
