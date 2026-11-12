@@ -8,7 +8,10 @@
   function resolveAppSetup(savedSetup, launchAppId, availableIds) {
     const available = [...new Set(availableIds)];
     if (launchAppId) {
-      return { installedApps: available.includes(launchAppId) ? [launchAppId] : [], setupComplete: true, schemaVersion: 2 };
+      const savedApps = Array.isArray(savedSetup?.installedApps)
+        ? [...new Set(savedSetup.installedApps.filter(id => available.includes(id)))]
+        : available;
+      return { installedApps: available.includes(launchAppId) ? (savedApps.includes(launchAppId) ? savedApps : [launchAppId, ...savedApps]) : [], setupComplete: true, schemaVersion: 2 };
     }
 
     if (savedSetup?.schemaVersion === 2 && Array.isArray(savedSetup.installedApps)) {
