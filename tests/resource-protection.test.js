@@ -65,7 +65,9 @@ test('release workflow has working install and release permissions', () => {
   assert.ok(workflow.includes('cargo fmt --manifest-path rust/Cargo.toml'));
   assert.ok(workflow.includes('cargo clippy --manifest-path rust/Cargo.toml'));
   assert.ok(workflow.includes('cargo test --manifest-path rust/Cargo.toml'));
-  assert.match(workflow, /npm run dist:apps:\$\{\{ matrix\.script \}\}/);
+  assert.match(workflow, /npm run dist:apps:win/);
+  assert.match(workflow, /npm run dist:apps:mac/);
+  assert.match(workflow, /npm run dist:apps:linux/);
   assert.match(workflow, /npm run release:verify:products:win/);
   assert.match(workflow, /npm run release:verify:products:mac/);
   assert.match(workflow, /npm run release:verify:products:linux/);
