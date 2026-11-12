@@ -36,3 +36,16 @@ test('single-product builds remain restricted to their selected product', () => 
   assert.deepEqual(setup.installedApps, ['sheets']);
   assert.equal(setup.setupComplete, true);
 });
+
+test('Suite-launched product windows retain access to the installed product switcher', () => {
+  const ids = ['pages','sheets','slides','notes','database','forms','lists','planner','todo','loop'];
+  const setup = resolveAppSetup({ schemaVersion: 2, installedApps: ['pages','sheets','todo'] }, 'sheets', ids, true);
+  assert.deepEqual(setup.installedApps, ['pages','sheets','todo']);
+  assert.equal(setup.setupComplete, true);
+});
+
+test('Suite-launched product windows default to all ten products when no Suite preferences exist', () => {
+  const ids = ['pages','sheets','slides','notes','database','forms','lists','planner','todo','loop'];
+  const setup = resolveAppSetup(null, 'sheets', ids, true);
+  assert.deepEqual(setup.installedApps, ids);
+});
