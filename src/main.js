@@ -55,10 +55,11 @@ function sendUpdateState(state) {
   const title = state.status === 'available' ? 'Brightdesk update available' : 'Brightdesk update ready';
   const notification = new Notification({ title, body: state.message || 'A Brightdesk Office Suite update is ready.', silent: false });
   notification.on('click', () => {
-    if (!mainWindow || mainWindow.isDestroyed()) return;
-    if (mainWindow.isMinimized()) mainWindow.restore();
-    mainWindow.show();
-    mainWindow.focus();
+    const target = mainWindow && !mainWindow.isDestroyed() ? mainWindow : BrowserWindow.getAllWindows()[0];
+    if (!target || target.isDestroyed()) return;
+    if (target.isMinimized()) target.restore();
+    target.show();
+    target.focus();
   });
   notification.show();
 }
@@ -297,7 +298,7 @@ ipcMain.handle('languages:set-proofing', async (event, code) => {
   const pack = packs.find(item => item.code === code || (item.proofingCode && item.proofingCode === code));
   if (!pack) throw new Error('Install this language pack before selecting it for proofing.');
   if (process.platform === 'darwin') return { ok: true, usesNativeMacSpellChecker: true, supported: true };
-  const session = mainWindow.webContents.session;
+  const session = event.sender.session;
   const proofingCode = pack.proofingCode || pack.code;
   const available = session.availableSpellCheckerLanguages || [];
   if (!available.includes(proofingCode)) return { ok: false, supported: false, available };
@@ -408,20 +409,20 @@ ipcMain.handle('file:export', async (event, payload) => {
 });
 ipcMain.handle('project:save', async (event, project) => {
   if (!senderIsMain(event)) throw new Error('Invalid sender.');
-  const result = await dialog.showSaveDialog(mainWindow, { defaultPath: cleanFileName(project?.title || 'Brightdesk project') + '.bdesk', filters: [{ name: 'Brightdesk project', extensions: ['bdesk'] }] });
+  const result = await dialog.showSaveDialog(BrowserWindow.fromWebContents(event.sender), { defaultPath: cleanFileName(project?.title || 'Brightdesk project') + '.bdesk', filters: [{ name: 'Brightdesk project', extensions: ['bdesk'] }] });
   if (result.canceled || !result.filePath) return { canceled: true };
   const filePath = ensureExtension(result.filePath, 'bdesk');
   await exportOfficeFile({ project }, filePath); return { canceled: false, filePath };
 });
 ipcMain.handle('project:open', async event => {
   if (!senderIsMain(event)) throw new Error('Invalid sender.');
-  const result = await dialog.showOpenDialog(mainWindow, { properties: ['openFile'], filters: [{ name: 'Brightdesk project', extensions: ['bdesk'] }] });
+  const result = await dialog.showOpenDialog(BrowserWindow.fromWebContents(event.sender), { properties: ['openFile'], filters: [{ name: 'Brightdesk project', extensions: ['bdesk'] }] });
   if (result.canceled || !result.filePaths[0]) return null;
   return openOfficeFile(result.filePaths[0]);
 });
 ipcMain.handle('file:pdf', async (event, payload) => {
   if (!senderIsMain(event)) throw new Error('Invalid sender.');
-  const result = await dialog.showSaveDialog(mainWindow, { defaultPath: cleanFileName(payload?.title || 'Brightdesk document') + '.pdf', filters: [{ name: 'PDF document', extensions: ['pdf'] }] });
+  const result = await dialog.showSaveDialog(BrowserWindow.fromWebContents(event.sender), { defaultPath: cleanFileName(payload?.title || 'Brightdesk document') + '.pdf', filters: [{ name: 'PDF document', extensions: ['pdf'] }] });
   if (result.canceled || !result.filePath) return { canceled: true };
   const filePath = ensureExtension(result.filePath, 'pdf');
   const pdf = await event.sender.printToPDF({ printBackground: true, pageSize: 'A4', margins: { top: 0.55, bottom: 0.55, left: 0.6, right: 0.6 } });
