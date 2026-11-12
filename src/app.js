@@ -886,7 +886,7 @@ function render() {
   syncAppNavigation();
   renderNotifications();
   document.querySelectorAll('.nav[data-app]').forEach(btn => {
-    const visible = launchAppId ? btn.dataset.app === launchAppId : installedApp(btn.dataset.app); btn.hidden = !visible; btn.classList.toggle('active', !suitePage && !languages && btn.dataset.app === state.app);
+    const visible = launchAppId ? btn.dataset.app !== launchAppId : installedApp(btn.dataset.app); btn.hidden = !visible; btn.classList.toggle('active', !suitePage && !languages && btn.dataset.app === state.app);
   });
   $('open-settings').hidden = Boolean(launchAppId);
   $('open-notifications').hidden = Boolean(launchAppId);
