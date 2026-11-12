@@ -25,10 +25,10 @@ test('Apps shows one suite-level sidebar entry instead of repeating the ten prod
   assert.match(app, /manager \? t\('sidebar\.applications'\)/);
 });
 
-test('uninstall requires confirmation and does not delete local documents', () => {
+test('removing an app from the Suite requires confirmation and does not delete local documents', () => {
   const app = read('src/app.js');
-  assert.match(app, /window\.confirm\(`Uninstall \$\{product\?\.name/);
-  assert.match(app, /state\.installedApps = state\.installedApps\.filter/);
+  assert.match(app, /window\.confirm\(`Remove \$\{product\?\.name \|\| 'this product'\} from the Suite/);
+  assert.match(app, /removeAppSelection\(/);
   assert.doesNotMatch(app, /delete state\.docs/);
 });
 
