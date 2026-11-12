@@ -50,7 +50,7 @@ const appSlug = appSlugs[appId];
 module.exports = {
   appId: `org.brightdesk.${appId}`,
   productName: 'Brightdesk ' + appName,
-  extraMetadata: { brightdeskAppId: appId, productName: 'Brightdesk ' + appName, desktopName: `org.brightdesk.${appId}.desktop` },
+  extraMetadata: { name: 'brightdesk-' + appId, brightdeskAppId: appId, productName: 'Brightdesk ' + appName, desktopName: `org.brightdesk.${appId}.desktop` },
   asar: true,
   files: ['src/**/*', 'native/brightdesk_engine.node', 'package.json', 'LICENSE', 'THIRD_PARTY_NOTICES.md', 'TERMS_AND_CONDITIONS.txt'],
   asarUnpack: ['native/brightdesk_engine.node'],
