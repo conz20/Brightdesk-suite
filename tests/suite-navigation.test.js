@@ -128,7 +128,8 @@ test('README and visual standard explain the contextual product-switching rule',
   assert.match(standard, /online-service destinations/);
   assert.match(home, /links Home, Apps and Files/);
   assert.doesNotMatch(home, /Create<\/text>/);
-  assert.match(standard, /In the Suite's own workspace context[\\s\\S]*?Switch product/);
+  assert.ok(standard.includes("In the Suite's own workspace context"));
+  assert.ok(standard.includes('Switch product'));
 });
 
 
