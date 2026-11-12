@@ -40,7 +40,8 @@ test('product settings menu can hide an installed product from Switch product na
   assert.match(app, /catalog\.filter\(item => installedApp\(item\.id\) && !state\.hiddenProducts\.includes\(item\.id\)\)/);
   assert.match(app, /More options for \$\{item\.name\}/);
   assert.match(app, /Hide from Switch product/);
-  assert.match(app, /visibleProducts\.length <= 1/);
+  assert.match(app, /setProductVisibility\(/);
+  assert.doesNotMatch(app, /visibleProducts\.length <= 1/);
   assert.match(read('src/assets/icons/more.svg'), /circle/);
   assert.match(read('src/styles.css'), /app-card-menu-trigger/);
 });
@@ -75,7 +76,7 @@ test('the live desktop shell provides Home, Apps and Files navigation', () => {
   assert.match(app, /\$\('files-save-button'\)\.addEventListener\('click', saveProject\)/);
 });
 
-test('all ten installed products remain available in the product-switching sidebar during workspace use', () => {
+test('all ten approved products can appear in the product-switching sidebar during workspace use', () => {
   const app = read('src/app.js');
   const catalogue = require('../src/app-catalog');
   assert.equal(catalogue.length, 10);
@@ -117,7 +118,7 @@ test('README and visual standard explain the contextual product-switching rule',
   const home = read('assets/product-experience/brightdesk-home.svg');
   assert.match(readme, /approved sidebar uses \*\*Home\*\*, \*\*Apps\*\* and \*\*Files\*\*/);
   assert.match(readme, /in the \*\*Switch product\*\*/);
-  assert.match(readme, /hide or restore an installed product/);
+  assert.match(readme, /hide or restore a product in the \*\*Switch product\*\*/);
   assert.equal((readme.match(/assets\/product-experience\/brightdesk-home\.svg/g) || []).length, 1);
   assert.doesNotMatch(readme, /brightdesk-app-centre\.svg/);
   assert.doesNotMatch(home, /Install a product|Update Brightdesk/);
