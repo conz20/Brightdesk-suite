@@ -146,3 +146,24 @@ Provide a narrow, validated main-process launch service. It must:
 - Update the shared Design System, product repositories, tests and CI enforcement together.
 - Require review of new product features against the ten-product scope, Microsoft capability matrix, local-first constraints and original Brightdesk identity.
 - Do not mark parity complete based on a visual mock-up, README, checklist or passing unit tests alone. Require end-to-end evidence from real packaged applications.
+
+
+## Current main-branch implementation status — rechecked 12 November 2026
+
+The findings in the earlier "Current known implementation gaps" section are historical and must not be copied forward without rechecking. The following changes have since been committed directly to `main`:
+
+- Suite product-card and Switch product actions call the validated `apps:open` IPC bridge rather than changing the selected renderer in the Suite window.
+- The Suite creates a dedicated Electron top-level `BrowserWindow` per product, with its own title/icon and product launch identifier. Reopening a running product restores/focuses its existing window.
+- Product document data is written to per-product local-storage keys in Suite-launched product windows.
+- Suite product inclusion can be empty. Removing the final included product leaves the Suite launcher usable; every product may be hidden from Switch product navigation.
+- The product-card controls are explicitly named **Add to Suite** and **Remove from Suite**. These actions change workspace inclusion, not the installed operating-system packages.
+
+Important remaining distinctions and gaps:
+
+1. The current Suite-created product windows are separate top-level windows in the Suite Electron process. They are **not yet proven to be separate operating-system processes or launches of the separately packaged product executables**.
+2. The current product inclusion list is a local Suite preference. It is not an OS package registry and must not be treated as proof that an individual product binary was installed or uninstalled.
+3. Standalone product installer build targets exist for Windows, macOS and Linux, but their actual packaged installation, upgrade, removal and relaunch workflows remain unverified.
+4. The Suite README records that native Windows x64 and Linux x64 packaging runners still need to be registered and online. Cross-platform support is not accepted until real native builds and tests pass.
+5. Regression tests for empty selection, removing the last product, and hiding the last visible product have been added to main. The full Suite test command and packaged OS integration suites have not yet produced verified CI results.
+
+The target architecture in this requirements document remains the intended end state. The current main implementation is an interim window-level implementation and must not be labelled complete independent-executable launching.
