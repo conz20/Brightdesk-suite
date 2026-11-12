@@ -330,9 +330,38 @@ test('every self-hosted workflow registers post-job source cleanup before other 
     const workflow = read(file);
     const registrations = workflow.split('uses: conz20/Brightdesk-suite/.github/actions/runner-workspace-cleanup@').length - 1;
     assert.equal(registrations, count, file);
-  assert.ok(!workflow.includes('run: node scripts/cleanup-runner-workspace.js'));
+    assert.ok(!workflow.includes('run: node scripts/cleanup-runner-workspace.js'));
     const actionIndex = workflow.indexOf('Register post-job workspace cleanup');
     const checkoutIndex = workflow.indexOf('uses: actions/checkout@');
     if (checkoutIndex >= 0) assert.ok(actionIndex >= 0 && actionIndex < checkoutIndex, file);
   }
+});
+
+
+test('Linux x64 runner bootstrap supports WSL 2 on Windows 10 and Windows 11', () => {
+  const setupPath = path.join(root, 'tools', 'runner-setup', 'linux', 'Install-Brightdesk-Linux-Runner.sh');
+  const setup = read('tools/runner-setup/linux/Install-Brightdesk-Linux-Runner.sh');
+  const instructions = read('tools/runner-setup/linux/README.txt');
+  const releaseGuide = read('docs/LOCAL-RELEASE-VERIFICATION.md');
+  assert.ok(instructions.includes('Windows 10 version 2004 (Build 19041) or later, or Windows 11.'));
+  assert.ok(instructions.includes('Ubuntu 22.04 LTS or Ubuntu 24.04 LTS.'));
+  assert.ok(setup.includes("RUNNER_VERSION='2.338.2'"));
+  assert.match(setup, /ARCHIVE_SHA256='[a-f0-9]{64}'/);
+  assert.ok(setup.includes('microsoft-standard-WSL2'));
+  assert.ok(setup.includes("'22.04'|'24.04'"));
+  assert.ok(setup.includes('gh api --method POST'));
+  assert.ok(setup.includes('pgrep -f -o'));
+  assert.ok(setup.includes('nohup ./run.sh'));
+  assert.ok(releaseGuide.includes('Install-Brightdesk-Linux-Runner.sh'));
+  assert.ok(releaseGuide.includes('post-job cleanup action'));
+  execFileSync('bash', ['-n', setupPath], { stdio: 'pipe' });
+});
+
+test('README freshness exempts internal workflows, runner setup and test-only changes', () => {
+  const workflow = read('.github/workflows/readme-freshness.yml');
+  assert.ok(workflow.includes('.github/**'));
+  assert.ok(workflow.includes('tools/runner-setup/**'));
+  assert.ok(workflow.includes('tests/**'));
+  assert.ok(workflow.includes('test/**'));
+  assert.ok(workflow.includes('scripts/cleanup-runner-workspace.js'));
 });

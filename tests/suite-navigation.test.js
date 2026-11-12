@@ -180,7 +180,7 @@ test('Home sidebar footer and navigation match the production artwork', () => {
   const readme = read('README.md');
   assert.ok(html.includes('<small id="platform">Desktop</small>'));
   assert.ok(html.includes('<small id="version-label">Local-first · Your files stay here</small>'));
-  assert.ok(app.includes("$('platform').textContent=`Desktop · ${window.brightdesk.platform}`;"));
+  assert.ok(app.includes("$('platform').textContent=`Brightdesk desktop · ${window.brightdesk.platform}`;"));
   assert.ok(!app.includes("$('version-label').textContent ="));
   assert.ok(styles.includes('body.suite-home .sidebar > .nav small { display: none; }'));
   assert.ok(styles.includes('body.suite-home .main > footer { display: none; }'));
