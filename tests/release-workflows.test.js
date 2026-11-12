@@ -267,3 +267,23 @@ test('Mac runner setup documentation explains scope, token handling and no-servi
   assert.ok(releaseGuide.includes('Start-Brightdesk-Mac-Foundation-Runners.sh'));
   assert.match(releaseGuide, /Brightdesk-Common-Actions/);
 });
+
+test('Windows runner setup explicitly supports Windows 10 and Windows 11', () => {
+  const setup = read('tools/runner-setup/windows/Install-Brightdesk-Windows-Runner.ps1');
+  const instructions = read('tools/runner-setup/windows/README.txt');
+  const releaseGuide = read('docs/LOCAL-RELEASE-VERIFICATION.md');
+  assert.match(instructions, /Windows 10 or Windows 11/);
+  assert.match(releaseGuide, /64-bit Windows 10 and Windows 11/);
+  assert.match(releaseGuide, /Windows 10 version 2004 \(build 19041\) or later/);
+  assert.match(setup, /Is64BitOperatingSystem/);
+});
+
+test('release workflow erases each complete checkout after artifacts are safely uploaded', () => {
+  const workflow = read('.github/workflows/build-release.yml');
+  assert.equal((workflow.match(/name: Erase checked-out source and build workspace/g) || []).length, 4);
+  assert.equal((workflow.match(/if: always\(\)/g) || []).length, 4);
+  assert.equal((workflow.match(/run: node scripts\/cleanup-runner-workspace\.js/g) || []).length, 4);
+  assert.equal((workflow.match(/persist-credentials: false/g) || []).length, 3);
+  assert.doesNotMatch(workflow, /cache: npm/);
+  assert.match(workflow, /name: Set up required Node\.js version[\s\S]*?node-version: 24\.22\.2/);
+});
