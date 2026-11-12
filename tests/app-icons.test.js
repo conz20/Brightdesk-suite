@@ -45,7 +45,8 @@ test('suite sidebar uses the original Brightdesk geometric brand mark, not a let
   const html = fs.readFileSync(path.join(root, 'src', 'index.html'), 'utf8');
   const markPath = path.join(root, 'src', 'assets', 'brand', 'brightdesk-suite-mark.svg');
   assert.ok(fs.existsSync(markPath), 'Brightdesk geometric mark must be bundled with the app');
-  assert.ok(html.includes('<img class="brand-mark-image" src="assets/brand/brightdesk-suite-mark.svg"'));
+  assert.equal(html.includes('brightdesk-suite-mark.svg'), false, 'Suite mark belongs in native application identity, not Home navigation');
+  assert.ok(html.includes('<title>Brightdesk Office Suite</title>'));
   assert.equal(html.includes('class="brand-mark">B</div>'), false);
 });
 
