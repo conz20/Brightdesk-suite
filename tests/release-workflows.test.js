@@ -369,3 +369,18 @@ test('README freshness exempts internal workflows, runner setup and test-only ch
   assert.ok(workflow.includes('test/**'));
   assert.ok(workflow.includes('scripts/cleanup-runner-workspace.js'));
 });
+
+
+test('Windows runner instructions match the files actually stored in GitHub', () => {
+  const instructions = read('tools/runner-setup/windows/README.txt');
+  const launcher = read('tools/runner-setup/windows/Start-Brightdesk-Windows-Runner.cmd');
+  const installer = read('tools/runner-setup/windows/Install-Brightdesk-Windows-Runner.ps1');
+  const releaseGuide = read('docs/LOCAL-RELEASE-VERIFICATION.md');
+  assert.ok(instructions.includes('Start-Brightdesk-Windows-Runner.cmd'));
+  assert.ok(instructions.includes('Install-Brightdesk-Windows-Runner.ps1'));
+  assert.ok(instructions.includes('There is no setup ZIP.'));
+  assert.ok(launcher.includes('Install-Brightdesk-Windows-Runner.ps1'));
+  assert.ok(installer.includes('Get-Command git.exe'));
+  assert.ok(installer.includes('Get-Command bash.exe'));
+  assert.ok(releaseGuide.includes('There is no setup ZIP.'));
+});

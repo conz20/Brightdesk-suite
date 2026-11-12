@@ -67,15 +67,15 @@ Type `REGISTER` only after reviewing the eight-repository list shown by the scri
 
 ### Windows runner setup
 
-The click-to-run Windows x64 setup source and exact instructions are in [tools/runner-setup/windows](../tools/runner-setup/windows/README.txt). The supplied ZIP contains the CMD launcher, PowerShell installer and README. It downloads the official runner, checks the published SHA-256 digest, installs under `C:\actions-runner`, and registers the runner only to this private repository. It retains GitHub's default labels: `self-hosted`, `Windows` and `X64`.
+The click-to-run Windows x64 setup source and instructions are in [tools/runner-setup/windows](../tools/runner-setup/windows/README.txt). Download [Start-Brightdesk-Windows-Runner.cmd](https://raw.githubusercontent.com/conz20/Brightdesk-suite/main/tools/runner-setup/windows/Start-Brightdesk-Windows-Runner.cmd) and [Install-Brightdesk-Windows-Runner.ps1](https://raw.githubusercontent.com/conz20/Brightdesk-suite/main/tools/runner-setup/windows/Install-Brightdesk-Windows-Runner.ps1) into the same folder. There is no setup ZIP. The PowerShell installer downloads the official runner, checks its published SHA-256 digest, installs under `C:\\actions-runner`, and registers it only to this private repository. It retains GitHub's default labels: `self-hosted`, `Windows` and `X64`.
 
-1. Extract the supplied setup ZIP on the Windows PC.
-2. This setup supports **64-bit Windows 10 and Windows 11**. Open [the repository's New self-hosted runner page](https://github.com/conz20/Brightdesk-suite/settings/actions/runners/new), select **Windows** and **x64**, and generate the one-time token.
-3. Double-click `Start-Brightdesk-Windows-Runner.cmd`, approve the Windows administrator prompt, and enter the token only into the official runner configuration prompt on the Windows PC.
-4. Confirm `Brightdesk-Windows-PC` appears as **Idle** in Settings → Actions → Runners.
+1. Install Git for Windows and confirm `git.exe` and `bash.exe` are available on the system PATH.
+2. Download the two setup files above into the same folder on the Windows PC.
+3. This setup supports **64-bit Windows 10 and Windows 11**. Open [the repository's New self-hosted runner page](https://github.com/conz20/Brightdesk-suite/settings/actions/runners/new), select **Windows** and **x64**, and generate the one-time token.
+4. Double-click `Start-Brightdesk-Windows-Runner.cmd`, approve the Windows administrator prompt, type `REGISTER`, and enter the token only into the official runner configuration prompt on the Windows PC.
+5. Confirm `Brightdesk-Windows-PC` appears as **Idle** in Settings → Actions → Runners.
 
 The token expires after one hour. Never paste it into chat, an issue, source code or logs. The installer setup checks that Git for Windows provides both `git.exe` and `bash.exe`, which the current Windows workflow needs for checkout and its explicit Bash shell steps. The release workflow already targets `[self-hosted, Windows, X64]`; once this runner appears Idle/Online, it is eligible for the native Windows build. The setup source stops rather than overwriting a non-empty existing runner folder.
-
 
 ### Linux x64 runner using Windows Subsystem for Linux 2
 

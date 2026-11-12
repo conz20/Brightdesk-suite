@@ -23,13 +23,17 @@ It does NOT change the Brightdesk release workflow, publish a release, or instal
 
 BEFORE YOU START
 ----------------
-1. Install Git for Windows from https://git-scm.com/download/win. Brightdesk uses Git for repository checkout and the Git Bash shell for Windows build steps. Ensure both git.exe and bash.exe are available on the system PATH, then open a new PowerShell window and confirm `git --version` and `bash --version` work.
-2. Download and extract this ZIP on your Windows PC.
-2. Sign in to GitHub in your browser.
-3. Open this exact page:
+1. Install Git for Windows from https://git-scm.com/download/win. Brightdesk uses Git for repository checkout and the Git Bash shell for Windows build steps. Ensure both `git.exe` and `bash.exe` are available on the system PATH, then open a new PowerShell window and confirm `git --version` and `bash --version` work.
+2. Download these two files into the **same folder** on your Windows PC:
+   - [Start-Brightdesk-Windows-Runner.cmd](https://raw.githubusercontent.com/conz20/Brightdesk-suite/main/tools/runner-setup/windows/Start-Brightdesk-Windows-Runner.cmd)
+   - [Install-Brightdesk-Windows-Runner.ps1](https://raw.githubusercontent.com/conz20/Brightdesk-suite/main/tools/runner-setup/windows/Install-Brightdesk-Windows-Runner.ps1)
+
+   There is no setup ZIP. The two files must remain together so the CMD launcher can find its PowerShell installer.
+3. Sign in to GitHub in your browser.
+4. Open this exact page:
    https://github.com/conz20/Brightdesk-suite/settings/actions/runners/new
-4. Select Windows and x64.
-5. Leave that page open. GitHub will show a short-lived registration token as part of its setup instructions. It expires after one hour.
+5. Select **Windows** and **x64**.
+6. Leave that page open. GitHub will show a short-lived registration token as part of its setup instructions. It expires after one hour.
 
 RUN THE SETUP
 -------------
@@ -51,7 +55,7 @@ AFTER REGISTRATION
 ------------------
 The Brightdesk release workflow already targets the labels `self-hosted`, `Windows` and `X64`. Once this runner appears as Idle/Online and Git for Windows is available to the runner service, it is eligible to receive the native Windows build job.
 
-That workflow change is intentionally not included in this setup package. First confirm the runner is Idle/Online in GitHub. Then the workflow can be changed and tested separately.
+No workflow edit is needed after registration. The Windows release job already targets these exact labels.
 
 TROUBLESHOOTING
 ---------------
