@@ -227,9 +227,15 @@ async function copyMissingResourceTree(source, destination) {
 async function ensureSharedResourcesDirectory() {
   const shared = sharedResourcesDirectory();
   await fs.mkdir(shared, { recursive: true });
-  const legacyUserData = app.getPath('userData');
-  for (const folder of ['dictionaries', 'language-packs']) {
-    await copyMissingResourceTree(path.join(legacyUserData, folder), path.join(shared, folder));
+  const legacyRoots = new Set([
+    app.getPath('userData'),
+    path.join(app.getPath('appData'), 'brightdesk-suite'),
+    path.join(app.getPath('appData'), 'Brightdesk Office Suite')
+  ]);
+  for (const legacyRoot of legacyRoots) {
+    for (const folder of ['dictionaries', 'language-packs']) {
+      await copyMissingResourceTree(path.join(legacyRoot, folder), path.join(shared, folder));
+    }
   }
   return shared;
 }
