@@ -161,6 +161,8 @@
     "language.allInstalled": "Alle Sprachpakete in diesem Katalog sind installiert.",
     "common.words": "Wörter",
     "common.zoomIn": "Vergrößern",
-    "common.zoomOut": "Verkleinern"
+    "common.zoomOut": "Verkleinern",
+    "top.print": "Drucken",
+    "top.printerSettings": "Druckereinstellungen"
   }
 }
