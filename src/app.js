@@ -28,7 +28,7 @@ const genericConfigs = Object.fromEntries((window.BrightdeskAppCatalog || []).fi
 const fullCatalog = window.BrightdeskAppCatalog || [];
 const launchAppId = window.brightdesk.launchAppId || null;
 const catalog = fullCatalog;
-const { resolveAppSetup } = window.BrightdeskAppSetupPolicy;
+const { resolveAppSetup, removeAppSelection } = window.BrightdeskAppSetupPolicy;
 const installableCatalog = catalog.filter(item => item.availability === 'available');
 const state = {
   app: launchAppId || 'pages', view: 'workspace', docs: structuredClone(defaults),
@@ -539,19 +539,34 @@ function renderAppManager() {
 function toggleAppInstall(id) {
   if (!installableCatalog.some(item => item.id === id) || launchAppId) return;
   if (installedApp(id)) {
-    if (state.installedApps.length === 1) { alert('Keep at least one app installed in your Brightdesk workspace.'); return; }
     const product = catalog.find(item => item.id === id);
     if (!window.confirm(`Uninstall ${product?.name || 'this product'}? Your documents and project files will remain on this device.`)) return;
-    state.installedApps = state.installedApps.filter(appId => appId !== id);
-    state.hiddenProducts = state.hiddenProducts.filter(appId => appId !== id);
-    if (state.app === id) { state.app = state.installedApps[0]; state.ribbonTab = 'home'; }
+    const selection = removeAppSelection(
+      state.installedApps,
+      state.hiddenProducts,
+      id,
+      state.app,
+      installableCatalog.map(item => item.id)
+    );
+    state.installedApps = selection.installedApps;
+    state.hiddenProducts = selection.hiddenProducts;
+    if (state.app === id) {
+      state.app = selection.activeAppId;
+      state.ribbonTab = 'home';
+      if (!state.app) {
+        state.view = 'home';
+        state.focusMode = false;
+      }
+    }
   } else { state.installedApps.push(id); }
   saveAppSetup(); render();
 }
 function completeAppSetup() {
   const selected = [...state.firstRunSelection].filter(id => installableCatalog.some(item => item.id === id));
-  if (!selected.length) { alert('Choose at least one app to install.'); return; }
-  state.installedApps = selected; state.setupComplete = true; state.app = selected[0]; state.view = 'home';
+  state.installedApps = selected;
+  state.setupComplete = true;
+  state.app = selected[0] || null;
+  state.view = 'home';
   saveAppSetup(); render();
 }
 
