@@ -95,15 +95,15 @@ The same approved Brightdesk visual system and supported feature scope apply on 
 
 ### Package and release parity
 
-The configured suite package targets are:
+The configured Suite and standalone product package targets are:
 
-| Operating system | Expected package targets |
-| --- | --- |
-| Windows | x64 NSIS installer (.exe) |
-| macOS | Universal DMG (.dmg), PKG (.pkg) and ZIP (.zip) |
-| Linux | x64 AppImage (.AppImage) and Debian package (.deb) |
+| Operating system | Suite targets | Each product's targets |
+| --- | --- | --- |
+| Windows | x64 NSIS installer (.exe) | x64 NSIS installer (.exe) |
+| macOS | Universal DMG (.dmg), PKG (.pkg) and ZIP (.zip) | Universal DMG (.dmg), PKG (.pkg) and ZIP (.zip) |
+| Linux | x64 AppImage (.AppImage) and Debian package (.deb) | x64 AppImage (.AppImage) and Debian package (.deb) |
 
-These are build targets, not proof of a published or verified release. A release is ready only after each target operating system has completed its own native build and verification. Test install, first launch, agreement acceptance/decline, upgrade, launch after upgrade, removal and local-data handling on the actual target OS. A successful build on one OS does not verify another.
+The full release matrix contains 66 installer files: six for the Suite plus six for each of the ten products. These are build targets, not proof of a published or verified release. The manual release workflow must build the Suite and each product independently, then verify each product's expected files and checksum manifest. A release is ready only after each target operating system has completed its own native build and verification. Test install, first launch, agreement acceptance/decline, upgrade, launch after upgrade, removal and local-data handling on the actual target OS. A successful build on one OS does not verify another.
 
 The suite's Windows and macOS installers present the Terms and Conditions during installation. Linux AppImage has no installer agreement page, so the packaged suite enforces the same blocking agreement before the first workspace opens. A valid agreement must be accepted; declining or closing the agreement exits without opening the product.
 
