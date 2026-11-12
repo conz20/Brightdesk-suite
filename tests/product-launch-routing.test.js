@@ -63,21 +63,10 @@ test('the actual Electron preload exposes the correct launch ID for all ten prod
   }
 });
 
-test('Electron main process supports the same ten approved product IDs', () => {
+test('Electron main process routes only the ten approved product IDs', () => {
   const main = fs.readFileSync(path.join(root, 'src', 'main.js'), 'utf8');
-  const declarationStart = main.indexOf('const supportedApplications = new Set([');
-  assert.notEqual(declarationStart, -1, 'main process must declare its supported product IDs');
-
-  const declarationEnd = main.indexOf(']);', declarationStart);
-  assert.notEqual(declarationEnd, -1, 'main process must close its supported product ID set');
-
-  const declaration = main.slice(declarationStart, declarationEnd);
-  const supportedIds = [...declaration.matchAll(/'([^']+)'/g)].map((match) => match[1]);
-  const approvedIds = catalog.map((product) => product.id);
-
-  assert.deepEqual(
-    supportedIds,
-    approvedIds,
-    'the main-process allowlist must match the ten-product catalogue in its approved order'
-  );
+  const { PRODUCT_MANIFEST } = require('../src/product-launcher');
+  assert.ok(main.includes("const { launchProduct, PRODUCT_MANIFEST } = require('./product-launcher')"));
+  assert.ok(main.includes('const supportedApplications = new Set(Object.keys(PRODUCT_MANIFEST));'));
+  assert.deepEqual(Object.keys(PRODUCT_MANIFEST), catalog.map(product => product.id));
 });

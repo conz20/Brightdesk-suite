@@ -139,19 +139,15 @@ test('Electron main process accepts every approved standalone app', () => {
   const fs = require('node:fs');
   const path = require('node:path');
   const main = fs.readFileSync(path.join(__dirname, '..', 'src', 'main.js'), 'utf8');
-  const declaration = main.split('\n').find(line => line.startsWith('const supportedApplications = new Set('));
-  assert.ok(declaration, 'main process must declare its supported applications');
-  const list = declaration.slice(declaration.indexOf('[') + 1, declaration.lastIndexOf(']'));
-  const ids = [...list.matchAll(/'([^']+)'/g)].map(([, id]) => id);
-  assert.deepEqual(ids, catalog.map(item => item.id));
+  const { PRODUCT_MANIFEST } = require('../src/product-launcher');
+  assert.ok(main.includes("const { launchProduct, PRODUCT_MANIFEST } = require('./product-launcher')"));
+  assert.ok(main.includes('const supportedApplications = new Set(Object.keys(PRODUCT_MANIFEST));'));
+  assert.deepEqual(Object.keys(PRODUCT_MANIFEST), catalog.map(app => app.id));
   for (const [id, name] of [
-    ['pages', 'Pages'], ['sheets', 'Sheets'], ['slides', 'Decks'],
-    ['notes', 'Notes'], ['database', 'Database'], ['forms', 'Forms'],
-    ['lists', 'Lists'], ['planner', 'Planner'], ['todo', 'To Do'],
-    ['loop', 'Workspace']
-  ]) {
-    assert.ok(main.includes(`${id}: '${name}'`), `missing app title for ${id}`);
-  }
+    ['pages', 'Pages'], ['sheets', 'Sheets'], ['slides', 'Decks'], ['notes', 'Notes'],
+    ['database', 'Database'], ['forms', 'Forms'], ['lists', 'Lists'], ['planner', 'Planner'],
+    ['todo', 'To Do'], ['loop', 'Workspace']
+  ]) assert.equal(PRODUCT_MANIFEST[id].name, name, `missing app title for ${id}`);
 });
 
 test('all ten integrated apps are marked installable', () => {
@@ -171,7 +167,7 @@ test('standalone app packaging has independent product IDs and all three platfor
   const builder = fs.readFileSync(path.join(root, 'electron-builder.app.config.js'), 'utf8');
   assert.match(builder, /org\.brightdesk\.\$\{appId\}/);
   assert.match(builder, /brightdeskAppId: appId/);
-  assert.match(builder, /extraMetadata: \{ brightdeskAppId: appId, productName:/);
+  assert.match(builder, /extraMetadata: \\{[^}]*brightdeskAppId: appId[^}]*productName:/s);
   const configPath = path.join(root, 'electron-builder.app.config.js');
   const previousAppId = process.env.BRIGHTDESK_APP_ID;
   const products = [];

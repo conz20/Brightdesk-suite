@@ -94,7 +94,7 @@ test('missing Linux AppImage integration is reported rather than guessed', () =>
       env: {},
       exists: () => false
     }),
-    error => error.code === 'PRODUCT_NOT_INSTALLED' && /integrate its AppImage or install its DEB/i.test(error.message)
+    error => error.code === 'PRODUCT_NOT_INSTALLED' && /integrate its AppImage into your desktop menu or install its DEB package/i.test(error.message)
   );
 });
 
