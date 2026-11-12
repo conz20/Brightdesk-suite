@@ -31,7 +31,7 @@ test('suite setup uses the versioned migration policy; individual builds lock to
   const app = read('src/app.js');
   assert.match(html, /app-setup-policy\.js/);
   assert.match(app, /const \{ resolveAppSetup \} = window\.BrightdeskAppSetupPolicy/);
-  assert.match(app, /resolveAppSetup\(appSetup, launchAppId, installableCatalog\.map\(item => item\.id\)\)/);
+  assert.match(app, /resolveAppSetup\(appSetup, launchAppId, installableCatalog\.map\(item => item\.id\), window\.brightdesk\.suiteLaunchedProduct\)/);
   assert.match(app, /state\.installedApps = resolvedSetup\.installedApps/);
   assert.match(app, /state\.setupComplete = resolvedSetup\.setupComplete/);
   assert.match(app, /if \(launchAppId\) \{ state\.app = launchAppId; state\.view = 'workspace'; \}/);
