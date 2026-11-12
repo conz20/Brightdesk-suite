@@ -101,3 +101,24 @@ test('unknown product identifiers and unsupported platforms are rejected', () =>
   assert.throws(() => buildProductLaunchRequest('outlook', { platform: 'darwin' }), /Unsupported Brightdesk product/);
   assert.throws(() => buildProductLaunchRequest('pages', { platform: 'freebsd' }), /Unsupported operating system/);
 });
+
+test('native launch uses argument arrays and never invokes a shell', async () => {
+  const { EventEmitter } = require('node:events');
+  const { launchProduct } = require('../src/product-launcher');
+  const child = new EventEmitter();
+  let captured;
+  const resultPromise = launchProduct('pages', {
+    platform: 'darwin',
+    spawn: (command, args, options) => {
+      captured = { command, args, options };
+      queueMicrotask(() => child.emit('close', 0));
+      return child;
+    }
+  });
+  const result = await resultPromise;
+  assert.deepEqual(result, { ok: true, applicationId: 'pages', kind: 'macos-bundle' });
+  assert.equal(captured.command, 'open');
+  assert.deepEqual(captured.args, ['-b', 'org.brightdesk.pages']);
+  assert.equal(captured.options.shell, false);
+  assert.equal(captured.options.detached, true);
+});
