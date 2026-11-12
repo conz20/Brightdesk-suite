@@ -180,6 +180,8 @@
     "common.zoomIn": "Zoom in",
     "common.zoomOut": "Zoom out",
     "sidebar.applications": "Apps",
-    "sidebar.applicationsDescription": "All your apps"
+    "sidebar.applicationsDescription": "All your apps",
+    "top.print": "Print",
+    "top.printerSettings": "Printer settings"
   }
 }
