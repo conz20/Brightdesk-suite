@@ -76,3 +76,10 @@ test('removing the active product selects another installed product without dele
     activeAppId: 'sheets'
   });
 });
+
+test('the last installed product may be hidden from the Switch product navigation', () => {
+  const result = require('../src/app-setup-policy').setProductVisibility(
+    ['pages'], ['pages'], 'pages', true
+  );
+  assert.deepEqual(result, ['pages']);
+});
