@@ -70,3 +70,22 @@ test('Electron main process routes only the ten approved product IDs', () => {
   assert.ok(main.includes('const supportedApplications = new Set(Object.keys(PRODUCT_MANIFEST));'));
   assert.deepEqual(Object.keys(PRODUCT_MANIFEST), catalog.map(product => product.id));
 });
+
+test('the Suite opens one independent product window per approved product', () => {
+  const main = fs.readFileSync(path.join(root, 'src', 'main.js'), 'utf8');
+
+  assert.ok(main.includes("const { createProductWindowManager } = require('./product-window-manager')"));
+  assert.ok(main.includes('function createSuiteProductWindow(requestedApplicationId)'));
+  assert.ok(main.includes("additionalArguments: [`--brightdesk-app=${requestedApplicationId}`, '--brightdesk-suite-window=1']"));
+  assert.ok(main.includes('const productWindowManager = createProductWindowManager({'));
+  assert.ok(main.includes('const opened = productWindowManager.open(requestedApplicationId);'));
+  assert.ok(main.includes('kind: \'suite-product-window\''));
+  assert.ok(main.includes('authorizedApplicationWindows.has(event.sender)'));
+  assert.ok(main.includes('window.once(\'closed\', () => authorizedApplicationWindows.delete(contents))'));
+});
+
+test('separately packaged products keep their native operating-system launch route', () => {
+  const main = fs.readFileSync(path.join(root, 'src', 'main.js'), 'utf8');
+  assert.ok(main.includes('if (applicationId) {'));
+  assert.ok(main.includes('return launchProduct(requestedApplicationId, {'));
+});
