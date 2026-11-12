@@ -49,7 +49,7 @@ PREPARE UBUNTU
 Open the Ubuntu terminal and install the basic tools:
 
    sudo apt update
-   sudo apt install -y ca-certificates curl git gh jq tar
+   sudo apt install -y ca-certificates curl git gh jq tar findutils procps
 
 Sign in to GitHub CLI:
 

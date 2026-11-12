@@ -27,7 +27,7 @@ start_runner() {
     fi
   fi
 
-  runner_pid="$(ps -eo pid=,args= | awk -v runner_home="$RUNNER_HOME" 'index($0, runner_home) && /Runner.Listener/ {print $1; exit}' | tr -d '[:space:]')"
+  runner_pid="$(pgrep -f -o "$RUNNER_HOME/bin/Runner.Listener run" || true)"
   if [[ "$runner_pid" =~ ^[0-9]+$ ]] && kill -0 "$runner_pid" 2>/dev/null; then
     printf '%s\n' "$runner_pid" > "$RUNNER_PID_FILE"
     say "Already running: $RUNNER_NAME (PID $runner_pid)"
@@ -67,7 +67,7 @@ case "${VERSION_ID:-}" in
   *) fail "Ubuntu ${VERSION_ID:-unknown} is not supported by this setup. Use Ubuntu 22.04 or 24.04 LTS." ;;
 esac
 
-for command_name in gh curl tar sha256sum nohup ps awk; do
+for command_name in gh curl tar sha256sum nohup pgrep find; do
   command -v "$command_name" >/dev/null 2>&1 || fail "Required command not found: $command_name."
 done
 

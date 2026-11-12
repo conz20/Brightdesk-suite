@@ -1,6 +1,6 @@
 # Local release verification
 
-GitHub-hosted workflow runs are currently failing before their first runner step. This script provides a no-cost way to test and build Brightdesk on a computer you already own.
+Use this guide to run and verify Brightdesk's builds on computers you already own. Each operating system requires its own native build and acceptance checks.
 
 ## Requirements
 
@@ -77,21 +77,35 @@ The click-to-run Windows x64 setup source and exact instructions are in [tools/r
 The token expires after one hour. Never paste it into chat, an issue, source code or logs. Registration does not switch any workflow to this runner; update the Windows job to use `[self-hosted, Windows, X64]` only after the runner appears online. The setup source stops rather than overwriting a non-empty existing runner folder.
 
 
-### Optional Linux x64 runner using Windows Subsystem for Linux
+### Linux x64 runner using Windows Subsystem for Linux 2
 
-A separate Linux computer is not necessarily required for the first Linux build attempt. A Windows x64 computer with WSL 2 and a supported Ubuntu distribution can be evaluated as a no-cost Linux runner:
+A Windows 10 or Windows 11 x64 computer can provide the Linux x64 build runner through Ubuntu on WSL 2. This is a separate Linux runner from the native Windows runner and uses GitHub's standard `self-hosted`, `Linux` and `X64` labels.
 
-1. Confirm the Windows machine supports WSL 2. This WSL 2 route supports **Windows 11** and **Windows 10 version 2004 (build 19041) or later**. This is the WSL 2 minimum, not the minimum for the native Windows runner. See [Install WSL](https://learn.microsoft.com/en-us/windows/wsl/install).
-2. Install or open an Ubuntu distribution under WSL 2. Check it from PowerShell with `wsl --list --verbose`; the distribution must show version `2`.
-3. In the Ubuntu environment, install and register a GitHub Actions Linux x64 self-hosted runner for this private repository. Use the repository's generated one-time registration token; never save it in the repository.
-4. Run the Linux runner as an interactive WSL process using its `run.sh` launcher. Do **not** install it as a Windows service. Ubuntu's WSL guidance explains that current Store-based WSL requires a logged-in user session and cannot be started by a Windows service; see [Running WSL workflows](https://ubuntu.com/wsl/docs/stable/howto/run-workflows-azure/).
-5. Confirm GitHub shows the runner as **Idle/Online** with the labels `self-hosted`, `Linux` and `X64`. Keep the Windows user session and WSL runner active while the manual installer workflow is running.
+The supported WSL route is Windows 11 or **64-bit Windows 10 version 2004 (build 19041) or later**, with WSL 2 and Ubuntu 22.04 LTS or Ubuntu 24.04 LTS. It does not replace the native Windows runner or native Linux desktop acceptance.
 
-**Verification status:** this is an optional route to evaluate, not an already verified Brightdesk build environment. The runner must first complete the Linux Suite build, all ten product builds, artifact checks and checksum generation. WSL package creation does not by itself prove that the DEB or AppImage works in a native Linux desktop session; test installation, first launch, window behaviour and removal on a real Linux desktop before release acceptance. A WSL runner also stores an Actions checkout in its runner workspace during the job. This checkout is not the canonical repository, but the current workflow does not yet have an explicit post-job workspace-erasure step. Do not describe the runner as leaving no local source copy; add and verify workspace cleanup before relying on this route for a no-persistent-checkout requirement.
+The repository includes a setup script and full instructions:
 
+- [Linux runner setup instructions](../tools/runner-setup/linux/README.txt)
+- [Linux runner setup script](../tools/runner-setup/linux/Install-Brightdesk-Linux-Runner.sh)
+
+Follow the instructions in the Ubuntu terminal:
+
+1. From Windows PowerShell, install Ubuntu 24.04 with `wsl --install -d Ubuntu-24.04`, then complete Ubuntu's first-run setup.
+2. Confirm the distribution uses WSL 2 with `wsl --list --verbose`. If it shows version 1, convert it using `wsl --set-version Ubuntu-24.04 2`.
+3. In Ubuntu, install prerequisites with `sudo apt update` and `sudo apt install -y ca-certificates curl git gh jq tar findutils procps`.
+4. Sign in to GitHub CLI as `conz20` with repository administration access: `gh auth login --hostname github.com`.
+5. From the Brightdesk-suite checkout in Ubuntu, run `bash tools/runner-setup/linux/Install-Brightdesk-Linux-Runner.sh`.
+6. Review the repository and security notice, type `REGISTER`, then confirm the runner is **Idle/Online** in Settings → Actions → Runners with labels `self-hosted`, `Linux` and `X64`.
+
+The script downloads the official GitHub Actions Linux x64 runner v2.338.2, verifies its published SHA-256 digest, checks for existing compatible registrations, requests a short-lived registration token through GitHub CLI and registers only to the private Brightdesk-suite repository. It does not install a Windows service or enable WSL auto-start. Keep Ubuntu and the Windows user session running while a Linux build is queued; after WSL shuts down, reopen Ubuntu and rerun the setup script to restart the existing runner.
+
+The runner application and its local log remain in the WSL distribution under `~/.brightdesk-product-ci-runners/Brightdesk-suite`. The job checkout is temporary and is removed by the post-job cleanup action described below. WSL build success does not prove native Linux desktop behaviour: DEB/AppImage installation, launch, window behaviour and removal must also be checked on a real supported Linux desktop before release acceptance.
 
 ### Automatic post-job checkout erasure
 
-The installer workflow now runs `scripts/cleanup-runner-workspace.js` as an `if: always()` final step in all four jobs: prepare, platform build, collect and publish. The script resolves both `GITHUB_WORKSPACE` and `RUNNER_WORKSPACE`, refuses filesystem roots or paths outside the runner work root, checks the resolved path to prevent symlink escape, and removes the entire job checkout including `.git`, source files, dependencies and generated installers. Uploaded GitHub Actions artifacts are already stored by GitHub before the cleanup step runs.
+All eight self-hosted workflows register the pinned Brightdesk workspace-cleanup action as their first step. The action's post-job hook runs after GitHub has completed the checkout and other actions' own post-job cleanup, including checkout and setup-node. It runs with `post-if: always()`, so it also cleans up after failed or cancelled workflow steps when the runner can still execute post-job actions.
 
-The workflow disables checkout credential persistence and npm cache post-job saving so those actions do not need the deleted checkout later. A failed cleanup fails the job rather than silently claiming that source was erased. The runner installation itself remains registered and active on persistent Windows/macOS machines; this step erases the job checkout, not the runner application or its logs. WSL still requires separate whole-distribution destruction if the goal is to erase every Linux filesystem trace, not just the job checkout.
+The action verifies that the checked-out workspace is an ordinary directory beneath `RUNNER_WORKSPACE`, rejects symbolic-link paths and refuses to erase the runner work root or any path outside it. It removes the job checkout, including `.git`, source files, dependencies and generated build output. The action deliberately runs after GitHub's own post-job steps; it must not be moved back to an ordinary final shell step, because that can break GitHub's later checkout cleanup.
+
+The cleanup removes the job checkout, not the installed runner application, its logs, the user's home directory, Windows files or the WSL distribution. The runner remains available for later jobs. Source exists on the runner disk while a job is running and is removed after the job's post-job actions finish; this is not a claim that source is never written locally.
+

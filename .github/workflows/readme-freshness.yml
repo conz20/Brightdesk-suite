@@ -71,7 +71,7 @@ jobs:
             fi
 
             case "$file" in
-              *.md|*.mdx|.github/workflows/readme-freshness.yml)
+              *.md|*.mdx|.github/**|tools/runner-setup/**|tests/**|test/**|scripts/cleanup-runner-workspace.js)
                 ;;
               *)
                 non_markdown_changed=true
