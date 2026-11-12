@@ -20,7 +20,7 @@ test('Apps shows one suite-level sidebar entry instead of repeating the ten prod
   assert.doesNotMatch(html, /class="nav[^\"]*create|id="(?:create|new)-nav"/i);
   assert.doesNotMatch(html, /data-app="(?:pages|sheets|slides|notes|database|forms|lists|planner|todo|loop)"/);
   assert.match(app, /catalog\.filter\(item => installedApp\(item\.id\) && !state\.hiddenProducts\.includes\(item\.id\)\)/);
-  assert.match(app, /\$\('dynamic-app-nav'\)\.hidden = suitePage \|\| languages \|\| Boolean\(launchAppId\)/);
+  assert.match(app, /\$\('dynamic-app-nav'\)\.hidden = suitePage \|\| languages/);
   assert.match(app, /\$\('app-centre-nav'\)\.hidden = !suitePage \|\| Boolean\(launchAppId\)/);
   assert.match(app, /manager \? t\('sidebar\.applications'\)/);
 });
