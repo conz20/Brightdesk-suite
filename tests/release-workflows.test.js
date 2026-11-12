@@ -371,16 +371,21 @@ test('README freshness exempts internal workflows, runner setup and test-only ch
 });
 
 
-test('Windows runner instructions match the files actually stored in GitHub', () => {
+test('Windows runner can be started from one verified download', () => {
   const instructions = read('tools/runner-setup/windows/README.txt');
   const launcher = read('tools/runner-setup/windows/Start-Brightdesk-Windows-Runner.cmd');
   const installer = read('tools/runner-setup/windows/Install-Brightdesk-Windows-Runner.ps1');
   const releaseGuide = read('docs/LOCAL-RELEASE-VERIFICATION.md');
-  assert.ok(instructions.includes('Start-Brightdesk-Windows-Runner.cmd'));
-  assert.ok(instructions.includes('Install-Brightdesk-Windows-Runner.ps1'));
+  assert.ok(instructions.includes('Download only Start-Brightdesk-Windows-Runner.cmd'));
+  assert.ok(instructions.includes('downloads the PowerShell installer automatically'));
   assert.ok(instructions.includes('There is no setup ZIP.'));
-  assert.ok(launcher.includes('Install-Brightdesk-Windows-Runner.ps1'));
+  assert.ok(launcher.includes('https://raw.githubusercontent.com/conz20/Brightdesk-suite/3689b07316e2c700cf868a895ad5b66843c2aca2/tools/runner-setup/windows/Install-Brightdesk-Windows-Runner.ps1'));
+  assert.ok(launcher.includes('24f51d6510002ef70e08af4df92f7f5254684c6127cb7c2cb754b0566c4f573e'));
+  assert.ok(launcher.includes('Invoke-WebRequest'));
+  assert.ok(launcher.includes('Get-FileHash'));
+  assert.ok(launcher.includes('powershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -File "%INSTALLER_PATH%"'));
+  assert.ok(!launcher.includes('%~dp0Install-Brightdesk-Windows-Runner.ps1'));
   assert.ok(installer.includes('Get-Command git.exe'));
   assert.ok(installer.includes('Get-Command bash.exe'));
-  assert.ok(releaseGuide.includes('There is no setup ZIP.'));
+  assert.ok(releaseGuide.includes('Download only the single Windows launcher file'));
 });
