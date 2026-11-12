@@ -159,12 +159,11 @@ test('production Home activates its dedicated shell layout and circular utility 
   const html = read('src/index.html');
   const app = read('src/app.js');
   const styles = read('src/styles.css');
-  assert.ok(html.includes('width="46" height="46"'));
+  assert.ok(html.includes('<title>Brightdesk Office Suite</title>'));
+  assert.equal(html.includes('brand-mark-image'), false);
   assert.ok(!html.includes('<small data-i18n="sidebar.workspace">YOUR WORKSPACE</small>'));
   assert.ok(app.includes("document.body.classList.toggle('suite-home', home)"));
   assert.ok(styles.includes('width: 238px;'));
-  assert.ok(styles.includes('width: 46px;'));
-  assert.ok(styles.includes('font-size: 25px;'));
   assert.ok(styles.includes('width: 38px;'));
   assert.ok(styles.includes('body.suite-home .main'));
   assert.ok(styles.includes('font-size: 34px;'));
@@ -177,9 +176,9 @@ test('Home sidebar footer and navigation match the production artwork', () => {
   const app = read('src/app.js');
   const styles = read('src/styles.css');
   const readme = read('README.md');
-  assert.ok(html.includes('<small id="platform">Brightdesk Office Suite</small>'));
+  assert.ok(html.includes('<small id="platform">Desktop</small>'));
   assert.ok(html.includes('<small id="version-label">Local-first · Your files stay here</small>'));
-  assert.ok(!app.includes("$('platform').textContent="));
+  assert.ok(app.includes("$('platform').textContent=`Desktop · ${window.brightdesk.platform}`;"));
   assert.ok(!app.includes("$('version-label').textContent ="));
   assert.ok(styles.includes('body.suite-home .sidebar > .nav small { display: none; }'));
   assert.ok(styles.includes('body.suite-home .main > footer { display: none; }'));
