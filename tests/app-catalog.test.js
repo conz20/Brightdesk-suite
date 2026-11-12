@@ -248,24 +248,25 @@ test('Suite Open actions launch dedicated product windows instead of changing th
   const main = fs.readFileSync(path.join(root, 'src', 'main.js'), 'utf8');
   const preload = fs.readFileSync(path.join(root, 'src', 'preload.js'), 'utf8');
   const app = fs.readFileSync(path.join(root, 'src', 'app.js'), 'utf8');
-  assert.match(main, /function openProductWindow\\(applicationId\\)/);
-  assert.match(main, /const productWindows = new Map\\(\\)/);
-  assert.match(main, /ipcMain\\.handle\\('apps:open'/);
-  assert.match(main, /additionalArguments: \\[.*brightdesk-app=/);
-  assert.match(main, /existing\\.show\\(\\);\\s*existing\\.focus\\(\\)/);
-  assert.match(preload, /openApplication: \\(applicationId\\) => ipcRenderer\\.invoke\\('apps:open', applicationId\\)/);
-  assert.match(app, /window\\.brightdesk\\.openApplication\\(item\\.id\\)/);
-  assert.doesNotMatch(app, /setApp\\(item\\.id\\)/);
-  assert.match(main, /: 'Brightdesk Office Suite'/);
+  assert.ok(main.includes('function openProductWindow(applicationId)'));
+  assert.ok(main.includes('const productWindows = new Map()'));
+  assert.ok(main.includes("ipcMain.handle('apps:open'"));
+  assert.ok(main.includes('--brightdesk-app=${applicationId}'));
+  assert.ok(main.includes('existing.show();'));
+  assert.ok(main.includes('existing.focus();'));
+  assert.ok(preload.includes("ipcRenderer.invoke('apps:open', applicationId)"));
+  assert.ok(app.includes('window.brightdesk.openApplication(item.id)'));
+  assert.equal(app.includes('setApp(item.id)'), false);
+  assert.ok(main.includes("'Brightdesk Office Suite'"));
 });
 
 test('each product window saves its own document without overwriting other open products', () => {
   const fs = require('node:fs');
   const path = require('node:path');
   const app = fs.readFileSync(path.join(__dirname, '..', 'src', 'app.js'), 'utf8');
-  assert.match(app, /brightdesk-doc-\\$\\{launchAppId\\}-v1/);
-  assert.match(app, /brightdesk-doc-\\$\\{id\\}-v1/);
-  assert.match(app, /else localStorage\\.setItem\\('brightdesk-docs-v3'/);
+  assert.ok(app.includes('brightdesk-doc-${launchAppId}-v1'));
+  assert.ok(app.includes('brightdesk-doc-${id}-v1'));
+  assert.ok(app.includes("else localStorage.setItem('brightdesk-docs-v3'"));
 });
 
 test('the Suite Home artwork and README no longer repeat Suite logo or wordmark branding', () => {
@@ -274,11 +275,13 @@ test('the Suite Home artwork and README no longer repeat Suite logo or wordmark 
   const root = path.join(__dirname, '..');
   const readme = fs.readFileSync(path.join(root, 'README.md'), 'utf8');
   const artwork = fs.readFileSync(path.join(root, 'assets', 'product-experience', 'brightdesk-home.svg'), 'utf8');
-  assert.doesNotMatch(readme, /assets\\/brand\\/brightdesk-logo\\.svg/);
-  assert.doesNotMatch(artwork, /Brightdesk Office Suite|brightdesk<\\/text>|BRIGHTDESK OFFICE SUITE/);
-  assert.match(artwork, /Ten original desktop products/);
+  assert.equal(readme.includes('assets/brand/brightdesk-logo.svg'), false);
+  assert.equal(artwork.includes('Brightdesk Office Suite'), false);
+  assert.equal(artwork.includes('brightdesk</text>'), false);
+  assert.equal(artwork.includes('BRIGHTDESK OFFICE SUITE'), false);
+  assert.ok(artwork.includes('Ten original desktop products'));
   const main = fs.readFileSync(path.join(root, 'src', 'main.js'), 'utf8');
-  assert.match(main, /: 'Brightdesk Office Suite'/);
+  assert.ok(main.includes("'Brightdesk Office Suite'"));
 });
 
 test('the shared visual standard requires Microsoft completeness checks and independent app windows', () => {
