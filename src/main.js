@@ -23,6 +23,11 @@ let updateCheckInterval = null;
 let automaticUpdateChecksEnabled = DEFAULT_UPDATE_SETTINGS.autoCheck;
 let dictionaryService;
 const supportedApplications = new Set(Object.keys(PRODUCT_MANIFEST));
+const applicationId = packageConfig.brightdeskAppId || null;
+if (applicationId && !supportedApplications.has(applicationId)) {
+  throw new Error(`Unsupported Brightdesk application: ${applicationId}`);
+}
+app.setName(packageConfig.productName || 'Brightdesk');
 const hasSingleInstanceLock = app.requestSingleInstanceLock();
 if (!hasSingleInstanceLock) {
   app.quit();
@@ -36,10 +41,6 @@ if (!hasSingleInstanceLock) {
     target.show();
     target.focus();
   });
-}
-const applicationId = packageConfig.brightdeskAppId || null;
-if (applicationId && !supportedApplications.has(applicationId)) {
-  throw new Error(`Unsupported Brightdesk application: ${applicationId}`);
 }
 
 const updateSettingsPath = path.join(app.getPath('userData'), 'update-settings.json');
@@ -453,8 +454,7 @@ async function runPackagedStartupSmokeTest() {
 
 app.whenReady().then(async () => {
   if (!hasSingleInstanceLock) return;
-  app.setName(packageConfig.productName || 'Brightdesk');
-  app.setAppUserModelId(applicationId ? `org.brightdesk.${applicationId}` : 'org.brightdesk.suite');
+  if (process.platform === 'win32') app.setAppUserModelId(applicationId ? `org.brightdesk.${applicationId}` : 'org.brightdesk.suite');
   dictionaryService = new DictionaryService(app.getPath('userData'));
   Menu.setApplicationMenu(null);
   if (process.env.BRIGHTDESK_STARTUP_SMOKE_TEST === '1') {
