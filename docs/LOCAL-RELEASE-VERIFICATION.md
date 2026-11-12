@@ -67,7 +67,7 @@ Type `REGISTER` only after reviewing the eight-repository list shown by the scri
 
 ### Windows runner setup
 
-The click-to-run Windows x64 setup is one file: [Start-Brightdesk-Windows-Runner.cmd](https://raw.githubusercontent.com/conz20/Brightdesk-suite/main/tools/runner-setup/windows/Start-Brightdesk-Windows-Runner.cmd). There is no setup ZIP and no second file to download. The launcher downloads the PowerShell installer from a pinned Brightdesk commit, verifies its SHA-256 checksum, and starts it only after verification succeeds.
+The click-to-run Windows x64 setup supports 64-bit Windows 10 and Windows 11 and is one file: [Start-Brightdesk-Windows-Runner.cmd](https://raw.githubusercontent.com/conz20/Brightdesk-suite/main/tools/runner-setup/windows/Start-Brightdesk-Windows-Runner.cmd). There is no setup ZIP and no second file to download. The launcher downloads the PowerShell installer from a pinned Brightdesk commit, verifies its SHA-256 checksum, and starts it only after verification succeeds.
 
 The installer uses Windows Package Manager (winget) to install Git for Windows and GitHub CLI only when either is missing. It adds the Git and Bash directories to the machine PATH for the runner service, then uses GitHub CLI's official browser/device sign-in flow. Sign in as `conz20`, which must have administrator access to the private Brightdesk-suite repository. The installer requests the short-lived repository runner registration token automatically through GitHub CLI and passes it to the official runner configurator; you do not open the runner registration page or copy/paste the token.
 
