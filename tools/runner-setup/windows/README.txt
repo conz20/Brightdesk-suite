@@ -23,12 +23,11 @@ It does NOT change the Brightdesk release workflow, publish a release, or instal
 
 BEFORE YOU START
 ----------------
-1. Install Git for Windows from https://git-scm.com/download/win. Brightdesk uses Git for repository checkout and the Git Bash shell for Windows build steps. Ensure both `git.exe` and `bash.exe` are available on the system PATH, then open a new PowerShell window and confirm `git --version` and `bash --version` work.
-2. Download these two files into the **same folder** on your Windows PC:
-   - [Start-Brightdesk-Windows-Runner.cmd](https://raw.githubusercontent.com/conz20/Brightdesk-suite/main/tools/runner-setup/windows/Start-Brightdesk-Windows-Runner.cmd)
-   - [Install-Brightdesk-Windows-Runner.ps1](https://raw.githubusercontent.com/conz20/Brightdesk-suite/main/tools/runner-setup/windows/Install-Brightdesk-Windows-Runner.ps1)
+1. Install Git for Windows from https://git-scm.com/download/win. Brightdesk uses Git for repository checkout and the Git Bash shell for Windows build steps. Ensure both `git.exe` and `bash.exe` are available on the system PATH. The installer checks these for you and stops with a clear message if either is missing.
+2. Download only Start-Brightdesk-Windows-Runner.cmd to your Windows PC:
+   https://raw.githubusercontent.com/conz20/Brightdesk-suite/main/tools/runner-setup/windows/Start-Brightdesk-Windows-Runner.cmd
 
-   There is no setup ZIP. The two files must remain together so the CMD launcher can find its PowerShell installer.
+   You do not need to download the PowerShell file separately. The launcher downloads it from a pinned Brightdesk commit, verifies its SHA-256 checksum, and only then starts it. There is no setup ZIP.
 3. Sign in to GitHub in your browser.
 4. Open this exact page:
    https://github.com/conz20/Brightdesk-suite/settings/actions/runners/new
@@ -38,12 +37,13 @@ BEFORE YOU START
 RUN THE SETUP
 -------------
 1. Double-click Start-Brightdesk-Windows-Runner.cmd.
-2. Approve the Windows User Account Control prompt.
-3. Read the security note and type REGISTER when prompted.
-4. When the official GitHub runner setup asks for its registration token, paste the token from GitHub into that prompt. Do not paste it into ChatGPT, email, messages, or this README.
-5. Follow any remaining prompts from the official GitHub runner setup program. Accept the default Windows service account unless you have a reason to use a dedicated service account.
-6. Wait for the setup window to report success.
-7. Return to GitHub Settings > Actions > Runners. Confirm Brightdesk-Windows-PC appears as Idle/Online.
+2. The launcher downloads the pinned PowerShell installer and verifies its SHA-256 checksum. If download or verification fails, setup stops.
+3. Approve the Windows User Account Control prompt.
+4. Read the security note and type REGISTER when prompted.
+5. When the official GitHub runner setup asks for its registration token, paste the token from GitHub into that prompt. Do not paste it into ChatGPT, email, messages, or this README.
+6. Follow any remaining prompts from the official GitHub runner setup program. Accept the default Windows service account unless you have a reason to use a dedicated service account.
+7. Wait for the setup window to report success.
+8. Return to GitHub Settings > Actions > Runners. Confirm Brightdesk-Windows-PC appears as Idle/Online.
 
 IMPORTANT SECURITY NOTES
 ------------------------
