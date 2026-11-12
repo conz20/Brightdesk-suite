@@ -14,6 +14,9 @@ This is the shared design contract for Brightdesk Office Suite and all ten appro
 
 ## Ten application identities
 
+Each installed product must open as its own top-level application window and process, with its own product name, original icon, application identity and local document context. Opening a product from the Suite must launch or focus that product; it must never silently replace the Suite renderer.
+
+
 | Product | Icon metaphor | Accent family |
 | --- | --- | --- |
 | Pages | Document page and editing pen | Blue-violet |
