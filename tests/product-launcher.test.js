@@ -129,6 +129,7 @@ test('the product packager creates native launch registrations matching the laun
   const path = require('node:path');
   const config = fs.readFileSync(path.join(__dirname, '..', 'electron-builder.app.config.js'), 'utf8');
   assert.match(config, /appId: `org\.brightdesk\.\$\{appId\}`/);
+  assert.match(config, /extraMetadata: \{ name: 'brightdesk-' \+ appId/);
   assert.match(config, /desktopName: `org\.brightdesk\.\$\{appId\}\.desktop`/);
   assert.match(config, /menuCategory: 'Brightdesk'/);
   assert.match(config, /shortcutName: 'Brightdesk ' \+ appName/);
