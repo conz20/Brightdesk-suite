@@ -17,6 +17,9 @@ jobs:
       contents: write
     runs-on: self-hosted
     steps:
+      - name: Register post-job workspace cleanup
+        uses: conz20/Brightdesk-suite/.github/actions/runner-workspace-cleanup@7727da85c4e6e660f3376b5b330d78b6782c1976
+
       - name: Check out repository
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
 
@@ -51,7 +54,3 @@ jobs:
             echo "package-lock.json was not generated." >&2
             exit 1
           fi
-
-      - name: Erase checked-out source and build workspace
-        if: always()
-        run: node scripts/cleanup-runner-workspace.js
