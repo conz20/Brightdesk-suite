@@ -17,6 +17,7 @@ test('the native launcher manifest contains exactly the ten approved products', 
     assert.equal(entry.bundleId, `org.brightdesk.${id}`);
     assert.equal(entry.desktopFile, `org.brightdesk.${id}.desktop`);
     assert.equal(entry.startMenuShortcut, `Brightdesk ${entry.name}.lnk`);
+    assert.ok(entry.iconAsset.endsWith('.svg'));
   }
 });
 
@@ -121,4 +122,15 @@ test('native launch uses argument arrays and never invokes a shell', async () =>
   assert.deepEqual(captured.args, ['-b', 'org.brightdesk.pages']);
   assert.equal(captured.options.shell, false);
   assert.equal(captured.options.detached, true);
+});
+
+test('the product packager creates native launch registrations matching the launcher manifest', () => {
+  const fs = require('node:fs');
+  const path = require('node:path');
+  const config = fs.readFileSync(path.join(__dirname, '..', 'electron-builder.app.config.js'), 'utf8');
+  assert.match(config, /appId: `org\.brightdesk\.\$\{appId\}`/);
+  assert.match(config, /desktopName: `org\.brightdesk\.\$\{appId\}\.desktop`/);
+  assert.match(config, /menuCategory: 'Brightdesk'/);
+  assert.match(config, /shortcutName: 'Brightdesk ' \+ appName/);
+  assert.match(config, /createStartMenuShortcut: true/);
 });
