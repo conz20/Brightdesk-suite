@@ -43,7 +43,7 @@ test('release workflow builds and verifies all three desktop platforms', () => {
   for (const platform of ['Linux', 'Windows', 'macOS']) {
     assert.match(workflow, new RegExp(`platform: ${platform}`));
   }
-  for (const command of ['dist:linux', 'dist:win', 'dist:mac', 'release:verify:linux', 'release:verify:win', 'release:verify:mac']) {
+  for (const command of ['dist:linux', 'dist:win', 'dist:mac', 'dist:apps:linux', 'dist:apps:win', 'dist:apps:mac', 'release:verify:linux', 'release:verify:win', 'release:verify:mac', 'release:verify:products:linux', 'release:verify:products:win', 'release:verify:products:mac']) {
     assert.ok(workflow.includes(command), `workflow includes ${command}`);
   }
   assert.match(workflow, /node-version: 24\.22\.2/);
@@ -59,7 +59,7 @@ test('release workflow builds and verifies all three desktop platforms', () => {
 
 test('signing and notarisation secrets are limited to main and the matching platform', () => {
   const workflow = read('.github/workflows/build-release.yml');
-  const buildStep = workflow.split('- name: Build suite installer')[1];
+  const buildStep = workflow.split('- name: Build Suite and all ten standalone product installers')[1];
   assert.ok(buildStep, 'build installer step exists');
   for (const secret of ['CSC_LINK', 'CSC_KEY_PASSWORD', 'CSC_INSTALLER_LINK', 'CSC_INSTALLER_KEY_PASSWORD', 'APPLE_ID', 'APPLE_APP_SPECIFIC_PASSWORD', 'APPLE_TEAM_ID']) {
     const line = buildStep.split('\n').find((item) => item.trimStart().startsWith(`${secret}:`));
@@ -81,7 +81,7 @@ test('release publishing is manual, disabled by default, and main-only', () => {
 
 test('Linux builds do not receive Windows or macOS signing credentials', () => {
   const workflow = read('.github/workflows/build-release.yml');
-  const buildStep = workflow.split('- name: Build suite installer')[1];
+  const buildStep = workflow.split('- name: Build Suite and all ten standalone product installers')[1];
   for (const key of ['CSC_LINK', 'CSC_KEY_PASSWORD']) {
     const line = buildStep.split('\n').find((item) => item.trimStart().startsWith(`${key}:`));
     assert.match(line, /matrix\.platform == 'Windows'/);
