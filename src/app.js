@@ -28,7 +28,7 @@ const genericConfigs = Object.fromEntries((window.BrightdeskAppCatalog || []).fi
 const fullCatalog = window.BrightdeskAppCatalog || [];
 const launchAppId = window.brightdesk.launchAppId || null;
 const catalog = fullCatalog;
-const { resolveAppSetup, removeAppSelection } = window.BrightdeskAppSetupPolicy;
+const { resolveAppSetup, removeAppSelection, setProductVisibility } = window.BrightdeskAppSetupPolicy;
 const installableCatalog = catalog.filter(item => item.availability === 'available');
 const state = {
   app: launchAppId || 'pages', view: 'workspace', docs: structuredClone(defaults),
@@ -496,9 +496,7 @@ function renderAppManager() {
     const visibilityAction = document.createElement('button'); visibilityAction.type = 'button'; visibilityAction.className = 'app-card-menu-item'; visibilityAction.setAttribute('role', 'menuitemcheckbox'); visibilityAction.setAttribute('aria-checked', String(!hiddenFromSidebar)); visibilityAction.textContent = hiddenFromSidebar ? 'Show in Switch product' : 'Hide from Switch product'; visibilityAction.disabled = !isInstalled;
     visibilityAction.addEventListener('click', () => {
       if (!isInstalled) return;
-      const visibleProducts = state.installedApps.filter(id => !state.hiddenProducts.includes(id));
-      if (!hiddenFromSidebar && visibleProducts.length <= 1) { alert('Keep at least one product visible in Switch product.'); return; }
-      state.hiddenProducts = hiddenFromSidebar ? state.hiddenProducts.filter(id => id !== item.id) : [...state.hiddenProducts, item.id];
+      state.hiddenProducts = setProductVisibility(state.hiddenProducts, state.installedApps, item.id, !hiddenFromSidebar);
       saveAppSetup(); render();
     });
     menu.append(visibilityAction);
