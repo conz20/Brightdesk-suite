@@ -35,30 +35,6 @@ jobs:
       - name: Verify Node.js runtime
         run: npm run check:node
 
-      - name: Check available cross-platform build tools
-        shell: bash
-        run: |
-          printf 'Host OS: '; uname -s
-          printf 'Host architecture: '; uname -m
-          printf 'Node architecture: '; node -p 'process.platform + "/" + process.arch'
-          for tool in wine wine64 docker podman qemu-system-x86_64 qemu-system-aarch64 x86_64-w64-mingw32-gcc x86_64-linux-gnu-gcc; do
-            if command -v "$tool" >/dev/null 2>&1; then
-              printf 'AVAILABLE %s: ' "$tool"
-              "$tool" --version 2>&1 | head -n 1 || true
-            else
-              printf 'MISSING %s\n' "$tool"
-            fi
-          done
-          if command -v docker >/dev/null 2>&1; then
-            printf 'Docker daemon: '
-            docker info --format '{{.OSType}}/{{.Architecture}}' 2>/dev/null || printf 'unavailable\n'
-          fi
-          if command -v rustup >/dev/null 2>&1; then
-            printf 'Installed Rust targets:\n'
-            rustup target list --installed
-          fi
-
-
       - name: Verify dependency lock
         run: npm run lock:verify
 
