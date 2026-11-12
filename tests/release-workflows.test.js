@@ -390,5 +390,5 @@ test('Windows runner can be started from one verified download', () => {
   assert.ok(!launcher.includes('%~dp0Install-Brightdesk-Windows-Runner.ps1'));
   assert.ok(installer.includes('Get-Command git.exe'));
   assert.ok(installer.includes('Get-Command bash.exe'));
-  assert.ok(releaseGuide.includes('Download only the single Windows launcher file'));
+  assert.ok(releaseGuide.includes('Download only the [single Windows launcher file]'));
 });
