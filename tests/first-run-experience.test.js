@@ -83,3 +83,33 @@ test('the last installed product may be hidden from the Switch product navigatio
   );
   assert.deepEqual(result, ['pages']);
 });
+
+test('Suite-launched product windows only show other installed and visible products', () => {
+  const { getNavigationProducts } = require('../src/app-setup-policy');
+  const catalog = ['pages','sheets','slides','notes','database','forms','lists','planner','todo','loop']
+    .map(id => ({ id }));
+  const result = getNavigationProducts(
+    catalog,
+    ['pages','sheets','todo'],
+    ['todo'],
+    'pages',
+    true
+  );
+  assert.deepEqual(result.map(item => item.id), ['sheets']);
+});
+
+test('separately installed product windows retain the other product switch options', () => {
+  const { getNavigationProducts } = require('../src/app-setup-policy');
+  const catalog = ['pages','sheets','slides','notes','database','forms','lists','planner','todo','loop']
+    .map(id => ({ id }));
+  const result = getNavigationProducts(catalog, ['pages'], [], 'pages', false);
+  assert.deepEqual(result.map(item => item.id), ['sheets','slides','notes','database','forms','lists','planner','todo','loop']);
+});
+
+test('Suite navigation excludes products that are not installed or are hidden', () => {
+  const { getNavigationProducts } = require('../src/app-setup-policy');
+  const catalog = ['pages','sheets','slides','notes'].map(id => ({ id }));
+  const result = getNavigationProducts(catalog, ['pages','sheets'], ['sheets'], null, false);
+  assert.deepEqual(result.map(item => item.id), ['pages']);
+});
+
