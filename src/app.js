@@ -28,7 +28,7 @@ const genericConfigs = Object.fromEntries((window.BrightdeskAppCatalog || []).fi
 const fullCatalog = window.BrightdeskAppCatalog || [];
 const launchAppId = window.brightdesk.launchAppId || null;
 const catalog = fullCatalog;
-const { resolveAppSetup, removeAppSelection, setProductVisibility } = window.BrightdeskAppSetupPolicy;
+const { resolveAppSetup, removeAppSelection, setProductVisibility, getNavigationProducts } = window.BrightdeskAppSetupPolicy;
 const installableCatalog = catalog.filter(item => item.availability === 'available');
 const state = {
   app: launchAppId || 'pages', view: 'workspace', docs: structuredClone(defaults),
@@ -582,9 +582,7 @@ function updateDocumentLanguage() {
 function syncAppNavigation() {
   const host = $('dynamic-app-nav'); if (!host) return;
   host.innerHTML = '';
-  const navigationProducts = launchAppId
-    ? catalog.filter(item => item.id !== launchAppId)
-    : catalog.filter(item => installedApp(item.id) && !state.hiddenProducts.includes(item.id));
+  const navigationProducts = getNavigationProducts(installableCatalog, state.installedApps, state.hiddenProducts, launchAppId, window.brightdesk.suiteLaunchedProduct);
   navigationProducts.forEach(item => {
     const button=document.createElement('button'); button.type='button'; button.className='nav'; button.dataset.app=item.id;
     const icon=document.createElement('img'); icon.className='app-icon-image'; icon.src=appIconPath(item); icon.alt=''; icon.setAttribute('aria-hidden','true');
