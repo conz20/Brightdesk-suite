@@ -292,3 +292,17 @@ test('the shared visual standard requires Microsoft completeness checks and inde
   assert.match(standard, /own top-level application window/i);
   assert.match(standard, /must never silently replace the Suite renderer/i);
 });
+
+test('Suite product management labels workspace inclusion instead of implying native installation', () => {
+  const fs = require('node:fs');
+  const path = require('node:path');
+  const root = path.join(__dirname, '..');
+  const app = fs.readFileSync(path.join(root, 'src', 'app.js'), 'utf8');
+  const en = JSON.parse(fs.readFileSync(path.join(root, 'src', 'languages', 'en-AU.json'), 'utf8')).translations;
+  assert.doesNotMatch(app, /Available to install|Uninstall/);
+  assert.match(app, /In your workspace/);
+  assert.match(app, /Available to add/);
+  assert.equal(en['manager.install'], 'Add to Suite');
+  assert.equal(en['manager.remove'], 'Remove from Suite');
+  assert.equal(en['manager.installSelected'], 'Add selected apps');
+});
