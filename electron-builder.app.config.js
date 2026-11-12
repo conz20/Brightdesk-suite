@@ -66,6 +66,8 @@ module.exports = {
     allowToChangeInstallationDirectory: true,
     createDesktopShortcut: true,
     createStartMenuShortcut: true,
+    menuCategory: 'Brightdesk',
+    shortcutName: 'Brightdesk ' + appName,
     license: 'TERMS_AND_CONDITIONS.txt'
   },
   mac: {
