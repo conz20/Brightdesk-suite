@@ -21,7 +21,7 @@
     if (savedSetup?.schemaVersion === 2 && Array.isArray(savedSetup.installedApps)) {
       const installedApps = [...new Set(savedSetup.installedApps.filter(id => available.includes(id)))];
       return {
-        installedApps: installedApps.length ? installedApps : available,
+        installedApps,
         setupComplete: true,
         schemaVersion: 2
       };
@@ -32,5 +32,17 @@
     return { installedApps: available, setupComplete: true, schemaVersion: 2 };
   }
 
-  return { resolveAppSetup };
+  function removeAppSelection(installedApps, hiddenProducts, removedAppId, activeAppId, availableIds) {
+    const available = new Set(availableIds);
+    const remaining = [...new Set((Array.isArray(installedApps) ? installedApps : [])
+      .filter(id => available.has(id) && id !== removedAppId))];
+    const visibleHidden = [...new Set((Array.isArray(hiddenProducts) ? hiddenProducts : [])
+      .filter(id => remaining.includes(id)))];
+    const nextActiveAppId = activeAppId === removedAppId
+      ? (remaining[0] || null)
+      : (remaining.includes(activeAppId) ? activeAppId : null);
+    return { installedApps: remaining, hiddenProducts: visibleHidden, activeAppId: nextActiveAppId };
+  }
+
+  return { resolveAppSetup, removeAppSelection };
 });
