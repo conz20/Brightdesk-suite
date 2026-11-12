@@ -35,10 +35,15 @@ if (!hasSingleInstanceLock) {
     const target = mainWindow && !mainWindow.isDestroyed()
       ? mainWindow
       : (agreementWindow && !agreementWindow.isDestroyed() ? agreementWindow : null);
-    if (!target) return;
-    if (target.isMinimized()) target.restore();
-    target.show();
-    target.focus();
+    if (target) {
+      if (target.isMinimized()) target.restore();
+      target.show();
+      target.focus();
+      return;
+    }
+    if (!app.isReady()) return;
+    if (termsAccepted) createWindow();
+    else createAgreementWindow();
   });
 }
 
