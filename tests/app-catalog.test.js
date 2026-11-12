@@ -93,7 +93,7 @@ test('automatic updates stay clearly disabled until a real GitHub owner is confi
   assert.match(main, /Automatic updates will be available after the Brightdesk GitHub release repository is configured/);
 });
 
-test('workspace navigation is generated from the installed catalogue and respects product visibility settings',()=>{const fs=require('node:fs');const path=require('node:path');const root=path.join(__dirname,'..');const html=fs.readFileSync(path.join(root,'src','index.html'),'utf8');const app=fs.readFileSync(path.join(root,'src','app.js'),'utf8');assert.match(html,/id="dynamic-app-nav"/);assert.match(html,/id="app-centre-nav"/);assert.match(html,/id="home-nav"/);assert.match(html,/id="files-nav"/);assert.doesNotMatch(html,/data-app="(?:pages|sheets|slides|notes)"/);assert.match(app,/catalog\.filter\(item => installedApp\(item\.id\) && !state\.hiddenProducts\.includes\(item\.id\)\)/);assert.match(app,/\$\('dynamic-app-nav'\)\.hidden = suitePage \|\| languages \|\| Boolean\(launchAppId\)/);assert.match(app,/\$\('app-centre-nav'\)\.hidden = !suitePage \|\| Boolean\(launchAppId\)/);});
+test('workspace navigation is generated from the installed catalogue and respects product visibility settings',()=>{const fs=require('node:fs');const path=require('node:path');const root=path.join(__dirname,'..');const html=fs.readFileSync(path.join(root,'src','index.html'),'utf8');const app=fs.readFileSync(path.join(root,'src','app.js'),'utf8');assert.match(html,/id="dynamic-app-nav"/);assert.match(html,/id="app-centre-nav"/);assert.match(html,/id="home-nav"/);assert.match(html,/id="files-nav"/);assert.doesNotMatch(html,/data-app="(?:pages|sheets|slides|notes)"/);assert.match(app,/catalog\.filter\(item => installedApp\(item\.id\) && !state\.hiddenProducts\.includes\(item\.id\)\)/);assert.match(app,/\$\('dynamic-app-nav'\)\.hidden = suitePage \|\| languages/);assert.match(app,/\$\('app-centre-nav'\)\.hidden = !suitePage \|\| Boolean\(launchAppId\)/);});
 
 test('catalog is hard-limited to the ten approved Brightdesk apps', () => {
   assert.deepEqual(catalog.map(item => item.id), ['pages','sheets','slides','notes','database','forms','lists','planner','todo','loop']);
@@ -239,4 +239,53 @@ test('README presents all ten apps as the integrated first-release lineup', () =
   assert.match(readme, /ten focused desktop products/i);
   assert.match(readme, /These are the only products in the approved suite/i);
   assert.doesNotMatch(readme, /other six.*not yet working apps/i);
+});
+
+test('Suite Open actions launch dedicated product windows instead of changing the Suite workspace', () => {
+  const fs = require('node:fs');
+  const path = require('node:path');
+  const root = path.join(__dirname, '..');
+  const main = fs.readFileSync(path.join(root, 'src', 'main.js'), 'utf8');
+  const preload = fs.readFileSync(path.join(root, 'src', 'preload.js'), 'utf8');
+  const app = fs.readFileSync(path.join(root, 'src', 'app.js'), 'utf8');
+  assert.match(main, /function openProductWindow\\(applicationId\\)/);
+  assert.match(main, /const productWindows = new Map\\(\\)/);
+  assert.match(main, /ipcMain\\.handle\\('apps:open'/);
+  assert.match(main, /additionalArguments: \\[.*brightdesk-app=/);
+  assert.match(main, /existing\\.show\\(\\);\\s*existing\\.focus\\(\\)/);
+  assert.match(preload, /openApplication: \\(applicationId\\) => ipcRenderer\\.invoke\\('apps:open', applicationId\\)/);
+  assert.match(app, /window\\.brightdesk\\.openApplication\\(item\\.id\\)/);
+  assert.doesNotMatch(app, /setApp\\(item\\.id\\)/);
+  assert.match(main, /: 'Brightdesk Office Suite'/);
+});
+
+test('each product window saves its own document without overwriting other open products', () => {
+  const fs = require('node:fs');
+  const path = require('node:path');
+  const app = fs.readFileSync(path.join(__dirname, '..', 'src', 'app.js'), 'utf8');
+  assert.match(app, /brightdesk-doc-\\$\\{launchAppId\\}-v1/);
+  assert.match(app, /brightdesk-doc-\\$\\{id\\}-v1/);
+  assert.match(app, /else localStorage\\.setItem\\('brightdesk-docs-v3'/);
+});
+
+test('the Suite Home artwork and README no longer repeat Suite logo or wordmark branding', () => {
+  const fs = require('node:fs');
+  const path = require('node:path');
+  const root = path.join(__dirname, '..');
+  const readme = fs.readFileSync(path.join(root, 'README.md'), 'utf8');
+  const artwork = fs.readFileSync(path.join(root, 'assets', 'product-experience', 'brightdesk-home.svg'), 'utf8');
+  assert.doesNotMatch(readme, /assets\\/brand\\/brightdesk-logo\\.svg/);
+  assert.doesNotMatch(artwork, /Brightdesk Office Suite|brightdesk<\\/text>|BRIGHTDESK OFFICE SUITE/);
+  assert.match(artwork, /Ten original desktop products/);
+  const main = fs.readFileSync(path.join(root, 'src', 'main.js'), 'utf8');
+  assert.match(main, /: 'Brightdesk Office Suite'/);
+});
+
+test('the shared visual standard requires Microsoft completeness checks and independent app windows', () => {
+  const fs = require('node:fs');
+  const path = require('node:path');
+  const standard = fs.readFileSync(path.join(__dirname, '..', 'docs', 'BRIGHTDESK_VISUAL_STANDARD.md'), 'utf8');
+  assert.match(standard, /Microsoft.*completeness and usability benchmark/i);
+  assert.match(standard, /own top-level application window/i);
+  assert.match(standard, /must never silently replace the Suite renderer/i);
 });
