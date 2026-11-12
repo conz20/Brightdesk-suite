@@ -49,3 +49,30 @@ test('Suite-launched product windows default to all ten products when no Suite p
   const setup = resolveAppSetup(null, 'sheets', ids, true);
   assert.deepEqual(setup.installedApps, ids);
 });
+
+test('an intentionally empty installed-product selection remains empty after startup', () => {
+  const ids = ['pages','sheets','slides','notes','database','forms','lists','planner','todo','loop'];
+  const setup = resolveAppSetup({ schemaVersion: 2, installedApps: [], setupComplete: true }, null, ids);
+  assert.deepEqual(setup.installedApps, []);
+  assert.equal(setup.setupComplete, true);
+});
+
+test('removing the final installed product leaves the Suite with no selected products', () => {
+  const ids = ['pages','sheets','slides','notes','database','forms','lists','planner','todo','loop'];
+  const result = require('../src/app-setup-policy').removeAppSelection(
+    ['pages'], ['pages'], 'pages', 'pages', ids
+  );
+  assert.deepEqual(result, { installedApps: [], hiddenProducts: [], activeAppId: null });
+});
+
+test('removing the active product selects another installed product without deleting its data', () => {
+  const ids = ['pages','sheets','slides','notes','database','forms','lists','planner','todo','loop'];
+  const result = require('../src/app-setup-policy').removeAppSelection(
+    ['pages','sheets','todo'], ['pages','todo'], 'pages', 'pages', ids
+  );
+  assert.deepEqual(result, {
+    installedApps: ['sheets','todo'],
+    hiddenProducts: ['todo'],
+    activeAppId: 'sheets'
+  });
+});
