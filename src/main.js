@@ -12,6 +12,7 @@ const { DictionaryService } = require('./dictionary-service');
 const { DEFAULT_UPDATE_SETTINGS, normalizeUpdateSettings, getUpdaterPreferences } = require('./update-policy');
 const { shouldRequireFirstLaunchTerms } = require('./installer-terms-policy');
 const { launchProduct, PRODUCT_MANIFEST } = require('./product-launcher');
+const { createProductWindowManager } = require('./product-window-manager');
 let mainWindow;
 let agreementWindow;
 let termsAccepted = false;
@@ -24,6 +25,7 @@ let updateCheckInterval = null;
 let automaticUpdateChecksEnabled = DEFAULT_UPDATE_SETTINGS.autoCheck;
 let dictionaryService;
 const supportedApplications = new Set(Object.keys(PRODUCT_MANIFEST));
+const authorizedApplicationWindows = new Set();
 const applicationId = packageConfig.brightdeskAppId || null;
 if (applicationId && !supportedApplications.has(applicationId)) {
   throw new Error(`Unsupported Brightdesk application: ${applicationId}`);
@@ -83,30 +85,83 @@ function sendUpdateState(state) {
   });
   notification.show();
 }
+function registerApplicationWindow(window) {
+  const contents = window.webContents;
+  authorizedApplicationWindows.add(contents);
+  window.once('closed', () => authorizedApplicationWindows.delete(contents));
+  contents.setWindowOpenHandler(() => ({ action: 'deny' }));
+  contents.on('will-navigate', event => event.preventDefault());
+  window.on('focus', () => { if (autoUpdater && automaticUpdateChecksEnabled) checkForUpdates({ quiet: true }); });
+  return window;
+}
+
 function createWindow({ show = true } = {}) {
-  mainWindow = new BrowserWindow({
+  mainWindow = registerApplicationWindow(new BrowserWindow({
     width: 1440, height: 920, minWidth: 980, minHeight: 680, show,
     title: applicationId ? `Brightdesk ${PRODUCT_MANIFEST[applicationId].name}` : 'Brightdesk Office Suite',
     icon: applicationId ? path.join(__dirname, 'assets', 'icons', PRODUCT_MANIFEST[applicationId].iconAsset) : undefined,
     backgroundColor: '#f5f6fa',
     webPreferences: { preload: path.join(__dirname, 'preload.js'), contextIsolation: true, nodeIntegration: false, sandbox: true, additionalArguments: applicationId ? [`--brightdesk-app=${applicationId}`] : [] }
-  });
-  mainWindow.webContents.setWindowOpenHandler(() => ({ action: 'deny' }));
-  mainWindow.webContents.on('will-navigate', event => event.preventDefault());
-  mainWindow.on('focus', () => { if (autoUpdater && automaticUpdateChecksEnabled) checkForUpdates({ quiet: true }); });
+  }));
   return mainWindow.loadFile(path.join(__dirname, 'index.html'));
 }
+
+function createSuiteProductWindow(requestedApplicationId) {
+  const entry = PRODUCT_MANIFEST[requestedApplicationId];
+  const window = registerApplicationWindow(new BrowserWindow({
+    width: 1440,
+    height: 920,
+    minWidth: 980,
+    minHeight: 680,
+    show: true,
+    title: `Brightdesk ${entry.name}`,
+    icon: path.join(__dirname, 'assets', 'icons', entry.iconAsset),
+    backgroundColor: '#f5f6fa',
+    webPreferences: {
+      preload: path.join(__dirname, 'preload.js'),
+      contextIsolation: true,
+      nodeIntegration: false,
+      sandbox: true,
+      additionalArguments: [`--brightdesk-app=${requestedApplicationId}`, '--brightdesk-suite-window=1']
+    }
+  }));
+  return { window, ready: window.loadFile(path.join(__dirname, 'index.html')) };
+}
+
+const productWindowManager = createProductWindowManager({
+  productIds: [...supportedApplications],
+  createWindow: createSuiteProductWindow
+});
+
 function senderIsMain(event) {
-  return Boolean(mainWindow && !mainWindow.isDestroyed() && event.sender === mainWindow.webContents);
+  return Boolean(
+    event?.sender
+      && authorizedApplicationWindows.has(event.sender)
+      && !event.sender.isDestroyed()
+  );
 }
 ipcMain.handle('apps:open', async (event, requestedApplicationId) => {
   if (!senderIsMain(event)) throw new Error('Invalid sender.');
   if (!supportedApplications.has(requestedApplicationId)) throw new Error('Unsupported Brightdesk application.');
-  return launchProduct(requestedApplicationId, {
-    platform: process.platform,
-    env: process.env,
-    homeDir: app.getPath('home')
-  });
+
+  // A separately packaged product keeps its own native OS application identity.
+  // The Suite opens its bundled products as independent windows in the Suite process.
+  if (applicationId) {
+    return launchProduct(requestedApplicationId, {
+      platform: process.platform,
+      env: process.env,
+      homeDir: app.getPath('home')
+    });
+  }
+
+  const opened = productWindowManager.open(requestedApplicationId);
+  await opened.ready;
+  return {
+    ok: true,
+    applicationId: requestedApplicationId,
+    kind: 'suite-product-window',
+    created: opened.created
+  };
 });
 ipcMain.handle('native:engine-info', event => {
   if (!senderIsMain(event)) throw new Error('Unauthorized native engine request.');
