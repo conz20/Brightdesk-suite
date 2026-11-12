@@ -19,6 +19,7 @@ test('Apps shows one suite-level sidebar entry instead of repeating the ten prod
   assert.match(read('src/main.js'), /Brightdesk Office Suite/);
   assert.doesNotMatch(html, /class="nav[^\"]*create|id="(?:create|new)-nav"/i);
   assert.doesNotMatch(html, /data-app="(?:pages|sheets|slides|notes|database|forms|lists|planner|todo|loop)"/);
+  assert.match(app, /navigationProducts = launchAppId/);
   assert.match(app, /catalog\.filter\(item => installedApp\(item\.id\) && !state\.hiddenProducts\.includes\(item\.id\)\)/);
   assert.match(app, /\$\('dynamic-app-nav'\)\.hidden = suitePage \|\| languages/);
   assert.match(app, /\$\('app-centre-nav'\)\.hidden = !suitePage \|\| Boolean\(launchAppId\)/);
@@ -81,7 +82,7 @@ test('all ten approved products can appear in the product-switching sidebar duri
   const catalogue = require('../src/app-catalog');
   assert.equal(catalogue.length, 10);
   assert.match(app, /function syncAppNavigation\(\)[\s\S]*?catalog\.filter\(item => installedApp\(item\.id\) && !state\.hiddenProducts\.includes\(item\.id\)\)/);
-  assert.match(app, /button\.addEventListener\('click',\(\)=>window\.brightdesk\.openApplication\(item\.id\)\)/);
+  assert.match(app, /button\.addEventListener\('click', async \(\) =>[\s\S]*?window\.brightdesk\.openApplication\(item\.id\)/);
   assert.match(app, /const suitePage = home \|\| manager \|\| files/);
 });
 
