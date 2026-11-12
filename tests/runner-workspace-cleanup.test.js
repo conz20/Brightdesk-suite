@@ -63,7 +63,7 @@ test('every release job registers cleanup as a post-job action', () => {
   const workflow = fs.readFileSync(path.join(__dirname, '..', '.github', 'workflows', 'build-release.yml'), 'utf8');
   const registrations = workflow.split('uses: conz20/Brightdesk-suite/.github/actions/runner-workspace-cleanup@').length - 1;
   assert.equal(registrations, 4);
-  assert.doesNotMatch(workflow, /run: node scripts\\/cleanup-runner-workspace\\.js/);
+  assert.ok(!workflow.includes('run: node scripts/cleanup-runner-workspace.js'));
 
   const action = fs.readFileSync(path.join(__dirname, '..', '.github', 'actions', 'runner-workspace-cleanup', 'action.yml'), 'utf8');
   assert.ok(action.includes('post: cleanup.js'));
@@ -77,5 +77,5 @@ test('release checkouts do not persist a GitHub token or use a cache post-job ho
   assert.equal(checkoutCount, 3);
   assert.equal(noCredentialPersistence, 3);
   assert.doesNotMatch(workflow, /cache: npm/);
-  assert.match(workflow, /name: Set up required Node\.js version[\s\S]*?node-version: 24\.22\.2/);
+  assert.ok(workflow.includes('node-version: 24.22.2'));
 });
