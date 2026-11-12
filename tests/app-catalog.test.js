@@ -93,7 +93,7 @@ test('automatic updates stay clearly disabled until a real GitHub owner is confi
   assert.match(main, /Automatic updates will be available after the Brightdesk GitHub release repository is configured/);
 });
 
-test('workspace navigation is generated from the installed catalogue and respects product visibility settings',()=>{const fs=require('node:fs');const path=require('node:path');const root=path.join(__dirname,'..');const html=fs.readFileSync(path.join(root,'src','index.html'),'utf8');const app=fs.readFileSync(path.join(root,'src','app.js'),'utf8');assert.match(html,/id="dynamic-app-nav"/);assert.match(html,/id="app-centre-nav"/);assert.match(html,/id="home-nav"/);assert.match(html,/id="files-nav"/);assert.doesNotMatch(html,/data-app="(?:pages|sheets|slides|notes)"/);assert.match(app,/catalog\.filter\(item => installedApp\(item\.id\) && !state\.hiddenProducts\.includes\(item\.id\)\)/);assert.match(app,/\$\('dynamic-app-nav'\)\.hidden = suitePage \|\| languages/);assert.match(app,/\$\('app-centre-nav'\)\.hidden = !suitePage \|\| Boolean\(launchAppId\)/);});
+test('workspace navigation is generated from the installed catalogue and respects product visibility settings',()=>{const fs=require('node:fs');const path=require('node:path');const root=path.join(__dirname,'..');const html=fs.readFileSync(path.join(root,'src','index.html'),'utf8');const app=fs.readFileSync(path.join(root,'src','app.js'),'utf8');assert.match(html,/id="dynamic-app-nav"/);assert.match(html,/id="app-centre-nav"/);assert.match(html,/id="home-nav"/);assert.match(html,/id="files-nav"/);assert.doesNotMatch(html,/data-app="(?:pages|sheets|slides|notes)"/);assert.match(app,/getNavigationProducts\(installableCatalog, state\.installedApps, state\.hiddenProducts, launchAppId, window\.brightdesk\.suiteLaunchedProduct\)/);assert.match(app,/\$\('dynamic-app-nav'\)\.hidden = suitePage \|\| languages/);assert.match(app,/\$\('app-centre-nav'\)\.hidden = !suitePage \|\| Boolean\(launchAppId\)/);});
 
 test('catalog is hard-limited to the ten approved Brightdesk apps', () => {
   assert.deepEqual(catalog.map(item => item.id), ['pages','sheets','slides','notes','database','forms','lists','planner','todo','loop']);
@@ -258,7 +258,7 @@ test('Suite Open actions launch registered standalone product applications', () 
   assert.equal(main.includes('function openProductWindow(applicationId)'), false);
   assert.ok(preload.includes("ipcRenderer.invoke('apps:open', applicationId)"));
   assert.ok(app.includes('window.brightdesk.openApplication(item.id)'));
-  assert.ok(app.includes('navigationProducts = launchAppId'));
+  assert.ok(app.includes('getNavigationProducts(installableCatalog, state.installedApps, state.hiddenProducts, launchAppId, window.brightdesk.suiteLaunchedProduct)'));
   assert.match(app, /launchAppId \? btn\.dataset\.app !== launchAppId : installedApp\(btn\.dataset\.app\)/);
   assert.ok(app.includes('catch (error) { alert(error.message'));
   assert.equal(app.includes('setApp(item.id)'), false);

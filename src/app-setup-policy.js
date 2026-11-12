@@ -53,5 +53,16 @@
     return [...hidden];
   }
 
-  return { resolveAppSetup, removeAppSelection, setProductVisibility };
+  function getNavigationProducts(catalog, installedApps, hiddenProducts, launchAppId, suiteLaunchedProduct = false) {
+    const products = Array.isArray(catalog) ? catalog : [];
+    if (launchAppId && !suiteLaunchedProduct) {
+      return products.filter(item => item && item.id !== launchAppId);
+    }
+
+    const installed = new Set(Array.isArray(installedApps) ? installedApps : []);
+    const hidden = new Set(Array.isArray(hiddenProducts) ? hiddenProducts : []);
+    return products.filter(item => item && item.id !== launchAppId && installed.has(item.id) && !hidden.has(item.id));
+  }
+
+  return { resolveAppSetup, removeAppSelection, setProductVisibility, getNavigationProducts };
 });
