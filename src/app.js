@@ -840,6 +840,8 @@ function render() {
   $('welcome').hidden = suitePage || files || languages || ['todo','lists','forms','planner','database','loop'].includes(state.app);
   $('app-title').textContent = home ? t('home.title') : (manager ? t('sidebar.applications') : (files ? 'Files' : (languages ? t('language.title') : (catalog.find(item => item.id === state.app)?.name || state.app))));
   $('top-actions').hidden = languages;
+  $('print-button').hidden = suitePage || files || languages;
+  $('printer-settings-button').hidden = suitePage || files || languages;
   $('save-status').hidden = suitePage || files || languages;
   $('open-button').hidden = suitePage || files || languages;
   $('save-project').hidden = suitePage || files || languages;
@@ -1007,6 +1009,29 @@ function exportPayload(){
 }
 async function exportCurrent(){try{const result=await window.brightdesk.exportFile(exportPayload());if(result?.canceled)return;setStatus('Exported successfully');}catch(error){alert(`Export failed: ${error.message}`);}}
 async function exportPdf(){try{const result=await window.brightdesk.exportPdf({title:$('doc-title').value});if(!result?.canceled)setStatus('PDF exported');}catch(error){alert(`PDF export failed: ${error.message}`);}}
+async function printCurrent() {
+  try {
+    const printers = await window.brightdesk.printing.listPrinters();
+    if (!Array.isArray(printers) || printers.length === 0) {
+      setStatus('No printer is available yet. Use Printer settings to add one, then try again.');
+      return;
+    }
+    const result = await window.brightdesk.printing.print({ printBackground: true });
+    setStatus(result?.status === 'submitted'
+      ? 'Your computer accepted the print request.'
+      : 'The print request was not submitted.');
+  } catch (error) {
+    setStatus(error?.message || 'Brightdesk could not start printing.');
+  }
+}
+async function openPrinterSettings() {
+  try {
+    await window.brightdesk.printing.openPrinterSettings();
+    setStatus('Printer settings opened. Return to Brightdesk and choose Print.');
+  } catch (error) {
+    setStatus(error?.message || 'Brightdesk could not open printer settings.');
+  }
+}
 function importProject(data){
   if (launchAppId && data?.kind && data.kind !== launchAppId) throw new Error(`This Brightdesk ${appLabel(launchAppId)} installation opens ${appLabel(launchAppId)} files only.`);
   if(data?.docs && typeof data.docs === 'object'){
@@ -1045,6 +1070,8 @@ $('app-centre-nav').addEventListener('click',()=>{if(launchAppId)return;state.vi
 $('files-nav').addEventListener('click',()=>{if(launchAppId)return;state.view = 'files';render();});
 $('files-open-button').addEventListener('click', openFile);
 $('files-save-button').addEventListener('click', saveProject);
+$('print-button').addEventListener('click', printCurrent);
+$('printer-settings-button').addEventListener('click', openPrinterSettings);
 $('open-settings').addEventListener('click',()=>{if (launchAppId) return; state.view='manager';render();});
 $('open-notifications').addEventListener('click',()=>{const panel=$('notification-panel');panel.hidden=!panel.hidden;$('open-notifications').setAttribute('aria-expanded',String(!panel.hidden));if(!panel.hidden)markNotificationsRead();});
 $('clear-notifications').addEventListener('click',clearNotifications);
