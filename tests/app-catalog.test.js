@@ -253,6 +253,8 @@ test('Suite Open actions launch registered standalone product applications', () 
   assert.ok(main.includes('return launchProduct(requestedApplicationId'));
   assert.ok(main.includes("ipcMain.handle('apps:open'"));
   assert.ok(main.includes('app.requestSingleInstanceLock()'));
+  assert.ok(main.includes('if (!app.isReady()) return;'));
+  assert.ok(main.includes('if (termsAccepted) createWindow();'));
   assert.ok(main.includes('app.setAppUserModelId('));
   assert.ok(launcher.includes("command: 'open'"));
   assert.ok(launcher.includes("command: 'explorer.exe'"));
