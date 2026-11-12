@@ -199,7 +199,7 @@ test('all third-party workflow actions are pinned to full commit SHAs', () => {
 test('Windows self-hosted runner setup targets the correct private repository and isolates its download', () => {
   const setup = read('tools/runner-setup/windows/Install-Brightdesk-Windows-Runner.ps1');
 
-  assert.match(setup, /RepositoryUrl = 'https:\/\/github\.com\/conz20\/Brightdesk-suite'/);
+  assert.match(setup, /\$RepositoryUrl = "https:\/\/github\.com\/conz20\/Brightdesk-suite"/);
   assert.doesNotMatch(setup, /connormolloy12/);
   assert.match(setup, /RunnerVersion = '2\.338\.2'/);
   assert.match(setup, /ExpectedSha256 = '[a-f0-9]{64}'/);
@@ -385,11 +385,13 @@ test('Windows runner can be started from one verified download', () => {
   const releaseGuide = read('docs/LOCAL-RELEASE-VERIFICATION.md');
   assert.ok(instructions.includes('Download only Start-Brightdesk-Windows-Runner.cmd'));
   assert.ok(instructions.includes('downloads the PowerShell installer automatically'));
-  assert.ok(instructions.includes('GitHub CLI sign-in'));
-  assert.ok(instructions.includes('No registration token needs to be copied or pasted.'));
-  assert.ok(instructions.includes('installs Git for Windows and GitHub CLI if they are missing'));
+  assert.ok(instructions.includes('browser/device sign-in flow'));
+  assert.ok(instructions.includes('You do NOT need to open the runner setup page or copy/paste a registration token.'));
+  assert.ok(instructions.includes('only if either is missing'));
   assert.ok(instructions.includes('There is no setup ZIP.'));
-  assert.ok(launcher.includes('https://raw.githubusercontent.com/conz20/Brightdesk-suite/3689b07316e2c700cf868a895ad5b66843c2aca2/tools/runner-setup/windows/Install-Brightdesk-Windows-Runner.ps1'));
+  const installerUrl = /^set "INSTALLER_URL=(.+)"$/m.exec(launcher)?.[1];
+  assert.ok(installerUrl, 'launcher pins a PowerShell installer URL');
+  assert.match(installerUrl, /\/[a-f0-9]{40}\/tools\/runner-setup\/windows\/Install-Brightdesk-Windows-Runner\.ps1$/);
   const expectedInstallerHash = /^set "INSTALLER_SHA256=([a-f0-9]{64})"$/m.exec(launcher)?.[1];
   assert.ok(expectedInstallerHash, 'launcher pins the PowerShell installer SHA-256');
   assert.equal(expectedInstallerHash, createHash('sha256').update(installer, 'utf8').digest('hex'));
