@@ -1,0 +1,7 @@
+name: Brightdesk runner workspace cleanup
+description: Erase a self-hosted job checkout after every action post-step has completed.
+runs:
+  using: node24
+  main: register.js
+  post: cleanup.js
+  post-if: always()
