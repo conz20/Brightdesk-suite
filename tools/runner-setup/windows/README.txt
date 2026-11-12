@@ -32,7 +32,7 @@ BEFORE YOU START
 3. Download only Start-Brightdesk-Windows-Runner.cmd to your Windows PC:
    https://raw.githubusercontent.com/conz20/Brightdesk-suite/main/tools/runner-setup/windows/Start-Brightdesk-Windows-Runner.cmd
 
-   You do not need to download the PowerShell file separately. The launcher downloads it automatically from a pinned Brightdesk commit, verifies its SHA-256 checksum, and only then starts it. There is no setup ZIP.
+   You do not need to download the PowerShell file separately. The launcher downloads the PowerShell installer automatically from a pinned Brightdesk commit, verifies its SHA-256 checksum, and only then starts it. There is no setup ZIP.
 
 RUN THE SETUP
 -------------
