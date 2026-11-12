@@ -20,7 +20,7 @@ test('Apps shows one suite-level sidebar entry instead of repeating the ten prod
   assert.doesNotMatch(html, /class="nav[^\"]*create|id="(?:create|new)-nav"/i);
   assert.doesNotMatch(html, /data-app="(?:pages|sheets|slides|notes|database|forms|lists|planner|todo|loop)"/);
   assert.match(app, /getNavigationProducts\(installableCatalog, state\.installedApps, state\.hiddenProducts, launchAppId, window\.brightdesk\.suiteLaunchedProduct\)/);
-  assert.match(app, /catalog\.filter\(item => installedApp\(item\.id\) && !state\.hiddenProducts\.includes\(item\.id\)\)/);
+  assert.match(app, /getNavigationProducts\(/);
   assert.match(app, /\$\('dynamic-app-nav'\)\.hidden = suitePage \|\| languages/);
   assert.match(app, /\$\('app-centre-nav'\)\.hidden = !suitePage \|\| Boolean\(launchAppId\)/);
   assert.match(app, /manager \? t\('sidebar\.applications'\)/);
@@ -38,7 +38,7 @@ test('product settings menu can hide an installed product from Switch product na
   assert.match(app, /hiddenProducts: \[\]/);
   assert.match(app, /hiddenProducts: state\.hiddenProducts/);
   assert.match(app, /state\.hiddenProducts = Array\.isArray\(appSetup\?\.hiddenProducts\)/);
-  assert.match(app, /catalog\.filter\(item => installedApp\(item\.id\) && !state\.hiddenProducts\.includes\(item\.id\)\)/);
+  assert.match(app, /getNavigationProducts\(/);
   assert.match(app, /More options for \$\{item\.name\}/);
   assert.match(app, /Hide from Switch product/);
   assert.match(app, /setProductVisibility\(/);
@@ -81,7 +81,7 @@ test('all ten approved products can appear in the product-switching sidebar duri
   const app = read('src/app.js');
   const catalogue = require('../src/app-catalog');
   assert.equal(catalogue.length, 10);
-  assert.match(app, /function syncAppNavigation\(\)[\s\S]*?catalog\.filter\(item => installedApp\(item\.id\) && !state\.hiddenProducts\.includes\(item\.id\)\)/);
+  assert.match(app, /function syncAppNavigation\(\)[\s\S]*?getNavigationProducts\(/);
   assert.match(app, /button\.addEventListener\('click', async \(\) =>[\s\S]*?window\.brightdesk\.openApplication\(item\.id\)/);
   assert.match(app, /const suitePage = home \|\| manager \|\| files/);
 });
