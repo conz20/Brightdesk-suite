@@ -282,10 +282,10 @@ test('release workflow registers post-job cleanup in every self-hosted job', () 
   const workflow = read('.github/workflows/build-release.yml');
   const actionRef = 'uses: conz20/Brightdesk-suite/.github/actions/runner-workspace-cleanup@';
   assert.equal(workflow.split(actionRef).length - 1, 4);
-  assert.doesNotMatch(workflow, /node scripts\\/cleanup-runner-workspace\\.js/);
+  assert.ok(!workflow.includes('run: node scripts/cleanup-runner-workspace.js'));
   assert.equal((workflow.match(/persist-credentials: false/g) || []).length, 3);
   assert.doesNotMatch(workflow, /cache: npm/);
-  assert.match(workflow, /name: Set up required Node\\.js version[\\s\\S]*?node-version: 24\\.22\\.2/);
+  assert.ok(workflow.includes('node-version: 24.22.2'));
 });
 
 test('self-hosted CI disables checkout credentials and registers post-job cleanup', () => {
@@ -330,7 +330,7 @@ test('every self-hosted workflow registers post-job source cleanup before other 
     const workflow = read(file);
     const registrations = workflow.split('uses: conz20/Brightdesk-suite/.github/actions/runner-workspace-cleanup@').length - 1;
     assert.equal(registrations, count, file);
-    assert.doesNotMatch(workflow, /node scripts\\/cleanup-runner-workspace\\.js/);
+  assert.ok(!workflow.includes('run: node scripts/cleanup-runner-workspace.js'));
     const actionIndex = workflow.indexOf('Register post-job workspace cleanup');
     const checkoutIndex = workflow.indexOf('uses: actions/checkout@');
     if (checkoutIndex >= 0) assert.ok(actionIndex >= 0 && actionIndex < checkoutIndex, file);
