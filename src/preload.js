@@ -4,6 +4,7 @@ const { contextBridge, ipcRenderer } = require('electron');
 
 const launchArgument = process.argv.find(argument => argument.startsWith('--brightdesk-app='));
 const launchAppId = launchArgument ? launchArgument.slice('--brightdesk-app='.length) : null;
+const suiteLaunchedProduct = process.argv.includes('--brightdesk-suite-window=1');
 const supportedApps = new Set([
   'pages',
   'sheets',
@@ -19,6 +20,7 @@ const supportedApps = new Set([
 
 contextBridge.exposeInMainWorld('brightdesk', {
   launchAppId: supportedApps.has(launchAppId) ? launchAppId : null,
+  suiteLaunchedProduct,
   openApplication: (applicationId) => ipcRenderer.invoke('apps:open', applicationId),
   platform: process.platform,
   version: ipcRenderer.sendSync('app:version-sync'),
