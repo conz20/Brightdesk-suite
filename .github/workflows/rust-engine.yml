@@ -16,6 +16,9 @@ jobs:
     # This repository's free self-hosted Mac runner replaces paid hosted runners.
     runs-on: self-hosted
     steps:
+      - name: Register post-job workspace cleanup
+        uses: conz20/Brightdesk-suite/.github/actions/runner-workspace-cleanup@7727da85c4e6e660f3376b5b330d78b6782c1976
+
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
           persist-credentials: false
@@ -41,7 +44,3 @@ jobs:
         env:
           BRIGHTDESK_REQUIRE_NATIVE_ENGINE: "1"
         run: node --test test/rust-engine.test.mjs test/embedding-bridge.test.mjs
-
-      - name: Erase checked-out source and build workspace
-        if: always()
-        run: node scripts/cleanup-runner-workspace.js
