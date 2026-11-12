@@ -19,7 +19,7 @@ test('Apps shows one suite-level sidebar entry instead of repeating the ten prod
   assert.match(read('src/main.js'), /Brightdesk Office Suite/);
   assert.doesNotMatch(html, /class="nav[^\"]*create|id="(?:create|new)-nav"/i);
   assert.doesNotMatch(html, /data-app="(?:pages|sheets|slides|notes|database|forms|lists|planner|todo|loop)"/);
-  assert.match(app, /navigationProducts = launchAppId/);
+  assert.match(app, /getNavigationProducts\(installableCatalog, state\.installedApps, state\.hiddenProducts, launchAppId, window\.brightdesk\.suiteLaunchedProduct\)/);
   assert.match(app, /catalog\.filter\(item => installedApp\(item\.id\) && !state\.hiddenProducts\.includes\(item\.id\)\)/);
   assert.match(app, /\$\('dynamic-app-nav'\)\.hidden = suitePage \|\| languages/);
   assert.match(app, /\$\('app-centre-nav'\)\.hidden = !suitePage \|\| Boolean\(launchAppId\)/);
