@@ -92,7 +92,7 @@ function openProductWindow(applicationId) {
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       contextIsolation: true, nodeIntegration: false, sandbox: true,
-      additionalArguments: [`--brightdesk-app=${applicationId}`]
+      additionalArguments: [`--brightdesk-app=${applicationId}`, '--brightdesk-suite-window=1']
     }
   });
   productWindows.set(applicationId, window);
