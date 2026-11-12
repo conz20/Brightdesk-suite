@@ -13,10 +13,10 @@ test('Apps shows one suite-level sidebar entry instead of repeating the ten prod
   assert.match(html, /id="dynamic-app-nav"/);
   assert.match(html, /data-i18n="sidebar\.applications">Apps<\/b>/);
   assert.match(html, /src="assets\/icons\/apps\.svg"/);
-  assert.match(html, /class="brand-mark-image" src="assets\/brand\/brightdesk-suite-mark\.svg"/);
+  assert.doesNotMatch(html, /brand-mark-image|brightdesk-suite-mark\.svg/);
   assert.match(read('src/assets/icons/apps.svg'), /Apps/);
-  assert.match(read('src/assets/brand/brightdesk-suite-mark.svg'), /Brightdesk Office Suite/);
-  assert.match(read('src/assets/brand/brightdesk-suite-mark.svg'), /viewBox="0 0 160 160"/);
+  assert.match(html, /<title>Brightdesk Office Suite<\/title>/);
+  assert.match(read('src/main.js'), /Brightdesk Office Suite/);
   assert.doesNotMatch(html, /class="nav[^\"]*create|id="(?:create|new)-nav"/i);
   assert.doesNotMatch(html, /data-app="(?:pages|sheets|slides|notes|database|forms|lists|planner|todo|loop)"/);
   assert.match(app, /catalog\.filter\(item => installedApp\(item\.id\) && !state\.hiddenProducts\.includes\(item\.id\)\)/);
