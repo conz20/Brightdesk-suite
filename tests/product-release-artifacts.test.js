@@ -18,9 +18,11 @@ function createReleaseFixture(platform, missingProduct = null) {
     const directory = path.join(root, 'apps', `org.brightdesk.${product}`);
     fs.mkdirSync(directory, { recursive: true });
     for (const extension of PRODUCT_ARTIFACTS[platform]) {
+      const slugs = { pages:'pages', sheets:'sheets', slides:'decks', notes:'notes', database:'database', forms:'forms', lists:'lists', planner:'planner', todo:'to-do', loop:'workspace' };
+      const names = { pages:'Pages', sheets:'Sheets', slides:'Decks', notes:'Notes', database:'Database', forms:'Forms', lists:'Lists', planner:'Planner', todo:'To-Do', loop:'Workspace' };
       const name = platform === 'linux'
-        ? `brightdesk-${product.replace('slides','decks').replace('loop','workspace')}-0.1.0-x64.${extension}`
-        : `Brightdesk-${({slides:'Decks',todo:'To-Do',loop:'Workspace'}[product] || (product[0].toUpperCase()+product.slice(1)))}-0.1.0-${platform==='mac'?'universal':'x64'}.${extension}`;
+        ? `brightdesk-${slugs[product]}-0.1.0-x64.${extension}`
+        : `Brightdesk-${names[product]}-0.1.0-${platform==='mac'?'universal':'x64'}.${extension}`;
       fs.writeFileSync(path.join(directory, name), `fixture:${product}:${extension}`);
     }
   }
