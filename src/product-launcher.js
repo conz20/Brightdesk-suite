@@ -6,16 +6,16 @@ const os = require('node:os');
 const { spawn } = require('node:child_process');
 
 const PRODUCT_MANIFEST = Object.freeze({
-  pages: Object.freeze({ name: 'Pages', bundleId: 'org.brightdesk.pages', desktopFile: 'org.brightdesk.pages.desktop', startMenuShortcut: 'Brightdesk Pages.lnk' }),
-  sheets: Object.freeze({ name: 'Sheets', bundleId: 'org.brightdesk.sheets', desktopFile: 'org.brightdesk.sheets.desktop', startMenuShortcut: 'Brightdesk Sheets.lnk' }),
-  slides: Object.freeze({ name: 'Decks', bundleId: 'org.brightdesk.slides', desktopFile: 'org.brightdesk.slides.desktop', startMenuShortcut: 'Brightdesk Decks.lnk' }),
-  notes: Object.freeze({ name: 'Notes', bundleId: 'org.brightdesk.notes', desktopFile: 'org.brightdesk.notes.desktop', startMenuShortcut: 'Brightdesk Notes.lnk' }),
-  database: Object.freeze({ name: 'Database', bundleId: 'org.brightdesk.database', desktopFile: 'org.brightdesk.database.desktop', startMenuShortcut: 'Brightdesk Database.lnk' }),
-  forms: Object.freeze({ name: 'Forms', bundleId: 'org.brightdesk.forms', desktopFile: 'org.brightdesk.forms.desktop', startMenuShortcut: 'Brightdesk Forms.lnk' }),
-  lists: Object.freeze({ name: 'Lists', bundleId: 'org.brightdesk.lists', desktopFile: 'org.brightdesk.lists.desktop', startMenuShortcut: 'Brightdesk Lists.lnk' }),
-  planner: Object.freeze({ name: 'Planner', bundleId: 'org.brightdesk.planner', desktopFile: 'org.brightdesk.planner.desktop', startMenuShortcut: 'Brightdesk Planner.lnk' }),
-  todo: Object.freeze({ name: 'To Do', bundleId: 'org.brightdesk.todo', desktopFile: 'org.brightdesk.todo.desktop', startMenuShortcut: 'Brightdesk To Do.lnk' }),
-  loop: Object.freeze({ name: 'Workspace', bundleId: 'org.brightdesk.loop', desktopFile: 'org.brightdesk.loop.desktop', startMenuShortcut: 'Brightdesk Workspace.lnk' })
+  pages: Object.freeze({ name: 'Pages', bundleId: 'org.brightdesk.pages', desktopFile: 'org.brightdesk.pages.desktop', iconAsset: 'pages.svg', startMenuShortcut: 'Brightdesk Pages.lnk' }),
+  sheets: Object.freeze({ name: 'Sheets', bundleId: 'org.brightdesk.sheets', desktopFile: 'org.brightdesk.sheets.desktop', iconAsset: 'sheets.svg', startMenuShortcut: 'Brightdesk Sheets.lnk' }),
+  slides: Object.freeze({ name: 'Decks', bundleId: 'org.brightdesk.slides', desktopFile: 'org.brightdesk.slides.desktop', iconAsset: 'decks.svg', startMenuShortcut: 'Brightdesk Decks.lnk' }),
+  notes: Object.freeze({ name: 'Notes', bundleId: 'org.brightdesk.notes', desktopFile: 'org.brightdesk.notes.desktop', iconAsset: 'notes.svg', startMenuShortcut: 'Brightdesk Notes.lnk' }),
+  database: Object.freeze({ name: 'Database', bundleId: 'org.brightdesk.database', desktopFile: 'org.brightdesk.database.desktop', iconAsset: 'database.svg', startMenuShortcut: 'Brightdesk Database.lnk' }),
+  forms: Object.freeze({ name: 'Forms', bundleId: 'org.brightdesk.forms', desktopFile: 'org.brightdesk.forms.desktop', iconAsset: 'forms.svg', startMenuShortcut: 'Brightdesk Forms.lnk' }),
+  lists: Object.freeze({ name: 'Lists', bundleId: 'org.brightdesk.lists', desktopFile: 'org.brightdesk.lists.desktop', iconAsset: 'lists.svg', startMenuShortcut: 'Brightdesk Lists.lnk' }),
+  planner: Object.freeze({ name: 'Planner', bundleId: 'org.brightdesk.planner', desktopFile: 'org.brightdesk.planner.desktop', iconAsset: 'planner.svg', startMenuShortcut: 'Brightdesk Planner.lnk' }),
+  todo: Object.freeze({ name: 'To Do', bundleId: 'org.brightdesk.todo', desktopFile: 'org.brightdesk.todo.desktop', iconAsset: 'to-do.svg', startMenuShortcut: 'Brightdesk To Do.lnk' }),
+  loop: Object.freeze({ name: 'Workspace', bundleId: 'org.brightdesk.loop', desktopFile: 'org.brightdesk.loop.desktop', iconAsset: 'workspace.svg', startMenuShortcut: 'Brightdesk Workspace.lnk' })
 });
 
 function productNotInstalledError(entry, platform) {
