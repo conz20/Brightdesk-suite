@@ -320,7 +320,8 @@ test('standalone product runtimes share protected language and dictionary resour
   const path = require('node:path');
   const main = fs.readFileSync(path.join(__dirname, '..', 'src', 'main.js'), 'utf8');
   assert.match(main, /function sharedResourcesDirectory\(\)[\s\S]*?app\.getPath\('appData'\), 'Brightdesk'/);
-  assert.match(main, /function ensureSharedResourcesDirectory\([\s\S]*?for \(const folder of \['dictionaries', 'language-packs'\]\)/);
+  assert.match(main, /function ensureSharedResourcesDirectory\([\s\S]*?path\.join\(app\.getPath\('appData'\), 'brightdesk-suite'\)/);
+  assert.match(main, /for \(const folder of \['dictionaries', 'language-packs'\]\)/);
   assert.match(main, /new DictionaryService\(sharedResources\)/);
   assert.match(main, /function languagePackDirectory\(\)[\s\S]*?sharedResourcesDirectory\(\), 'language-packs'/);
   assert.match(main, /fsNative\.constants\.COPYFILE_EXCL/);
