@@ -278,25 +278,23 @@ test('Windows runner setup explicitly supports Windows 10 and Windows 11', () =>
   assert.match(setup, /Is64BitOperatingSystem/);
 });
 
-test('release workflow erases each complete checkout after artifacts are safely uploaded', () => {
+test('release workflow registers post-job cleanup in every self-hosted job', () => {
   const workflow = read('.github/workflows/build-release.yml');
-  assert.equal((workflow.match(/name: Erase checked-out source and build workspace/g) || []).length, 4);
-  assert.equal((workflow.match(/if: always\(\)/g) || []).length, 4);
-  assert.equal((workflow.match(/run: node scripts\/cleanup-runner-workspace\.js/g) || []).length, 4);
+  const actionRef = 'uses: conz20/Brightdesk-suite/.github/actions/runner-workspace-cleanup@';
+  assert.equal(workflow.split(actionRef).length - 1, 4);
+  assert.doesNotMatch(workflow, /node scripts\\/cleanup-runner-workspace\\.js/);
   assert.equal((workflow.match(/persist-credentials: false/g) || []).length, 3);
   assert.doesNotMatch(workflow, /cache: npm/);
-  assert.match(workflow, /name: Set up required Node\.js version[\s\S]*?node-version: 24\.22\.2/);
+  assert.match(workflow, /name: Set up required Node\\.js version[\\s\\S]*?node-version: 24\\.22\\.2/);
 });
 
-
-test('self-hosted CI disables checkout credentials and erases its workspace after every run', () => {
+test('self-hosted CI disables checkout credentials and registers post-job cleanup', () => {
   const workflow = read('.github/workflows/ci.yml');
   assert.ok(workflow.includes('runs-on: self-hosted'));
   assert.ok(workflow.includes('persist-credentials: false'));
   assert.ok(!workflow.includes('cache: npm'));
-  assert.ok(workflow.includes('name: Erase checked-out source and build workspace'));
-  assert.ok(workflow.includes('if: always()'));
-  assert.ok(workflow.includes('run: node scripts/cleanup-runner-workspace.js'));
+  assert.ok(workflow.includes('uses: conz20/Brightdesk-suite/.github/actions/runner-workspace-cleanup@'));
+  assert.ok(!workflow.includes('run: node scripts/cleanup-runner-workspace.js'));
 });
 
 test('release collector checkout uses one valid with block and preserves the exact commit checkout', () => {
@@ -311,7 +309,7 @@ test('release collector checkout uses one valid with block and preserves the exa
 });
 
 
-test('every self-hosted workflow removes its checked-out workspace even after failure', () => {
+test('every self-hosted workflow registers post-job source cleanup before other actions', () => {
   const expected = [
     ['.github/workflows/build-release.yml', 4],
     ['.github/workflows/ci.yml', 1],
@@ -322,11 +320,19 @@ test('every self-hosted workflow removes its checked-out workspace even after fa
     ['.github/workflows/generate-lockfile.yml', 1],
     ['.github/workflows/generate-third-party-notices.yml', 1]
   ];
+  const action = read('.github/actions/runner-workspace-cleanup/action.yml');
+  assert.ok(action.includes('using: node24'));
+  assert.ok(action.includes('main: register.js'));
+  assert.ok(action.includes('post: cleanup.js'));
+  assert.ok(action.includes('post-if: always()'));
 
   for (const [file, count] of expected) {
     const workflow = read(file);
-    assert.equal((workflow.match(/name: Erase checked-out source and build workspace/g) || []).length, count, file);
-    assert.equal(workflow.split('run: node scripts/cleanup-runner-workspace.js').length - 1, count, file);
-    assert.equal(workflow.split('if: always()').length - 1, count, file);
+    const registrations = workflow.split('uses: conz20/Brightdesk-suite/.github/actions/runner-workspace-cleanup@').length - 1;
+    assert.equal(registrations, count, file);
+    assert.doesNotMatch(workflow, /node scripts\\/cleanup-runner-workspace\\.js/);
+    const actionIndex = workflow.indexOf('Register post-job workspace cleanup');
+    const checkoutIndex = workflow.indexOf('uses: actions/checkout@');
+    if (checkoutIndex >= 0) assert.ok(actionIndex >= 0 && actionIndex < checkoutIndex, file);
   }
 });
