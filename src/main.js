@@ -11,6 +11,7 @@ const { DictionaryService } = require('./dictionary-service');
 const { DEFAULT_UPDATE_SETTINGS, normalizeUpdateSettings, getUpdaterPreferences } = require('./update-policy');
 const { shouldRequireFirstLaunchTerms } = require('./installer-terms-policy');
 let mainWindow;
+const productWindows = new Map();
 let agreementWindow;
 let termsAccepted = false;
 let autoUpdater;
@@ -49,7 +50,7 @@ async function writeUpdateSettings(settings = {}) {
 }
 
 function sendUpdateState(state) {
-  if (mainWindow && !mainWindow.isDestroyed()) mainWindow.webContents.send('updates:state', state);
+  BrowserWindow.getAllWindows().forEach(window => { if (!window.isDestroyed()) window.webContents.send('updates:state', state); });
   if (!['available', 'downloaded'].includes(state?.status) || (mainWindow && mainWindow.isFocused()) || !Notification.isSupported()) return;
   const title = state.status === 'available' ? 'Brightdesk update available' : 'Brightdesk update ready';
   const notification = new Notification({ title, body: state.message || 'A Brightdesk Office Suite update is ready.', silent: false });
@@ -72,7 +73,47 @@ function createWindow({ show = true } = {}) {
   mainWindow.on('focus', () => { if (autoUpdater && automaticUpdateChecksEnabled) checkForUpdates({ quiet: true }); });
   return mainWindow.loadFile(path.join(__dirname, 'index.html'));
 }
-function senderIsMain(event) { return mainWindow && event.sender === mainWindow.webContents; }
+const applicationNames = { pages: 'Pages', sheets: 'Sheets', slides: 'Decks', notes: 'Notes', database: 'Database', forms: 'Forms', lists: 'Lists', planner: 'Planner', todo: 'To Do', loop: 'Workspace' };
+const applicationIcons = { pages: 'pages.svg', sheets: 'sheets.svg', slides: 'decks.svg', notes: 'notes.svg', database: 'database.svg', forms: 'forms.svg', lists: 'lists.svg', planner: 'planner.svg', todo: 'to-do.svg', loop: 'workspace.svg' };
+function openProductWindow(applicationId) {
+  if (!supportedApplications.has(applicationId)) throw new Error('Unsupported Brightdesk application.');
+  const existing = productWindows.get(applicationId);
+  if (existing && !existing.isDestroyed()) {
+    if (existing.isMinimized()) existing.restore();
+    existing.show();
+    existing.focus();
+    return { ok: true, alreadyOpen: true };
+  }
+  const window = new BrowserWindow({
+    width: 1440, height: 920, minWidth: 980, minHeight: 680,
+    title: `Brightdesk ${applicationNames[applicationId]}`,
+    icon: path.join(__dirname, 'assets', 'icons', applicationIcons[applicationId]),
+    backgroundColor: '#f5f6fa',
+    webPreferences: {
+      preload: path.join(__dirname, 'preload.js'),
+      contextIsolation: true, nodeIntegration: false, sandbox: true,
+      additionalArguments: [`--brightdesk-app=${applicationId}`]
+    }
+  });
+  productWindows.set(applicationId, window);
+  window.webContents.setWindowOpenHandler(() => ({ action: 'deny' }));
+  window.webContents.on('will-navigate', event => event.preventDefault());
+  window.on('focus', () => { if (autoUpdater && automaticUpdateChecksEnabled) checkForUpdates({ quiet: true }); });
+  window.on('closed', () => { if (productWindows.get(applicationId) === window) productWindows.delete(applicationId); });
+  window.loadFile(path.join(__dirname, 'index.html')).catch(error => {
+    productWindows.delete(applicationId);
+    console.error(`Could not open Brightdesk ${applicationNames[applicationId]}.`, error);
+  });
+  return { ok: true, alreadyOpen: false };
+}
+function senderIsMain(event) {
+  if (mainWindow && !mainWindow.isDestroyed() && event.sender === mainWindow.webContents) return true;
+  return [...productWindows.values()].some(window => !window.isDestroyed() && event.sender === window.webContents);
+}
+ipcMain.handle('apps:open', (event, applicationId) => {
+  if (!senderIsMain(event)) throw new Error('Invalid sender.');
+  return openProductWindow(applicationId);
+});
 ipcMain.handle('native:engine-info', event => {
   if (!senderIsMain(event)) throw new Error('Unauthorized native engine request.');
   return nativeEngine.engineInfo();
@@ -220,7 +261,7 @@ ipcMain.handle('languages:list', async event => {
   if (!senderIsMain(event)) throw new Error('Invalid sender.');
   const installed = await readInstalledLanguagePacks();
   const builtIn = BUILTIN_LANGUAGES.map(({ code, name, nativeName, proofingCode, isDefault }) => ({ code, name, nativeName, proofingCode, isDefault }));
-  const session = mainWindow.webContents.session;
+  const session = event.sender.session;
   return {
     available: builtIn,
     installed,
@@ -343,7 +384,7 @@ async function initUpdater() {
 
 ipcMain.handle('file:open', async event => {
   if (!senderIsMain(event)) throw new Error('Invalid sender.');
-  const result = await dialog.showOpenDialog(mainWindow, {
+  const result = await dialog.showOpenDialog(BrowserWindow.fromWebContents(event.sender), {
     properties: ['openFile'],
     filters: [{ name: 'Office files', extensions: ['docx','xlsx','xlsm','csv','tsv','pptx','txt','md','html','bdesk'] }, { name: 'All files', extensions: ['*'] }]
   });
@@ -359,7 +400,7 @@ ipcMain.handle('file:export', async (event, payload) => {
     slides: [{ name: 'PPTX presentation', extensions: ['pptx'] }],
     notes: [{ name: 'Markdown', extensions: ['md'] }, { name: 'Text', extensions: ['txt'] }]
   }[payload.kind];
-  const result = await dialog.showSaveDialog(mainWindow, { defaultPath: cleanFileName(payload.title), filters });
+  const result = await dialog.showSaveDialog(BrowserWindow.fromWebContents(event.sender), { defaultPath: cleanFileName(payload.title), filters });
   if (result.canceled || !result.filePath) return { canceled: true };
   const filePath = ensureExtension(result.filePath, filters[0]?.extensions?.[0]);
   await exportOfficeFile(payload, filePath);
@@ -383,7 +424,7 @@ ipcMain.handle('file:pdf', async (event, payload) => {
   const result = await dialog.showSaveDialog(mainWindow, { defaultPath: cleanFileName(payload?.title || 'Brightdesk document') + '.pdf', filters: [{ name: 'PDF document', extensions: ['pdf'] }] });
   if (result.canceled || !result.filePath) return { canceled: true };
   const filePath = ensureExtension(result.filePath, 'pdf');
-  const pdf = await mainWindow.webContents.printToPDF({ printBackground: true, pageSize: 'A4', margins: { top: 0.55, bottom: 0.55, left: 0.6, right: 0.6 } });
+  const pdf = await event.sender.printToPDF({ printBackground: true, pageSize: 'A4', margins: { top: 0.55, bottom: 0.55, left: 0.6, right: 0.6 } });
   await fs.writeFile(filePath, pdf); return { canceled: false, filePath };
 });
 ipcMain.handle('updates:check', async event => { if (!senderIsMain(event)) throw new Error('Invalid sender.'); return checkForUpdates({ force: true }); });
