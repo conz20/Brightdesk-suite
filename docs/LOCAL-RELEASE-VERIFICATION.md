@@ -35,7 +35,7 @@ The manual installer workflow uses private self-hosted runners instead of GitHub
 Register one runner for each required platform in the repository's **Settings → Actions → Runners** page:
 
 - **macOS:** labels `self-hosted`, `macOS`, `ARM64` (the existing Apple-silicon Mac runner).
-- **Windows:** labels `self-hosted`, `Windows`, `X64` (the project Windows PC).
+- **Windows:** labels `self-hosted`, `Windows`, `X64` (a 64-bit Windows 10 or Windows 11 PC; GitHub lists both as supported self-hosted runner operating systems).
 - **Linux:** labels `self-hosted`, `Linux`, `X64` (a Linux x64 computer).
 
 GitHub assigns the standard operating-system and architecture labels when each runner is registered. Do not add a custom label in place of the standard labels above. Keep the runner service active while a build is queued. The installer workflow waits for all three matching runners; if a platform runner is offline or not registered, that platform's job remains queued and the full bundle cannot be collected.
@@ -70,7 +70,7 @@ Type `REGISTER` only after reviewing the eight-repository list shown by the scri
 The click-to-run Windows x64 setup source and exact instructions are in [tools/runner-setup/windows](../tools/runner-setup/windows/README.txt). The supplied ZIP contains the CMD launcher, PowerShell installer and README. It downloads the official runner, checks the published SHA-256 digest, installs under `C:\actions-runner`, and registers the runner only to this private repository. It retains GitHub's default labels: `self-hosted`, `Windows` and `X64`.
 
 1. Extract the supplied setup ZIP on the Windows PC.
-2. Open [the repository's New self-hosted runner page](https://github.com/conz20/Brightdesk-suite/settings/actions/runners/new), select **Windows** and **x64**, and generate the one-time token.
+2. This setup supports **64-bit Windows 10 and Windows 11**. Open [the repository's New self-hosted runner page](https://github.com/conz20/Brightdesk-suite/settings/actions/runners/new), select **Windows** and **x64**, and generate the one-time token.
 3. Double-click `Start-Brightdesk-Windows-Runner.cmd`, approve the Windows administrator prompt, and enter the token only into the official runner configuration prompt on the Windows PC.
 4. Confirm `Brightdesk-Windows-PC` appears as **Idle** in Settings → Actions → Runners.
 
@@ -81,10 +81,17 @@ The token expires after one hour. Never paste it into chat, an issue, source cod
 
 A separate Linux computer is not necessarily required for the first Linux build attempt. A Windows x64 computer with WSL 2 and a supported Ubuntu distribution can be evaluated as a no-cost Linux runner:
 
-1. Confirm the Windows machine supports WSL 2. Microsoft's current install guidance supports Windows 11 and Windows 10 version 2004 (build 19041) or later. See [Install WSL](https://learn.microsoft.com/en-us/windows/wsl/install).
+1. Confirm the Windows machine supports WSL 2. This WSL 2 route supports **Windows 11** and **Windows 10 version 2004 (build 19041) or later**. This is the WSL 2 minimum, not the minimum for the native Windows runner. See [Install WSL](https://learn.microsoft.com/en-us/windows/wsl/install).
 2. Install or open an Ubuntu distribution under WSL 2. Check it from PowerShell with `wsl --list --verbose`; the distribution must show version `2`.
 3. In the Ubuntu environment, install and register a GitHub Actions Linux x64 self-hosted runner for this private repository. Use the repository's generated one-time registration token; never save it in the repository.
 4. Run the Linux runner as an interactive WSL process using its `run.sh` launcher. Do **not** install it as a Windows service. Ubuntu's WSL guidance explains that current Store-based WSL requires a logged-in user session and cannot be started by a Windows service; see [Running WSL workflows](https://ubuntu.com/wsl/docs/stable/howto/run-workflows-azure/).
 5. Confirm GitHub shows the runner as **Idle/Online** with the labels `self-hosted`, `Linux` and `X64`. Keep the Windows user session and WSL runner active while the manual installer workflow is running.
 
 **Verification status:** this is an optional route to evaluate, not an already verified Brightdesk build environment. The runner must first complete the Linux Suite build, all ten product builds, artifact checks and checksum generation. WSL package creation does not by itself prove that the DEB or AppImage works in a native Linux desktop session; test installation, first launch, window behaviour and removal on a real Linux desktop before release acceptance. A WSL runner also stores an Actions checkout in its runner workspace during the job. This checkout is not the canonical repository, but the current workflow does not yet have an explicit post-job workspace-erasure step. Do not describe the runner as leaving no local source copy; add and verify workspace cleanup before relying on this route for a no-persistent-checkout requirement.
+
+
+### Automatic post-job checkout erasure
+
+The installer workflow now runs `scripts/cleanup-runner-workspace.js` as an `if: always()` final step in all four jobs: prepare, platform build, collect and publish. The script resolves both `GITHUB_WORKSPACE` and `RUNNER_WORKSPACE`, refuses filesystem roots or paths outside the runner work root, checks the resolved path to prevent symlink escape, and removes the entire job checkout including `.git`, source files, dependencies and generated installers. Uploaded GitHub Actions artifacts are already stored by GitHub before the cleanup step runs.
+
+The workflow disables checkout credential persistence and npm cache post-job saving so those actions do not need the deleted checkout later. A failed cleanup fails the job rather than silently claiming that source was erased. The runner installation itself remains registered and active on persistent Windows/macOS machines; this step erases the job checkout, not the runner application or its logs. WSL still requires separate whole-distribution destruction if the goal is to erase every Linux filesystem trace, not just the job checkout.
