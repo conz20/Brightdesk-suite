@@ -58,3 +58,23 @@ test('rejects filesystem roots and unresolved paths', () => {
   );
   assert.throws(() => removeRunnerWorkspace({ workspace: '', runnerWorkspace: process.cwd() }), /required/);
 });
+
+test('every release workflow job erases its checkout even after failure', () => {
+  const workflow = fs.readFileSync(path.join(__dirname, '..', '.github', 'workflows', 'build-release.yml'), 'utf8');
+  const cleanupSteps = workflow.match(/- name: Erase checked-out source and build workspace/g) || [];
+  const alwaysGuards = workflow.match(/if: always\(\)/g) || [];
+  const cleanupCommands = workflow.match(/run: node scripts\/cleanup-runner-workspace\.js/g) || [];
+  assert.equal(cleanupSteps.length, 4);
+  assert.equal(alwaysGuards.length, 4);
+  assert.equal(cleanupCommands.length, 4);
+});
+
+test('release checkouts do not persist a GitHub token or use a cache post-job hook', () => {
+  const workflow = fs.readFileSync(path.join(__dirname, '..', '.github', 'workflows', 'build-release.yml'), 'utf8');
+  const checkoutCount = (workflow.match(/uses: actions\/checkout@/g) || []).length;
+  const noCredentialPersistence = (workflow.match(/persist-credentials: false/g) || []).length;
+  assert.equal(checkoutCount, 3);
+  assert.equal(noCredentialPersistence, 3);
+  assert.doesNotMatch(workflow, /cache: npm/);
+  assert.match(workflow, /name: Set up required Node\.js version[\s\S]*?node-version: 24\.22\.2/);
+});
