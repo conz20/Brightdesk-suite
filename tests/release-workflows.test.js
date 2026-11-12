@@ -276,6 +276,10 @@ test('Windows runner setup explicitly supports Windows 10 and Windows 11', () =>
   assert.match(releaseGuide, /64-bit Windows 10 and Windows 11/);
   assert.match(releaseGuide, /Windows 10 version 2004 \(build 19041\) or later/);
   assert.match(setup, /Is64BitOperatingSystem/);
+  assert.match(setup, /Get-Command git\\.exe/);
+  assert.match(setup, /Get-Command bash\\.exe/);
+  assert.match(instructions, /Git for Windows/);
+  assert.match(releaseGuide, /The release workflow already targets/);
 });
 
 test('release workflow registers post-job cleanup in every self-hosted job', () => {

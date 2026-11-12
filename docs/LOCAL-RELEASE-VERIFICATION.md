@@ -74,7 +74,7 @@ The click-to-run Windows x64 setup source and exact instructions are in [tools/r
 3. Double-click `Start-Brightdesk-Windows-Runner.cmd`, approve the Windows administrator prompt, and enter the token only into the official runner configuration prompt on the Windows PC.
 4. Confirm `Brightdesk-Windows-PC` appears as **Idle** in Settings → Actions → Runners.
 
-The token expires after one hour. Never paste it into chat, an issue, source code or logs. Registration does not switch any workflow to this runner; update the Windows job to use `[self-hosted, Windows, X64]` only after the runner appears online. The setup source stops rather than overwriting a non-empty existing runner folder.
+The token expires after one hour. Never paste it into chat, an issue, source code or logs. The installer setup checks that Git for Windows provides both `git.exe` and `bash.exe`, which the current Windows workflow needs for checkout and its explicit Bash shell steps. The release workflow already targets `[self-hosted, Windows, X64]`; once this runner appears Idle/Online, it is eligible for the native Windows build. The setup source stops rather than overwriting a non-empty existing runner folder.
 
 
 ### Linux x64 runner using Windows Subsystem for Linux 2

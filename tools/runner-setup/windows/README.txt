@@ -16,13 +16,15 @@ WHAT THIS PACKAGE DOES
 - Installs the runner under C:\actions-runner.
 - Prompts the official GitHub configuration program for a one-time registration token.
 - Registers the runner only to Brightdesk-suite and retains GitHub's default labels: self-hosted, Windows and X64.
+- Checks that Git for Windows provides both git.exe and bash.exe for checkout and the workflow's Bash steps.
 - Installs and starts the runner as a Windows service.
 
 It does NOT change the Brightdesk release workflow, publish a release, or install Docker, Linux, or development tools.
 
 BEFORE YOU START
 ----------------
-1. Download and extract this ZIP on your Windows gaming PC.
+1. Install Git for Windows from https://git-scm.com/download/win. Brightdesk uses Git for repository checkout and the Git Bash shell for Windows build steps. Ensure both git.exe and bash.exe are available on the system PATH, then open a new PowerShell window and confirm `git --version` and `bash --version` work.
+2. Download and extract this ZIP on your Windows PC.
 2. Sign in to GitHub in your browser.
 3. Open this exact page:
    https://github.com/conz20/Brightdesk-suite/settings/actions/runners/new
@@ -47,8 +49,7 @@ The one-time registration token is needed only to register the runner. GitHub sa
 
 AFTER REGISTRATION
 ------------------
-Registration alone does not make Brightdesk use this PC. The Windows job in the release workflow must be updated to target the runner labels:
-self-hosted, Windows, X64
+The Brightdesk release workflow already targets the labels `self-hosted`, `Windows` and `X64`. Once this runner appears as Idle/Online and Git for Windows is available to the runner service, it is eligible to receive the native Windows build job.
 
 That workflow change is intentionally not included in this setup package. First confirm the runner is Idle/Online in GitHub. Then the workflow can be changed and tested separately.
 

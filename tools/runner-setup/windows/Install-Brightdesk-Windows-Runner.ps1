@@ -52,6 +52,12 @@ try {
         throw 'This package requires 64-bit Intel/AMD Windows (x64).'
     }
 
+    $gitCommand = Get-Command git.exe -ErrorAction SilentlyContinue
+    $bashCommand = Get-Command bash.exe -ErrorAction SilentlyContinue
+    if ($null -eq $gitCommand -or $null -eq $bashCommand) {
+        throw 'Git for Windows is required for repository checkout and the workflow Bash shell. Install Git for Windows from https://git-scm.com/download/win, ensure git.exe and bash.exe are available on the system PATH, then reopen this setup window.'
+    }
+
     Write-Host 'The runner can execute code from the private Brightdesk repository.' -ForegroundColor Yellow
     Write-Host 'Keep this runner restricted to Brightdesk-suite. Do not attach it to public repositories.' -ForegroundColor Yellow
     Write-Host ''
@@ -140,7 +146,7 @@ try {
     Write-Host "Runner name: $RunnerName"
     Write-Host 'Default labels: self-hosted, Windows, X64'
     Write-Host 'Open GitHub Settings > Actions > Runners to confirm that it shows as Idle/Online.'
-    Write-Host 'The Windows build workflow still needs to be pointed at this runner before it can use it.' -ForegroundColor Yellow
+    Write-Host 'The Brightdesk release workflow already targets self-hosted, Windows and X64. This PC is eligible once GitHub shows it as Idle/Online.' -ForegroundColor Green
 }
 catch {
     $exitCode = 1
