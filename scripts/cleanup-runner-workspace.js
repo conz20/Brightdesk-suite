@@ -46,6 +46,9 @@ if (require.main === module) {
     if (process.env.GITHUB_ACTIONS !== 'true') {
       throw new Error('This cleanup command may only run inside a GitHub Actions job.');
     }
+    if (process.env.RUNNER_WORKSPACE) {
+      process.chdir(process.env.RUNNER_WORKSPACE);
+    }
     const result = removeRunnerWorkspace({
       workspace: process.env.GITHUB_WORKSPACE,
       runnerWorkspace: process.env.RUNNER_WORKSPACE
