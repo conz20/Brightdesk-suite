@@ -208,7 +208,13 @@ test('Windows self-hosted runner setup targets the correct private repository an
   assert.doesNotMatch(setup, /if \(Test-Path -LiteralPath \$archivePath\)/);
   assert.match(setup, /already contains files\. Nothing was overwritten/);
   assert.match(setup, /Type REGISTER to continue/);
-  assert.match(setup, /The token is not included in this script/);
+  assert.match(setup, /winget install --id Git\.Git/);
+  assert.match(setup, /winget install --id GitHub\.cli/);
+  assert.match(setup, /auth login --hostname github\.com --git-protocol https --web/);
+  assert.match(setup, /api --method POST \$RegistrationEndpoint/);
+  assert.match(setup, /'--token', \$registrationToken/);
+  assert.match(setup, /Remove-Variable -Name registrationToken/);
+  assert.doesNotMatch(setup, /Paste the one-time registration token/);
 });
 
 
@@ -379,6 +385,9 @@ test('Windows runner can be started from one verified download', () => {
   const releaseGuide = read('docs/LOCAL-RELEASE-VERIFICATION.md');
   assert.ok(instructions.includes('Download only Start-Brightdesk-Windows-Runner.cmd'));
   assert.ok(instructions.includes('downloads the PowerShell installer automatically'));
+  assert.ok(instructions.includes('GitHub CLI sign-in'));
+  assert.ok(instructions.includes('No registration token needs to be copied or pasted.'));
+  assert.ok(instructions.includes('installs Git for Windows and GitHub CLI if they are missing'));
   assert.ok(instructions.includes('There is no setup ZIP.'));
   assert.ok(launcher.includes('https://raw.githubusercontent.com/conz20/Brightdesk-suite/3689b07316e2c700cf868a895ad5b66843c2aca2/tools/runner-setup/windows/Install-Brightdesk-Windows-Runner.ps1'));
   const expectedInstallerHash = /^set "INSTALLER_SHA256=([a-f0-9]{64})"$/m.exec(launcher)?.[1];
@@ -390,5 +399,10 @@ test('Windows runner can be started from one verified download', () => {
   assert.ok(!launcher.includes('%~dp0Install-Brightdesk-Windows-Runner.ps1'));
   assert.ok(installer.includes('Get-Command git.exe'));
   assert.ok(installer.includes('Get-Command bash.exe'));
+  assert.ok(installer.includes('winget install --id Git.Git'));
+  assert.ok(installer.includes('winget install --id GitHub.cli'));
+  assert.ok(installer.includes('--web'));
+  assert.ok(installer.includes('api --method POST $RegistrationEndpoint'));
+  assert.ok(installer.includes("'--token', $registrationToken"));
   assert.ok(releaseGuide.includes('Download only the [single Windows launcher file]'));
 });
