@@ -27,7 +27,6 @@ const applicationId = packageConfig.brightdeskAppId || null;
 if (applicationId && !supportedApplications.has(applicationId)) {
   throw new Error(`Unsupported Brightdesk application: ${applicationId}`);
 }
-app.setName(packageConfig.productName || 'Brightdesk');
 const hasSingleInstanceLock = app.requestSingleInstanceLock();
 if (!hasSingleInstanceLock) {
   app.quit();
@@ -454,6 +453,7 @@ async function runPackagedStartupSmokeTest() {
 
 app.whenReady().then(async () => {
   if (!hasSingleInstanceLock) return;
+  app.setName(packageConfig.productName || packageConfig.build?.productName || (applicationId ? `Brightdesk ${PRODUCT_MANIFEST[applicationId].name}` : 'Brightdesk Office Suite'));
   if (process.platform === 'win32') app.setAppUserModelId(applicationId ? `org.brightdesk.${applicationId}` : 'org.brightdesk.suite');
   dictionaryService = new DictionaryService(app.getPath('userData'));
   Menu.setApplicationMenu(null);
