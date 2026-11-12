@@ -59,14 +59,15 @@ test('rejects filesystem roots and unresolved paths', () => {
   assert.throws(() => removeRunnerWorkspace({ workspace: '', runnerWorkspace: process.cwd() }), /required/);
 });
 
-test('every release workflow job erases its checkout even after failure', () => {
+test('every release job registers cleanup as a post-job action', () => {
   const workflow = fs.readFileSync(path.join(__dirname, '..', '.github', 'workflows', 'build-release.yml'), 'utf8');
-  const cleanupSteps = workflow.match(/- name: Erase checked-out source and build workspace/g) || [];
-  const alwaysGuards = workflow.match(/if: always\(\)/g) || [];
-  const cleanupCommands = workflow.match(/run: node scripts\/cleanup-runner-workspace\.js/g) || [];
-  assert.equal(cleanupSteps.length, 4);
-  assert.equal(alwaysGuards.length, 4);
-  assert.equal(cleanupCommands.length, 4);
+  const registrations = workflow.split('uses: conz20/Brightdesk-suite/.github/actions/runner-workspace-cleanup@').length - 1;
+  assert.equal(registrations, 4);
+  assert.doesNotMatch(workflow, /run: node scripts\\/cleanup-runner-workspace\\.js/);
+
+  const action = fs.readFileSync(path.join(__dirname, '..', '.github', 'actions', 'runner-workspace-cleanup', 'action.yml'), 'utf8');
+  assert.ok(action.includes('post: cleanup.js'));
+  assert.ok(action.includes('post-if: always()'));
 });
 
 test('release checkouts do not persist a GitHub token or use a cache post-job hook', () => {
