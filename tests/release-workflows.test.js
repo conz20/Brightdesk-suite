@@ -287,3 +287,19 @@ test('release workflow erases each complete checkout after artifacts are safely 
   assert.doesNotMatch(workflow, /cache: npm/);
   assert.match(workflow, /name: Set up required Node\.js version[\s\S]*?node-version: 24\.22\.2/);
 });
+
+test('self-hosted CI disables checkout credentials and erases its workspace after every run', () => {
+  const workflow = read('.github/workflows/ci.yml');
+  assert.match(workflow, /runs-on: self-hosted/);
+  assert.match(workflow, /uses: actions\\/checkout@[\\s\\S]*?with:\\s*\\n\\s+persist-credentials: false/);
+  assert.doesNotMatch(workflow, /cache: npm/);
+  assert.match(workflow, /name: Erase checked-out source and build workspace\\s+if: always\\(\\)\\s+run: node scripts\\/cleanup-runner-workspace\\.js/);
+});
+
+test('release collector checkout uses one valid with block and preserves the exact commit checkout', () => {
+  const workflow = read('.github/workflows/build-release.yml');
+  const checkout = workflow.match(/- name: Check out the exact release source[\\s\\S]*?(?=\\n      - name: Set up required Node\\.js version)/)?.[0];
+  assert.ok(checkout, 'release collector checkout exists');
+  assert.match(checkout, /with:\\s*\\n\\s+persist-credentials: false\\s*\\n\\s+ref: \\$\\{\\{ github\\.sha \\}\\}/);
+  assert.equal((checkout.match(/\\n\\s+with:/g) || []).length, 1);
+});
