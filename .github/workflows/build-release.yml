@@ -24,6 +24,9 @@ jobs:
     runs-on: self-hosted
     timeout-minutes: 60
     steps:
+      - name: Register post-job workspace cleanup
+        uses: conz20/Brightdesk-suite/.github/actions/runner-workspace-cleanup@7727da85c4e6e660f3376b5b330d78b6782c1976
+
       - name: Check out Brightdesk
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -64,10 +67,6 @@ jobs:
       - name: Audit dependencies for high severity vulnerabilities
         run: npm audit --audit-level=high
 
-      - name: Erase checked-out source and build workspace
-        if: always()
-        run: node scripts/cleanup-runner-workspace.js
-
   build:
     name: Build ${{ matrix.platform }} installer
     needs: prepare
@@ -86,6 +85,9 @@ jobs:
             script: mac
     runs-on: ${{ matrix.runner }}
     steps:
+      - name: Register post-job workspace cleanup
+        uses: conz20/Brightdesk-suite/.github/actions/runner-workspace-cleanup@7727da85c4e6e660f3376b5b330d78b6782c1976
+
       - name: Check out Brightdesk
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -170,10 +172,6 @@ jobs:
           if-no-files-found: error
           retention-days: 14
 
-      - name: Erase checked-out source and build workspace
-        if: always()
-        run: node scripts/cleanup-runner-workspace.js
-
   collect:
     name: Collect verified installers
     needs: [prepare, build]
@@ -183,6 +181,9 @@ jobs:
     outputs:
       version: ${{ steps.release-version.outputs.version }}
     steps:
+      - name: Register post-job workspace cleanup
+        uses: conz20/Brightdesk-suite/.github/actions/runner-workspace-cleanup@7727da85c4e6e660f3376b5b330d78b6782c1976
+
       - name: Check out the exact release source
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -232,10 +233,6 @@ jobs:
           if-no-files-found: error
           retention-days: 30
 
-      - name: Erase checked-out source and build workspace
-        if: always()
-        run: node scripts/cleanup-runner-workspace.js
-
   publish-release:
     name: Publish GitHub Release (manual approval only)
     needs: collect
@@ -246,6 +243,9 @@ jobs:
     permissions:
       contents: write
     steps:
+      - name: Register post-job workspace cleanup
+        uses: conz20/Brightdesk-suite/.github/actions/runner-workspace-cleanup@7727da85c4e6e660f3376b5b330d78b6782c1976
+
       - name: Set up required Node.js version
         uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
@@ -264,7 +264,3 @@ jobs:
           name: Brightdesk ${{ needs.collect.outputs.version }}
           generate_release_notes: true
           files: release/**/**
-
-      - name: Erase checked-out source and build workspace
-        if: always()
-        run: node scripts/cleanup-runner-workspace.js
