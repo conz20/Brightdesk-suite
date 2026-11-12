@@ -5,9 +5,13 @@
   if (typeof module === 'object' && module.exports) module.exports = policy;
   if (root) root.BrightdeskAppSetupPolicy = policy;
 })(typeof globalThis === 'object' ? globalThis : this, () => {
-  function resolveAppSetup(savedSetup, launchAppId, availableIds) {
+  function resolveAppSetup(savedSetup, launchAppId, availableIds, suiteLaunchedProduct = false) {
     const available = [...new Set(availableIds)];
-    if (launchAppId) {
+    if (launchAppId && !suiteLaunchedProduct) {
+      return { installedApps: available.includes(launchAppId) ? [launchAppId] : [], setupComplete: true, schemaVersion: 2 };
+    }
+
+    if (launchAppId && suiteLaunchedProduct) {
       const savedApps = Array.isArray(savedSetup?.installedApps)
         ? [...new Set(savedSetup.installedApps.filter(id => available.includes(id)))]
         : available;
