@@ -135,3 +135,19 @@ test('the product packager creates native launch registrations matching the laun
   assert.match(config, /shortcutName: 'Brightdesk ' \+ appName/);
   assert.match(config, /createStartMenuShortcut: true/);
 });
+
+test('a failed native launch returns an actionable not-installed result', async () => {
+  const { EventEmitter } = require('node:events');
+  const { launchProduct } = require('../src/product-launcher');
+  const child = new EventEmitter();
+  const result = launchProduct('pages', {
+    platform: 'darwin',
+    spawn: () => {
+      queueMicrotask(() => child.emit('close', 1));
+      return child;
+    }
+  });
+  await assert.rejects(result, error =>
+    error.code === 'PRODUCT_NOT_INSTALLED' && /Install it with its Brightdesk product installer/i.test(error.message)
+  );
+});
