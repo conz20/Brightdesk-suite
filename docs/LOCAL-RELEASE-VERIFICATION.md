@@ -67,15 +67,18 @@ Type `REGISTER` only after reviewing the eight-repository list shown by the scri
 
 ### Windows runner setup
 
-The click-to-run Windows x64 setup source and instructions are in [tools/runner-setup/windows](../tools/runner-setup/windows/README.txt). Download only the [single Windows launcher file](https://raw.githubusercontent.com/conz20/Brightdesk-suite/main/tools/runner-setup/windows/Start-Brightdesk-Windows-Runner.cmd). There is no setup ZIP and no second file to download. The launcher retrieves the PowerShell installer from a pinned Brightdesk commit, verifies its SHA-256 checksum, and starts it only after verification succeeds. The installer downloads the official GitHub runner, checks its published SHA-256 digest, installs under `C:\\actions-runner`, and registers it only to this private repository. It retains GitHub's default labels: `self-hosted`, `Windows` and `X64`.
+The click-to-run Windows x64 setup is one file: [Start-Brightdesk-Windows-Runner.cmd](https://raw.githubusercontent.com/conz20/Brightdesk-suite/main/tools/runner-setup/windows/Start-Brightdesk-Windows-Runner.cmd). There is no setup ZIP and no second file to download. The launcher downloads the PowerShell installer from a pinned Brightdesk commit, verifies its SHA-256 checksum, and starts it only after verification succeeds.
 
-1. Install Git for Windows and confirm `git.exe` and `bash.exe` are available on the system PATH.
-2. Download the two setup files above into the same folder on the Windows PC.
-3. This setup supports **64-bit Windows 10 and Windows 11**. Open [the repository's New self-hosted runner page](https://github.com/conz20/Brightdesk-suite/settings/actions/runners/new), select **Windows** and **x64**, and generate the one-time token.
-4. Double-click `Start-Brightdesk-Windows-Runner.cmd`, approve the Windows administrator prompt, type `REGISTER`, and enter the token only into the official runner configuration prompt on the Windows PC.
-5. Confirm `Brightdesk-Windows-PC` appears as **Idle** in Settings → Actions → Runners.
+The installer uses Windows Package Manager (winget) to install Git for Windows and GitHub CLI only when either is missing. It adds the Git and Bash directories to the machine PATH for the runner service, then uses GitHub CLI's official browser/device sign-in flow. Sign in as `conz20`, which must have administrator access to the private Brightdesk-suite repository. The installer requests the short-lived repository runner registration token automatically through GitHub CLI and passes it to the official runner configurator; you do not open the runner registration page or copy/paste the token.
 
-The token expires after one hour. Never paste it into chat, an issue, source code or logs. The installer setup checks that Git for Windows provides both `git.exe` and `bash.exe`, which the current Windows workflow needs for checkout and its explicit Bash shell steps. The release workflow already targets `[self-hosted, Windows, X64]`; once this runner appears Idle/Online, it is eligible for the native Windows build. The setup source stops rather than overwriting a non-empty existing runner folder.
+1. Download only the [single Windows launcher file](https://raw.githubusercontent.com/conz20/Brightdesk-suite/main/tools/runner-setup/windows/Start-Brightdesk-Windows-Runner.cmd) to the Windows PC.
+2. Double-click it and approve the Windows administrator prompt.
+3. Read the security notice and type `REGISTER`.
+4. Allow the installer to add Git for Windows and GitHub CLI if they are missing. If it reports that winget is unavailable, install or update **App Installer** from the Microsoft Store and run the same launcher again.
+5. When GitHub CLI asks, complete the official browser/device sign-in as `conz20`.
+6. Confirm `Brightdesk-Windows-PC` appears as **Idle/Online** in Settings → Actions → Runners.
+
+The GitHub CLI credential remains on the Windows PC. The short-lived runner registration token is retrieved automatically, is not printed or saved to a file, and is cleared from the script after configuration. Never share GitHub sign-in codes or credentials. Keep the runner restricted to the private repository. The release workflow already targets `[self-hosted, Windows, X64]`; once this runner appears Idle/Online, it is eligible for the native Windows build.
 
 ### Linux x64 runner using Windows Subsystem for Linux 2
 
