@@ -486,7 +486,7 @@ function renderAppManager() {
     const name = document.createElement('b'); name.textContent = item.name;
     const subtitle = document.createElement('small'); subtitle.textContent = item.subtitle;
     const stateChip = document.createElement('span'); stateChip.className = `app-status-chip ${!canInstall ? 'development' : (isInstalled ? 'installed' : 'available')}`;
-    stateChip.textContent = !canInstall ? 'In development' : (isInstalled ? 'Installed' : 'Available to install');
+    stateChip.textContent = !canInstall ? 'In development' : t(isInstalled ? 'manager.inWorkspace' : 'manager.notInstalled');
     heading.append(name, subtitle, stateChip);
     const menuWrap = document.createElement('div'); menuWrap.className = 'app-card-menu-wrap';
     const menuTrigger = document.createElement('button'); menuTrigger.type = 'button'; menuTrigger.className = 'app-card-menu-trigger'; menuTrigger.title = 'Product settings'; menuTrigger.setAttribute('aria-label', `More options for ${item.name}`); menuTrigger.setAttribute('aria-haspopup', 'menu'); menuTrigger.setAttribute('aria-expanded', 'false');
@@ -527,8 +527,8 @@ function renderAppManager() {
         open.addEventListener('click', () => window.brightdesk.openApplication(item.id)); footer.append(open);
       }
       const action = document.createElement('button'); action.className = isInstalled ? 'secondary small-action app-install-action' : 'primary small-action app-install-action';
-      action.textContent = isInstalled ? 'Uninstall' : 'Install';
-      action.setAttribute('aria-label', `${isInstalled ? 'Uninstall' : 'Install'} ${item.name}`);
+      action.textContent = t(isInstalled ? 'manager.remove' : 'manager.install');
+      action.setAttribute('aria-label', `${t(isInstalled ? 'manager.remove' : 'manager.install')} ${item.name}`);
       action.addEventListener('click', () => toggleAppInstall(item.id)); footer.append(action);
     }
     card.append(header, description, footer); grid.append(card);
@@ -538,7 +538,7 @@ function toggleAppInstall(id) {
   if (!installableCatalog.some(item => item.id === id) || launchAppId) return;
   if (installedApp(id)) {
     const product = catalog.find(item => item.id === id);
-    if (!window.confirm(`Uninstall ${product?.name || 'this product'}? Your documents and project files will remain on this device.`)) return;
+    if (!window.confirm(`Remove ${product?.name || 'this product'} from the Suite? This only changes which bundled workspaces are available here. Its files and documents remain on this device.`)) return;
     const selection = removeAppSelection(
       state.installedApps,
       state.hiddenProducts,
