@@ -80,7 +80,7 @@ test('all ten installed products remain available in the product-switching sideb
   const catalogue = require('../src/app-catalog');
   assert.equal(catalogue.length, 10);
   assert.match(app, /function syncAppNavigation\(\)[\s\S]*?catalog\.filter\(item => installedApp\(item\.id\) && !state\.hiddenProducts\.includes\(item\.id\)\)/);
-  assert.match(app, /button\.addEventListener\('click',\(\)=>setApp\(item\.id\)\)/);
+  assert.match(app, /button\.addEventListener\('click',\(\)=>window\.brightdesk\.openApplication\(item\.id\)\)/);
   assert.match(app, /const suitePage = home \|\| manager \|\| files/);
 });
 
@@ -88,7 +88,7 @@ test('one Brightdesk Home artwork combines the suite sidebar and ten-product gri
   const svg = read('assets/product-experience/brightdesk-home.svg');
   assert.equal((svg.match(/id="sidebar-applications"/g) || []).length, 1);
   assert.doesNotMatch(svg, /id="sidebar-(?:pages|sheets|decks|notes|database|forms|lists|planner|todo|workspace)-/);
-  assert.match(svg, /Brightdesk Office Suite Home experience/);
+  assert.match(svg, /Desktop productivity Home experience/);
   assert.match(svg, /Product shortcuts are not repeated beside the Home application grid/);
   assert.match(svg, /id="settings-cogwheel"/);
   assert.match(svg, /id="notifications-bell"/);
