@@ -4,6 +4,7 @@ const nativeEngine = require('./rust-engine');
 const { assertPackagedVersion, assertMainWindowReady } = require('./startup-smoke');
 const path = require('node:path');
 const crypto = require('node:crypto');
+const fsNative = require('node:fs');
 const fs = require('node:fs/promises');
 const { openOfficeFile, exportOfficeFile, cleanFileName, ensureExtension } = require('./file-service');
 const { BUILTIN_LANGUAGES, validateLanguagePack, getBuiltinLanguage } = require('./language-service');
@@ -195,8 +196,46 @@ ipcMain.handle('terms:decline', event => {
 ipcMain.on('app:version-sync', event => { event.returnValue = app.getVersion(); });
 ipcMain.handle('app:version', event => { if (!senderIsMain(event)) throw new Error('Invalid sender.'); return app.getVersion(); });
 
+function sharedResourcesDirectory() {
+  return path.join(app.getPath('appData'), 'Brightdesk');
+}
+
+async function copyMissingResourceTree(source, destination) {
+  let entries;
+  try {
+    entries = await fs.readdir(source, { withFileTypes: true });
+  } catch (error) {
+    if (error.code === 'ENOENT') return;
+    throw error;
+  }
+  await fs.mkdir(destination, { recursive: true });
+  for (const entry of entries) {
+    const from = path.join(source, entry.name);
+    const to = path.join(destination, entry.name);
+    if (entry.isDirectory()) {
+      await copyMissingResourceTree(from, to);
+      continue;
+    }
+    try {
+      await fs.copyFile(from, to, fsNative.constants.COPYFILE_EXCL);
+    } catch (error) {
+      if (error.code !== 'EEXIST') throw error;
+    }
+  }
+}
+
+async function ensureSharedResourcesDirectory() {
+  const shared = sharedResourcesDirectory();
+  await fs.mkdir(shared, { recursive: true });
+  const legacyUserData = app.getPath('userData');
+  for (const folder of ['dictionaries', 'language-packs']) {
+    await copyMissingResourceTree(path.join(legacyUserData, folder), path.join(shared, folder));
+  }
+  return shared;
+}
+
 function languagePackDirectory() {
-  return path.join(app.getPath('userData'), 'language-packs');
+  return path.join(sharedResourcesDirectory(), 'language-packs');
 }
 
 async function readBundledLanguagePack(code) {
@@ -460,7 +499,8 @@ app.whenReady().then(async () => {
   if (!hasSingleInstanceLock) return;
   app.setName(packageConfig.productName || packageConfig.build?.productName || (applicationId ? `Brightdesk ${PRODUCT_MANIFEST[applicationId].name}` : 'Brightdesk Office Suite'));
   if (process.platform === 'win32') app.setAppUserModelId(applicationId ? `org.brightdesk.${applicationId}` : 'org.brightdesk.suite');
-  dictionaryService = new DictionaryService(app.getPath('userData'));
+  const sharedResources = await ensureSharedResourcesDirectory();
+  dictionaryService = new DictionaryService(sharedResources);
   Menu.setApplicationMenu(null);
   if (process.env.BRIGHTDESK_STARTUP_SMOKE_TEST === '1') {
     await runPackagedStartupSmokeTest();
