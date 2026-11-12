@@ -26,12 +26,13 @@ jobs:
     steps:
       - name: Check out Brightdesk
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
 
       - name: Set up required Node.js version
         uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: 24.22.2
-          cache: npm
 
       - name: Set up the pinned Rust toolchain
         uses: dtolnay/rust-toolchain@683b588c487a69d01f6c6ddf40f036ff682cc2c8 # pinned action revision
@@ -52,3 +53,6 @@ jobs:
       - name: Verify installer files and generate SHA-256 checksums
         run: npm run release:verify:mac
 
+      - name: Erase checked-out source and build workspace
+        if: always()
+        run: node scripts/cleanup-runner-workspace.js

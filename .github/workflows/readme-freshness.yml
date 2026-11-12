@@ -22,6 +22,12 @@ jobs:
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           fetch-depth: 0
+          persist-credentials: false
+
+      - name: Set up Node.js 24.22.2 for workspace cleanup
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24.22.2
 
       - name: Require a root README update for non-Markdown changes
         shell: bash
@@ -85,3 +91,7 @@ jobs:
 
           echo "README freshness check passed."
           echo "This check verifies README.md is included; reviewers must still verify factual accuracy and current visuals."
+
+      - name: Erase checked-out source and build workspace
+        if: always()
+        run: node scripts/cleanup-runner-workspace.js

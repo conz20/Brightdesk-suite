@@ -26,7 +26,6 @@ jobs:
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: 24.22.2
-          cache: npm
       - name: Prepare exact dependency lock
         run: npm run lock:prepare
       - name: Verify dependency lock
@@ -46,3 +45,7 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git commit -m "Generate third-party dependency notices"
           git push
+
+      - name: Erase checked-out source and build workspace
+        if: always()
+        run: node scripts/cleanup-runner-workspace.js

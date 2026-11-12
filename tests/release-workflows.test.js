@@ -309,3 +309,24 @@ test('release collector checkout uses one valid with block and preserves the exa
   assert.ok(checkout.includes('ref: ${{ github.sha }}'));
   assert.equal(checkout.split('        with:').length - 1, 1);
 });
+
+
+test('every self-hosted workflow removes its checked-out workspace even after failure', () => {
+  const expected = [
+    ['.github/workflows/build-release.yml', 4],
+    ['.github/workflows/ci.yml', 1],
+    ['.github/workflows/quality.yml', 1],
+    ['.github/workflows/rust-engine.yml', 1],
+    ['.github/workflows/readme-freshness.yml', 1],
+    ['.github/workflows/verify-macos-installer.yml', 1],
+    ['.github/workflows/generate-lockfile.yml', 1],
+    ['.github/workflows/generate-third-party-notices.yml', 1]
+  ];
+
+  for (const [file, count] of expected) {
+    const workflow = read(file);
+    assert.equal((workflow.match(/name: Erase checked-out source and build workspace/g) || []).length, count, file);
+    assert.equal(workflow.split('run: node scripts/cleanup-runner-workspace.js').length - 1, count, file);
+    assert.equal(workflow.split('if: always()').length - 1, count, file);
+  }
+});

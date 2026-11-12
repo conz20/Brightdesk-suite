@@ -51,3 +51,7 @@ jobs:
             echo "package-lock.json was not generated." >&2
             exit 1
           fi
+
+      - name: Erase checked-out source and build workspace
+        if: always()
+        run: node scripts/cleanup-runner-workspace.js
