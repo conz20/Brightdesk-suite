@@ -62,7 +62,7 @@ function loadLocal() {
       try { const separate = JSON.parse(localStorage.getItem(`brightdesk-doc-${id}-v1`) || 'null'); if (separate && typeof separate === 'object') state.docs[id] = separate; } catch { /* Keep the last valid document data. */ }
     }
     const appSetup = JSON.parse(localStorage.getItem('brightdesk-app-setup-v1') || 'null');
-    const resolvedSetup = resolveAppSetup(appSetup, launchAppId, installableCatalog.map(item => item.id));
+    const resolvedSetup = resolveAppSetup(appSetup, launchAppId, installableCatalog.map(item => item.id), window.brightdesk.suiteLaunchedProduct);
     state.installedApps = resolvedSetup.installedApps;
     state.hiddenProducts = Array.isArray(appSetup?.hiddenProducts) ? appSetup.hiddenProducts.filter(id => state.installedApps.includes(id)) : [];
     state.setupComplete = resolvedSetup.setupComplete;
