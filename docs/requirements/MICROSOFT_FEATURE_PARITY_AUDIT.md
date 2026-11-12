@@ -98,3 +98,18 @@ The following Microsoft Support pages were checked while preparing this audit. T
 - **Workspace:** Loop documents flexible pages and portable components, but those components are designed to stay in sync across Microsoft apps and shared workspaces use Microsoft account/cloud storage. Brightdesk should adapt the modular local-page/block idea only; do not reproduce online sharing, cross-app cloud sync or identity requirements: [Get started with Loop](https://support.microsoft.com/en-au/loop/get-started-with-microsoft-loop), [Loop storage and access requirements](https://support.microsoft.com/en-us/loop/loop-access-via-microsoft-365-subscriptions).
 
 Where a Microsoft article describes a feature that is Windows-only, web-only, account-dependent, subscription-dependent or cloud-backed, Brightdesk must not assume that the capability is automatically available or appropriate on all three Brightdesk operating systems. Build a local-first equivalent only where it is practical and verify the same intended behaviour on Windows, macOS and Linux.
+
+
+## Native product-launch implementation status — 12 November 2026
+
+The Suite main branch now contains a native product-launch service and platform-specific package registration settings:
+
+- Windows: launch the product's Brightdesk Start Menu shortcut created by the product NSIS package.
+- macOS: launch by the product's \`org.brightdesk.<id>\` bundle identifier.
+- Linux: launch the exact registered \`org.brightdesk.<id>.desktop\` entry using \`gio launch\`.
+- Each product has a unique package/runtime name and application ID. The Electron main process requests a single-instance lock so a repeated launch can focus the existing instance.
+- Product build configuration assigns its matching original icon. The Suite's Open and Switch product actions call the native launch service and show actionable errors when a package cannot be found or started.
+
+The manual release workflow now invokes all ten individual product builds after building the Suite, then verifies the expected product package formats and records a separate product SHA-256 manifest for each platform.
+
+**Important verification boundary:** these are source/configuration and workflow changes only. No new packaged Windows, macOS or Linux installer has yet been run through an end-to-end installation and relaunch test. CI results are not available for the current code head. Linux AppImages do not automatically register desktop entries; a user must integrate the AppImage, or install the DEB package, before the Suite can discover it. The real process launch, app focus, concurrent operation, upgrade and uninstall behaviour remain pending native-platform acceptance.
