@@ -261,6 +261,7 @@ test('Suite Open actions launch registered standalone product applications', () 
   assert.ok(preload.includes("ipcRenderer.invoke('apps:open', applicationId)"));
   assert.ok(app.includes('window.brightdesk.openApplication(item.id)'));
   assert.ok(app.includes('navigationProducts = launchAppId'));
+  assert.match(app, /launchAppId \? btn\.dataset\.app !== launchAppId : installedApp\(btn\.dataset\.app\)/);
   assert.ok(app.includes('catch (error) { alert(error.message'));
   assert.equal(app.includes('setApp(item.id)'), false);
   assert.ok(main.includes("'Brightdesk Office Suite'"));
