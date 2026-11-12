@@ -1,13 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-labelledby="title desc">
-<title id="title">Brightdesk Office Suite Home</title>
-<desc id="desc">Brightdesk Office Suite Home experience. One professional sidebar links Home, Apps and Files, with ten original product cards in the main area and Notifications and Settings controls in the top-right. Product shortcuts are not repeated beside the Home application grid. When the update service reports an update, it appears as a desktop notification and remains in the notification bell history.</desc>
+<title id="title">Desktop productivity Home</title>
+<desc id="desc">Desktop productivity Home experience. One professional sidebar links Home, Apps and Files, with ten original product cards in the main area and Notifications and Settings controls in the top-right. Product shortcuts are not repeated beside the Home application grid. When the update service reports an update, it appears as a desktop notification and remains in the notification bell history.</desc>
 <defs><linearGradient id="side" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#14233F"/><stop offset="1" stop-color="#0D1930"/></linearGradient><linearGradient id="banner" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#E8F0FF"/><stop offset="1" stop-color="#F0ECFF"/></linearGradient><filter id="shadow" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="7" stdDeviation="14" flood-color="#1A2B4B" flood-opacity=".09"/></filter></defs>
 <rect width="1600" height="900" fill="#F2F5FA"/>
 <rect width="238" height="900" fill="url(#side)"/>
-<rect x="26" y="25" width="46" height="46" rx="13" fill="#526FE0"/>
-<g fill="#FFFFFF"><rect x="37" y="36" width="10" height="10" rx="2"/><rect x="51" y="36" width="10" height="10" rx="2" opacity=".78"/><rect x="37" y="50" width="10" height="10" rx="2" opacity=".78"/><rect x="51" y="50" width="10" height="10" rx="2"/></g>
-<text x="84" y="56" font-family="Arial, sans-serif" font-size="25" font-weight="700" fill="#FFFFFF">brightdesk</text>
 <text x="28" y="111" font-family="Arial, sans-serif" font-size="10" font-weight="700" letter-spacing="2" fill="#8292B2">YOUR WORKSPACE</text>
 <g id="sidebar-home">
   <rect x="15" y="132" width="208" height="48" rx="10" fill="#293E65"/>
@@ -33,7 +30,6 @@
   <text x="58" y="263" font-family="Arial, sans-serif" font-size="13" fill="#C4CFE2">Files</text>
 </g>
 <path d="M25 810h188" stroke="#344766"/>
-<text x="28" y="842" font-family="Arial, sans-serif" font-size="12" fill="#A8B6D0">Brightdesk Office Suite</text>
 <text x="28" y="865" font-family="Arial, sans-serif" font-size="10" fill="#7184A7">Local-first · Your files stay here</text>
 <text x="270" y="65" font-family="Arial, sans-serif" font-size="12" font-weight="700" letter-spacing="2" fill="#7786A0">YOUR WORKSPACE</text>
 <text x="270" y="111" font-family="Arial, sans-serif" font-size="34" font-weight="700" fill="#1B2941">Your apps</text>
@@ -233,5 +229,5 @@
 <rect x="1311" y="740" width="92" height="34" rx="9" fill="#233B67"/><text x="1357" y="762" text-anchor="middle" font-family="Arial, sans-serif" font-size="12.5" font-weight="700" fill="#FFFFFF">Open</text>
 <rect x="1411" y="740" width="106" height="34" rx="9" fill="#FFFFFF" stroke="#DCE3ED"/><text x="1464" y="762" text-anchor="middle" font-family="Arial, sans-serif" font-size="10.5" font-weight="700" fill="#52627A">Uninstall</text></g>
 </g>
-<text x="270" y="850" font-family="Arial, sans-serif" font-size="11" fill="#8996AA">BRIGHTDESK OFFICE SUITE · Ten original desktop products · Local-first files · Update alerts in Notifications</text>
+<text x="270" y="850" font-family="Arial, sans-serif" font-size="11" fill="#8996AA">Ten original desktop products · Local-first files · Update alerts in Notifications</text>
 </svg>
