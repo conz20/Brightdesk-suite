@@ -13,8 +13,8 @@
     "windowsBuildScript": {
       "sourceRepository": "conz20/Brightdesk-Printing",
       "sourcePullRequest": 2,
-      "sourceCommit": "bb057ac192faa714e92deb218768506301d21367",
-      "description": "Writes the temporary COFF object file to a disposable temp directory and cleans it after the native build."
+      "sourceCommit": "7cf74214a8b0dd732ec5c703fa47c4a25a1a40d2",
+      "description": "Initializes the Visual Studio x64 compiler and Windows SDK environment for service-based runners, validates required headers and libraries, and cleans a disposable temporary COFF object directory."
     },
     "discoveryPrivacy": {
       "sourceRepository": "conz20/Brightdesk-Printing",
