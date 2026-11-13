@@ -74,6 +74,9 @@ test('cross-platform preflight bootstraps a pinned no-admin container runtime be
  assert.match(runtime,/vmType: vz/);
  assert.match(runtime,/binfmt: true/);
  assert.match(runtime,/rosetta: false/);
+ assert.ok(runtime.includes('mounts:\n  - location: "$ROOT"\n    writable: true'));
+ assert.ok(runtime.includes('Existing dedicated Colima profile is not mounted to this repository workspace'));
+ assert.match(outer,/--volume "\$ROOT:\/workspace"/);
  assert.match(runtime,/colima start --profile/);
  assert.match(runtime,/docker info/);
 });
