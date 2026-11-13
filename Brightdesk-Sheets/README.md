@@ -58,3 +58,8 @@ Use win on Windows or linux on Linux instead of mac.
 ## Identity and licence
 
 Brightdesk is independent and is not affiliated with Microsoft. It uses original product names, code, interface design and artwork. See LICENSE, TERMS_AND_CONDITIONS.txt and THIRD_PARTY_NOTICES.md.
+
+
+## Customer Help
+
+The Brightdesk Sheets desktop experience includes a small, discreet **Help** link near the bottom of its persistent left sidebar. It opens the central, read-only customer guide at the reserved address `https://help.brightdesk.com/products/sheets.html` in the customer's normal browser. The Help website is not live or verified yet; this link must not be released until the production domain and deployment are verified. Approved Wiki guide updates appear the next time customers open Help and do not require a new Brightdesk installer. Opening Help sends no document or product data.
