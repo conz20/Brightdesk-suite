@@ -1123,7 +1123,10 @@ async function printCurrent() {
     if (state.app === "pages") {
       printRequest.orientation = pageLayout.normalizePageLayout(activeDoc()?.pageSettings || {}).orientation;
     }
-    if (state.app === "sheets" || state.app === "slides") {
+    if (state.app === "sheets") {
+      printRequest.orientation = "landscape";
+    }
+    if (state.app === "slides") {
       printRequest.orientation = "landscape";
     }
     const result = await window.brightdesk.printing.print(printRequest);
