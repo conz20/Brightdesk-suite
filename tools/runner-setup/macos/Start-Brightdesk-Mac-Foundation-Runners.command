@@ -19,7 +19,7 @@ cd "$REPOSITORY_ROOT" || {
 }
 
 printf '\nBRIGHTDESK MAC RUNNER SETUP\n'
-printf 'This opens the existing, verified setup for the eleven private repositories.\n'
+printf 'This opens the existing, verified setup for the twelve private repositories.\n'
 printf 'Review its security notice and type REGISTER only when you are ready.\n\n'
 
 bash "$RUNNER_SETUP"
