@@ -155,3 +155,54 @@ test("prints every Decks slide as a themed 16:9 slide in landscape orientation",
   assert.ok(css.includes(".theme-paper{background:#fff;border:1px solid #e1e1e1}"));
   assert.ok(!css.includes('  #brightdesk-print-root[data-app="slides"] .brightdesk-print-slide {\n    background: #fff !important;'));
 });
+
+
+test("keeps discovered network printer addresses and service URIs out of product records", async () => {
+  const { createHash } = await import("node:crypto");
+  const { discoverNetworkPrinterServices } = await import(
+    "../src/printing-package/src/ipp-printer-discovery.mjs"
+  );
+
+  for (const [serviceUri, address] of [
+    ["ipp://192.168.10.24:631/ipp/print", "192.168.10.24"],
+    ["ipps://[2001:db8::25]:631/ipp/print", "2001:db8::25"]
+  ]) {
+    const printers = await discoverNetworkPrinterServices({
+      platform: "linux",
+      async runCommand() {
+        return { stdout: `${serviceUri}\\n` };
+      }
+    });
+
+    const expectedId = `dns-sd:${createHash("sha256").update(serviceUri, "utf8").digest("hex")}`;
+    assert.deepEqual(printers, [{
+      id: expectedId,
+      displayName: "Network printer",
+      source: "dns-sd",
+      availability: "discovered",
+      canPrint: false
+    }]);
+    assert.equal(Object.hasOwn(printers[0], "uri"), false);
+    assert.equal(JSON.stringify(printers).includes(serviceUri), false);
+    assert.equal(JSON.stringify(printers).includes(address), false);
+  }
+});
+
+test("keeps friendly DNS-SD printer names without exposing their service URI", async () => {
+  const { discoverNetworkPrinterServices } = await import(
+    "../src/printing-package/src/ipp-printer-discovery.mjs"
+  );
+  const serviceUri = "ipp://Office-Laser.local:631/ipp/print";
+  const printers = await discoverNetworkPrinterServices({
+    platform: "linux",
+    async runCommand() {
+      return { stdout: `${serviceUri}\\n` };
+    }
+  });
+
+  assert.equal(printers.length, 1);
+  assert.equal(printers[0].displayName, "Office Laser");
+  assert.match(printers[0].id, /^dns-sd:[a-f0-9]{64}$/);
+  assert.equal(Object.hasOwn(printers[0], "uri"), false);
+  assert.equal(JSON.stringify(printers).includes(serviceUri), false);
+});
