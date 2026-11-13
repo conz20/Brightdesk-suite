@@ -52,6 +52,7 @@ export interface DnsSdPrinterDiscovery {
 }
 
 export interface WindowsWsdPrinterDiscovery {
+  /** Opaque process-local selector; the raw Windows device ID remains in the main process and is invalidated by a fresh search. */
   id: string;
   displayName: string;
   source: "windows-wsd";
