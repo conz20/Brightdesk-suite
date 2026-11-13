@@ -313,3 +313,11 @@ test("requires an explicit configured-printer selection and binds printing to th
   assert.match(app, /openNetworkPrinterPanel\(\)/);
   assert.match(app, /\$\('print-printer-select'\)\.focus\(\)/);
 });
+
+
+test("uses product-aware print orientation for pages, sheets and decks", () => {
+  const app = read("src/app.js");
+  assert.match(app, /if \(state\.app === "pages"\) \{\s*printRequest\.orientation = pageLayout\.normalizePageLayout\(activeDoc\(\)\?\.pageSettings \|\| \{\}\)\.orientation/);
+  assert.match(app, /if \(state\.app === "sheets"\) \{\s*printRequest\.orientation = "landscape"/);
+  assert.match(app, /if \(state\.app === "slides"\) \{\s*printRequest\.orientation = "landscape"/);
+});
