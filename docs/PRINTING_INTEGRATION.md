@@ -31,11 +31,39 @@ system. No printer queue or driver is installed silently.
 A successful print submission means the operating system accepted the job. It
 does not prove that paper was physically printed.
 
-## Current boundary
+## Platform-native discovery and packaging
 
-The shared adapter source is bundled. The native macOS and Windows network
-discovery helper binaries are not yet built and bundled by the Suite packaging
-workflow. Until that separate packaging work is completed, network discovery
-may return a clear unavailable result; configured system queues and the visible
-print dialog remain the first integration path. Linux discovery depends on the
-host's `ippfind` utility. Hardware-free tests are used for integration checks.
+The shared source snapshot includes the native macOS and Windows discovery
+helpers and their build scripts:
+
+- **macOS:** `npm run native:build` compiles the Bonjour helper with the Xcode
+  Swift compiler. The Suite and product electron-builder configurations
+  include the helper and unpack it outside ASAR so Electron can execute it.
+  Their macOS Info.plists declare `_ipp._tcp`, `_ipps._tcp` and
+  `_printer._tcp`, along with the local-network permission explanation.
+- **Windows:** `npm run native:build` compiles the WinDNS and WSD helper with
+  the Windows SDK and Visual C++ Build Tools. The generated executable is
+  included and unpacked outside ASAR. The build must run on Windows with the
+  required native toolchain available.
+- **Linux:** the adapter uses the host's CUPS `ippfind` utility for IPP/IPPS
+  and legacy LPD discovery. Brightdesk does not bundle or install CUPS,
+  `ippfind`, drivers or vendor packages. Configured queues remain available
+  when `ippfind` is absent, and the user can open the Linux printer settings
+  route to add a printer.
+
+A discovered network device is not automatically a usable print queue. The
+user adds or pairs it through the operating system, then Brightdesk refreshes
+the configured queue list. Brightdesk does not silently create queues or
+install drivers.
+
+## Verification boundary
+
+The Suite integration includes virtual-printer tests and source/configuration
+checks. Native helper compilation must be verified on its matching operating
+system, and real printer discovery, setup, capability reporting and physical
+print acceptance still require platform hardware testing on macOS, Windows and
+Linux. A virtual queue or successful OS submission callback is not evidence
+that a physical page printed.
+
+Do not merge the integration until the current branch's checks pass and the
+three platform build and hardware acceptance gaps have been recorded honestly.
