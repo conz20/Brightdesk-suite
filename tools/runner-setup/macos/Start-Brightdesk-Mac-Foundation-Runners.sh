@@ -18,6 +18,9 @@ REPOSITORIES=(
   'Brightdesk-Services'
   'Brightdesk-Assets'
   'Brightdesk-Lists'
+  'Brightdesk-Pages'
+  'Brightdesk-Database'
+  'Brightdesk-Decks'
 )
 
 say() {
@@ -79,7 +82,7 @@ github_user="$(gh api user --jq '.login' 2>/dev/null)" || fail 'GitHub CLI could
 
 say ''
 say 'BRIGHTDESK PRIVATE MAC RUNNER SETUP'
-say 'This will prepare up to eight repository-scoped runners on this Apple-silicon Mac.'
+say 'This will prepare up to eleven repository-scoped runners on this Apple-silicon Mac.'
 say 'The runners can execute workflows from their matching private Brightdesk repositories.'
 say 'This adds repository-scoped Actions runners only; it does not change permissions, secrets, workflows, visibility, branch protection or releases.'
 say 'The runner registrations are local to this Mac and will not auto-start after a reboot.'
@@ -124,9 +127,11 @@ for repository in "${REPOSITORIES[@]}"; do
   runner_home="$RUNNER_ROOT/$repository"
   repository_url="https://github.com/$OWNER/$repository"
   extra_label=''
-  if [[ "$repository" == 'Brightdesk-Lists' ]]; then
-    extra_label='brightdesk-product-ci'
-  fi
+  case "$repository" in
+    Brightdesk-Lists|Brightdesk-Pages|Brightdesk-Database|Brightdesk-Decks)
+      extra_label='brightdesk-product-ci'
+      ;;
+  esac
 
   required_labels='["self-hosted","macOS","ARM64"]'
   if [[ -n "$extra_label" ]]; then
