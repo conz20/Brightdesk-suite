@@ -8,7 +8,9 @@ All ten approved Brightdesk products expose the same **Print** and **Printer set
 
 The current renderer path calls `listPrinters()` before printing. If the operating system has no configured queue, Brightdesk asks the user to open **Printer settings** and add one through macOS, Windows, or Linux. This is intentional: discovering a network device is not the same as having a usable operating-system print queue.
 
-**Important discovery gap:** the preload bridge exposes network discovery, Windows WSD pairing, and capability lookup, but the product renderer does not call `discoverNetworkPrinters()`, `pairNetworkPrinter()`, or `getPrinterCapabilities()`. There is currently no customer-facing **Find network printers** screen, no discovery result list, and no capability panel. Native discovery source/build scripts are present, but those capabilities are not yet available as an end-user workflow.
+**Implemented in this integration branch (not yet merged):** the product renderer includes a customer-facing **Find network printers** panel. Opening the panel does not start discovery; the user must choose **Search local network**. Results show safe display names and protocol labels. Eligible Windows WSD results offer a separate, explicit **Pair** action; other discoveries direct the user to the operating system's printer settings. After a successful pairing, Brightdesk refreshes the configured printer list. The configured-printer panel also offers **Show capabilities** for each installed queue, displaying normalized colour, duplex, paper-size, resolution and maximum-copy information; unknown values are shown as not reported. These are source-level implementation findings, not proof that a real network printer was discovered or paired.
+
+This discovery panel is separate from a Brightdesk print-preview experience. The current **Print** action builds a temporary content-only print document and opens the visible operating-system print dialog. A dedicated interactive Brightdesk preview and full product-specific page/range controls are not yet implemented.
 
 ## Product-by-product cross-reference
 
