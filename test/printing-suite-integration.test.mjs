@@ -289,5 +289,5 @@ test("shows safe configured-printer capability details and unknown values honest
   assert.match(app, /printing\.maximumCopies/);
   assert.match(app, /printer\.systemName/);
   assert.match(app, /textContent/);
-  assert.match(app, /await refreshConfiguredPrinters\\(\\)/);
+  assert.match(app, /await refreshConfiguredPrinters\(\)/);
 });
