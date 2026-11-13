@@ -43,7 +43,7 @@ export interface PrinterSummary {
 }
 
 export interface DnsSdPrinterDiscovery {
-  /** One-way, stable service identifier; not a credential or an authorization token. */
+  /** Opaque identifier stable for the lifetime of the current process; not a credential or an authorization token. */
   id: string;
   displayName: string;
   source: "dns-sd";
