@@ -36,15 +36,19 @@ on:
       - "tests/release-workflows.test.js"
       - ".github/workflows/build-release.yml"
       - ".github/workflows/verify-macos-installer.yml"
+  push:
+    branches:
+      - "release/ten-product-installers-2026-11-07"
+
 permissions:
   contents: read
 concurrency:
-  group: brightdesk-cross-platform-installers-pr-${{ github.event.pull_request.number }}
+  group: brightdesk-cross-platform-installers-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 jobs:
   build-and-verify:
     name: Build Suite and ten products for all platforms on the existing Mac runner
-    if: github.event.pull_request.head.repo.full_name == github.repository
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
     runs-on: [self-hosted, macOS, ARM64]
     timeout-minutes: 360
     steps:
