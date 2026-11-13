@@ -60,6 +60,9 @@ test('cross-platform preflight bootstraps a pinned no-admin container runtime be
  const productBuild=workflow.indexOf('npm run dist:products:mac');
  assert.ok(preflightStep>=0 && preflightStep<suiteBuild && preflightStep<productBuild,'prepare the cross-build runtime before spending time on macOS installers');
  assert.match(preflight,/prepare-cross-platform-runtime\.sh/);
+ assert.ok(workflow.includes('"scripts/bootstrap-cross-platform-tools.sh"'));
+ assert.ok(workflow.includes('"scripts/check-cross-platform-build-prerequisites.sh"'));
+ assert.ok(workflow.includes('"scripts/prepare-cross-platform-runtime.sh"'));
  assert.match(bootstrap,/RUNNER_TEMP/);
  assert.match(bootstrap,/COLIMA_VERSION=0\.10\.3/);
  assert.match(bootstrap,/LIMA_VERSION=2\.3\.0/);
