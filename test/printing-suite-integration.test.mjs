@@ -1,3 +1,4 @@
+  assert.match(app, /return printers/);
 import test from "node:test";
 import assert from "node:assert/strict";
 import fs from "node:fs";
@@ -305,7 +306,7 @@ test("requires an explicit configured-printer selection and binds printing to th
   assert.match(html, /for="print-printer-select"/);
   assert.match(app, /const selectedPrinter = \$\('print-printer-select'\)\.value/);
   assert.match(app, /if \(!selectedPrinter\)/);
-  assert.match(app, /printRequest\.printerName = selectedPrinter/);
+  assert.match(app, /printerName: selectedPrinter/);
   assert.match(app, /select\.value = availableSelection/);
-  assert.match(app, /!printers\.some\(printer => printer\.systemName === availableSelection\)/);
+  assert.match(app, /printers\.some\(printer => printer\.systemName === select\.value\)/);
 });
