@@ -501,3 +501,48 @@ test('platform collection rejects changed product installers before moving any r
     fs.rmSync(workspace, { recursive: true, force: true });
   }
 });
+
+
+test('platform collection rejects unexpected top-level files before moving any release content', () => {
+  const workspace = fs.mkdtempSync(path.join(require('node:os').tmpdir(), 'brightdesk-platform-unexpected-'));
+  const release = path.join(workspace, 'release');
+  const productIds = ['pages', 'sheets', 'slides', 'notes', 'database', 'forms', 'lists', 'planner', 'todo', 'loop'];
+  const checksums = [];
+
+  try {
+    fs.mkdirSync(release, { recursive: true });
+    for (const id of productIds) {
+      const productDirectory = path.join(release, 'apps', `org.brightdesk.${id}`);
+      fs.mkdirSync(productDirectory, { recursive: true });
+      const filename = `Brightdesk-${id}-0.1.0-x64.exe`;
+      const relative = `apps/org.brightdesk.${id}/${filename}`;
+      const contents = Buffer.from(`verified installer for ${id}`);
+      fs.writeFileSync(path.join(productDirectory, filename), contents);
+      checksums.push(`${createHash('sha256').update(contents).digest('hex')}  ${relative}`);
+    }
+
+    fs.writeFileSync(path.join(release, 'Brightdesk-Office-Suite-0.1.0-x64.exe'), 'suite installer');
+    fs.writeFileSync(path.join(release, 'Brightdesk-SHA256SUMS-WIN.txt'), 'suite checksum');
+    fs.writeFileSync(path.join(release, 'Brightdesk-Windows-TERMS_AND_CONDITIONS.txt'), 'terms');
+    fs.writeFileSync(path.join(release, 'Brightdesk-Windows-LICENSE.txt'), 'licence');
+    fs.writeFileSync(path.join(release, 'Brightdesk-Windows-THIRD_PARTY_NOTICES.md'), 'notices');
+    fs.writeFileSync(path.join(release, 'Brightdesk-SHA256SUMS-PRODUCTS-WIN.txt'), `${checksums.join('\\n')}\\n`);
+    fs.writeFileSync(path.join(release, 'private-build.log'), 'must never be uploaded');
+
+    const collector = path.join(root, 'scripts', 'collect-platform-release-files.js');
+    let failure;
+    try {
+      execFileSync(process.execPath, [collector, 'win', release], { encoding: 'utf8' });
+    } catch (error) {
+      failure = error;
+    }
+
+    assert.ok(failure, 'unexpected top-level files must block collection');
+    assert.match(String(failure.stderr), /Unexpected release file is not permitted: private-build\.log/);
+    assert.equal(fs.existsSync(path.join(release, 'Windows')), false, 'no partial platform folder should be created');
+    assert.ok(fs.existsSync(path.join(release, 'Brightdesk-Office-Suite-0.1.0-x64.exe')), 'Suite installer remains untouched');
+    assert.ok(fs.existsSync(path.join(release, 'apps', 'org.brightdesk.pages', 'Brightdesk-pages-0.1.0-x64.exe')), 'product installer remains untouched');
+  } finally {
+    fs.rmSync(workspace, { recursive: true, force: true });
+  }
+});
