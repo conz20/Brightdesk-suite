@@ -1,61 +1,33 @@
 #!/usr/bin/env bash
 set -euo pipefail
+
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-PROFILE="brightdesk-cross"
-CONTEXT="colima-${PROFILE}"
+TOOLS_ROOT="${RUNNER_TEMP:-${TMPDIR:-/tmp}}/brightdesk-cross-tools"
+export PATH="$TOOLS_ROOT/bin:$PATH"
 IMAGE="brightdesk-cross-builder:node-24.22.2-rust-1.99.1"
 
-if [[ "$(uname -s)" != "Darwin" || "$(uname -m)" != "arm64" ]]; then
-  echo "Brightdesk cross-platform packaging must run on the existing Apple-silicon Mac runner." >&2
-  exit 2
+CONTEXT="$(bash "$ROOT/scripts/prepare-cross-platform-runtime.sh")"
+if [[ -z "$CONTEXT" ]]; then
+  echo "The prepared cross-platform runtime did not return a Docker context." >&2
+  exit 1
 fi
-if command -v docker >/dev/null 2>&1 && docker info >/dev/null 2>&1; then
-  CONTEXT="${DOCKER_CONTEXT:-$(docker context show)}"
-  echo "Using an existing Docker engine context: $CONTEXT"
-else
-  if ! command -v colima >/dev/null 2>&1 || ! command -v docker >/dev/null 2>&1 || ! command -v qemu-system-x86_64 >/dev/null 2>&1; then
-    if ! command -v brew >/dev/null 2>&1; then
-      if [[ -x /opt/homebrew/bin/brew ]]; then
-        eval "$(/opt/homebrew/bin/brew shellenv)"
-      elif [[ -x /usr/local/bin/brew ]]; then
-        eval "$(/usr/local/bin/brew shellenv)"
-      else
-        echo "Cross-platform packaging needs Docker with a running engine, or Colima, Docker CLI and QEMU." >&2
-        echo "Homebrew is missing and cannot install the missing tools without non-interactive administrator access." >&2
-        if ! command -v sudo >/dev/null 2>&1 || ! sudo -n true >/dev/null 2>&1; then
-          echo "No paid runner is required; make the free cross-build tools available to this Mac runner, then retry." >&2
-          exit 2
-        fi
-        if ! command -v curl >/dev/null 2>&1; then
-          echo "curl is required to install Homebrew." >&2
-          exit 2
-        fi
-        NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-        if [[ -x /opt/homebrew/bin/brew ]]; then
-          eval "$(/opt/homebrew/bin/brew shellenv)"
-        elif [[ -x /usr/local/bin/brew ]]; then
-          eval "$(/usr/local/bin/brew shellenv)"
-        else
-          echo "Homebrew installation completed without a usable brew executable." >&2
-          exit 2
-        fi
-      fi
-    fi
-    if ! command -v colima >/dev/null 2>&1; then brew install colima; fi
-    if ! command -v docker >/dev/null 2>&1; then brew install docker; fi
-    if ! command -v qemu-system-x86_64 >/dev/null 2>&1; then brew install qemu; fi
-  fi
 
-  status="$(colima status --profile "$PROFILE" 2>&1 || true)"
-  if ! printf '%s' "$status" | grep -qi 'running'; then
-    colima start --profile "$PROFILE" --arch x86_64 --vm-type qemu --cpus 4 --memory 8 --disk 100
-  fi
-  CONTEXT="colima-$PROFILE"
-fi
+default_context="$(docker context show 2>/dev/null || true)"
+echo "Docker CLI default context left unchanged: $default_context" >&2
+echo "Using an existing Docker engine context: $CONTEXT" >&2
 
 docker --context "$CONTEXT" info >/dev/null
 docker --context "$CONTEXT" build --platform linux/amd64 --tag "$IMAGE" \
   --file "$ROOT/tools/release-cross-build/Dockerfile" "$ROOT/tools/release-cross-build"
+
+architecture="$(docker --context "$CONTEXT" run --rm \
+  --platform linux/amd64 \
+  --entrypoint /bin/uname \
+  "$IMAGE" -m)"
+if [[ "$architecture" != "x86_64" ]]; then
+  echo "Cross-build image is not executing as x86_64 under QEMU binfmt: $architecture" >&2
+  exit 1
+fi
 
 for volume in brightdesk-cross-node-modules brightdesk-cross-electron-cache brightdesk-cross-builder-cache brightdesk-cross-cargo-registry; do
   docker --context "$CONTEXT" volume create "$volume" >/dev/null
