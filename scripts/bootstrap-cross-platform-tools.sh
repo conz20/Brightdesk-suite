@@ -61,7 +61,7 @@ fi
 LIMA_RELEASE="https://github.com/lima-vm/lima/releases/download/v${LIMA_VERSION}"
 LIMA_ARCHIVE="lima-${LIMA_VERSION}-Darwin-arm64.tar.gz"
 LIMA_GUEST_ARCHIVE="lima-additional-guestagents-${LIMA_VERSION}-Darwin-arm64.tar.gz"
-if [[ ! -x "$BIN_DIR/limactl" || ! -d "$TOOLS_ROOT/share/lima" ]] || ! "$BIN_DIR/limactl" --version 2>/dev/null | grep -Fq "$LIMA_VERSION"; then
+if [[ ! -x "$BIN_DIR/limactl" || ! -d "$TOOLS_ROOT/share/lima" || ( ! -s "$TOOLS_ROOT/share/lima/lima-guestagent.Linux-aarch64" && ! -s "$TOOLS_ROOT/share/lima/lima-guestagent.Linux-aarch64.gz" ) ]] || ! "$BIN_DIR/limactl" --version 2>/dev/null | grep -Fq "$LIMA_VERSION"; then
   echo "Bootstrapping Lima $LIMA_VERSION and its guest agents into RUNNER_TEMP." >&2
   lima_checksums="$DOWNLOAD_DIR/lima-${LIMA_VERSION}-SHA256SUMS"
   lima_archive="$DOWNLOAD_DIR/$LIMA_ARCHIVE"
@@ -104,6 +104,7 @@ if [[ ! -x "$BIN_DIR/limactl" || ! -d "$TOOLS_ROOT/share/lima" ]] || ! "$BIN_DIR
     cp -R "$guest_share/." "$TOOLS_ROOT/share/lima/"
   fi
   [[ -x "$BIN_DIR/limactl" && -d "$TOOLS_ROOT/share/lima" ]] || { echo "Lima binaries or guest agents were not installed." >&2; exit 1; }
+  [[ -s "$TOOLS_ROOT/share/lima/lima-guestagent.Linux-aarch64" || -s "$TOOLS_ROOT/share/lima/lima-guestagent.Linux-aarch64.gz" ]] || { echo "The Lima ARM64 Linux guest agent is missing." >&2; exit 1; }
 fi
 
 DOCKER_ARCHIVE="docker-${DOCKER_CLI_VERSION}.tgz"
