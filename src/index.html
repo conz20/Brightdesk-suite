@@ -49,6 +49,17 @@
           <p id="network-printer-status" role="status" aria-live="polite" data-i18n="printing.searchPrompt">Search starts only when you choose Search local network.</p>
         </div>
         <ul class="network-printer-results" id="network-printer-results" aria-label="Network printer results"></ul>
+        <section class="configured-printer-section" aria-labelledby="configured-printer-title">
+          <header class="configured-printer-heading">
+            <div>
+              <h3 id="configured-printer-title" data-i18n="printing.configuredTitle">Printers set up on this device</h3>
+              <p data-i18n="printing.configuredDescription">Check the capabilities reported by your operating system for a configured printer.</p>
+            </div>
+            <button type="button" class="secondary small-action" id="refresh-configured-printers-button" data-i18n="printing.refreshPrinters">Refresh printer list</button>
+          </header>
+          <p id="configured-printer-status" role="status" aria-live="polite" data-i18n="printing.configuredPrompt">Choose Refresh printer list to see printers already set up on this device.</p>
+          <ul class="configured-printer-list" id="configured-printer-list" aria-label="Configured printer capabilities"></ul>
+        </section>
       </div>
     </section>
     <section class="welcome" id="welcome"><div><div class="eyebrow" data-i18n="welcome.eyebrow">YOUR WORK. ONE DESKTOP SUITE.</div><h2 id="welcome-title">Make room for your ideas.</h2><p id="welcome-copy">Write letters, reports and documents with Brightdesk Pages.</p></div></section>
