@@ -136,15 +136,17 @@ test("Brightdesk Forms includes the preview and response panels required for pri
   ]) assert.match(html, new RegExp(`id="${id}"`));
 });
 
-
 test("prints every Decks slide as a themed 16:9 slide in landscape orientation", () => {
   const app = read("src/app.js");
   const css = read("src/styles.css");
-  assert.match(app, /brightdesk-print-slide slide-stage theme-\\$\\{state\\.slideTheme\\}/);
-  assert.match(app, /slideTitle\\.className = ["']slide-title["']/);
-  assert.match(app, /body\\.className = ["']slide-body["']/);
-  assert.match(app, /printRequest\\.orientation = ["']landscape["']/);
-  assert.match(css, /#brightdesk-print-root\\[data-app=["']slides["']\\] \\.brightdesk-print-slide\\s*\\{[^}]*aspect-ratio:\\s*16\\s*\\/\\s*9/s);
-  assert.match(css, /theme-midnight \\.slide-title/);
-  assert.match(css, /theme-midnight \\.slide-body/);
+  assert.ok(app.includes('if (appId !== "slides")'));
+  assert.ok(app.includes("brightdesk-print-slide slide-stage theme-${slideTheme}"));
+  assert.ok(app.includes('slideTitle.className = "slide-title"'));
+  assert.ok(app.includes('body.className = "slide-body"'));
+  assert.ok(app.includes('printRequest.orientation = "landscape"'));
+  assert.ok(app.includes("window.brightdesk.printing.print(printRequest)"));
+  assert.ok(css.includes('#brightdesk-print-root[data-app="slides"] .brightdesk-print-slide {'));
+  assert.ok(css.includes("aspect-ratio: 16 / 9 !important;"));
+  assert.ok(css.includes("#brightdesk-print-root .brightdesk-print-slide.theme-midnight .slide-title"));
+  assert.ok(css.includes("#brightdesk-print-root .brightdesk-print-slide.theme-midnight .slide-body"));
 });
