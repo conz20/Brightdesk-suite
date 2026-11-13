@@ -833,6 +833,7 @@ body.suite-home .app-manager.home-view .manager-hero .eyebrow { display: none; }
 .configured-printer-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:16px}
 .configured-printer-heading h3{font-size:13px;color:#34374b;margin:0 0 5px}
 .configured-printer-heading p{font-size:11px;line-height:1.5;color:#85899a;margin:0}
+.print-printer-selection{display:grid;gap:6px;max-width:420px;margin-top:14px}.print-printer-selection label{font-size:11px;font-weight:650;color:#55596d}.print-printer-selection select{width:100%;min-height:38px;border:1px solid #d9dbe5;border-radius:8px;padding:8px 10px;background:#fff;color:#34374b;font:inherit}
 #configured-printer-status{font-size:11px;line-height:1.5;color:#777b8e;margin:12px 0 0}
 .configured-printer-list{list-style:none;padding:0;margin:10px 0 0;display:grid;gap:9px}
 .configured-printer-item{border:1px solid #ececf2;border-radius:10px;padding:12px 14px;background:#fff;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px 14px;align-items:center}
