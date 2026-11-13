@@ -111,9 +111,9 @@ function validateTopLevelReleaseFiles(releaseDirectory, platform) {
   return movable;
 }
 
-function sha256RegularFile(filePath) {
-  const before = lstatRequired(filePath, 'Product installer');
-  if (!before.isFile()) throw new Error('Product installer is not a regular file: ' + filePath);
+function sha256RegularFile(filePath, description = 'Product installer') {
+  const before = lstatRequired(filePath, description);
+  if (!before.isFile()) throw new Error(description + ' is not a regular file: ' + filePath);
 
   let descriptor;
   try {
@@ -121,7 +121,7 @@ function sha256RegularFile(filePath) {
     descriptor = fs.openSync(filePath, flags);
     const opened = fs.fstatSync(descriptor);
     if (!opened.isFile() || opened.dev !== before.dev || opened.ino !== before.ino || opened.size !== before.size) {
-      throw new Error('Product installer changed while it was being checked: ' + filePath);
+      throw new Error(description + ' changed while it was being checked: ' + filePath);
     }
 
     const hash = crypto.createHash('sha256');
@@ -134,7 +134,7 @@ function sha256RegularFile(filePath) {
 
     const after = fs.lstatSync(filePath);
     if (after.isSymbolicLink() || !after.isFile() || after.dev !== before.dev || after.ino !== before.ino || after.size !== before.size) {
-      throw new Error('Product installer path changed during verification: ' + filePath);
+      throw new Error(description + ' path changed during verification: ' + filePath);
     }
     return { sha256: hash.digest('hex'), sizeBytes: opened.size, dev: opened.dev, ino: opened.ino };
   } finally {
@@ -193,6 +193,50 @@ function parseProductManifest(manifestPath, platform) {
   return records;
 }
 
+function parseSuiteManifest(manifestPath, expectedFiles) {
+  const metadata = lstatRequired(manifestPath, 'Suite checksum manifest');
+  if (!metadata.isFile()) throw new Error('Suite checksum manifest must be a regular file.');
+
+  const content = fs.readFileSync(manifestPath, 'utf8');
+  const lines = content.split(/\r?\n/).filter(line => line.length > 0);
+  if (lines.length !== expectedFiles.length) {
+    throw new Error('Suite checksum manifest must contain exactly ' + expectedFiles.length + ' top-level entries; found ' + lines.length + '.');
+  }
+
+  const expected = new Set(expectedFiles);
+  const seen = new Set();
+  const records = [];
+  const pattern = /^([a-f0-9]{64})  ([^/\\]+)$/i;
+
+  for (const line of lines) {
+    const match = pattern.exec(line);
+    if (!match) throw new Error('Invalid Suite checksum entry: ' + line);
+    const expectedHash = match[1].toLowerCase();
+    const filename = match[2];
+    if (!safeFilename(filename)) throw new Error('Unsafe Suite release filename: ' + filename);
+    if (!expected.has(filename)) throw new Error('Unexpected file in Suite checksum manifest: ' + filename);
+    if (seen.has(filename)) throw new Error('Duplicate Suite checksum entry: ' + filename);
+    seen.add(filename);
+    records.push({ expectedHash, filename });
+  }
+
+  const missing = expectedFiles.filter(filename => !seen.has(filename));
+  if (missing.length) {
+    throw new Error('Suite checksum manifest is missing required file(s): ' + missing.join(', '));
+  }
+  return records;
+}
+
+function verifySuiteManifest(releaseDirectory, manifestPath, expectedFiles) {
+  const records = parseSuiteManifest(manifestPath, expectedFiles);
+  for (const record of records) {
+    const measured = sha256RegularFile(path.join(releaseDirectory, record.filename), 'Suite release artifact');
+    if (measured.sha256 !== record.expectedHash) {
+      throw new Error('Suite release artifact SHA-256 changed after verification: ' + record.filename);
+    }
+  }
+}
+
 function collectPlatformReleaseFiles({ platform, releaseDirectory = path.resolve(__dirname, '..', 'release') } = {}) {
   const config = PLATFORMS[platform];
   if (!config) throw new Error('Usage: node scripts/collect-platform-release-files.js <win|mac|linux> [release-directory]');
@@ -210,6 +254,9 @@ function collectPlatformReleaseFiles({ platform, releaseDirectory = path.resolve
   }
 
   const topLevelFiles = validateTopLevelReleaseFiles(releaseDirectory, platform);
+  const suiteChecksumName = 'Brightdesk-SHA256SUMS-' + platform.toUpperCase() + '.txt';
+  const expectedSuiteFiles = topLevelFiles.filter(filename => !filename.startsWith('Brightdesk-SHA256SUMS-'));
+  verifySuiteManifest(releaseDirectory, path.join(releaseDirectory, suiteChecksumName), expectedSuiteFiles);
 
   const verified = records.map(record => {
     const source = path.resolve(releaseDirectory, record.relativePath);
@@ -283,4 +330,4 @@ if (require.main === module) {
   }
 }
 
-module.exports = { collectPlatformReleaseFiles, parseProductManifest, PLATFORMS, PRODUCTS, validateTopLevelReleaseFiles };
+module.exports = { collectPlatformReleaseFiles, parseProductManifest, parseSuiteManifest, PLATFORMS, PRODUCTS, validateTopLevelReleaseFiles };
