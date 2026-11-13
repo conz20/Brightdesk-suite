@@ -809,3 +809,22 @@ body.suite-home .app-manager.home-view .manager-hero .eyebrow { display: none; }
   }
 }
 
+
+
+/* User-invoked local network printer discovery */
+.network-printer-panel{margin:18px 0 0}
+.network-printer-panel[hidden]{display:none}
+.network-printer-panel-card{background:#fff;border:1px solid #e5e6ee;border-radius:14px;padding:20px 22px;box-shadow:0 5px 25px #25264a08}
+.network-printer-panel-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:18px}
+.network-printer-panel-heading h2{font-size:17px;letter-spacing:-.3px;margin:0 0 6px;color:#292c40}
+.network-printer-panel-heading p{font-size:12px;line-height:1.55;color:#777b8e;margin:0;max-width:680px}
+.network-printer-panel-actions{display:flex;align-items:center;gap:14px;margin-top:16px}
+.network-printer-panel-actions p{font-size:11px;color:#777b8e;margin:0}
+.network-printer-results{list-style:none;padding:0;margin:14px 0 0;display:grid;gap:8px}
+.network-printer-result{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:13px 14px;border:1px solid #ececf2;border-radius:10px;background:#fcfcfe}
+.network-printer-result-details{display:grid;gap:4px;min-width:0}
+.network-printer-result-details strong{font-size:13px;color:#34374b;overflow-wrap:anywhere}
+.network-printer-kind{font-size:10px;font-weight:700;color:#5b57b8;letter-spacing:.2px}
+.network-printer-result-details p{font-size:11px;line-height:1.5;color:#85899a;margin:0}
+.network-printer-result-actions{flex-shrink:0}
+@media(max-width:760px){.network-printer-panel-card{padding:16px}.network-printer-panel-actions,.network-printer-result{align-items:stretch;flex-direction:column}.network-printer-result-actions .secondary{width:100%}.network-printer-panel-heading{gap:10px}}
