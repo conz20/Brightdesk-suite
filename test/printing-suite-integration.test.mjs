@@ -310,4 +310,6 @@ test("requires an explicit configured-printer selection and binds printing to th
   assert.match(app, /select\.value = availableSelection/);
   assert.match(app, /printers\.some\(printer => printer\.systemName === select\.value\)/);
   assert.match(app, /return printers/);
+  assert.match(app, /openNetworkPrinterPanel\(\)/);
+  assert.match(app, /\$\('print-printer-select'\)\.focus\(\)/);
 });
