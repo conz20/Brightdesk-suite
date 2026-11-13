@@ -1,4 +1,4 @@
-const { app, BrowserWindow, Menu, ipcMain, dialog, Notification } = require('electron');
+const { app, BrowserWindow, Menu, ipcMain, dialog, Notification, shell } = require('electron');
 const packageConfig = require('../package.json');
 const nativeEngine = require('./rust-engine');
 const { assertPackagedVersion, assertMainWindowReady } = require('./startup-smoke');
@@ -85,11 +85,19 @@ function sendUpdateState(state) {
   });
   notification.show();
 }
+function openBrightdeskHelp(url) {
+  try {
+    const target = new URL(url);
+    if (target.origin !== 'https://conz20.github.io' || !target.pathname.startsWith('/Brightdesk-Wiki/')) return;
+    void shell.openExternal(target.href).catch(() => {});
+  } catch {}
+}
+
 function registerApplicationWindow(window) {
   const contents = window.webContents;
   authorizedApplicationWindows.add(contents);
   window.once('closed', () => authorizedApplicationWindows.delete(contents));
-  contents.setWindowOpenHandler(() => ({ action: 'deny' }));
+  contents.setWindowOpenHandler(({ url }) => { openBrightdeskHelp(url); return { action: 'deny' }; });
   contents.on('will-navigate', event => event.preventDefault());
   window.on('focus', () => { if (autoUpdater && automaticUpdateChecksEnabled) checkForUpdates({ quiet: true }); });
   return window;
