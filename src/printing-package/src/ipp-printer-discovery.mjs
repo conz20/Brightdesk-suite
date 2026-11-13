@@ -1,11 +1,14 @@
 import { execFile } from "node:child_process";
-import { createHash } from "node:crypto";
+import { createHmac, randomBytes } from "node:crypto";
 import { isIP } from "node:net";
 import { promisify } from "node:util";
 import { fileURLToPath } from "node:url";
 import { PrintingError } from "./printing-error.mjs";
 
 const execFileAsync = promisify(execFile);
+// Never expose a predictable digest of a low-entropy local network address.
+// IDs remain stable within this process and rotate when the process restarts.
+const DISCOVERY_ID_KEY = randomBytes(32);
 const SUPPORTED_PLATFORMS = new Set(["darwin", "linux", "win32"]);
 const MACOS_BONJOUR_HELPER = fileURLToPath(
   new URL("../native/macos/brightdesk-ipp-discovery", import.meta.url),
@@ -57,7 +60,7 @@ function normalizeWindowsWsdService(line) {
 }
 
 function createDnsSdPrinterId(uri) {
-  return `dns-sd:${createHash("sha256").update(uri, "utf8").digest("hex")}`;
+  return `dns-sd:${createHmac("sha256", DISCOVERY_ID_KEY).update(uri, "utf8").digest("hex")}`;
 }
 
 function normalizePrinterService(uri) {
