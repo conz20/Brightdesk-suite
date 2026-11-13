@@ -200,6 +200,24 @@ test('README freshness workflow protects the private runner from forked pull req
 });
 
 
+test('all private self-hosted pull-request workflows reject fork-controlled code', () => {
+  const files = [
+    '.github/workflows/ci.yml',
+    '.github/workflows/quality.yml',
+    '.github/workflows/rust-engine.yml',
+    '.github/workflows/verify-macos-installer.yml'
+  ];
+  const guard = /if:\\s*github\\.event_name != 'pull_request' \\|\\| github\\.event\\.pull_request\\.head\\.repo\\.full_name == github\\.repository/;
+
+  for (const file of files) {
+    const workflow = read(file);
+    assert.match(workflow, /pull_request:/, file + ' must retain pull-request checks');
+    assert.match(workflow, /runs-on:.*self-hosted/, file + ' must use the private runner');
+    assert.match(workflow, guard, file + ' must not run fork-controlled pull-request code');
+  }
+});
+
+
 test('all third-party workflow actions are pinned to full commit SHAs', () => {
   const workflowDirectory = path.join(root, '.github', 'workflows');
   const workflowFiles = fs.readdirSync(workflowDirectory).filter(file => file.endsWith('.yml'));
