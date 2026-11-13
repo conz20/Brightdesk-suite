@@ -828,3 +828,19 @@ body.suite-home .app-manager.home-view .manager-hero .eyebrow { display: none; }
 .network-printer-result-details p{font-size:11px;line-height:1.5;color:#85899a;margin:0}
 .network-printer-result-actions{flex-shrink:0}
 @media(max-width:760px){.network-printer-panel-card{padding:16px}.network-printer-panel-actions,.network-printer-result{align-items:stretch;flex-direction:column}.network-printer-result-actions .secondary{width:100%}.network-printer-panel-heading{gap:10px}}
+
+.configured-printer-section{border-top:1px solid #ececf2;margin-top:18px;padding-top:16px}
+.configured-printer-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:16px}
+.configured-printer-heading h3{font-size:13px;color:#34374b;margin:0 0 5px}
+.configured-printer-heading p{font-size:11px;line-height:1.5;color:#85899a;margin:0}
+#configured-printer-status{font-size:11px;line-height:1.5;color:#777b8e;margin:12px 0 0}
+.configured-printer-list{list-style:none;padding:0;margin:10px 0 0;display:grid;gap:9px}
+.configured-printer-item{border:1px solid #ececf2;border-radius:10px;padding:12px 14px;background:#fff;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px 14px;align-items:center}
+.configured-printer-details{display:flex;align-items:center;gap:9px;min-width:0;flex-wrap:wrap}
+.configured-printer-details strong{font-size:12px;color:#34374b;overflow-wrap:anywhere}
+.configured-printer-default{font-size:10px;color:#5b57b8;font-weight:650}
+.printer-capability-report{grid-column:1/-1}
+.printer-capability-grid{display:grid;grid-template-columns:minmax(120px,180px) minmax(0,1fr);gap:6px 14px;margin:4px 0 0;padding-top:10px;border-top:1px solid #f0f0f5}
+.printer-capability-grid dt{font-size:11px;font-weight:650;color:#777b8e}
+.printer-capability-grid dd{font-size:11px;color:#34374b;margin:0;overflow-wrap:anywhere}
+@media(max-width:760px){.configured-printer-heading,.configured-printer-item{align-items:stretch;display:flex;flex-direction:column}.configured-printer-item .secondary{width:100%}.printer-capability-grid{grid-template-columns:1fr;gap:3px}.printer-capability-grid dd{margin-bottom:8px}}
