@@ -47,9 +47,9 @@ Runner setup requires access to each physical computer and a one-time registrati
 
 ### Mac foundation runner setup
 
-The private Mac setup helper in [tools/runner-setup/macos](../tools/runner-setup/macos/README.txt) registers repository-scoped runners for seven infrastructure repositories, four product repositories and the shared Printing repository: Brightdesk-Common-Actions, Brightdesk-Developer-Tools, Brightdesk-Extensions, Brightdesk-Wiki, Brightdesk-Release-Tools, Brightdesk-Services, Brightdesk-Assets, Brightdesk-Printing, Brightdesk-Lists, Brightdesk-Pages, Brightdesk-Database and Brightdesk-Decks. Lists, Pages, Database and Decks receive the additional `brightdesk-product-ci` label. Printing receives its separate `brightdesk-printing-ci` label.
+The private Mac setup helper in [tools/runner-setup/macos](../tools/runner-setup/macos/README.txt) registers a runner for Brightdesk-suite itself, plus seven infrastructure repositories, four product repositories and the shared Printing repository: Brightdesk-suite, Brightdesk-Common-Actions, Brightdesk-Developer-Tools, Brightdesk-Extensions, Brightdesk-Wiki, Brightdesk-Release-Tools, Brightdesk-Services, Brightdesk-Assets, Brightdesk-Printing, Brightdesk-Lists, Brightdesk-Pages, Brightdesk-Database and Brightdesk-Decks. Lists, Pages, Database and Decks receive the additional `brightdesk-product-ci` label. Printing receives its separate `brightdesk-printing-ci` label.
 
-On the Apple-silicon Mac, first sign in to GitHub CLI as `conz20` with administrator access to those twelve repositories:
+On the Apple-silicon Mac, first sign in to GitHub CLI as `conz20` with administrator access to those thirteen repositories:
 
 ```sh
 gh auth login --hostname github.com
@@ -59,7 +59,7 @@ In Finder, double-click [Start-Brightdesk-Mac-Foundation-Runners.command](../too
 
 The helper downloads the official GitHub Actions runner v2.338.2 macOS ARM64 archive, verifies its published SHA-256 digest, checks existing registrations before creating any, and starts configured runners with `nohup`. For each repository, GitHub CLI requests a short-lived registration token through the repository registration-token API. The GitHub CLI credential itself is not passed to the runner configurator. The short-lived token is passed to the official `config.sh --token` option, is not printed or saved, and is cleared immediately after configuration. It is briefly present in the configurator process arguments while that command runs. The helper reuses a complete, unconfigured runner folder left by an interrupted setup but never overwrites an unexpected or configured folder. It does not use launchd or require administrator elevation. It adds repository-scoped Actions runner registrations only; it does not change repository permissions, secrets, variables, workflows, visibility, branch protection or release settings.
 
-Type `REGISTER` only after reviewing the twelve-repository list shown by the script. Confirm the runners show as **Idle/Online** under Settings → Actions → Runners in each repository. The processes continue after closing the terminal, but do not auto-start after logout or reboot. Rerun the helper after signing in to restart an existing local runner if it is offline. If the helper reports a registration/folder mismatch, inspect it manually; do not delete a runner registration or local folder blindly.
+Type `REGISTER` only after reviewing the thirteen-repository list shown by the script. Confirm the runners show as **Idle/Online** under Settings → Actions → Runners in each repository. The processes continue after closing the terminal, but do not auto-start after logout or reboot. Rerun the helper after signing in to restart an existing local runner if it is offline. If the helper reports a registration/folder mismatch, inspect it manually; do not delete a runner registration or local folder blindly.
 
 ### Windows runner setup
 
