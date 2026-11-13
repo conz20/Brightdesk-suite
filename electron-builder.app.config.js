@@ -63,11 +63,7 @@ module.exports = {
   win: {
     icon: `${appIcons[appId]}.svg`,
     target: ['nsis'],
-    artifactName: 'Brightdesk-' + appSlug + '-${version}-${arch}.${ext}',
-    extendInfo: {
-      NSBonjourServices: ['_ipp._tcp', '_ipps._tcp', '_printer._tcp'],
-      NSLocalNetworkUsageDescription: 'Brightdesk uses your local network to discover printers you choose to use.'
-    }
+    artifactName: 'Brightdesk-' + appSlug + '-${version}-${arch}.${ext}'
   },
   nsis: {
     oneClick: false,
@@ -82,7 +78,11 @@ module.exports = {
     icon: `${appIcons[appId]}.svg`,
     target: ['dmg', 'pkg', 'zip'],
     category: 'public.app-category.productivity',
-    artifactName: 'Brightdesk-' + appSlug + '-${version}-${arch}.${ext}'
+    artifactName: 'Brightdesk-' + appSlug + '-${version}-${arch}.${ext}',
+    extendInfo: {
+      NSBonjourServices: ['_ipp._tcp', '_ipps._tcp', '_printer._tcp'],
+      NSLocalNetworkUsageDescription: 'Brightdesk uses your local network to discover printers you choose to use.'
+    }
   },
   pkg: {
     license: 'TERMS_AND_CONDITIONS.txt',
