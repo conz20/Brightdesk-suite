@@ -1,4 +1,6 @@
 import { execFile } from "node:child_process";
+import { createHash } from "node:crypto";
+import { isIP } from "node:net";
 import { promisify } from "node:util";
 import { fileURLToPath } from "node:url";
 import { PrintingError } from "./printing-error.mjs";
@@ -54,6 +56,10 @@ function normalizeWindowsWsdService(line) {
   };
 }
 
+function createDnsSdPrinterId(uri) {
+  return `dns-sd:${createHash("sha256").update(uri, "utf8").digest("hex")}`;
+}
+
 function normalizePrinterService(uri) {
   if (typeof uri !== "string" || uri.trim() === "") return null;
 
@@ -78,22 +84,24 @@ function normalizePrinterService(uri) {
   const authority = authorityMatch?.[1] ?? parsed.hostname;
   if (authority.includes("@") || parsed.username || parsed.password) return null;
 
-  let displayName;
-  try {
-    const decodedAuthority = decodeURIComponent(authority);
-    if (hasUnsafePrinterText(decodedAuthority)) return null;
-    displayName = decodedAuthority
-      .replace(/\.local\.?$/i, "")
-      .replaceAll("-", " ")
-      .trim();
-  } catch {
-    displayName = parsed.hostname;
+  let displayName = "Network printer";
+  const hostWithoutBrackets = parsed.hostname.replace(/^\[|\]$/g, "");
+  if (isIP(hostWithoutBrackets) === 0) {
+    try {
+      const decodedAuthority = decodeURIComponent(authority);
+      if (hasUnsafePrinterText(decodedAuthority)) return null;
+      displayName = decodedAuthority
+        .replace(/\.local\.?$/i, "")
+        .replaceAll("-", " ")
+        .trim() || "Network printer";
+    } catch {
+      // Keep a generic label rather than exposing an address or malformed host.
+    }
   }
 
   return {
-    id: normalizedURI,
-    displayName: displayName || "Network printer",
-    uri: normalizedURI,
+    id: createDnsSdPrinterId(normalizedURI),
+    displayName,
     source: "dns-sd",
     availability: "discovered",
     canPrint: false,
