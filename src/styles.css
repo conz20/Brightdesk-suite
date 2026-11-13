@@ -790,3 +790,9 @@ body.suite-home .app-manager.home-view .manager-hero .eyebrow { display: none; }
     height: auto !important;
   }
 }
+
+@media print {
+  #brightdesk-print-root[data-app="slides"] .brightdesk-print-slide {
+    background: #fff !important;
+  }
+}
