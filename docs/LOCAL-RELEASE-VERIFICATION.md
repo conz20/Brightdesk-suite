@@ -28,8 +28,6 @@ Build output is kept in the local `release/` folder. The script does not upload 
 
 Run it separately on each operating system you intend to distribute Brightdesk for. A successful build on one platform does not verify the other platforms.
 
-
-
 ## Verified platform bundle contents
 
 The manual workflow checks the Suite installers and all ten standalone product installers on each native platform before collection. Product verification writes a platform-specific SHA-256 manifest. The collection step reads that manifest, requires the full ten-product format matrix for the selected platform, rechecks each product file's SHA-256, and then moves only those verified files into the platform upload folder while preserving the `apps/org.brightdesk.<product-id>/` relative paths. Suite installers, legal notices and Suite checksum files are moved into the same platform folder. The collector enforces an explicit allowlist for those files (including the Linux consent helper) and rejects unexpected top-level files before moving any content. Unpacked builder directories remain outside the uploaded folder.
