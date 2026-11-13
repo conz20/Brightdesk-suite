@@ -15,6 +15,8 @@ concurrency:
 jobs:
   native:
     # This repository's free self-hosted Mac runner replaces paid hosted runners.
+    # Do not execute fork-controlled pull-request code on this private runner.
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
     runs-on: self-hosted
     steps:
       - name: Register post-job workspace cleanup
