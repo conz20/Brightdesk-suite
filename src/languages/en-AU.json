@@ -182,6 +182,27 @@
     "sidebar.applications": "Apps",
     "sidebar.applicationsDescription": "All your apps",
     "top.print": "Print",
-    "top.printerSettings": "Printer settings"
+    "top.printerSettings": "Printer settings",
+    "top.findNetworkPrinters": "Find network printers",
+    "printing.panelTitle": "Find network printers",
+    "printing.panelDescription": "Search your local network for compatible printers. Brightdesk will not add queues or install drivers.",
+    "printing.close": "Close",
+    "printing.search": "Search local network",
+    "printing.searchPrompt": "Search starts only when you choose Search local network.",
+    "printing.searching": "Searching your local network for printers…",
+    "printing.searchComplete": "Search complete. Review the results below.",
+    "printing.noResults": "No compatible network printers were found. Check that your printer is connected to the same network, then search again.",
+    "printing.searchFailed": "Network printer search could not be completed.",
+    "printing.networkService": "Network printer service",
+    "printing.windowsWsd": "Windows WSD printer",
+    "printing.requiresSetup": "Not ready to print yet. Use Printer settings to add it through your operating system.",
+    "printing.openSettings": "Open Printer settings",
+    "printing.pair": "Pair in Windows",
+    "printing.pairing": "Waiting for Windows to complete printer pairing…",
+    "printing.paired": "Windows completed pairing. Brightdesk refreshed the configured printer list. Choose Print to check for the printer.",
+    "printing.alreadyPaired": "This printer is already paired in Windows. Check Printer settings for its queue.",
+    "printing.pairCancelled": "Printer pairing was cancelled.",
+    "printing.pairFailed": "Windows could not pair the selected printer.",
+    "printing.unnamed": "Network printer"
   }
 }
