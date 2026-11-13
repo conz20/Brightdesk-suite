@@ -10,6 +10,7 @@ ARCHIVE_SHA256='25a065af409ffa317ab4d5a3b614dd15fc9c40f2172bc1b35a1b1258e919a388
 RUNNER_ROOT="${BRIGHTDESK_RUNNER_ROOT:-${HOME}/.brightdesk-product-ci-runners}"
 
 REPOSITORIES=(
+  'Brightdesk-suite'
   'Brightdesk-Common-Actions'
   'Brightdesk-Developer-Tools'
   'Brightdesk-Extensions'
@@ -83,7 +84,7 @@ github_user="$(gh api user --jq '.login' 2>/dev/null)" || fail 'GitHub CLI could
 
 say ''
 say 'BRIGHTDESK PRIVATE MAC RUNNER SETUP'
-say 'This will prepare up to twelve repository-scoped runners on this Apple-silicon Mac.'
+say 'This will prepare up to thirteen repository-scoped runners on this Apple-silicon Mac.'
 say 'The runners can execute workflows from their matching private Brightdesk repositories.'
 say 'This adds repository-scoped Actions runners only; it does not change permissions, secrets, workflows, visibility, branch protection or releases.'
 say 'The runner registrations are local to this Mac and will not auto-start after a reboot.'
