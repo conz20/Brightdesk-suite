@@ -433,27 +433,18 @@ test('README freshness exempts internal workflows, runner setup and test-only ch
 });
 
 
-test('Windows runner can be started from one verified download', () => {
+test('Windows runner launcher runs its sibling installer without an unauthenticated private download', () => {
   const instructions = read('tools/runner-setup/windows/README.txt');
   const launcher = read('tools/runner-setup/windows/Start-Brightdesk-Windows-Runner.cmd');
   const installer = read('tools/runner-setup/windows/Install-Brightdesk-Windows-Runner.ps1');
   const releaseGuide = read('docs/LOCAL-RELEASE-VERIFICATION.md');
-  assert.ok(instructions.includes('Download only Start-Brightdesk-Windows-Runner.cmd'));
-  assert.ok(instructions.includes('downloads the PowerShell installer automatically'));
-  assert.ok(instructions.includes('browser/device sign-in flow'));
-  assert.ok(instructions.includes('You do NOT need to open the runner setup page or copy/paste a registration token.'));
-  assert.ok(instructions.includes('only if either is missing'));
-  assert.ok(instructions.includes('There is no setup ZIP.'));
-  const installerUrl = /^set "INSTALLER_URL=(.+)"$/m.exec(launcher)?.[1];
-  assert.ok(installerUrl, 'launcher pins a PowerShell installer URL');
-  assert.match(installerUrl, /\/[a-f0-9]{40}\/tools\/runner-setup\/windows\/Install-Brightdesk-Windows-Runner\.ps1$/);
-  const expectedInstallerHash = /^set "INSTALLER_SHA256=([a-f0-9]{64})"$/m.exec(launcher)?.[1];
-  assert.ok(expectedInstallerHash, 'launcher pins the PowerShell installer SHA-256');
-  assert.equal(expectedInstallerHash, createHash('sha256').update(installer, 'utf8').digest('hex'));
-  assert.ok(launcher.includes('Invoke-WebRequest'));
-  assert.ok(launcher.includes('Get-FileHash'));
+
+  assert.ok(instructions.includes('Download both Start-Brightdesk-Windows-Runner.cmd and Install-Brightdesk-Windows-Runner.ps1'));
+  assert.ok(instructions.includes('Keep both files in the same folder'));
+  assert.match(launcher, /set "INSTALLER_PATH=%~dp0Install-Brightdesk-Windows-Runner\\.ps1"/);
+  assert.ok(launcher.includes('if not exist "%INSTALLER_PATH%"'));
   assert.ok(launcher.includes('powershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -File "%INSTALLER_PATH%"'));
-  assert.ok(!launcher.includes('%~dp0Install-Brightdesk-Windows-Runner.ps1'));
+  assert.doesNotMatch(launcher, /INSTALLER_URL|INSTALLER_SHA256|Invoke-WebRequest|raw\\.githubusercontent\\.com/i);
   assert.ok(installer.includes('Get-Command git.exe'));
   assert.ok(installer.includes('Get-Command bash.exe'));
   assert.ok(installer.includes('install --id Git.Git'));
@@ -461,5 +452,5 @@ test('Windows runner can be started from one verified download', () => {
   assert.ok(installer.includes('--web'));
   assert.ok(installer.includes('api --method POST $RegistrationEndpoint'));
   assert.ok(installer.includes("'--token', $registrationToken"));
-  assert.ok(releaseGuide.includes('Download only the [single Windows launcher file]'));
+  assert.ok(releaseGuide.includes('Download both the Windows launcher and its PowerShell installer'));
 });
