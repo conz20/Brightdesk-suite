@@ -163,6 +163,27 @@
     "common.zoomIn": "Agrandir",
     "common.zoomOut": "Réduire",
     "top.print": "Imprimer",
-    "top.printerSettings": "Paramètres de l’imprimante"
+    "top.printerSettings": "Paramètres de l’imprimante",
+    "top.findNetworkPrinters": "Rechercher des imprimantes réseau",
+    "printing.panelTitle": "Rechercher des imprimantes réseau",
+    "printing.panelDescription": "Recherchez des imprimantes compatibles sur votre réseau local. Brightdesk n’ajoutera aucune file d’attente et n’installera aucun pilote.",
+    "printing.close": "Fermer",
+    "printing.search": "Rechercher sur le réseau local",
+    "printing.searchPrompt": "La recherche commence uniquement lorsque vous sélectionnez Rechercher sur le réseau local.",
+    "printing.searching": "Recherche d’imprimantes sur le réseau local…",
+    "printing.searchComplete": "Recherche terminée. Consultez les résultats ci-dessous.",
+    "printing.noResults": "Aucune imprimante réseau compatible n’a été trouvée. Vérifiez qu’elle est connectée au même réseau, puis réessayez.",
+    "printing.searchFailed": "La recherche d’imprimantes réseau n’a pas pu aboutir.",
+    "printing.networkService": "Service d’imprimante réseau",
+    "printing.windowsWsd": "Imprimante WSD Windows",
+    "printing.requiresSetup": "Pas encore prête à imprimer. Ajoutez-la dans les paramètres d’imprimante de votre système d’exploitation.",
+    "printing.openSettings": "Ouvrir les paramètres d’imprimante",
+    "printing.pair": "Associer dans Windows",
+    "printing.pairing": "Windows procède à l’association de l’imprimante…",
+    "printing.paired": "Windows a associé l’imprimante. Brightdesk a actualisé la liste des imprimantes configurées. Sélectionnez Imprimer pour vérifier sa disponibilité.",
+    "printing.alreadyPaired": "Cette imprimante est déjà associée dans Windows. Vérifiez sa file d’attente dans les paramètres d’imprimante.",
+    "printing.pairCancelled": "L’association de l’imprimante a été annulée.",
+    "printing.pairFailed": "Windows n’a pas pu associer l’imprimante sélectionnée.",
+    "printing.unnamed": "Imprimante réseau"
   }
 }
