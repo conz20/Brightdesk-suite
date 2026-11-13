@@ -166,6 +166,7 @@ test("keeps discovered network printer addresses and service URIs out of product
   for (const [serviceUri, address] of [
     ["ipp://192.168.10.24:631/ipp/print", "192.168.10.24"],
     ["ipps://[2001:db8::25]:631/ipp/print", "2001:db8::25"]
+    ,["ipp://192.168.10.24.local:631/ipp/print", "192.168.10.24"]
   ]) {
     const printers = await discoverNetworkPrinterServices({
       platform: "linux",
