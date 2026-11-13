@@ -532,7 +532,7 @@ test('platform collection rejects unexpected top-level files before moving any r
     fs.writeFileSync(path.join(release, 'Brightdesk-Windows-TERMS_AND_CONDITIONS.txt'), 'terms');
     fs.writeFileSync(path.join(release, 'Brightdesk-Windows-LICENSE.txt'), 'licence');
     fs.writeFileSync(path.join(release, 'Brightdesk-Windows-THIRD_PARTY_NOTICES.md'), 'notices');
-    fs.writeFileSync(path.join(release, 'Brightdesk-SHA256SUMS-PRODUCTS-WIN.txt'), `${checksums.join('\\n')}\\n`);
+    fs.writeFileSync(path.join(release, 'Brightdesk-SHA256SUMS-PRODUCTS-WIN.txt'), `${checksums.join('\n')}\n`);
     fs.writeFileSync(path.join(release, 'private-build.log'), 'must never be uploaded');
 
     const collector = path.join(root, 'scripts', 'collect-platform-release-files.js');
