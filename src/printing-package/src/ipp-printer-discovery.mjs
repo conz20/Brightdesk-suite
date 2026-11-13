@@ -86,7 +86,8 @@ function normalizePrinterService(uri) {
 
   let displayName = "Network printer";
   const hostWithoutBrackets = parsed.hostname.replace(/^\[|\]$/g, "");
-  if (isIP(hostWithoutBrackets) === 0) {
+  const displayHost = hostWithoutBrackets.replace(/\.local\.?$/i, "");
+  if (isIP(displayHost) === 0) {
     try {
       const decodedAuthority = decodeURIComponent(authority);
       if (hasUnsafePrinterText(decodedAuthority)) return null;
