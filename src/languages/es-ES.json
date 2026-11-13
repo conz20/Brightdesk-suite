@@ -163,6 +163,27 @@
     "common.zoomIn": "Ampliar",
     "common.zoomOut": "Reducir",
     "top.print": "Imprimir",
-    "top.printerSettings": "Configuración de impresora"
+    "top.printerSettings": "Configuración de impresora",
+    "top.findNetworkPrinters": "Buscar impresoras de red",
+    "printing.panelTitle": "Buscar impresoras de red",
+    "printing.panelDescription": "Busca impresoras compatibles en tu red local. Brightdesk no añadirá impresoras ni instalará controladores.",
+    "printing.close": "Cerrar",
+    "printing.search": "Buscar en la red local",
+    "printing.searchPrompt": "La búsqueda solo comienza cuando seleccionas Buscar en la red local.",
+    "printing.searching": "Buscando impresoras en la red local…",
+    "printing.searchComplete": "Búsqueda completada. Revisa los resultados.",
+    "printing.noResults": "No se encontraron impresoras de red compatibles. Comprueba que la impresora esté conectada a la misma red y vuelve a buscar.",
+    "printing.searchFailed": "No se pudo completar la búsqueda de impresoras de red.",
+    "printing.networkService": "Servicio de impresora de red",
+    "printing.windowsWsd": "Impresora WSD de Windows",
+    "printing.requiresSetup": "Aún no está lista para imprimir. Añádela desde la configuración de impresoras del sistema operativo.",
+    "printing.openSettings": "Abrir configuración de impresoras",
+    "printing.pair": "Emparejar en Windows",
+    "printing.pairing": "Esperando a que Windows complete el emparejamiento…",
+    "printing.paired": "Windows ha emparejado la impresora. Brightdesk ha actualizado la lista de impresoras configuradas. Selecciona Imprimir para comprobar si está disponible.",
+    "printing.alreadyPaired": "Esta impresora ya está emparejada en Windows. Comprueba su cola en la configuración de impresoras.",
+    "printing.pairCancelled": "Se canceló el emparejamiento de la impresora.",
+    "printing.pairFailed": "Windows no pudo emparejar la impresora seleccionada.",
+    "printing.unnamed": "Impresora de red"
   }
 }
