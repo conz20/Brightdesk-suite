@@ -552,3 +552,93 @@ test('platform collection rejects unexpected top-level files before moving any r
     fs.rmSync(workspace, { recursive: true, force: true });
   }
 });
+
+
+const crossPlatformBundleCases = [
+  {
+    platform: 'mac',
+    directory: 'macOS',
+    code: 'MAC',
+    formats: ['dmg', 'pkg', 'zip'],
+    suiteArtifacts: [
+      'Brightdesk-Office-Suite-0.1.0-universal.dmg',
+      'Brightdesk-Office-Suite-0.1.0-universal.pkg',
+      'Brightdesk-Office-Suite-0.1.0-universal.zip'
+    ]
+  },
+  {
+    platform: 'linux',
+    directory: 'Linux',
+    code: 'LINUX',
+    formats: ['AppImage', 'deb'],
+    suiteArtifacts: [
+      'Brightdesk-Office-Suite-0.1.0-x64.AppImage',
+      'brightdesk-office-suite-0.1.0-x64.deb'
+    ]
+  }
+];
+
+for (const config of crossPlatformBundleCases) {
+  test('platform bundle collection preserves all ' + config.directory + ' product installers', () => {
+    const workspace = fs.mkdtempSync(path.join(require('node:os').tmpdir(), 'brightdesk-platform-' + config.platform + '-'));
+    const release = path.join(workspace, 'release');
+    const productIds = ['pages', 'sheets', 'slides', 'notes', 'database', 'forms', 'lists', 'planner', 'todo', 'loop'];
+    const checksums = [];
+
+    try {
+      fs.mkdirSync(release, { recursive: true });
+      for (const id of productIds) {
+        const productDirectory = path.join(release, 'apps', 'org.brightdesk.' + id);
+        fs.mkdirSync(path.join(productDirectory, 'unpacked-build'), { recursive: true });
+        fs.writeFileSync(path.join(productDirectory, 'unpacked-build', 'resources.asar'), 'build scratch');
+
+        for (const format of config.formats) {
+          const extension = format === 'AppImage' ? '.AppImage' : '.' + format;
+          const filename = 'Brightdesk-' + id + '-0.1.0-x64' + extension;
+          const relative = 'apps/org.brightdesk.' + id + '/' + filename;
+          const contents = Buffer.from('verified ' + config.platform + ' installer for ' + id + ' (' + format + ')');
+          fs.writeFileSync(path.join(productDirectory, filename), contents);
+          checksums.push(createHash('sha256').update(contents).digest('hex') + '  ' + relative);
+        }
+      }
+
+      for (const filename of config.suiteArtifacts) {
+        fs.writeFileSync(path.join(release, filename), 'verified Suite installer ' + filename);
+      }
+      fs.writeFileSync(path.join(release, 'Brightdesk-SHA256SUMS-' + config.code + '.txt'), 'suite checksum');
+      fs.writeFileSync(path.join(release, 'Brightdesk-SHA256SUMS-PRODUCTS-' + config.code + '.txt'), checksums.join('\n') + '\n');
+      fs.writeFileSync(path.join(release, 'Brightdesk-' + config.directory + '-TERMS_AND_CONDITIONS.txt'), 'terms');
+      fs.writeFileSync(path.join(release, 'Brightdesk-' + config.directory + '-LICENSE.txt'), 'licence');
+      fs.writeFileSync(path.join(release, 'Brightdesk-' + config.directory + '-THIRD_PARTY_NOTICES.md'), 'third-party notices');
+      if (config.platform === 'linux') {
+        fs.writeFileSync(path.join(release, 'Brightdesk-Install-Linux.sh'), '#!/bin/sh\nexit 0\n');
+      }
+
+      const collector = path.join(root, 'scripts', 'collect-platform-release-files.js');
+      execFileSync(process.execPath, [collector, config.platform, release], { encoding: 'utf8' });
+
+      const platformDirectory = path.join(release, config.directory);
+      assert.ok(fs.existsSync(path.join(platformDirectory, 'Brightdesk-SHA256SUMS-' + config.code + '.txt')));
+      assert.ok(fs.existsSync(path.join(platformDirectory, 'Brightdesk-SHA256SUMS-PRODUCTS-' + config.code + '.txt')));
+      for (const filename of config.suiteArtifacts) {
+        assert.ok(fs.existsSync(path.join(platformDirectory, filename)), filename);
+      }
+
+      for (const id of productIds) {
+        const outputDirectory = path.join(platformDirectory, 'apps', 'org.brightdesk.' + id);
+        for (const format of config.formats) {
+          const extension = format === 'AppImage' ? '.AppImage' : '.' + format;
+          assert.ok(fs.existsSync(path.join(outputDirectory, 'Brightdesk-' + id + '-0.1.0-x64' + extension)), id + ' ' + format);
+        }
+        assert.equal(fs.existsSync(path.join(outputDirectory, 'unpacked-build')), false, 'unpacked output must not be uploaded for ' + id);
+        assert.ok(fs.existsSync(path.join(release, 'apps', 'org.brightdesk.' + id, 'unpacked-build', 'resources.asar')), 'scratch remains outside upload folder for ' + id);
+      }
+
+      if (config.platform === 'linux') {
+        assert.ok(fs.existsSync(path.join(platformDirectory, 'Brightdesk-Install-Linux.sh')));
+      }
+    } finally {
+      fs.rmSync(workspace, { recursive: true, force: true });
+    }
+  });
+}
