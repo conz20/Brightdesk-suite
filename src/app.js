@@ -1106,7 +1106,7 @@ function createBrightdeskPrintDocument() {
 async function printCurrent() {
   let printDocument;
   try {
-    const printers = await window.brightdesk.printing.listPrinters();
+    const printers = await refreshConfiguredPrinters();
     if (!Array.isArray(printers) || printers.length === 0) {
       setStatus('No printer is available yet. Use Printer settings to add one, then try again.');
       return;
