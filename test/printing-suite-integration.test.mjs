@@ -214,7 +214,7 @@ test("keeps friendly DNS-SD printer names without exposing their service URI", a
   assert.equal(JSON.stringify(printers).includes(serviceUri), false);
 });
 
-test("keeps Windows WSD device IDs private and expires old selectors after a fresh search", async () => {
+test("keeps Windows WSD device IDs private across refreshes while pairing through the main process", async () => {
   const { discoverNetworkPrinterServices, pairDiscoveredWsdPrinter } = await import(
     "../src/printing-package/src/ipp-printer-discovery.mjs"
   );
@@ -247,13 +247,14 @@ test("keeps Windows WSD device IDs private and expires old selectors after a fre
   const otherId = Buffer.from("Brightdesk-Another-WSD-Printer", "utf8").toString("base64url");
   const otherName = Buffer.from("Another Printer", "utf8").toString("base64url");
   await scan(otherId, otherName);
-  let stalePairInvoked = false;
-  await assert.rejects(
-    pairDiscoveredWsdPrinter(selectedPrinter, {
-      platform: "win32",
-      async runCommand() { stalePairInvoked = true; }
-    }),
-    { code: "INVALID_PRINTER_SELECTION" }
-  );
-  assert.equal(stalePairInvoked, false);
+  let refreshedPairArgs;
+  const refreshedPairing = await pairDiscoveredWsdPrinter(selectedPrinter, {
+    platform: "win32",
+    async runCommand(_command, args) {
+      refreshedPairArgs = args;
+      return { stdout: "WSD_PAIR_RESULT\\tPAIRED\\n" };
+    }
+  });
+  assert.deepEqual(refreshedPairArgs, ["--pair-wsd", encodedDeviceId]);
+  assert.deepEqual(refreshedPairing, { status: "paired", protocol: "wsd", refreshRequired: true });
 });
