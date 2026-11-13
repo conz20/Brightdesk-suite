@@ -295,6 +295,14 @@ test('Mac runner setup documentation explains scope, token handling and no-servi
   assert.ok(instructions.includes('They do not auto-start after logout or reboot.'));
   assert.ok(releaseGuide.includes('Start-Brightdesk-Mac-Foundation-Runners.sh'));
   assert.match(releaseGuide, /Brightdesk-Common-Actions/);
+  assert.ok(instructions.includes('these eleven repositories'));
+  for (const repository of ['Brightdesk-Pages', 'Brightdesk-Database', 'Brightdesk-Decks']) {
+    assert.ok(instructions.includes(repository), repository);
+    assert.ok(releaseGuide.includes(repository), repository);
+  }
+  for (const repository of ['Brightdesk-Lists', 'Brightdesk-Pages', 'Brightdesk-Database', 'Brightdesk-Decks']) {
+    assert.ok(instructions.includes(repository + ' receives the additional label') || instructions.includes('Brightdesk-Lists, Brightdesk-Pages, Brightdesk-Database and Brightdesk-Decks receive'));
+  }
 });
 
 test('Windows runner setup explicitly supports Windows 10 and Windows 11', () => {
