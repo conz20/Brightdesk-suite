@@ -44,7 +44,7 @@ The script:
 - Configures each runner only for its matching private repository and adds the `brightdesk-product-ci` label.
 - Starts configured runners with `nohup`. It does not install a launchd service, elevate privileges or change repository settings.
 - Keeps each runner's files and logs under `~/.brightdesk-product-ci-runners/products/<repository>/` with owner-only directory permissions.
-- Refuses to overwrite unexpected, symbolic-link or already-configured local runner folders.
+- Restarts only a matching registered offline runner whose labels and local configuration match. It refuses to execute or reuse an unregistered existing runner folder, and refuses symbolic links or unexpected paths; inspect and move an unregistered folder aside before retrying.
 
 The helper processes repositories sequentially. The runner registration token is temporary; the script does not print or write it to a file and clears its variable after configuration. The token is necessarily passed to GitHub's official runner configurator during setup.
 
