@@ -2,5 +2,13 @@
   "sourceRepository": "conz20/Brightdesk-Printing",
   "sourceCommit": "70d41095616c6d1cd3473c0ad73a6ecb5a596c05",
   "packageVersion": "0.1.0",
-  "syncPolicy": "Brightdesk-Printing is canonical; update this checked-in offline snapshot from an approved upstream commit."
+  "syncPolicy": "Brightdesk-Printing is canonical; update this checked-in offline snapshot from an approved upstream commit.",
+  "localPatches": {
+    "macOSBuildScript": {
+      "sourceRepository": "conz20/Brightdesk-Printing",
+      "sourcePullRequest": 2,
+      "sourceCommit": "1b1d7264413520885b400884103095196377a659",
+      "description": "Universal macOS helper build for arm64 and x86_64 with lipo verification argument order corrected."
+    }
+  }
 }
