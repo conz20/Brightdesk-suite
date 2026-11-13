@@ -258,3 +258,20 @@ test("keeps Windows WSD device IDs private across refreshes while pairing throug
   assert.deepEqual(refreshedPairArgs, ["--pair-wsd", encodedDeviceId]);
   assert.deepEqual(refreshedPairing, { status: "paired", protocol: "wsd", refreshRequired: true });
 });
+
+test("offers an explicit network-printer search and safe result actions", () => {
+  const html = read("src/index.html");
+  const app = read("src/app.js");
+
+  assert.match(html, /id="find-network-printers-button"/);
+  assert.match(html, /id="network-printer-panel"/);
+  assert.match(html, /id="discover-network-printers-button"/);
+  assert.match(html, /id="network-printer-results"/);
+  assert.match(html, /id="network-printer-status"/);
+  assert.match(app, /\$\('find-network-printers-button'\)\.addEventListener\('click', openNetworkPrinterPanel\)/);
+  assert.match(app, /\$\('discover-network-printers-button'\)\.addEventListener\('click', discoverNetworkPrinters\)/);
+  assert.match(app, /window\.brightdesk\.printing\.discoverNetworkPrinters\(\)/);
+  assert.match(app, /window\.brightdesk\.printing\.pairNetworkPrinter\(printer\)/);
+  assert.match(app, /window\.brightdesk\.printing\.openPrinterSettings\(\)/);
+  assert.doesNotMatch(app, /printer\.uri/);
+});
