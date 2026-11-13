@@ -5,7 +5,7 @@ Purpose
 -------
 Register and start private GitHub Actions runners on an Apple-silicon Mac for the Brightdesk repositories whose Mac checks are waiting for their own repository-scoped runner.
 
-The setup covers these eleven repositories:
+The setup covers these twelve repositories:
 - Brightdesk-Common-Actions
 - Brightdesk-Developer-Tools
 - Brightdesk-Extensions
@@ -13,12 +13,13 @@ The setup covers these eleven repositories:
 - Brightdesk-Release-Tools
 - Brightdesk-Services
 - Brightdesk-Assets
+- Brightdesk-Printing
 - Brightdesk-Lists
 - Brightdesk-Pages
 - Brightdesk-Database
 - Brightdesk-Decks
 
-Brightdesk-Lists, Brightdesk-Pages, Brightdesk-Database and Brightdesk-Decks receive the additional label "brightdesk-product-ci" because their quality or installer workflows require it. All runners retain GitHub's normal self-hosted, macOS and ARM64 labels.
+Brightdesk-Lists, Brightdesk-Pages, Brightdesk-Database and Brightdesk-Decks receive the additional label "brightdesk-product-ci" because their quality or installer workflows require it. Brightdesk-Printing receives the separate "brightdesk-printing-ci" label required by its shared quality workflow. All runners retain GitHub's normal self-hosted, macOS and ARM64 labels.
 
 BEFORE YOU START
 ----------------
