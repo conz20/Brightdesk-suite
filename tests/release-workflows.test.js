@@ -305,6 +305,21 @@ test('Mac runner setup documentation explains scope, token handling and no-servi
   }
 });
 
+test('Mac runner setup can be opened from Finder without typing a shell command', () => {
+  const launcherPath = path.join(root, 'tools/runner-setup/macos/Start-Brightdesk-Mac-Foundation-Runners.command');
+  const launcher = read('tools/runner-setup/macos/Start-Brightdesk-Mac-Foundation-Runners.command');
+  const setupPath = path.join(root, 'tools/runner-setup/macos/Start-Brightdesk-Mac-Foundation-Runners.sh');
+
+  assert.ok(fs.statSync(launcherPath).mode & 0o111, 'Finder launcher must be executable');
+  assert.ok(launcher.includes('SCRIPT_DIR='));
+  assert.ok(launcher.includes('Start-Brightdesk-Mac-Foundation-Runners.sh'));
+  assert.ok(launcher.includes('bash "$RUNNER_SETUP"'));
+  assert.ok(launcher.includes('REGISTER only when you are ready'));
+  assert.ok(launcher.includes('read -r -p'));
+  execFileSync('bash', ['-n', launcherPath], { stdio: 'pipe' });
+  execFileSync('bash', ['-n', setupPath], { stdio: 'pipe' });
+});
+
 test('Windows runner setup explicitly supports Windows 10 and Windows 11', () => {
   const setup = read('tools/runner-setup/windows/Install-Brightdesk-Windows-Runner.ps1');
   const instructions = read('tools/runner-setup/windows/README.txt');

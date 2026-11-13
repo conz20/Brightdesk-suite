@@ -30,11 +30,13 @@ BEFORE YOU START
 
 RUN THE SETUP
 -------------
-From the Brightdesk-suite repository root, run:
+In Finder, open the Brightdesk-suite checkout and double-click:
 
-   bash tools/runner-setup/macos/Start-Brightdesk-Mac-Foundation-Runners.sh
+   tools/runner-setup/macos/Start-Brightdesk-Mac-Foundation-Runners.command
 
-Read the security notice and type REGISTER to continue.
+macOS opens Terminal and starts the existing setup script for you. You do not need to type a shell command or navigate to the repository folder. Read the security notice in the Terminal window and type REGISTER only when you are ready to register the eleven repository-scoped runners.
+
+The launcher is a small, checked-in wrapper. It does not download or run a separate installer; it starts the setup script alongside it in this repository.
 
 The script:
 - Checks that the computer is Apple-silicon macOS and that GitHub CLI is signed in as conz20.

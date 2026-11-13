@@ -55,11 +55,7 @@ On the Apple-silicon Mac, first sign in to GitHub CLI as `conz20` with administr
 gh auth login --hostname github.com
 ```
 
-Then, from the Brightdesk-suite repository root, run:
-
-```sh
-bash tools/runner-setup/macos/Start-Brightdesk-Mac-Foundation-Runners.sh
-```
+In Finder, double-click [Start-Brightdesk-Mac-Foundation-Runners.command](../tools/runner-setup/macos/Start-Brightdesk-Mac-Foundation-Runners.command). macOS opens Terminal and starts the checked-in setup script from the repository checkout. You do not need to type a shell command or navigate to the repository folder.
 
 The helper downloads the official GitHub Actions runner v2.338.2 macOS ARM64 archive, verifies its published SHA-256 digest, checks existing registrations before creating any, and starts configured runners with `nohup`. For each repository, GitHub CLI requests a short-lived registration token through the repository registration-token API. The GitHub CLI credential itself is not passed to the runner configurator. The short-lived token is passed to the official `config.sh --token` option, is not printed or saved, and is cleared immediately after configuration. It is briefly present in the configurator process arguments while that command runs. The helper reuses a complete, unconfigured runner folder left by an interrupted setup but never overwrites an unexpected or configured folder. It does not use launchd or require administrator elevation. It adds repository-scoped Actions runner registrations only; it does not change repository permissions, secrets, variables, workflows, visibility, branch protection or release settings.
 
