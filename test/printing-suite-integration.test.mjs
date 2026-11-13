@@ -187,6 +187,11 @@ test("keeps discovered network printer addresses and service URIs out of product
     assert.equal(JSON.stringify(printers).includes(address), false);
     assert.match(printers[0].id, /^dns-sd:[a-f0-9]{64}$/);
     assert.notEqual(printers[0].id, plainDigest);
+    const repeated = await discoverNetworkPrinterServices({
+      platform: "linux",
+      async runCommand() { return { stdout: `${serviceUri}\\n` }; }
+    });
+    assert.equal(repeated[0].id, printers[0].id);
   }
 });
 
