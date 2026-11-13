@@ -39,6 +39,24 @@ test('one consolidated quality gate uses the self-hosted runner and verifies the
   }
 });
 
+test('PR verification workflows queue attempts instead of cancelling earlier checks', () => {
+  const workflowFiles = [
+    '.github/workflows/ci.yml',
+    '.github/workflows/quality.yml',
+    '.github/workflows/rust-engine.yml',
+    '.github/workflows/verify-macos-installer.yml'
+  ];
+
+  for (const file of workflowFiles) {
+    const workflow = read(file);
+    assert.match(
+      workflow,
+      /concurrency:\s*\n\s*group:[^\n]+\n\s*queue:\s*max\s*\n\s*cancel-in-progress:\s*false/,
+      `${file} must preserve queued verification attempts`
+    );
+  }
+});
+
 test('release workflow builds and verifies all three desktop platforms', () => {
   const workflow = read('.github/workflows/build-release.yml');
   for (const platform of ['Linux', 'Windows', 'macOS']) {
