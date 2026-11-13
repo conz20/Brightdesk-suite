@@ -60,3 +60,8 @@ test('runner paths are scoped under a separate products directory and existing r
   assert.match(script, /A compatible macOS product CI runner is already registered but offline/);
   assert.match(instructions, /does not create a duplicate/i);
 });
+ 
+test('unregistered local runner folders are never executed or reused', () => {
+  assert.match(script, /An unregistered runner folder already exists.*Nothing was executed or overwritten/);
+  assert.doesNotMatch(script, /Reusing previously verified product runner files/);
+});
