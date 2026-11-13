@@ -445,6 +445,10 @@ test('Windows runner launcher runs its sibling installer without an unauthentica
   assert.ok(instructions.includes('Keep both files in the same folder'));
   assert.ok(launcher.includes('set "INSTALLER_PATH=%~dp0Install-Brightdesk-Windows-Runner.ps1"'));
   assert.ok(launcher.includes('if not exist "%INSTALLER_PATH%"'));
+  const expectedInstallerHash = /^set "INSTALLER_SHA256=([a-f0-9]{64})"$/m.exec(launcher)?.[1];
+  assert.ok(expectedInstallerHash, 'launcher pins the sibling PowerShell installer checksum');
+  assert.equal(expectedInstallerHash, createHash('sha256').update(installer, 'utf8').digest('hex'));
+  assert.ok(launcher.includes('Get-FileHash -LiteralPath $env:INSTALLER_PATH -Algorithm SHA256'));
   assert.ok(launcher.includes('powershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -File "%INSTALLER_PATH%"'));
   assert.ok(!/INSTALLER_URL|INSTALLER_SHA256|Invoke-WebRequest|raw\.githubusercontent\.com/i.test(launcher));
   assert.ok(installer.includes('Get-Command git.exe'));
