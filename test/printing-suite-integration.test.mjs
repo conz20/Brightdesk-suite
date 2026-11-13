@@ -104,3 +104,21 @@ test("macOS printer discovery helper is a universal Apple Silicon and Intel exec
  assert.equal(upstream.localPatches.windowsBuildScript.sourceCommit,"bb057ac192faa714e92deb218768506301d21367");
 
 });
+
+
+test("prepares a content-only print document for every Brightdesk product", () => {
+  const app = read("src/app.js");
+  const css = read("src/styles.css");
+  assert.match(app, /const PRINTABLE_APP_TARGETS/);
+  assert.match(app, /createBrightdeskPrintDocument/);
+  assert.match(app, /activeDoc\(\)\.slides/);
+  for (const appId of [
+    "pages", "sheets", "slides", "notes", "database",
+    "forms", "lists", "planner", "todo", "loop"
+  ]) {
+    assert.ok(app.includes(appId), `Missing print support for ${appId}`);
+  }
+  assert.match(app, /brightdesk-print-root/);
+  assert.match(css, /#brightdesk-print-root/);
+  assert.match(css, /data-app=["']slides["']/);
+});
