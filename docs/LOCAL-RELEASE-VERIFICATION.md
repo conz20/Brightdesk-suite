@@ -63,11 +63,11 @@ Type `REGISTER` only after reviewing the thirteen-repository list shown by the s
 
 ### Windows runner setup
 
-The click-to-run Windows x64 setup supports 64-bit Windows 10 and Windows 11 and uses two files kept together: [Start-Brightdesk-Windows-Runner.cmd](../tools/runner-setup/windows/Start-Brightdesk-Windows-Runner.cmd) and [Install-Brightdesk-Windows-Runner.ps1](../tools/runner-setup/windows/Install-Brightdesk-Windows-Runner.ps1). Download both files from this private repository to the same folder. The CMD launcher starts the checked-in PowerShell installer beside it; it does not attempt an unauthenticated download from the private repository. There is no setup ZIP.
+The click-to-run Windows x64 setup supports 64-bit Windows 10 and Windows 11 and uses two files kept together: [Start-Brightdesk-Windows-Runner.cmd](../tools/runner-setup/windows/Start-Brightdesk-Windows-Runner.cmd) and [Install-Brightdesk-Windows-Runner.ps1](../tools/runner-setup/windows/Install-Brightdesk-Windows-Runner.ps1). Download both files from this private repository to the same folder. The CMD launcher verifies the checked-in PowerShell installer beside it against a pinned SHA-256 digest before starting it; it does not attempt an unauthenticated download from the private repository. There is no setup ZIP.
 
 The installer uses Windows Package Manager (winget) to install Git for Windows and GitHub CLI only when either is missing. It adds the Git and Bash directories to the machine PATH for the runner service, then uses GitHub CLI's official browser/device sign-in flow. Sign in as `conz20`, which must have administrator access to the private Brightdesk-suite repository. The installer requests the short-lived repository runner registration token automatically through GitHub CLI and passes it to the official runner configurator; you do not open the runner registration page or copy/paste the token.
 
-1. Download both the Windows launcher and its PowerShell installer from the private repository to the same folder.
+1. Download both the Windows launcher and its PowerShell installer from the private repository to the same folder. The Windows setup README contains direct file-page links for both.
 2. Double-click `Start-Brightdesk-Windows-Runner.cmd` and approve the Windows administrator prompt.
 3. Read the security notice and type `REGISTER`.
 4. Allow the installer to add Git for Windows and GitHub CLI if they are missing. If it reports that winget is unavailable, install or update **App Installer** from the Microsoft Store and run the same launcher again.
