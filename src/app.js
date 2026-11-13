@@ -1009,19 +1009,109 @@ function exportPayload(){
 }
 async function exportCurrent(){try{const result=await window.brightdesk.exportFile(exportPayload());if(result?.canceled)return;setStatus('Exported successfully');}catch(error){alert(`Export failed: ${error.message}`);}}
 async function exportPdf(){try{const result=await window.brightdesk.exportPdf({title:$('doc-title').value});if(!result?.canceled)setStatus('PDF exported');}catch(error){alert(`PDF export failed: ${error.message}`);}}
+
+const PRINTABLE_APP_TARGETS = Object.freeze({
+  pages: "editor",
+  sheets: "sheet-wrap",
+  slides: "slide-wrap",
+  notes: "notes-wrap",
+  database: "database-wrap",
+  forms: "forms-wrap",
+  lists: "lists-wrap",
+  planner: "planner-wrap",
+  todo: "todo-wrap",
+  loop: "workspace-app-wrap"
+});
+
+function createBrightdeskPrintDocument() {
+  const appId = state.app;
+  const title = String($("doc-title")?.value || activeDoc()?.title || $("app-title")?.textContent || "Brightdesk").trim();
+  const root = document.createElement("main");
+  root.id = "brightdesk-print-root";
+  root.dataset.app = appId;
+
+  const heading = document.createElement("header");
+  heading.className = "brightdesk-print-heading";
+  const titleElement = document.createElement("h1");
+  titleElement.textContent = title || "Brightdesk";
+  heading.append(titleElement);
+  root.append(heading);
+
+  if (appId === "slides") {
+    const slides = Array.isArray(activeDoc()?.slides) ? activeDoc().slides : [];
+    if (!slides.length) throw new Error("There are no slides to print yet.");
+    slides.forEach((slide, index) => {
+      const page = document.createElement("section");
+      page.className = "brightdesk-print-slide";
+      const number = document.createElement("p");
+      number.className = "brightdesk-print-slide-number";
+      number.textContent = `Slide ${index + 1} of ${slides.length}`;
+      const slideTitle = document.createElement("h2");
+      slideTitle.textContent = String(slide?.title || "");
+      const body = document.createElement("p");
+      body.className = "brightdesk-print-slide-body";
+      body.textContent = String(slide?.body || "");
+      page.append(number, slideTitle, body);
+      root.append(page);
+    });
+  } else {
+    const targetId = PRINTABLE_APP_TARGETS[appId];
+    const source = targetId ? $(targetId) : null;
+    if (!source || source.hidden) {
+      throw new Error("There is no open product content to print.");
+    }
+
+    const content = source.cloneNode(true);
+    content.removeAttribute("hidden");
+    const sourceControls = Array.from(source.querySelectorAll("input, textarea, select"));
+    const printControls = Array.from(content.querySelectorAll("input, textarea, select"));
+
+    sourceControls.forEach((original, index) => {
+      const control = printControls[index];
+      if (!control) return;
+      if (original instanceof HTMLInputElement && original.type === "hidden") {
+        control.remove();
+        return;
+      }
+
+      const value = document.createElement("span");
+      value.className = "brightdesk-print-field";
+      if (original instanceof HTMLInputElement && ["checkbox", "radio"].includes(original.type)) {
+        value.textContent = original.checked ? "☑" : "☐";
+      } else if (original instanceof HTMLSelectElement) {
+        value.textContent = original.selectedOptions[0]?.textContent || "\u00a0";
+      } else {
+        value.textContent = original.value || "\u00a0";
+      }
+      control.replaceWith(value);
+    });
+
+    content.querySelectorAll("button").forEach((button) => button.remove());
+    content.querySelectorAll("[hidden]").forEach((element) => element.remove());
+    root.append(content);
+  }
+
+  document.body.append(root);
+  return root;
+}
+
 async function printCurrent() {
+  let printDocument;
   try {
     const printers = await window.brightdesk.printing.listPrinters();
     if (!Array.isArray(printers) || printers.length === 0) {
       setStatus('No printer is available yet. Use Printer settings to add one, then try again.');
       return;
     }
+    printDocument = createBrightdeskPrintDocument();
     const result = await window.brightdesk.printing.print({ printBackground: true });
     setStatus(result?.status === 'submitted'
       ? 'Your computer accepted the print request.'
       : 'The print request was not submitted.');
   } catch (error) {
     setStatus(error?.message || 'Brightdesk could not start printing.');
+  } finally {
+    printDocument?.remove();
   }
 }
 async function openPrinterSettings() {
