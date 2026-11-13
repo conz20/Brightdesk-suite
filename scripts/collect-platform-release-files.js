@@ -21,15 +21,15 @@ function lstatRequired(filePath, description) {
   try {
     metadata = fs.lstatSync(filePath);
   } catch (error) {
-    throw new Error(`${description} is missing or unreadable: ${error.code || error.message}`);
+    throw new Error(description + ' is missing or unreadable: ' + (error.code || error.message));
   }
-  if (metadata.isSymbolicLink()) throw new Error(`${description} must not be a symbolic link.`);
+  if (metadata.isSymbolicLink()) throw new Error(description + ' must not be a symbolic link.');
   return metadata;
 }
 
 function requireDirectory(filePath, description) {
   const metadata = lstatRequired(filePath, description);
-  if (!metadata.isDirectory()) throw new Error(`${description} must be a directory.`);
+  if (!metadata.isDirectory()) throw new Error(description + ' must be a directory.');
   return metadata;
 }
 
@@ -44,193 +44,13 @@ function safeFilename(filename) {
 }
 
 function allowedSuiteArtifactNames(platform) {
-  const version = String(packageConfig.version).replace(/[.*+?^${}()|[\\]\\\\]/g, '\\\\function sha256RegularFile(filePath) {');
+  const version = String(packageConfig.version).split('.').join('\\.');
   const patterns = {
-    win: [new RegExp(`^Brightdesk-Office-Suite-${version}-x64\\\\.exe'use strict';
-
-const crypto = require('node:crypto');
-const fs = require('node:fs');
-const path = require('node:path');
-const packageConfig = require('../package.json');
-
-const PRODUCTS = Object.freeze([
-  'pages', 'sheets', 'slides', 'notes', 'database',
-  'forms', 'lists', 'planner', 'todo', 'loop'
-]);
-
-const PLATFORMS = Object.freeze({
-  win: Object.freeze({ directory: 'Windows', formats: ['exe'] }),
-  mac: Object.freeze({ directory: 'macOS', formats: ['dmg', 'pkg', 'zip'] }),
-  linux: Object.freeze({ directory: 'Linux', formats: ['appimage', 'deb'] })
-});
-
-function lstatRequired(filePath, description) {
-  let metadata;
-  try {
-    metadata = fs.lstatSync(filePath);
-  } catch (error) {
-    throw new Error(`${description} is missing or unreadable: ${error.code || error.message}`);
-  }
-  if (metadata.isSymbolicLink()) throw new Error(`${description} must not be a symbolic link.`);
-  return metadata;
-}
-
-function requireDirectory(filePath, description) {
-  const metadata = lstatRequired(filePath, description);
-  if (!metadata.isDirectory()) throw new Error(`${description} must be a directory.`);
-  return metadata;
-}
-
-function safeFilename(filename) {
-  if (typeof filename !== 'string' || filename.length === 0) return false;
-  if (filename === '.' || filename === '..' || /[\\/<>:"|?*\u0000-\u001f]/.test(filename)) return false;
-  if (/[. ]$/.test(filename)) return false;
-  const stem = filename.split('.')[0].replace(/[ .]+$/g, '').toUpperCase();
-  if (['CON', 'PRN', 'AUX', 'NUL', 'CONIN$', 'CONOUT$', 'CLOCK$'].includes(stem)) return false;
-  if (/^(COM|LPT)([1-9]|[¹²³])$/.test(stem)) return false;
-  return true;
-}
-
-, 'i')],
-    mac: [new RegExp(`^Brightdesk-Office-Suite-${version}-universal\\\\.(?:dmg|pkg|zip)'use strict';
-
-const crypto = require('node:crypto');
-const fs = require('node:fs');
-const path = require('node:path');
-const packageConfig = require('../package.json');
-
-const PRODUCTS = Object.freeze([
-  'pages', 'sheets', 'slides', 'notes', 'database',
-  'forms', 'lists', 'planner', 'todo', 'loop'
-]);
-
-const PLATFORMS = Object.freeze({
-  win: Object.freeze({ directory: 'Windows', formats: ['exe'] }),
-  mac: Object.freeze({ directory: 'macOS', formats: ['dmg', 'pkg', 'zip'] }),
-  linux: Object.freeze({ directory: 'Linux', formats: ['appimage', 'deb'] })
-});
-
-function lstatRequired(filePath, description) {
-  let metadata;
-  try {
-    metadata = fs.lstatSync(filePath);
-  } catch (error) {
-    throw new Error(`${description} is missing or unreadable: ${error.code || error.message}`);
-  }
-  if (metadata.isSymbolicLink()) throw new Error(`${description} must not be a symbolic link.`);
-  return metadata;
-}
-
-function requireDirectory(filePath, description) {
-  const metadata = lstatRequired(filePath, description);
-  if (!metadata.isDirectory()) throw new Error(`${description} must be a directory.`);
-  return metadata;
-}
-
-function safeFilename(filename) {
-  if (typeof filename !== 'string' || filename.length === 0) return false;
-  if (filename === '.' || filename === '..' || /[\\/<>:"|?*\u0000-\u001f]/.test(filename)) return false;
-  if (/[. ]$/.test(filename)) return false;
-  const stem = filename.split('.')[0].replace(/[ .]+$/g, '').toUpperCase();
-  if (['CON', 'PRN', 'AUX', 'NUL', 'CONIN$', 'CONOUT$', 'CLOCK$'].includes(stem)) return false;
-  if (/^(COM|LPT)([1-9]|[¹²³])$/.test(stem)) return false;
-  return true;
-}
-
-, 'i')],
+    win: [new RegExp('^Brightdesk-Office-Suite-' + version + '-x64\\.exe$', 'i')],
+    mac: [new RegExp('^Brightdesk-Office-Suite-' + version + '-universal\\.(?:dmg|pkg|zip)$', 'i')],
     linux: [
-      new RegExp(`^brightdesk-office-suite-${version}-x64\\\\.deb'use strict';
-
-const crypto = require('node:crypto');
-const fs = require('node:fs');
-const path = require('node:path');
-const packageConfig = require('../package.json');
-
-const PRODUCTS = Object.freeze([
-  'pages', 'sheets', 'slides', 'notes', 'database',
-  'forms', 'lists', 'planner', 'todo', 'loop'
-]);
-
-const PLATFORMS = Object.freeze({
-  win: Object.freeze({ directory: 'Windows', formats: ['exe'] }),
-  mac: Object.freeze({ directory: 'macOS', formats: ['dmg', 'pkg', 'zip'] }),
-  linux: Object.freeze({ directory: 'Linux', formats: ['appimage', 'deb'] })
-});
-
-function lstatRequired(filePath, description) {
-  let metadata;
-  try {
-    metadata = fs.lstatSync(filePath);
-  } catch (error) {
-    throw new Error(`${description} is missing or unreadable: ${error.code || error.message}`);
-  }
-  if (metadata.isSymbolicLink()) throw new Error(`${description} must not be a symbolic link.`);
-  return metadata;
-}
-
-function requireDirectory(filePath, description) {
-  const metadata = lstatRequired(filePath, description);
-  if (!metadata.isDirectory()) throw new Error(`${description} must be a directory.`);
-  return metadata;
-}
-
-function safeFilename(filename) {
-  if (typeof filename !== 'string' || filename.length === 0) return false;
-  if (filename === '.' || filename === '..' || /[\\/<>:"|?*\u0000-\u001f]/.test(filename)) return false;
-  if (/[. ]$/.test(filename)) return false;
-  const stem = filename.split('.')[0].replace(/[ .]+$/g, '').toUpperCase();
-  if (['CON', 'PRN', 'AUX', 'NUL', 'CONIN$', 'CONOUT$', 'CLOCK$'].includes(stem)) return false;
-  if (/^(COM|LPT)([1-9]|[¹²³])$/.test(stem)) return false;
-  return true;
-}
-
-, 'i'),
-      new RegExp(`^Brightdesk-Office-Suite-${version}-x64\\\\.AppImage'use strict';
-
-const crypto = require('node:crypto');
-const fs = require('node:fs');
-const path = require('node:path');
-const packageConfig = require('../package.json');
-
-const PRODUCTS = Object.freeze([
-  'pages', 'sheets', 'slides', 'notes', 'database',
-  'forms', 'lists', 'planner', 'todo', 'loop'
-]);
-
-const PLATFORMS = Object.freeze({
-  win: Object.freeze({ directory: 'Windows', formats: ['exe'] }),
-  mac: Object.freeze({ directory: 'macOS', formats: ['dmg', 'pkg', 'zip'] }),
-  linux: Object.freeze({ directory: 'Linux', formats: ['appimage', 'deb'] })
-});
-
-function lstatRequired(filePath, description) {
-  let metadata;
-  try {
-    metadata = fs.lstatSync(filePath);
-  } catch (error) {
-    throw new Error(`${description} is missing or unreadable: ${error.code || error.message}`);
-  }
-  if (metadata.isSymbolicLink()) throw new Error(`${description} must not be a symbolic link.`);
-  return metadata;
-}
-
-function requireDirectory(filePath, description) {
-  const metadata = lstatRequired(filePath, description);
-  if (!metadata.isDirectory()) throw new Error(`${description} must be a directory.`);
-  return metadata;
-}
-
-function safeFilename(filename) {
-  if (typeof filename !== 'string' || filename.length === 0) return false;
-  if (filename === '.' || filename === '..' || /[\\/<>:"|?*\u0000-\u001f]/.test(filename)) return false;
-  if (/[. ]$/.test(filename)) return false;
-  const stem = filename.split('.')[0].replace(/[ .]+$/g, '').toUpperCase();
-  if (['CON', 'PRN', 'AUX', 'NUL', 'CONIN$', 'CONOUT$', 'CLOCK$'].includes(stem)) return false;
-  if (/^(COM|LPT)([1-9]|[¹²³])$/.test(stem)) return false;
-  return true;
-}
-
-, 'i')
+      new RegExp('^brightdesk-office-suite-' + version + '-x64\\.deb$', 'i'),
+      new RegExp('^Brightdesk-Office-Suite-' + version + '-x64\\.AppImage$', 'i')
     ]
   };
   return patterns[platform];
@@ -240,11 +60,11 @@ function validateTopLevelReleaseFiles(releaseDirectory, platform) {
   const config = PLATFORMS[platform];
   const platformCode = platform.toUpperCase();
   const required = new Set([
-    `Brightdesk-SHA256SUMS-${platformCode}.txt`,
-    `Brightdesk-SHA256SUMS-PRODUCTS-${platformCode}.txt`,
-    `Brightdesk-${config.directory}-TERMS_AND_CONDITIONS.txt`,
-    `Brightdesk-${config.directory}-LICENSE.txt`,
-    `Brightdesk-${config.directory}-THIRD_PARTY_NOTICES.md`
+    'Brightdesk-SHA256SUMS-' + platformCode + '.txt',
+    'Brightdesk-SHA256SUMS-PRODUCTS-' + platformCode + '.txt',
+    'Brightdesk-' + config.directory + '-TERMS_AND_CONDITIONS.txt',
+    'Brightdesk-' + config.directory + '-LICENSE.txt',
+    'Brightdesk-' + config.directory + '-THIRD_PARTY_NOTICES.md'
   ]);
   if (platform === 'linux') required.add('Brightdesk-Install-Linux.sh');
 
@@ -255,9 +75,9 @@ function validateTopLevelReleaseFiles(releaseDirectory, platform) {
   for (const entry of fs.readdirSync(releaseDirectory, { withFileTypes: true })) {
     if (entry.name === config.directory || entry.name === 'apps') continue;
     const fullPath = path.join(releaseDirectory, entry.name);
-    const metadata = lstatRequired(fullPath, `Release entry ${entry.name}`);
+    const metadata = lstatRequired(fullPath, 'Release entry ' + entry.name);
     if (metadata.isDirectory()) continue;
-    if (!metadata.isFile()) throw new Error(`Release entry is not a regular file: ${entry.name}`);
+    if (!metadata.isFile()) throw new Error('Release entry is not a regular file: ' + entry.name);
 
     if (required.has(entry.name)) {
       movable.push(entry.name);
@@ -266,36 +86,34 @@ function validateTopLevelReleaseFiles(releaseDirectory, platform) {
 
     const suiteArtifact = artifactPatterns.find(pattern => pattern.test(entry.name));
     if (suiteArtifact) {
-      const extension = path.extname(entry.name).toLowerCase();
+      const extension = path.extname(entry.name).slice(1).toLowerCase();
       if (presentArtifacts.has(extension)) {
-        throw new Error(`Duplicate Suite installer artifact for ${platform}: ${entry.name}`);
+        throw new Error('Duplicate Suite installer artifact for ' + platform + ': ' + entry.name);
       }
       presentArtifacts.add(extension);
-      required.add(entry.name);
       movable.push(entry.name);
       continue;
     }
 
-    throw new Error(`Unexpected release file is not permitted: ${entry.name}`);
+    throw new Error('Unexpected release file is not permitted: ' + entry.name);
   }
 
-  const expectedSuiteExtensions = PLATFORMS[platform].formats;
-  for (const extension of expectedSuiteExtensions) {
-    if (!presentArtifacts.has(`.${extension}`)) {
-      throw new Error(`Missing Suite installer artifact for ${platform}: .${extension}`);
+  for (const extension of config.formats) {
+    if (!presentArtifacts.has(extension)) {
+      throw new Error('Missing Suite installer artifact for ' + platform + ': .' + extension);
     }
   }
 
   const missing = [...required].filter(name => !movable.includes(name));
   if (missing.length) {
-    throw new Error(`Platform release bundle is missing required file(s): ${missing.join(', ')}`);
+    throw new Error('Platform release bundle is missing required file(s): ' + missing.join(', '));
   }
   return movable;
 }
 
 function sha256RegularFile(filePath) {
   const before = lstatRequired(filePath, 'Product installer');
-  if (!before.isFile()) throw new Error(`Product installer is not a regular file: ${filePath}`);
+  if (!before.isFile()) throw new Error('Product installer is not a regular file: ' + filePath);
 
   let descriptor;
   try {
@@ -303,7 +121,7 @@ function sha256RegularFile(filePath) {
     descriptor = fs.openSync(filePath, flags);
     const opened = fs.fstatSync(descriptor);
     if (!opened.isFile() || opened.dev !== before.dev || opened.ino !== before.ino || opened.size !== before.size) {
-      throw new Error(`Product installer changed while it was being checked: ${filePath}`);
+      throw new Error('Product installer changed while it was being checked: ' + filePath);
     }
 
     const hash = crypto.createHash('sha256');
@@ -316,7 +134,7 @@ function sha256RegularFile(filePath) {
 
     const after = fs.lstatSync(filePath);
     if (after.isSymbolicLink() || !after.isFile() || after.dev !== before.dev || after.ino !== before.ino || after.size !== before.size) {
-      throw new Error(`Product installer path changed during verification: ${filePath}`);
+      throw new Error('Product installer path changed during verification: ' + filePath);
     }
     return { sha256: hash.digest('hex'), sizeBytes: opened.size, dev: opened.dev, ino: opened.ino };
   } finally {
@@ -332,7 +150,7 @@ function parseProductManifest(manifestPath, platform) {
   const lines = content.split(/\r?\n/).filter(line => line.length > 0);
   const expectedCount = PRODUCTS.length * PLATFORMS[platform].formats.length;
   if (lines.length !== expectedCount) {
-    throw new Error(`Product checksum manifest must contain exactly ${expectedCount} entries; found ${lines.length}.`);
+    throw new Error('Product checksum manifest must contain exactly ' + expectedCount + ' entries; found ' + lines.length + '.');
   }
 
   const seen = new Set();
@@ -343,28 +161,31 @@ function parseProductManifest(manifestPath, platform) {
 
   for (const line of lines) {
     const match = pattern.exec(line);
-    if (!match) throw new Error(`Invalid product checksum entry: ${line}`);
-    const [, expectedHash, relativePath, productId, filename] = match;
-    if (!PRODUCTS.includes(productId)) throw new Error(`Unknown Brightdesk product in checksum manifest: ${productId}`);
-    if (!safeFilename(filename)) throw new Error(`Unsafe product installer filename: ${filename}`);
+    if (!match) throw new Error('Invalid product checksum entry: ' + line);
+    const expectedHash = match[1].toLowerCase();
+    const relativePath = match[2];
+    const productId = match[3];
+    const filename = match[4];
+    if (!PRODUCTS.includes(productId)) throw new Error('Unknown Brightdesk product in checksum manifest: ' + productId);
+    if (!safeFilename(filename)) throw new Error('Unsafe product installer filename: ' + filename);
 
     const extension = path.extname(filename).slice(1).toLowerCase();
-    if (!allowedFormats.has(extension)) throw new Error(`Unexpected product installer format for ${platform}: ${filename}`);
-    if (!relativePath.startsWith(`apps/org.brightdesk.${productId}/`)) {
-      throw new Error(`Product installer path does not match its product ID: ${relativePath}`);
+    if (!allowedFormats.has(extension)) throw new Error('Unexpected product installer format for ' + platform + ': ' + filename);
+    if (!relativePath.startsWith('apps/org.brightdesk.' + productId + '/')) {
+      throw new Error('Product installer path does not match its product ID: ' + relativePath);
     }
-    if (seen.has(relativePath)) throw new Error(`Duplicate product installer path: ${relativePath}`);
-    const pair = `${productId}/${extension}`;
-    if (pairs.has(pair)) throw new Error(`Duplicate product installer format: ${pair}`);
+    if (seen.has(relativePath)) throw new Error('Duplicate product installer path: ' + relativePath);
+    const pair = productId + '/' + extension;
+    if (pairs.has(pair)) throw new Error('Duplicate product installer format: ' + pair);
     seen.add(relativePath);
     pairs.add(pair);
-    records.push({ expectedHash: expectedHash.toLowerCase(), relativePath, productId, filename });
+    records.push({ expectedHash, relativePath, productId, filename });
   }
 
   for (const productId of PRODUCTS) {
     for (const format of allowedFormats) {
-      if (!pairs.has(`${productId}/${format}`)) {
-        throw new Error(`Product checksum manifest is missing ${productId} .${format} installer.`);
+      if (!pairs.has(productId + '/' + format)) {
+        throw new Error('Product checksum manifest is missing ' + productId + ' .' + format + ' installer.');
       }
     }
   }
@@ -380,23 +201,25 @@ function collectPlatformReleaseFiles({ platform, releaseDirectory = path.resolve
   const sourceApps = path.join(releaseDirectory, 'apps');
   requireDirectory(sourceApps, 'Product installer directory');
 
-  const checksumName = `Brightdesk-SHA256SUMS-PRODUCTS-${platform.toUpperCase()}.txt`;
+  const checksumName = 'Brightdesk-SHA256SUMS-PRODUCTS-' + platform.toUpperCase() + '.txt';
   const manifestPath = path.join(releaseDirectory, checksumName);
   const records = parseProductManifest(manifestPath, platform);
 
   for (const productId of PRODUCTS) {
-    requireDirectory(path.join(sourceApps, `org.brightdesk.${productId}`), `Installer directory for ${productId}`);
+    requireDirectory(path.join(sourceApps, 'org.brightdesk.' + productId), 'Installer directory for ' + productId);
   }
 
-  const topLevelFiles = validateTopLevelReleaseFiles(releaseDirectory, platform);\n\n  const verified = records.map(record => {
+  const topLevelFiles = validateTopLevelReleaseFiles(releaseDirectory, platform);
+
+  const verified = records.map(record => {
     const source = path.resolve(releaseDirectory, record.relativePath);
     const relativeFromRoot = path.relative(releaseDirectory, source);
     if (relativeFromRoot.startsWith('..') || path.isAbsolute(relativeFromRoot)) {
-      throw new Error(`Product installer path escapes the release directory: ${record.relativePath}`);
+      throw new Error('Product installer path escapes the release directory: ' + record.relativePath);
     }
     const measured = sha256RegularFile(source);
     if (measured.sha256 !== record.expectedHash) {
-      throw new Error(`Product installer SHA-256 changed after verification: ${record.relativePath}`);
+      throw new Error('Product installer SHA-256 changed after verification: ' + record.relativePath);
     }
     return { ...record, source, sizeBytes: measured.sizeBytes, dev: measured.dev, ino: measured.ino };
   });
@@ -405,24 +228,22 @@ function collectPlatformReleaseFiles({ platform, releaseDirectory = path.resolve
   if (fs.existsSync(platformDirectory)) {
     requireDirectory(platformDirectory, 'Platform output directory');
     if (fs.readdirSync(platformDirectory).length > 0) {
-      throw new Error(`Platform output directory is not empty: ${platformDirectory}`);
+      throw new Error('Platform output directory is not empty: ' + platformDirectory);
     }
   } else {
     fs.mkdirSync(platformDirectory);
   }
 
-  const productOutput = path.join(platformDirectory, 'apps');
-  fs.mkdirSync(productOutput);
+  fs.mkdirSync(path.join(platformDirectory, 'apps'));
 
   for (const record of verified) {
     const destination = path.join(platformDirectory, record.relativePath);
-    const destinationParent = path.dirname(destination);
-    fs.mkdirSync(destinationParent, { recursive: true });
-    if (fs.existsSync(destination)) throw new Error(`Platform bundle already contains ${record.relativePath}`);
+    fs.mkdirSync(path.dirname(destination), { recursive: true });
+    if (fs.existsSync(destination)) throw new Error('Platform bundle already contains ' + record.relativePath);
 
     const current = lstatRequired(record.source, 'Product installer before collection');
     if (!current.isFile() || current.dev !== record.dev || current.ino !== record.ino || current.size !== record.sizeBytes) {
-      throw new Error(`Product installer changed before collection: ${record.relativePath}`);
+      throw new Error('Product installer changed before collection: ' + record.relativePath);
     }
     fs.renameSync(record.source, destination);
   }
@@ -431,9 +252,9 @@ function collectPlatformReleaseFiles({ platform, releaseDirectory = path.resolve
   for (const filename of topLevelFiles) {
     const source = path.join(releaseDirectory, filename);
     const destination = path.join(platformDirectory, filename);
-    if (fs.existsSync(destination)) throw new Error(`Platform bundle already contains ${filename}`);
-    const metadata = lstatRequired(source, `Release entry ${filename}`);
-    if (!metadata.isFile()) throw new Error(`Release entry is not a regular file: ${filename}`);
+    if (fs.existsSync(destination)) throw new Error('Platform bundle already contains ' + filename);
+    const metadata = lstatRequired(source, 'Release entry ' + filename);
+    if (!metadata.isFile()) throw new Error('Release entry is not a regular file: ' + filename);
     fs.renameSync(source, destination);
     topLevelFilesMoved += 1;
   }
@@ -447,17 +268,19 @@ function collectPlatformReleaseFiles({ platform, releaseDirectory = path.resolve
 }
 
 if (require.main === module) {
-  const [platform, directoryArgument] = process.argv.slice(2);
+  const args = process.argv.slice(2);
+  const platform = args[0];
+  const directoryArgument = args[1];
   try {
     const result = collectPlatformReleaseFiles({
       platform,
       releaseDirectory: directoryArgument ? path.resolve(directoryArgument) : undefined
     });
-    console.log(`Collected ${result.productInstallerCount} verified Brightdesk product installer(s) and ${result.topLevelFilesMoved} top-level release file(s) into ${result.outputDirectory}.`);
+    console.log('Collected ' + result.productInstallerCount + ' verified Brightdesk product installer(s) and ' + result.topLevelFilesMoved + ' approved top-level release file(s) into ' + result.outputDirectory + '.');
   } catch (error) {
     console.error(error.message);
     process.exitCode = 1;
   }
 }
 
-module.exports = { collectPlatformReleaseFiles, parseProductManifest, PLATFORMS, PRODUCTS };
+module.exports = { collectPlatformReleaseFiles, parseProductManifest, PLATFORMS, PRODUCTS, validateTopLevelReleaseFiles };
