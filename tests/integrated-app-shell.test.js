@@ -15,9 +15,10 @@ test('the app shell routes each app away from the generic editor',()=>{for(const
 
 
 test('provides a safe external link to Brightdesk Help from the Suite sidebar',()=>{
-  const helpUrl='https://conz20.github.io/Brightdesk-Wiki/';
+  const helpUrl='https://help.brightdesk.com/';
   const pageHtml=require('node:fs').readFileSync(require('node:path').join(__dirname,'..','src','index.html'),'utf8');
   const mainSource=require('node:fs').readFileSync(require('node:path').join(__dirname,'..','src','main.js'),'utf8');
+  const helpIcon=require('node:fs').readFileSync(require('node:path').join(__dirname,'..','src','assets','icons','help.svg'),'utf8');
   const sidebarStart=pageHtml.indexOf('<aside class="sidebar">');
   const sidebarEnd=pageHtml.indexOf('</aside>',sidebarStart);
   const linkStart=pageHtml.indexOf('<a class="nav help-nav" id="help-link"',sidebarStart);
@@ -29,8 +30,12 @@ test('provides a safe external link to Brightdesk Help from the Suite sidebar',(
   assert.ok(link.includes('href="'+helpUrl+'"'),'Help opens the Wiki homepage');
   assert.ok(link.includes('target="_blank"')&&link.includes('rel="noopener noreferrer"'),'Help opens safely outside the Suite');
   assert.ok(link.includes('<b>Help</b>')&&link.includes('Guides and how-to'),'Help has a discreet, clear label');
+  assert.ok(link.includes('src="assets/icons/help.svg"'),'Help uses the shared original SVG icon');
+  assert.match(helpIcon, /<svg\b/);
+  assert.match(helpIcon, /viewBox="0 0 24 24"/);
   assert.ok(!pageHtml.slice(pageHtml.indexOf('<header class="topbar">'),pageHtml.indexOf('</header>')).includes('id="help-link"'),'Help is not duplicated in the top bar');
-  assert.ok(mainSource.includes("target.origin !== 'https://conz20.github.io'"),'external navigation is host-restricted');
-  assert.ok(mainSource.includes("target.pathname.startsWith('/Brightdesk-Wiki/')"),'external navigation is path-restricted');
+  assert.ok(mainSource.includes("target.origin !== 'https://help.brightdesk.com'"),'external navigation is restricted to the approved Brightdesk Help domain');
+  assert.ok(mainSource.includes("!allowedBrightdeskHelpPaths.has(target.pathname)"),'external navigation is restricted to the Suite Help homepage only');
+  assert.ok(mainSource.includes('target.search || target.hash'),'unexpected query strings and fragments are rejected');
   assert.ok(mainSource.includes('shell.openExternal(target.href)'),'approved Help navigation opens in the system browser');
 });
