@@ -5,7 +5,8 @@ Purpose
 -------
 Register and start private GitHub Actions runners on an Apple-silicon Mac for the Brightdesk repositories whose Mac checks are waiting for their own repository-scoped runner.
 
-The setup covers these twelve repositories:
+The setup covers these thirteen repositories:
+- Brightdesk-suite
 - Brightdesk-Common-Actions
 - Brightdesk-Developer-Tools
 - Brightdesk-Extensions
@@ -19,14 +20,14 @@ The setup covers these twelve repositories:
 - Brightdesk-Database
 - Brightdesk-Decks
 
-Brightdesk-Lists, Brightdesk-Pages, Brightdesk-Database and Brightdesk-Decks receive the additional label "brightdesk-product-ci" because their quality or installer workflows require it. Brightdesk-Printing receives the separate "brightdesk-printing-ci" label required by its shared quality workflow. All runners retain GitHub's normal self-hosted, macOS and ARM64 labels.
+Brightdesk-Lists, Brightdesk-Pages, Brightdesk-Database and Brightdesk-Decks receive the additional label "brightdesk-product-ci" because their quality or installer workflows require it. Brightdesk-Printing receives the separate "brightdesk-printing-ci" label required by its shared quality workflow. Brightdesk-suite receives no extra label and uses its standard self-hosted, macOS and ARM64 labels so the Suite's own CI, Rust and macOS installer checks can run. All runners retain GitHub's normal self-hosted, macOS and ARM64 labels.
 
 BEFORE YOU START
 ----------------
 1. This package is for an Apple-silicon Mac only.
 2. Install GitHub CLI (gh) from the official GitHub distribution and sign in as conz20:
    gh auth login --hostname github.com
-3. The signed-in GitHub credential must have administrator access to all twelve private repositories, including permission to register repository-level self-hosted runners.
+3. The signed-in GitHub credential must have administrator access to all thirteen private repositories, including permission to register repository-level self-hosted runners.
 4. Keep normal macOS security protections enabled. Do not send your GitHub CLI credential or a runner token to ChatGPT or anyone else.
 
 RUN THE SETUP
@@ -35,7 +36,7 @@ In Finder, open the Brightdesk-suite checkout and double-click:
 
    tools/runner-setup/macos/Start-Brightdesk-Mac-Foundation-Runners.command
 
-macOS opens Terminal and starts the existing setup script for you. You do not need to type a shell command or navigate to the repository folder. Read the security notice in the Terminal window and type REGISTER only when you are ready to register the twelve repository-scoped runners.
+macOS opens Terminal and starts the existing setup script for you. You do not need to type a shell command or navigate to the repository folder. Read the security notice in the Terminal window and type REGISTER only when you are ready to register the thirteen repository-scoped runners.
 
 The launcher is a small, checked-in wrapper. It does not download or run a separate installer; it starts the setup script alongside it in this repository.
 
@@ -65,7 +66,7 @@ If GitHub CLI does not have sufficient repository administration access, the scr
 
 SECURITY AND SCOPE
 ------------------
-A self-hosted runner executes workflow code from the private repository to which it is registered. These runners are limited to the twelve named Brightdesk repositories. Do not attach them to public repositories or run untrusted fork code on them.
+A self-hosted runner executes workflow code from the private repository to which it is registered. These runners are limited to the thirteen named Brightdesk repositories. Do not attach them to public repositories or run untrusted fork code on them.
 
 The GitHub CLI credential is used only by `gh api` to request a short-lived registration token for the specific repository. The temporary registration token is passed to the official `config.sh --token` option, as required by the runner configurator. It is not printed or saved to a file and is cleared from the setup script immediately after configuration. The temporary token is present in the configurator process arguments while that command runs.
 
