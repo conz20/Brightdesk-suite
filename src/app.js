@@ -1030,26 +1030,32 @@ function createBrightdeskPrintDocument() {
   root.id = "brightdesk-print-root";
   root.dataset.app = appId;
 
-  const heading = document.createElement("header");
-  heading.className = "brightdesk-print-heading";
-  const titleElement = document.createElement("h1");
-  titleElement.textContent = title || "Brightdesk";
-  heading.append(titleElement);
-  root.append(heading);
+  if (appId !== "slides") {
+    const heading = document.createElement("header");
+    heading.className = "brightdesk-print-heading";
+    const titleElement = document.createElement("h1");
+    titleElement.textContent = title || "Brightdesk";
+    heading.append(titleElement);
+    root.append(heading);
+  }
 
   if (appId === "slides") {
     const slides = Array.isArray(activeDoc()?.slides) ? activeDoc().slides : [];
     if (!slides.length) throw new Error("There are no slides to print yet.");
+    const slideTheme = ["lavender", "midnight", "paper"].includes(state.slideTheme)
+      ? state.slideTheme
+      : "lavender";
     slides.forEach((slide, index) => {
       const page = document.createElement("section");
-      page.className = "brightdesk-print-slide";
+      page.className = `brightdesk-print-slide slide-stage theme-${slideTheme}`;
       const number = document.createElement("p");
       number.className = "brightdesk-print-slide-number";
       number.textContent = `Slide ${index + 1} of ${slides.length}`;
       const slideTitle = document.createElement("h2");
+      slideTitle.className = "slide-title";
       slideTitle.textContent = String(slide?.title || "");
       const body = document.createElement("p");
-      body.className = "brightdesk-print-slide-body";
+      body.className = "slide-body";
       body.textContent = String(slide?.body || "");
       page.append(number, slideTitle, body);
       root.append(page);
@@ -1104,7 +1110,11 @@ async function printCurrent() {
       return;
     }
     printDocument = createBrightdeskPrintDocument();
-    const result = await window.brightdesk.printing.print({ printBackground: true });
+    const printRequest = { printBackground: true };
+    if (state.app === "slides") {
+      printRequest.orientation = "landscape";
+    }
+    const result = await window.brightdesk.printing.print(printRequest);
     setStatus(result?.status === 'submitted'
       ? 'Your computer accepted the print request.'
       : 'The print request was not submitted.');
