@@ -240,6 +240,7 @@ test('private Mac runner bootstrap is pinned, repository-scoped and token-safe',
   const setupPath = path.join(root, 'tools/runner-setup/macos/Start-Brightdesk-Mac-Foundation-Runners.sh');
   const setup = read('tools/runner-setup/macos/Start-Brightdesk-Mac-Foundation-Runners.sh');
   const repositories = [
+    'Brightdesk-suite',
     'Brightdesk-Common-Actions',
     'Brightdesk-Developer-Tools',
     'Brightdesk-Extensions',
@@ -255,6 +256,7 @@ test('private Mac runner bootstrap is pinned, repository-scoped and token-safe',
   ];
 
   assert.ok(setup.includes("RUNNER_VERSION='2.338.2'"));
+  assert.ok(setup.includes("'Brightdesk-suite'"));
   assert.ok(setup.includes("ARCHIVE_SHA256='25a065af409ffa317ab4d5a3b614dd15fc9c40f2172bc1b35a1b1258e919a388'"));
   assert.ok(setup.includes('actions-runner-osx-arm64-'));
   assert.ok(setup.includes('shasum -a 256'));
@@ -281,7 +283,7 @@ test('private Mac runner bootstrap is pinned, repository-scoped and token-safe',
   assert.ok(setup.includes('Brightdesk-Printing)'));
   assert.ok(setup.includes("extra_label='brightdesk-printing-ci'"));
   assert.match(setup, /required_labels=.*\$extra_label/);
-  assert.ok(setup.includes('up to twelve repository-scoped runners'));
+  assert.ok(setup.includes('up to thirteen repository-scoped runners'));
   for (const repository of repositories) assert.ok(setup.includes("'" + repository + "'"), repository);
   assert.ok(!setup.includes('ubuntu-latest'));
   assert.ok(!setup.includes('windows-latest'));
@@ -301,9 +303,9 @@ test('Mac runner setup documentation explains scope, token handling and no-servi
   assert.ok(releaseGuide.includes('Start-Brightdesk-Mac-Foundation-Runners.sh'));
   assert.ok(releaseGuide.includes('Brightdesk-Printing'));
   assert.ok(releaseGuide.includes('brightdesk-printing-ci'));
-  assert.ok(releaseGuide.includes('those twelve repositories'));
+  assert.ok(releaseGuide.includes('those thirteen repositories'));
   assert.match(releaseGuide, /Brightdesk-Common-Actions/);
-  assert.ok(instructions.includes('these twelve repositories'));
+  assert.ok(instructions.includes('these thirteen repositories'));
   assert.ok(instructions.includes('Brightdesk-Printing receives the separate "brightdesk-printing-ci" label'));
   assert.ok(instructions.includes('brightdesk-printing-ci'));
   for (const repository of ['Brightdesk-Pages', 'Brightdesk-Database', 'Brightdesk-Decks']) {
