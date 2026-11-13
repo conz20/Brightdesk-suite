@@ -9,6 +9,7 @@ const execFileAsync = promisify(execFile);
 // Never expose a predictable digest of a low-entropy local network address.
 // IDs remain stable within this process and rotate when the process restarts.
 const DISCOVERY_ID_KEY = randomBytes(32);
+const WSD_DEVICE_ID_BY_PUBLIC_ID = new Map();
 const SUPPORTED_PLATFORMS = new Set(["darwin", "linux", "win32"]);
 const MACOS_BONJOUR_HELPER = fileURLToPath(
   new URL("../native/macos/brightdesk-ipp-discovery", import.meta.url),
@@ -47,8 +48,11 @@ function normalizeWindowsWsdService(line) {
   const displayName = decodeBase64Url(encodedName);
   if (!deviceId || !displayName) return null;
 
+  const id = createOpaquePrinterId("wsd", deviceId);
+  WSD_DEVICE_ID_BY_PUBLIC_ID.set(id, deviceId);
+
   return {
-    id: `wsd:${encodedId}`,
+    id,
     displayName,
     source: "windows-wsd",
     protocol: "wsd",
@@ -59,8 +63,9 @@ function normalizeWindowsWsdService(line) {
   };
 }
 
-function createDnsSdPrinterId(uri) {
-  return `dns-sd:${createHmac("sha256", DISCOVERY_ID_KEY).update(uri, "utf8").digest("hex")}`;
+function createOpaquePrinterId(namespace, value) {
+  const scopedValue = `${namespace}\\0${value}`;
+  return `${namespace}:${createHmac("sha256", DISCOVERY_ID_KEY).update(scopedValue, "utf8").digest("hex")}`;
 }
 
 function normalizePrinterService(uri) {
@@ -104,7 +109,7 @@ function normalizePrinterService(uri) {
   }
 
   return {
-    id: createDnsSdPrinterId(normalizedURI),
+    id: createOpaquePrinterId("dns-sd", normalizedURI),
     displayName,
     source: "dns-sd",
     availability: "discovered",
@@ -155,6 +160,8 @@ export async function discoverNetworkPrinterServices({
       `Network printer DNS-SD discovery is not implemented for platform "${platform}".`,
     );
   }
+
+  if (platform === "win32") WSD_DEVICE_ID_BY_PUBLIC_ID.clear();
 
   const { command, args } = getDiscoveryCommand(platform);
   let result;
@@ -250,10 +257,11 @@ export async function pairDiscoveredWsdPrinter(printer, {
     throw new PrintingError("INVALID_PRINTER_SELECTION", "Select a WSD printer discovered by Brightdesk before pairing.");
   }
 
-  const encodedId = printer.id.slice(4);
-  if (!decodeBase64Url(encodedId)) {
-    throw new PrintingError("INVALID_PRINTER_SELECTION", "The selected WSD printer reference is invalid.");
+  const deviceId = WSD_DEVICE_ID_BY_PUBLIC_ID.get(printer.id);
+  if (!deviceId) {
+    throw new PrintingError("INVALID_PRINTER_SELECTION", "The selected WSD printer reference is invalid or has expired. Search again and select the printer.");
   }
+  const encodedId = Buffer.from(deviceId, "utf8").toString("base64url");
 
   let result;
   try {
