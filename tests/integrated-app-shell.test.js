@@ -12,3 +12,17 @@ test('the integrated app shell loads every feature module before app.js',()=>{co
 test('the fixed product catalogue remains exactly ten approved apps',()=>{assert.deepEqual(catalog.map(x=>x.id),['pages','sheets','slides','notes','database','forms','lists','planner','todo','loop']);assert.equal(catalog.length,10);for(const id of ['outlook','onedrive','teams'])assert.equal(catalog.some(x=>x.id===id),false);});
 test('all ten approved apps are available in the integrated suite',()=>{assert.ok(catalog.every(x=>x.availability==='available'),'every approved app must be marked available once its implementation is integrated');});
 test('the app shell routes each app away from the generic editor',()=>{for(const id of ['todo','lists','forms','planner','database','loop'])assert.ok(app.includes("state.app === '"+id+"'")||app.includes("state.app==='")+id+"'",id+' routing');});
+
+
+test('provides a safe external link to Brightdesk Help',()=>{
+  const helpUrl='https://conz20.github.io/Brightdesk-Wiki/';
+  const pageHtml=require('node:fs').readFileSync(require('node:path').join(__dirname,'..','src','index.html'),'utf8');
+  const mainSource=require('node:fs').readFileSync(require('node:path').join(__dirname,'..','src','main.js'),'utf8');
+  const link=pageHtml.match(/<a\\b[^>]*id="help-link"[^>]*>Help<\\/a>/);
+  assert.ok(link,'Help link is present in the Suite header');
+  assert.ok(link[0].includes('href="'+helpUrl+'"'),'Help opens the Wiki home page');
+  assert.ok(link[0].includes('target="_blank"')&&link[0].includes('rel="noopener noreferrer"'),'Help opens safely outside the Suite');
+  assert.ok(mainSource.includes("target.origin !== 'https://conz20.github.io'"),'external navigation is host-restricted');
+  assert.ok(mainSource.includes("target.pathname.startsWith('/Brightdesk-Wiki/')"),'external navigation is path-restricted');
+  assert.ok(mainSource.includes('shell.openExternal(target.href)'),'approved Help navigation opens in the system browser');
+});
