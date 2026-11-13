@@ -1113,6 +1113,8 @@ async function printCurrent() {
     }
     const selectedPrinter = $('print-printer-select').value;
     if (!selectedPrinter) {
+      openNetworkPrinterPanel();
+      $('print-printer-select').focus();
       setStatus('Choose a printer in Find network printers before printing.');
       return;
     }
