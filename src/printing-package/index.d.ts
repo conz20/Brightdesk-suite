@@ -43,9 +43,9 @@ export interface PrinterSummary {
 }
 
 export interface DnsSdPrinterDiscovery {
+  /** One-way, stable service identifier; not a credential or an authorization token. */
   id: string;
   displayName: string;
-  uri: string;
   source: "dns-sd";
   availability: "discovered";
   canPrint: false;
