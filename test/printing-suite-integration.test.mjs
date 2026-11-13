@@ -352,3 +352,17 @@ test("every approved product print target resolves to a real product content ele
   }
   assert.equal(Object.keys(targets).length, 10);
 });
+
+
+test("print snapshots preserve live form values and remove interactive controls", () => {
+  const app = read("src/app.js");
+  assert.match(app, /const content = source\.cloneNode\(true\)/);
+  assert.match(app, /const sourceControls = Array\.from\(source\.querySelectorAll\("input, textarea, select"\)\)/);
+  assert.match(app, /const printControls = Array\.from\(content\.querySelectorAll\("input, textarea, select"\)\)/);
+  assert.match(app, /original\.checked \? "☑" : "☐"/);
+  assert.match(app, /original\.selectedOptions\[0\]\?\.textContent/);
+  assert.match(app, /value\.textContent = original\.value \|\| "\\u00a0"/);
+  assert.match(app, /content\.querySelectorAll\("button"\)\.forEach\(\(button\) => button\.remove\(\)\)/);
+  assert.match(app, /content\.querySelectorAll\("\[hidden\]"\)\.forEach\(\(element\) => element\.remove\(\)\)/);
+  assert.match(app, /original\.type === "hidden"/);
+});
