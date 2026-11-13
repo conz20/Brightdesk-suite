@@ -280,7 +280,7 @@ test('private Mac runner bootstrap is pinned, repository-scoped and token-safe',
   assert.ok(setup.includes('Brightdesk-Lists|Brightdesk-Pages|Brightdesk-Database|Brightdesk-Decks'));
   assert.ok(setup.includes('Brightdesk-Printing)'));
   assert.ok(setup.includes("extra_label='brightdesk-printing-ci'"));
-  assert.ok(setup.includes('"$extra_label"'));
+  assert.match(setup, /required_labels=.*\\\$extra_label/);
   assert.ok(setup.includes('up to twelve repository-scoped runners'));
   for (const repository of repositories) assert.ok(setup.includes("'" + repository + "'"), repository);
   assert.ok(!setup.includes('ubuntu-latest'));
