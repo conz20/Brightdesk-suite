@@ -79,6 +79,9 @@ test("macOS Suite and product bundles declare the Bonjour services and local-net
   assert.deepEqual(plist.NSBonjourServices, ["_ipp._tcp", "_ipps._tcp", "_printer._tcp"]);
   assert.match(plist.NSLocalNetworkUsageDescription, /printer/i);
   const appConfig = read("electron-builder.app.config.js");
-  assert.match(appConfig, /NSBonjourServices/);
-  assert.match(appConfig, /NSLocalNetworkUsageDescription/);
+  const macConfig = appConfig.slice(appConfig.indexOf("  mac: {"), appConfig.indexOf("  pkg: {"));
+  const windowsConfig = appConfig.slice(appConfig.indexOf("  win: {"), appConfig.indexOf("  nsis:"));
+  assert.match(macConfig, /NSBonjourServices/);
+  assert.match(macConfig, /NSLocalNetworkUsageDescription/);
+  assert.doesNotMatch(windowsConfig, /NSBonjourServices|NSLocalNetworkUsageDescription/);
 });
