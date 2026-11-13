@@ -53,13 +53,21 @@ module.exports = {
   extraMetadata: { name: 'brightdesk-' + appId, brightdeskAppId: appId, productName: 'Brightdesk ' + appName, desktopName: `org.brightdesk.${appId}.desktop` },
   asar: true,
   files: ['src/**/*', 'native/brightdesk_engine.node', 'package.json', 'LICENSE', 'THIRD_PARTY_NOTICES.md', 'TERMS_AND_CONDITIONS.txt'],
-  asarUnpack: ['native/brightdesk_engine.node'],
+  asarUnpack: [
+    'native/brightdesk_engine.node',
+    'src/printing-package/native/macos/brightdesk-ipp-discovery',
+    'src/printing-package/native/windows/brightdesk-ipp-discovery.exe'
+  ],
   directories: { output: path.join('release', 'apps', appId), buildResources: 'assets/platform-icons/native' },
   publish: [],
   win: {
     icon: `${appIcons[appId]}.svg`,
     target: ['nsis'],
-    artifactName: 'Brightdesk-' + appSlug + '-${version}-${arch}.${ext}'
+    artifactName: 'Brightdesk-' + appSlug + '-${version}-${arch}.${ext}',
+    extendInfo: {
+      NSBonjourServices: ['_ipp._tcp', '_ipps._tcp', '_printer._tcp'],
+      NSLocalNetworkUsageDescription: 'Brightdesk uses your local network to discover printers you choose to use.'
+    }
   },
   nsis: {
     oneClick: false,
