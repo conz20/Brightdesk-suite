@@ -843,7 +843,7 @@ function render() {
   $('print-button').hidden = suitePage || files || languages;
   $('printer-settings-button').hidden = suitePage || files || languages;
   $('find-network-printers-button').hidden = suitePage || files || languages;
-  if (suitePage || files || languages) closeNetworkPrinterPanel();
+  if (suitePage || files || languages) closeNetworkPrinterPanel({ restoreFocus: false });
   $('save-status').hidden = suitePage || files || languages;
   $('open-button').hidden = suitePage || files || languages;
   $('save-project').hidden = suitePage || files || languages;
@@ -1143,12 +1143,13 @@ function openNetworkPrinterPanel() {
   $('discover-network-printers-button').focus();
 }
 
-function closeNetworkPrinterPanel() {
+function closeNetworkPrinterPanel({ restoreFocus = true } = {}) {
   const panel = $('network-printer-panel');
   if (panel.hidden) return;
   panel.hidden = true;
-  $('find-network-printers-button').setAttribute('aria-expanded', 'false');
-  $('find-network-printers-button').focus();
+  const trigger = $('find-network-printers-button');
+  trigger.setAttribute('aria-expanded', 'false');
+  if (restoreFocus && !trigger.hidden) trigger.focus();
 }
 
 function renderNetworkPrinterResults(printers) {
@@ -1202,9 +1203,10 @@ async function discoverNetworkPrinters() {
   $('network-printer-status').textContent = t('printing.searching');
 
   try {
-    const printers = await window.brightdesk.printing.discoverNetworkPrinters();
-    renderNetworkPrinterResults(Array.isArray(printers) ? printers : []);
-    $('network-printer-status').textContent = printers?.length
+    const discovered = await window.brightdesk.printing.discoverNetworkPrinters();
+    const printers = Array.isArray(discovered) ? discovered : [];
+    renderNetworkPrinterResults(printers);
+    $('network-printer-status').textContent = printers.length
       ? t('printing.searchComplete')
       : t('printing.noResults');
   } catch (error) {
@@ -1229,6 +1231,8 @@ async function pairNetworkPrinter(printer, actionButton) {
       $('network-printer-status').textContent = result.status === 'already-paired'
         ? t('printing.alreadyPaired')
         : t('printing.paired');
+    } else {
+      $('network-printer-status').textContent = t('printing.pairFailed');
     }
   } catch (error) {
     $('network-printer-status').textContent = error?.message || t('printing.pairFailed');
