@@ -48,20 +48,31 @@ test('manual release workflow builds all platforms from the one Mac runner and k
  assert.match(workflow,/files: release\/verified-bundle\/\*\*\/\*/);
 });
 
-test('cross-platform prerequisites are checked before expensive macOS packaging without mutating the runner',()=>{
+test('cross-platform preflight bootstraps a pinned no-admin container runtime before macOS packaging',()=>{
  const workflow=read('.github/workflows/verify-macos-installer.yml');
  const manifest=JSON.parse(read('package.json'));
  const preflight=read('scripts/check-cross-platform-build-prerequisites.sh');
+ const bootstrap=read('scripts/bootstrap-cross-platform-tools.sh');
+ const runtime=read('scripts/prepare-cross-platform-runtime.sh');
  assert.equal(manifest.scripts['release:cross-platform:preflight'],'bash scripts/check-cross-platform-build-prerequisites.sh');
  const preflightStep=workflow.indexOf('npm run release:cross-platform:preflight');
  const suiteBuild=workflow.indexOf('npm run dist:mac');
  const productBuild=workflow.indexOf('npm run dist:products:mac');
- assert.ok(preflightStep>=0 && preflightStep<suiteBuild && preflightStep<productBuild,'check cross-build prerequisites before spending time on macOS installers');
- assert.match(preflight,/docker info/);
- assert.match(preflight,/command -v colima/);
- assert.match(preflight,/command -v qemu-system-x86_64/);
- assert.match(preflight,/sudo -n true/);
- assert.doesNotMatch(preflight,/brew install|NONINTERACTIVE|curl -fsSL|colima start/,'preflight must not install software or start services');
+ assert.ok(preflightStep>=0 && preflightStep<suiteBuild && preflightStep<productBuild,'prepare the cross-build runtime before spending time on macOS installers');
+ assert.match(preflight,/prepare-cross-platform-runtime\.sh/);
+ assert.match(bootstrap,/RUNNER_TEMP/);
+ assert.match(bootstrap,/COLIMA_VERSION=0\.10\.3/);
+ assert.match(bootstrap,/LIMA_VERSION=2\.3\.0/);
+ assert.match(bootstrap,/DOCKER_CLI_VERSION=29\.9\.3/);
+ assert.match(bootstrap,/shasum -a 256/);
+ assert.match(bootstrap,/SHA256SUMS/);
+ assert.doesNotMatch(bootstrap,/brew install|sudo\b/,'bootstrap stays in the runner temporary directory without administrator access');
+ assert.match(runtime,/arch: aarch64/);
+ assert.match(runtime,/vmType: vz/);
+ assert.match(runtime,/binfmt: true/);
+ assert.match(runtime,/rosetta: false/);
+ assert.match(runtime,/colima start --profile/);
+ assert.match(runtime,/docker info/);
 });
 
 test('cross-build image and toolchain versions are pinned',()=>{
@@ -74,19 +85,20 @@ test('cross-build image and toolchain versions are pinned',()=>{
  assert.match(dockerfile,/x86_64-w64-mingw32-gcc/);
 });
 
-test('cross-build scripts use isolated Colima volumes and verify both container platforms',()=>{
+test('cross-build uses the user-space Colima VZ runtime with QEMU-backed x86_64 containers',()=>{
  const outer=read('scripts/run-cross-platform-installer-builds.sh');
  const inner=read('scripts/build-cross-platform-installers.sh');
- assert.match(outer,/brew install colima/);
- assert.match(outer,/brew install docker/);
- assert.match(outer,/brew install qemu/);
- assert.match(outer,/command -v docker[\s\S]*docker info/);
- assert.match(outer,/NONINTERACTIVE=1/);
- assert.match(outer,/raw\.githubusercontent\.com\/Homebrew\/install/);
- assert.match(outer,/sudo -n true/);
- assert.match(outer,/brew shellenv/);
- assert.match(outer,/colima start --profile "\$PROFILE" --arch x86_64 --vm-type qemu/);
- assert.match(outer,/docker --context "\$CONTEXT" build/);
+ const runtime=read('scripts/prepare-cross-platform-runtime.sh');
+ assert.match(outer,/prepare-cross-platform-runtime\.sh/);
+ assert.doesNotMatch(outer,/brew install|NONINTERACTIVE|sudo -n true|qemu-system-x86_64|brew shellenv/);
+ assert.match(runtime,/colima start --profile/);
+ assert.match(runtime,/arch: aarch64/);
+ assert.match(runtime,/vmType: vz/);
+ assert.match(runtime,/binfmt: true/);
+ assert.match(runtime,/rosetta: false/);
+ assert.match(outer,/docker --context "\$CONTEXT" build --platform linux\/amd64/);
+ assert.match(outer,/docker --context "\$CONTEXT" run --rm --platform linux\/amd64/);
+ assert.match(outer,/architecture.*x86_64|x86_64.*architecture/);
  assert.match(outer,/docker context show/);
  assert.match(outer,/Using an existing Docker engine context/);
  assert.match(outer,/brightdesk-cross-node-modules/);
