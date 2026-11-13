@@ -656,13 +656,18 @@ body.suite-home .app-manager.home-view .manager-hero .eyebrow { display: none; }
     color: #111 !important;
     white-space: pre-wrap !important;
   }
-  #brightdesk-print-root .brightdesk-print-slide {
+  #brightdesk-print-root[data-app="slides"] .brightdesk-print-slide {
     display: flex !important;
-    min-height: 230mm !important;
+    width: 100% !important;
+    max-width: none !important;
+    min-height: 0 !important;
+    aspect-ratio: 16 / 9 !important;
     flex-direction: column !important;
     justify-content: center !important;
-    padding: 12mm !important;
-    border: 1px solid #c8ccd4 !important;
+    margin: 4mm auto !important;
+    padding: 8% !important;
+    border: 0 !important;
+    border-radius: 0 !important;
     break-after: page;
     page-break-after: always;
   }
@@ -670,24 +675,37 @@ body.suite-home .app-manager.home-view .manager-hero .eyebrow { display: none; }
     break-after: auto;
     page-break-after: auto;
   }
+  #brightdesk-print-root .brightdesk-print-slide.theme-paper {
+    border: 1px solid #e1e1e1 !important;
+  }
   #brightdesk-print-root .brightdesk-print-slide-number {
     margin: 0 0 12mm !important;
     color: #5b6472 !important;
     font-size: 9pt !important;
   }
-  #brightdesk-print-root .brightdesk-print-slide h2 {
+  #brightdesk-print-root .brightdesk-print-slide .slide-title {
     margin: 0 0 8mm !important;
+    min-height: 0 !important;
     color: #24243d !important;
     font-size: 28pt !important;
+    font-weight: 750 !important;
+    line-height: 1.15 !important;
     text-align: center !important;
   }
-  #brightdesk-print-root .brightdesk-print-slide-body {
+  #brightdesk-print-root .brightdesk-print-slide .slide-body {
     margin: 0 !important;
+    min-height: 0 !important;
     color: #44445f !important;
     font-size: 17pt !important;
     line-height: 1.5 !important;
     text-align: center !important;
     white-space: pre-wrap !important;
+  }
+  #brightdesk-print-root .brightdesk-print-slide.theme-midnight .slide-title {
+    color: #fff !important;
+  }
+  #brightdesk-print-root .brightdesk-print-slide.theme-midnight .slide-body {
+    color: #d9dcf4 !important;
   }
   #brightdesk-print-root .todo-app,
   #brightdesk-print-root .lists-app,
