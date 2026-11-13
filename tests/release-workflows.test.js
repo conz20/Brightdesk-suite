@@ -54,6 +54,7 @@ test('cross-platform preflight bootstraps a pinned no-admin container runtime be
  const preflight=read('scripts/check-cross-platform-build-prerequisites.sh');
  const bootstrap=read('scripts/bootstrap-cross-platform-tools.sh');
  const runtime=read('scripts/prepare-cross-platform-runtime.sh');
+ const outer=read('scripts/run-cross-platform-installer-builds.sh');
  assert.equal(manifest.scripts['release:cross-platform:preflight'],'bash scripts/check-cross-platform-build-prerequisites.sh');
  const preflightStep=workflow.indexOf('npm run release:cross-platform:preflight');
  const suiteBuild=workflow.indexOf('npm run dist:mac');
