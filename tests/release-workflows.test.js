@@ -90,6 +90,9 @@ test('cross-build uses the user-space Colima VZ runtime with QEMU-backed x86_64 
  const inner=read('scripts/build-cross-platform-installers.sh');
  const runtime=read('scripts/prepare-cross-platform-runtime.sh');
  assert.match(outer,/prepare-cross-platform-runtime\.sh/);
+ assert.match(outer,/export COLIMA_HOME="\$TOOLS_ROOT\/colima-home"/);
+ assert.match(outer,/export COLIMA_CACHE_HOME="\$TOOLS_ROOT\/colima-cache"/);
+ assert.match(outer,/export DOCKER_CONFIG="\$TOOLS_ROOT\/docker-config"/);
  assert.doesNotMatch(outer,/brew install|NONINTERACTIVE|sudo -n true|qemu-system-x86_64|brew shellenv/);
  assert.match(runtime,/colima start --profile/);
  assert.match(runtime,/arch: aarch64/);
