@@ -27,6 +27,16 @@ Microsoft documentation is used only as a workflow reference. Brightdesk remains
 | **To Do** | Microsoft To Do: print a list, with optional task steps and notes. [Microsoft reference](https://support.microsoft.com/en-us/todo/printing-lists-in-microsoft-to-do) | Prints the currently displayed task view. | Add explicit include/exclude controls for task steps and notes; verify completed, planned, and filtered views print only the intended tasks. |
 | **Workspace** | Microsoft Loop: print a page. [Microsoft reference](https://techcommunity.microsoft.com/blog/microsoft365insiderblog/do-more-with-loop-content-using-the-new-print--pdf-export-command/4226542) | Prints the current Workspace page content. | Verify headings, tables, lists, and embedded blocks paginate correctly; keep page printing separate from any whole-workspace export. |
 
+## Suite and standalone consistency
+
+The table above describes the ten product windows in the Suite integration. The standalone product repositories are separate builds and must be checked independently; having the same printer adapter does not mean every standalone build has identical product screens.
+
+One confirmed difference is **Forms**: the Suite's Forms window contains Questions, Preview and Responses panels, while the current standalone Brightdesk-Forms integration branch exposes the Questions panel only. Its current print target therefore cannot yet provide Microsoft's blank-form, response-summary and individual-response print modes. This is a product-feature gap, not a printer-driver or queue problem.
+
+Likewise, Decks currently stores slide title and body text only. The printing path can print those values, but it cannot provide PowerPoint-style slide imagery, speaker-note pages or handouts until the Decks document model supports that content.
+
+Before claiming parity, review the Suite and each standalone product branch separately, including the exact content available to that build.
+
 ## Acceptance requirements
 
 A product is not considered print-ready merely because its Print button exists. Each of the ten products must pass the following checks:
