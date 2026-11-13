@@ -213,3 +213,47 @@ test("keeps friendly DNS-SD printer names without exposing their service URI", a
   assert.equal(Object.hasOwn(printers[0], "uri"), false);
   assert.equal(JSON.stringify(printers).includes(serviceUri), false);
 });
+
+test("keeps Windows WSD device IDs private and expires old selectors after a fresh search", async () => {
+  const { discoverNetworkPrinterServices, pairDiscoveredWsdPrinter } = await import(
+    "../src/printing-package/src/ipp-printer-discovery.mjs"
+  );
+  const deviceId = "Brightdesk-Private-WSD-Office-Printer";
+  const encodedDeviceId = Buffer.from(deviceId, "utf8").toString("base64url");
+  const encodedName = Buffer.from("Office Printer", "utf8").toString("base64url");
+  const scan = (id, name) => discoverNetworkPrinterServices({
+    platform: "win32",
+    async runCommand() { return { stdout: `WSD\t${id}\t${name}\t1\t0\n` }; }
+  });
+
+  const [selectedPrinter] = await scan(encodedDeviceId, encodedName);
+  assert.equal(selectedPrinter.displayName, "Office Printer");
+  assert.match(selectedPrinter.id, /^wsd:[a-f0-9]{64}$/);
+  assert.notEqual(selectedPrinter.id, `wsd:${encodedDeviceId}`);
+  assert.equal(JSON.stringify(selectedPrinter).includes(encodedDeviceId), false);
+  assert.equal(JSON.stringify(selectedPrinter).includes(deviceId), false);
+
+  let pairArgs;
+  const paired = await pairDiscoveredWsdPrinter(selectedPrinter, {
+    platform: "win32",
+    async runCommand(_command, args) {
+      pairArgs = args;
+      return { stdout: "WSD_PAIR_RESULT\tPAIRED\n" };
+    }
+  });
+  assert.deepEqual(pairArgs, ["--pair-wsd", encodedDeviceId]);
+  assert.deepEqual(paired, { status: "paired", protocol: "wsd", refreshRequired: true });
+
+  const otherId = Buffer.from("Brightdesk-Another-WSD-Printer", "utf8").toString("base64url");
+  const otherName = Buffer.from("Another Printer", "utf8").toString("base64url");
+  await scan(otherId, otherName);
+  let stalePairInvoked = false;
+  await assert.rejects(
+    pairDiscoveredWsdPrinter(selectedPrinter, {
+      platform: "win32",
+      async runCommand() { stalePairInvoked = true; }
+    }),
+    { code: "INVALID_PRINTER_SELECTION" }
+  );
+  assert.equal(stalePairInvoked, false);
+});
