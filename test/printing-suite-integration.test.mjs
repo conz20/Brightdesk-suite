@@ -252,7 +252,7 @@ test("keeps Windows WSD device IDs private across refreshes while pairing throug
     platform: "win32",
     async runCommand(_command, args) {
       refreshedPairArgs = args;
-      return { stdout: "WSD_PAIR_RESULT\\tPAIRED\\n" };
+      return { stdout: "WSD_PAIR_RESULT\tPAIRED\n" };
     }
   });
   assert.deepEqual(refreshedPairArgs, ["--pair-wsd", encodedDeviceId]);
