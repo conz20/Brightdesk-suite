@@ -842,6 +842,8 @@ function render() {
   $('top-actions').hidden = languages;
   $('print-button').hidden = suitePage || files || languages;
   $('printer-settings-button').hidden = suitePage || files || languages;
+  $('find-network-printers-button').hidden = suitePage || files || languages;
+  if (suitePage || files || languages) closeNetworkPrinterPanel();
   $('save-status').hidden = suitePage || files || languages;
   $('open-button').hidden = suitePage || files || languages;
   $('save-project').hidden = suitePage || files || languages;
@@ -1132,6 +1134,108 @@ async function openPrinterSettings() {
     setStatus(error?.message || 'Brightdesk could not open printer settings.');
   }
 }
+
+function openNetworkPrinterPanel() {
+  const panel = $('network-printer-panel');
+  panel.hidden = false;
+  $('find-network-printers-button').setAttribute('aria-expanded', 'true');
+  $('network-printer-status').textContent = t('printing.searchPrompt');
+  $('discover-network-printers-button').focus();
+}
+
+function closeNetworkPrinterPanel() {
+  const panel = $('network-printer-panel');
+  if (panel.hidden) return;
+  panel.hidden = true;
+  $('find-network-printers-button').setAttribute('aria-expanded', 'false');
+  $('find-network-printers-button').focus();
+}
+
+function renderNetworkPrinterResults(printers) {
+  const results = $('network-printer-results');
+  results.replaceChildren();
+
+  for (const printer of printers) {
+    const item = document.createElement('li');
+    item.className = 'network-printer-result';
+
+    const details = document.createElement('div');
+    details.className = 'network-printer-result-details';
+
+    const name = document.createElement('strong');
+    name.textContent = String(printer?.displayName || t('printing.unnamed'));
+    const kind = document.createElement('span');
+    kind.className = 'network-printer-kind';
+    kind.textContent = printer?.protocol === 'wsd'
+      ? t('printing.windowsWsd')
+      : t('printing.networkService');
+    const explanation = document.createElement('p');
+    explanation.textContent = printer?.protocol === 'wsd' && printer?.isPaired
+      ? t('printing.alreadyPaired')
+      : t('printing.requiresSetup');
+    details.append(name, kind, explanation);
+
+    const actions = document.createElement('div');
+    actions.className = 'network-printer-result-actions';
+    const action = document.createElement('button');
+    action.type = 'button';
+    action.className = 'secondary small-action';
+
+    if (printer?.protocol === 'wsd' && printer?.canPair && !printer?.isPaired) {
+      action.textContent = t('printing.pair');
+      action.addEventListener('click', () => pairNetworkPrinter(printer, action));
+    } else {
+      action.textContent = t('printing.openSettings');
+      action.addEventListener('click', openPrinterSettings);
+    }
+    actions.append(action);
+    item.append(details, actions);
+    results.append(item);
+  }
+}
+
+async function discoverNetworkPrinters() {
+  const searchButton = $('discover-network-printers-button');
+  const results = $('network-printer-results');
+  searchButton.disabled = true;
+  results.replaceChildren();
+  $('network-printer-status').textContent = t('printing.searching');
+
+  try {
+    const printers = await window.brightdesk.printing.discoverNetworkPrinters();
+    renderNetworkPrinterResults(Array.isArray(printers) ? printers : []);
+    $('network-printer-status').textContent = printers?.length
+      ? t('printing.searchComplete')
+      : t('printing.noResults');
+  } catch (error) {
+    $('network-printer-status').textContent = error?.message || t('printing.searchFailed');
+  } finally {
+    searchButton.disabled = false;
+  }
+}
+
+async function pairNetworkPrinter(printer, actionButton) {
+  actionButton.disabled = true;
+  $('network-printer-status').textContent = t('printing.pairing');
+
+  try {
+    const result = await window.brightdesk.printing.pairNetworkPrinter(printer);
+    if (result?.status === 'cancelled') {
+      $('network-printer-status').textContent = t('printing.pairCancelled');
+      return;
+    }
+    if (result?.refreshRequired) {
+      await window.brightdesk.printing.listPrinters();
+      $('network-printer-status').textContent = result.status === 'already-paired'
+        ? t('printing.alreadyPaired')
+        : t('printing.paired');
+    }
+  } catch (error) {
+    $('network-printer-status').textContent = error?.message || t('printing.pairFailed');
+  } finally {
+    actionButton.disabled = false;
+  }
+}
 function importProject(data){
   if (launchAppId && data?.kind && data.kind !== launchAppId) throw new Error(`This Brightdesk ${appLabel(launchAppId)} installation opens ${appLabel(launchAppId)} files only.`);
   if(data?.docs && typeof data.docs === 'object'){
@@ -1172,6 +1276,12 @@ $('files-open-button').addEventListener('click', openFile);
 $('files-save-button').addEventListener('click', saveProject);
 $('print-button').addEventListener('click', printCurrent);
 $('printer-settings-button').addEventListener('click', openPrinterSettings);
+$('find-network-printers-button').addEventListener('click', openNetworkPrinterPanel);
+$('network-printer-panel-close').addEventListener('click', closeNetworkPrinterPanel);
+$('discover-network-printers-button').addEventListener('click', discoverNetworkPrinters);
+document.addEventListener('keydown', event => {
+  if (event.key === 'Escape' && !$('network-printer-panel').hidden) closeNetworkPrinterPanel();
+});
 $('open-settings').addEventListener('click',()=>{if (launchAppId) return; state.view='manager';render();});
 $('open-notifications').addEventListener('click',()=>{const panel=$('notification-panel');panel.hidden=!panel.hidden;$('open-notifications').setAttribute('aria-expanded',String(!panel.hidden));if(!panel.hidden)markNotificationsRead();});
 $('clear-notifications').addEventListener('click',clearNotifications);
