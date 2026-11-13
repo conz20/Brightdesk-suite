@@ -247,6 +247,7 @@ test('private Mac runner bootstrap is pinned, repository-scoped and token-safe',
     'Brightdesk-Release-Tools',
     'Brightdesk-Services',
     'Brightdesk-Assets',
+    'Brightdesk-Printing',
     'Brightdesk-Lists',
     'Brightdesk-Pages',
     'Brightdesk-Database',
@@ -277,6 +278,10 @@ test('private Mac runner bootstrap is pinned, repository-scoped and token-safe',
   assert.ok(setup.includes('A compatible Mac runner is already registered but offline'));
   assert.ok(setup.includes('brightdesk-product-ci'));
   assert.ok(setup.includes('Brightdesk-Lists|Brightdesk-Pages|Brightdesk-Database|Brightdesk-Decks'));
+  assert.ok(setup.includes('Brightdesk-Printing)'));
+  assert.ok(setup.includes("extra_label='brightdesk-printing-ci'"));
+  assert.ok(setup.includes('"$extra_label"'));
+  assert.ok(setup.includes('up to twelve repository-scoped runners'));
   for (const repository of repositories) assert.ok(setup.includes("'" + repository + "'"), repository);
   assert.ok(!setup.includes('ubuntu-latest'));
   assert.ok(!setup.includes('windows-latest'));
@@ -294,8 +299,13 @@ test('Mac runner setup documentation explains scope, token handling and no-servi
   assert.ok(instructions.includes('It is not printed or saved to a file and is cleared from the setup script immediately after configuration.'));
   assert.ok(instructions.includes('They do not auto-start after logout or reboot.'));
   assert.ok(releaseGuide.includes('Start-Brightdesk-Mac-Foundation-Runners.sh'));
+  assert.ok(releaseGuide.includes('Brightdesk-Printing'));
+  assert.ok(releaseGuide.includes('brightdesk-printing-ci'));
+  assert.ok(releaseGuide.includes('twelve repository-scoped runners'));
   assert.match(releaseGuide, /Brightdesk-Common-Actions/);
-  assert.ok(instructions.includes('these eleven repositories'));
+  assert.ok(instructions.includes('these twelve repositories'));
+  assert.ok(instructions.includes('Brightdesk-Printing receives the separate "brightdesk-printing-ci" label'));
+  assert.ok(instructions.includes('brightdesk-printing-ci'));
   for (const repository of ['Brightdesk-Pages', 'Brightdesk-Database', 'Brightdesk-Decks']) {
     assert.ok(instructions.includes(repository), repository);
     assert.ok(releaseGuide.includes(repository), repository);
