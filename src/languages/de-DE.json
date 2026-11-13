@@ -163,6 +163,27 @@
     "common.zoomIn": "Vergrößern",
     "common.zoomOut": "Verkleinern",
     "top.print": "Drucken",
-    "top.printerSettings": "Druckereinstellungen"
+    "top.printerSettings": "Druckereinstellungen",
+    "top.findNetworkPrinters": "Netzwerkdrucker suchen",
+    "printing.panelTitle": "Netzwerkdrucker suchen",
+    "printing.panelDescription": "Suchen Sie in Ihrem lokalen Netzwerk nach kompatiblen Druckern. Brightdesk fügt keine Drucker hinzu und installiert keine Treiber.",
+    "printing.close": "Schließen",
+    "printing.search": "Lokales Netzwerk durchsuchen",
+    "printing.searchPrompt": "Die Suche beginnt erst, wenn Sie „Lokales Netzwerk durchsuchen“ auswählen.",
+    "printing.searching": "Das lokale Netzwerk wird nach Druckern durchsucht…",
+    "printing.searchComplete": "Suche abgeschlossen. Prüfen Sie die Ergebnisse unten.",
+    "printing.noResults": "Keine kompatiblen Netzwerkdrucker gefunden. Prüfen Sie, ob der Drucker mit demselben Netzwerk verbunden ist, und suchen Sie erneut.",
+    "printing.searchFailed": "Die Suche nach Netzwerkdruckern konnte nicht abgeschlossen werden.",
+    "printing.networkService": "Netzwerkdruckdienst",
+    "printing.windowsWsd": "Windows-WSD-Drucker",
+    "printing.requiresSetup": "Noch nicht druckbereit. Fügen Sie den Drucker über die Druckereinstellungen Ihres Betriebssystems hinzu.",
+    "printing.openSettings": "Druckereinstellungen öffnen",
+    "printing.pair": "In Windows koppeln",
+    "printing.pairing": "Windows führt die Druckerkopplung aus…",
+    "printing.paired": "Windows hat den Drucker gekoppelt. Brightdesk hat die eingerichteten Drucker aktualisiert. Wählen Sie „Drucken“, um den Drucker zu prüfen.",
+    "printing.alreadyPaired": "Dieser Drucker ist bereits in Windows gekoppelt. Prüfen Sie die Druckerwarteschlange in den Druckereinstellungen.",
+    "printing.pairCancelled": "Die Druckerkopplung wurde abgebrochen.",
+    "printing.pairFailed": "Windows konnte den ausgewählten Drucker nicht koppeln.",
+    "printing.unnamed": "Netzwerkdrucker"
   }
 }
