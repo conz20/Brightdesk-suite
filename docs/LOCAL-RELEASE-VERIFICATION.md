@@ -47,7 +47,7 @@ Runner setup requires access to each physical computer and a one-time registrati
 
 ### Mac foundation runner setup
 
-The private Mac setup helper in [tools/runner-setup/macos](../tools/runner-setup/macos/README.txt) registers repository-scoped runners for eight infrastructure repositories and three product repositories: Brightdesk-Common-Actions, Brightdesk-Developer-Tools, Brightdesk-Extensions, Brightdesk-Wiki, Brightdesk-Release-Tools, Brightdesk-Services, Brightdesk-Assets, Brightdesk-Lists, Brightdesk-Pages, Brightdesk-Database and Brightdesk-Decks. Lists, Pages, Database and Decks receive the additional `brightdesk-product-ci` label required by their quality or installer workflows.
+The private Mac setup helper in [tools/runner-setup/macos](../tools/runner-setup/macos/README.txt) registers repository-scoped runners for seven infrastructure repositories and four product repositories: Brightdesk-Common-Actions, Brightdesk-Developer-Tools, Brightdesk-Extensions, Brightdesk-Wiki, Brightdesk-Release-Tools, Brightdesk-Services, Brightdesk-Assets, Brightdesk-Lists, Brightdesk-Pages, Brightdesk-Database and Brightdesk-Decks. Lists, Pages, Database and Decks receive the additional `brightdesk-product-ci` label required by their quality or installer workflows.
 
 On the Apple-silicon Mac, first sign in to GitHub CLI as `conz20` with administrator access to those eleven repositories:
 
