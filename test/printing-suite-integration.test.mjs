@@ -296,3 +296,16 @@ test("shows safe configured-printer capability details and unknown values honest
   assert.match(app, /textContent/);
   assert.match(app, /await refreshConfiguredPrinters\(\)/);
 });
+
+
+test("requires an explicit configured-printer selection and binds printing to that queue", () => {
+  const html = read("src/index.html");
+  const app = read("src/app.js");
+  assert.match(html, /id="print-printer-select"/);
+  assert.match(html, /for="print-printer-select"/);
+  assert.match(app, /const selectedPrinter = \$\('print-printer-select'\)\.value/);
+  assert.match(app, /if \(!selectedPrinter\)/);
+  assert.match(app, /printRequest\.printerName = selectedPrinter/);
+  assert.match(app, /select\.value = availableSelection/);
+  assert.match(app, /!printers\.some\(printer => printer\.systemName === availableSelection\)/);
+});
