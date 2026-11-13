@@ -441,10 +441,10 @@ test('Windows runner launcher runs its sibling installer without an unauthentica
 
   assert.ok(instructions.includes('Download both Start-Brightdesk-Windows-Runner.cmd and Install-Brightdesk-Windows-Runner.ps1'));
   assert.ok(instructions.includes('Keep both files in the same folder'));
-  assert.match(launcher, /set "INSTALLER_PATH=%~dp0Install-Brightdesk-Windows-Runner\\.ps1"/);
+  assert.ok(launcher.includes('set "INSTALLER_PATH=%~dp0Install-Brightdesk-Windows-Runner.ps1"'));
   assert.ok(launcher.includes('if not exist "%INSTALLER_PATH%"'));
   assert.ok(launcher.includes('powershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -File "%INSTALLER_PATH%"'));
-  assert.doesNotMatch(launcher, /INSTALLER_URL|INSTALLER_SHA256|Invoke-WebRequest|raw\\.githubusercontent\\.com/i);
+  assert.ok(!/INSTALLER_URL|INSTALLER_SHA256|Invoke-WebRequest|raw\.githubusercontent\.com/i.test(launcher));
   assert.ok(installer.includes('Get-Command git.exe'));
   assert.ok(installer.includes('Get-Command bash.exe'));
   assert.ok(installer.includes('install --id Git.Git'));
