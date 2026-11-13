@@ -28,7 +28,7 @@ CONFIG_FILE="$PROFILE_DIR/colima.yaml"
 mkdir -p "$PROFILE_DIR"
 
 if [[ ! -f "$CONFIG_FILE" ]]; then
-  cat > "$CONFIG_FILE" <<'YAML'
+  cat > "$CONFIG_FILE" <<YAML
 cpu: 4
 memory: 8
 disk: 100
@@ -40,7 +40,9 @@ rosetta: false
 binfmt: true
 portForwarder: ssh
 sshConfig: false
-mounts: null
+mounts:
+  - location: "$ROOT"
+    writable: true
 network:
   address: false
 YAML
@@ -59,6 +61,11 @@ else
       exit 1
     fi
   done
+  if ! grep -Fxq "  - location: \"$ROOT\"" "$CONFIG_FILE"; then
+    echo "Existing dedicated Colima profile is not mounted to this repository workspace." >&2
+    echo "Refusing to start a profile that cannot expose the checked-out source." >&2
+    exit 1
+  fi
 fi
 
 if ! "$TOOLS_ROOT/bin/colima" status --profile "$PROFILE" 2>&1 | grep -qi running; then
