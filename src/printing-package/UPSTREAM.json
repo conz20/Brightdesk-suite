@@ -19,8 +19,8 @@
     "discoveryPrivacy": {
       "sourceRepository": "conz20/Brightdesk-Printing",
       "sourcePullRequest": 2,
-      "sourceCommit": "228bc9b14bebb82f40b2dc311fa7abb015d83e79",
-      "description": "Keeps DNS-SD service URIs and network addresses inside the trusted main process; returns one-way SHA-256 service identifiers and safe display names for IP literals and IP-looking .local hosts."
+      "sourceCommit": "292efb0f747f08f61e578b7e693188c5103cac84",
+      "description": "Keeps DNS-SD service URIs and network addresses inside the trusted main process; returns keyed HMAC-SHA-256 identifiers using a random process-local key, stable only during the current process, and hides IP literals or IP-looking .local names."
     }
   }
 }
