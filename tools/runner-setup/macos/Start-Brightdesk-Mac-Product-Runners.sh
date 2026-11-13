@@ -158,25 +158,16 @@ for repository in "${REPOSITORIES[@]}"; do
   fi
 
   if [[ -e "$runner_home" || -L "$runner_home" ]]; then
-    [[ ! -L "$runner_home" && -d "$runner_home" ]] || fail "The existing product runner path is not a normal directory: $runner_home."
-    [[ ! -e "$runner_home/.runner" && ! -L "$runner_home/.runner" ]] || fail "The existing product runner folder already contains runner configuration: $runner_home. Inspect it before continuing."
-    [[ ! -e "$runner_home/.credentials" && ! -L "$runner_home/.credentials" &&
-       ! -e "$runner_home/.credentials_rsaparams" && ! -L "$runner_home/.credentials_rsaparams" ]] ||
-      fail "The existing product runner folder contains credential files: $runner_home. Inspect it before continuing."
-    [[ -f "$runner_home/config.sh" && ! -L "$runner_home/config.sh" && -x "$runner_home/config.sh" &&
-       -f "$runner_home/run.sh" && ! -L "$runner_home/run.sh" && -x "$runner_home/run.sh" &&
-       -d "$runner_home/bin" && ! -L "$runner_home/bin" &&
-       -d "$runner_home/externals" && ! -L "$runner_home/externals" ]] ||
-      fail "The existing product runner folder is incomplete or unexpected: $runner_home. Nothing was overwritten."
-    say "Reusing previously verified product runner files: $runner_home"
-  else
-    say "Preparing $repository..."
-    mkdir -m 700 "$runner_home"
-    tar -xzf "$archive_path" -C "$runner_home"
-    [[ -f "$runner_home/config.sh" && -x "$runner_home/config.sh" &&
-       -f "$runner_home/run.sh" && -x "$runner_home/run.sh" ]] ||
-      fail "The extracted product runner files are incomplete for $repository."
+    fail "An unregistered runner folder already exists at $runner_home. Nothing was executed or overwritten; inspect it and move it aside before retrying."
   fi
+
+  say "Preparing $repository..."
+  mkdir -m 700 "$runner_home"
+  tar -xzf "$archive_path" -C "$runner_home"
+  [[ -f "$runner_home/config.sh" && ! -L "$runner_home/config.sh" && -x "$runner_home/config.sh" &&
+     -f "$runner_home/run.sh" && ! -L "$runner_home/run.sh" && -x "$runner_home/run.sh" ]] ||
+    fail "The extracted product runner files are incomplete for $repository."
+
 
   registration_endpoint="repos/$OWNER/$repository/actions/runners/registration-token"
   registration_token="$(gh api --method POST "$registration_endpoint" --jq '.token')" ||
