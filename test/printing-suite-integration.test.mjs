@@ -85,3 +85,14 @@ test("macOS Suite and product bundles declare the Bonjour services and local-net
   assert.match(macConfig, /NSLocalNetworkUsageDescription/);
   assert.doesNotMatch(windowsConfig, /NSBonjourServices|NSLocalNetworkUsageDescription/);
 });
+
+
+test("macOS printer discovery helper is a universal Apple Silicon and Intel executable",()=>{
+ const macBuild=read("src/printing-package/tools/build-macos-printer-discovery.sh");
+ const upstream=JSON.parse(read("src/printing-package/UPSTREAM.json"));
+ assert.match(macBuild,/arm64-apple-macosx/);
+ assert.match(macBuild,/x86_64-apple-macosx/);
+ assert.match(macBuild,/xcrun lipo -create/);
+ assert.ok(macBuild.includes('lipo "$OUTPUT" -verify_arch arm64 x86_64'));
+ assert.equal(upstream.localPatches.macOSBuildScript.sourceCommit,"1b1d7264413520885b400884103095196377a659");
+});
