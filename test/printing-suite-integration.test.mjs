@@ -122,3 +122,16 @@ test("prepares a content-only print document for every Brightdesk product", () =
   assert.match(css, /#brightdesk-print-root/);
   assert.match(css, /data-app=["']slides["']/);
 });
+
+
+test("Brightdesk Forms includes the preview and response panels required for printable forms", () => {
+  const html = read("src/index.html");
+  for (const id of [
+    "forms-questions-panel",
+    "forms-preview-panel",
+    "forms-response-form",
+    "forms-responses-panel",
+    "forms-response-list",
+    "forms-status"
+  ]) assert.match(html, new RegExp(`id="${id}"`));
+});
