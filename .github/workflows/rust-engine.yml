@@ -10,7 +10,8 @@ permissions:
   contents: read
 concurrency:
   group: brightdesk-rust-native-${{ github.ref }}
-  cancel-in-progress: true
+  queue: max
+  cancel-in-progress: false
 jobs:
   native:
     # This repository's free self-hosted Mac runner replaces paid hosted runners.
