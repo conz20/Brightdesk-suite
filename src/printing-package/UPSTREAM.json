@@ -15,6 +15,12 @@
       "sourcePullRequest": 2,
       "sourceCommit": "bb057ac192faa714e92deb218768506301d21367",
       "description": "Writes the temporary COFF object file to a disposable temp directory and cleans it after the native build."
+    },
+    "discoveryPrivacy": {
+      "sourceRepository": "conz20/Brightdesk-Printing",
+      "sourcePullRequest": 2,
+      "sourceCommit": "f3156b5fbcf2f03af2a7b89fc1825bffad7f8e3a",
+      "description": "Keeps DNS-SD service URIs and network addresses inside the trusted main process; returns one-way SHA-256 service identifiers and safe display names."
     }
   }
 }
