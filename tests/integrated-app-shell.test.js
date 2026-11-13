@@ -18,10 +18,13 @@ test('provides a safe external link to Brightdesk Help',()=>{
   const helpUrl='https://conz20.github.io/Brightdesk-Wiki/';
   const pageHtml=require('node:fs').readFileSync(require('node:path').join(__dirname,'..','src','index.html'),'utf8');
   const mainSource=require('node:fs').readFileSync(require('node:path').join(__dirname,'..','src','main.js'),'utf8');
-  const link=pageHtml.match(/<a\\b[^>]*id="help-link"[^>]*>Help<\\/a>/);
-  assert.ok(link,'Help link is present in the Suite header');
-  assert.ok(link[0].includes('href="'+helpUrl+'"'),'Help opens the Wiki home page');
-  assert.ok(link[0].includes('target="_blank"')&&link[0].includes('rel="noopener noreferrer"'),'Help opens safely outside the Suite');
+  const linkStart=pageHtml.indexOf('<a class="secondary help-link" id="help-link"');
+  const linkEnd=pageHtml.indexOf('>Help</a>',linkStart);
+  assert.notEqual(linkStart,-1,'Help link is present in the Suite header');
+  assert.notEqual(linkEnd,-1,'Help link has a visible label');
+  const link=pageHtml.slice(linkStart,linkEnd+9);
+  assert.ok(link.includes('href="'+helpUrl+'"'),'Help opens the Wiki home page');
+  assert.ok(link.includes('target="_blank"')&&link.includes('rel="noopener noreferrer"'),'Help opens safely outside the Suite');
   assert.ok(mainSource.includes("target.origin !== 'https://conz20.github.io'"),'external navigation is host-restricted');
   assert.ok(mainSource.includes("target.pathname.startsWith('/Brightdesk-Wiki/')"),'external navigation is path-restricted');
   assert.ok(mainSource.includes('shell.openExternal(target.href)'),'approved Help navigation opens in the system browser');
