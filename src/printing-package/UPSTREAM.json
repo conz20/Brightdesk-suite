@@ -19,8 +19,8 @@
     "discoveryPrivacy": {
       "sourceRepository": "conz20/Brightdesk-Printing",
       "sourcePullRequest": 2,
-      "sourceCommit": "292efb0f747f08f61e578b7e693188c5103cac84",
-      "description": "Keeps DNS-SD service URIs and network addresses inside the trusted main process; returns keyed HMAC-SHA-256 identifiers using a random process-local key, stable only during the current process, and hides IP literals or IP-looking .local names."
+      "sourceCommit": "f7d67df786f517087af0f0efcc413cdae23c4c1d",
+      "description": "Keeps DNS-SD URIs and raw Windows WSD device IDs inside the trusted main process; returns keyed HMAC-SHA-256 selectors with process-lifetime scope, invalidated on fresh WSD discovery, and hides IP literals or IP-looking .local names."
     }
   }
 }
