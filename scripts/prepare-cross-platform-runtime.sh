@@ -63,7 +63,7 @@ fi
 
 if ! "$TOOLS_ROOT/bin/colima" status --profile "$PROFILE" 2>&1 | grep -qi running; then
   echo "Starting the dedicated ARM64 Virtualization.framework runtime with QEMU binfmt enabled." >&2
-  "$TOOLS_ROOT/bin/colima" start "$PROFILE" \
+  "$TOOLS_ROOT/bin/colima" start --profile "$PROFILE" \
     --arch aarch64 \
     --vm-type vz \
     --runtime docker \
