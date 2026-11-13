@@ -175,9 +175,8 @@ test("keeps discovered network printer addresses and service URIs out of product
       }
     });
 
-    const expectedId = `dns-sd:${createHash("sha256").update(serviceUri, "utf8").digest("hex")}`;
-    assert.deepEqual(printers, [{
-      id: expectedId,
+    const plainDigest = `dns-sd:${createHash("sha256").update(serviceUri, "utf8").digest("hex")}`;
+    assert.deepEqual(printers.map(({ id, ...printer }) => printer), [{
       displayName: "Network printer",
       source: "dns-sd",
       availability: "discovered",
@@ -186,6 +185,8 @@ test("keeps discovered network printer addresses and service URIs out of product
     assert.equal(Object.hasOwn(printers[0], "uri"), false);
     assert.equal(JSON.stringify(printers).includes(serviceUri), false);
     assert.equal(JSON.stringify(printers).includes(address), false);
+    assert.match(printers[0].id, /^dns-sd:[a-f0-9]{64}$/);
+    assert.notEqual(printers[0].id, plainDigest);
   }
 });
 
