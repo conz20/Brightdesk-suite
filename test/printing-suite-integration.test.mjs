@@ -275,3 +275,18 @@ test("offers an explicit network-printer search and safe result actions", () => 
   assert.match(app, /window\.brightdesk\.printing\.openPrinterSettings\(\)/);
   assert.doesNotMatch(app, /printer\.uri/);
 });
+
+test("shows safe configured-printer capability details and unknown values honestly", () => {
+  const html = read("src/index.html");
+  const app = read("src/app.js");
+  assert.match(html, /id="refresh-configured-printers-button"/);
+  assert.match(html, /id="configured-printer-list"/);
+  assert.match(html, /id="configured-printer-status"/);
+  assert.match(app, /window\.brightdesk\.printing\.listPrinters\(\)/);
+  assert.match(app, /window\.brightdesk\.printing\.getPrinterCapabilities\(/);
+  assert.match(app, /renderPrinterCapabilities/);
+  assert.match(app, /printing\.notReported/);
+  assert.match(app, /printing\.maximumCopies/);
+  assert.match(app, /printer\.systemName/);
+  assert.match(app, /textContent/);
+});
