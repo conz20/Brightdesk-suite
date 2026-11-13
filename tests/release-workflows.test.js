@@ -108,7 +108,7 @@ test('platform release artifacts remain in separate folders and release lock met
   assert.ok(collectIndex >= 0 && collectIndex < uploadIndex, 'verified product files are collected before the platform upload');
   assert.ok(workflow.includes('node scripts/collect-platform-release-files.js ${{ matrix.script }} release'));
   assert.ok(workflow.includes('path: release/${{ matrix.platform }}/'), 'upload includes the complete platform folder recursively');
-  assert.doesNotMatch(workflow, /readdirSync\\(root\\)/, 'the old top-level-only move must not return');
+  assert.doesNotMatch(workflow, /readdirSync\(root\)/, 'the old top-level-only move must not return');
   const collector = read('scripts/collect-platform-release-files.js');
   assert.match(collector, /Brightdesk-SHA256SUMS-PRODUCTS-/);
   assert.match(collector, /sha256RegularFile/);
@@ -442,7 +442,7 @@ test('platform bundle collection includes only the verified product installers a
     fs.writeFileSync(path.join(release, 'Brightdesk-Office-Suite-0.1.0-x64.exe'), 'suite installer');
     fs.writeFileSync(path.join(release, 'Brightdesk-SHA256SUMS-WIN.txt'), 'suite checksum');
     fs.writeFileSync(path.join(release, 'Brightdesk-Windows-LICENSE.txt'), 'licence notice');
-    fs.writeFileSync(path.join(release, 'Brightdesk-SHA256SUMS-PRODUCTS-WIN.txt'), `${checksums.join('\\n')}\\n`);
+    fs.writeFileSync(path.join(release, 'Brightdesk-SHA256SUMS-PRODUCTS-WIN.txt'), `${checksums.join('\n')}\n`);
 
     const collector = path.join(root, 'scripts', 'collect-platform-release-files.js');
     execFileSync(process.execPath, [collector, 'win', release], { encoding: 'utf8' });
