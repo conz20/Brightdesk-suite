@@ -207,13 +207,13 @@ test('all private self-hosted pull-request workflows reject fork-controlled code
     '.github/workflows/rust-engine.yml',
     '.github/workflows/verify-macos-installer.yml'
   ];
-  const guard = /if:\\s*github\\.event_name != 'pull_request' \\|\\| github\\.event\\.pull_request\\.head\\.repo\\.full_name == github\\.repository/;
+  const guard = "if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository";
 
   for (const file of files) {
     const workflow = read(file);
     assert.match(workflow, /pull_request:/, file + ' must retain pull-request checks');
     assert.match(workflow, /runs-on:.*self-hosted/, file + ' must use the private runner');
-    assert.match(workflow, guard, file + ' must not run fork-controlled pull-request code');
+    assert.ok(workflow.includes(guard), file + ' must not run fork-controlled pull-request code');
   }
 });
 
