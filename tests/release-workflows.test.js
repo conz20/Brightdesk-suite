@@ -453,7 +453,8 @@ test('platform bundle collection includes only the verified product installers a
 
     fs.writeFileSync(path.join(release, 'Brightdesk-Windows-LICENSE.txt'), 'licence notice');
     fs.writeFileSync(path.join(release, 'Brightdesk-Windows-TERMS_AND_CONDITIONS.txt'), 'terms');
-    fs.writeFileSync(path.join(release, 'Brightdesk-Windows-THIRD_PARTY_NOTICES.md'), 'third-party notices');\n    writeSuiteManifest(release, 'WIN', [
+    fs.writeFileSync(path.join(release, 'Brightdesk-Windows-THIRD_PARTY_NOTICES.md'), 'third-party notices');
+    writeSuiteManifest(release, 'WIN', [
       'Brightdesk-Office-Suite-0.1.0-x64.exe',
       'Brightdesk-Windows-TERMS_AND_CONDITIONS.txt',
       'Brightdesk-Windows-LICENSE.txt',
@@ -504,7 +505,8 @@ test('platform collection rejects changed product installers before moving any r
 
     fs.writeFileSync(path.join(release, 'Brightdesk-Windows-TERMS_AND_CONDITIONS.txt'), 'terms');
     fs.writeFileSync(path.join(release, 'Brightdesk-Windows-LICENSE.txt'), 'licence');
-    fs.writeFileSync(path.join(release, 'Brightdesk-Windows-THIRD_PARTY_NOTICES.md'), 'notices');\n    writeSuiteManifest(release, 'WIN', [
+    fs.writeFileSync(path.join(release, 'Brightdesk-Windows-THIRD_PARTY_NOTICES.md'), 'notices');
+    writeSuiteManifest(release, 'WIN', [
       'Brightdesk-Office-Suite-0.1.0-x64.exe',
       'Brightdesk-Windows-TERMS_AND_CONDITIONS.txt',
       'Brightdesk-Windows-LICENSE.txt',
@@ -599,7 +601,8 @@ test('platform collection rejects unexpected top-level files before moving any r
 
     fs.writeFileSync(path.join(release, 'Brightdesk-Windows-TERMS_AND_CONDITIONS.txt'), 'terms');
     fs.writeFileSync(path.join(release, 'Brightdesk-Windows-LICENSE.txt'), 'licence');
-    fs.writeFileSync(path.join(release, 'Brightdesk-Windows-THIRD_PARTY_NOTICES.md'), 'notices');\n    writeSuiteManifest(release, 'WIN', [
+    fs.writeFileSync(path.join(release, 'Brightdesk-Windows-THIRD_PARTY_NOTICES.md'), 'notices');
+    writeSuiteManifest(release, 'WIN', [
       'Brightdesk-Office-Suite-0.1.0-x64.exe',
       'Brightdesk-Windows-TERMS_AND_CONDITIONS.txt',
       'Brightdesk-Windows-LICENSE.txt',
