@@ -17,6 +17,7 @@ REPOSITORIES=(
   'Brightdesk-Release-Tools'
   'Brightdesk-Services'
   'Brightdesk-Assets'
+  'Brightdesk-Printing'
   'Brightdesk-Lists'
   'Brightdesk-Pages'
   'Brightdesk-Database'
@@ -82,7 +83,7 @@ github_user="$(gh api user --jq '.login' 2>/dev/null)" || fail 'GitHub CLI could
 
 say ''
 say 'BRIGHTDESK PRIVATE MAC RUNNER SETUP'
-say 'This will prepare up to eleven repository-scoped runners on this Apple-silicon Mac.'
+say 'This will prepare up to twelve repository-scoped runners on this Apple-silicon Mac.'
 say 'The runners can execute workflows from their matching private Brightdesk repositories.'
 say 'This adds repository-scoped Actions runners only; it does not change permissions, secrets, workflows, visibility, branch protection or releases.'
 say 'The runner registrations are local to this Mac and will not auto-start after a reboot.'
@@ -128,6 +129,9 @@ for repository in "${REPOSITORIES[@]}"; do
   repository_url="https://github.com/$OWNER/$repository"
   extra_label=''
   case "$repository" in
+    Brightdesk-Printing)
+      extra_label='brightdesk-printing-ci'
+      ;;
     Brightdesk-Lists|Brightdesk-Pages|Brightdesk-Database|Brightdesk-Decks)
       extra_label='brightdesk-product-ci'
       ;;
@@ -135,7 +139,7 @@ for repository in "${REPOSITORIES[@]}"; do
 
   required_labels='["self-hosted","macOS","ARM64"]'
   if [[ -n "$extra_label" ]]; then
-    required_labels='["self-hosted","macOS","ARM64","brightdesk-product-ci"]'
+    required_labels="[\"self-hosted\",\"macOS\",\"ARM64\",\"$extra_label\"]"
   fi
 
   runners_endpoint="repos/$OWNER/$repository/actions/runners?per_page=100"
