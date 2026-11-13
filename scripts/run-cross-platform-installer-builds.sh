@@ -4,6 +4,9 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 TOOLS_ROOT="${RUNNER_TEMP:-${TMPDIR:-/tmp}}/brightdesk-cross-tools"
 export PATH="$TOOLS_ROOT/bin:$PATH"
+export COLIMA_HOME="$TOOLS_ROOT/colima-home"
+export COLIMA_CACHE_HOME="$TOOLS_ROOT/colima-cache"
+export DOCKER_CONFIG="$TOOLS_ROOT/docker-config"
 IMAGE="brightdesk-cross-builder:node-24.22.2-rust-1.99.1"
 
 CONTEXT="$(bash "$ROOT/scripts/prepare-cross-platform-runtime.sh")"
