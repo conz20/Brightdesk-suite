@@ -559,3 +559,234 @@ body.suite-home .sidebar > .nav small { display: none; }
 body.suite-home .main > footer { display: none; }
 
 body.suite-home .app-manager.home-view .manager-hero .eyebrow { display: none; }
+
+
+/* Product-aware print output. The OS still owns the printer and print settings. */
+#brightdesk-print-root { display: none; }
+
+@media print {
+  @page { margin: 12mm; }
+  html, body {
+    display: block !important;
+    width: auto !important;
+    height: auto !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: visible !important;
+    background: #fff !important;
+    color: #111 !important;
+  }
+  body > :not(#brightdesk-print-root) { display: none !important; }
+  body > #brightdesk-print-root {
+    display: block !important;
+    position: static !important;
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+    background: #fff !important;
+    color: #111 !important;
+    font: 10pt/1.45 Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif !important;
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+  #brightdesk-print-root * {
+    box-sizing: border-box !important;
+    max-height: none !important;
+    overflow: visible !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+    animation: none !important;
+    transition: none !important;
+  }
+  #brightdesk-print-root .brightdesk-print-heading {
+    display: block !important;
+    margin: 0 0 8mm !important;
+    padding: 0 0 4mm !important;
+    border-bottom: 1px solid #b8bec8 !important;
+  }
+  #brightdesk-print-root .brightdesk-print-heading h1 {
+    margin: 0 !important;
+    color: #111 !important;
+    font-size: 18pt !important;
+  }
+  #brightdesk-print-root h1,
+  #brightdesk-print-root h2,
+  #brightdesk-print-root h3 {
+    break-after: avoid;
+    page-break-after: avoid;
+  }
+  #brightdesk-print-root .editor {
+    display: block !important;
+    min-height: 0 !important;
+    padding: 0 !important;
+    overflow: visible !important;
+    color: #111 !important;
+  }
+  #brightdesk-print-root .sheet-wrap,
+  #brightdesk-print-root .slide-wrap,
+  #brightdesk-print-root .notes-wrap {
+    display: block !important;
+    min-height: 0 !important;
+    padding: 0 !important;
+    overflow: visible !important;
+  }
+  #brightdesk-print-root .sheet {
+    width: 100% !important;
+    min-width: 0 !important;
+    border-collapse: collapse !important;
+    table-layout: auto !important;
+    white-space: normal !important;
+  }
+  #brightdesk-print-root .sheet th,
+  #brightdesk-print-root .sheet td {
+    min-width: 0 !important;
+    height: auto !important;
+    padding: 4px !important;
+    border: 1px solid #9ca3af !important;
+    color: #111 !important;
+    background: #fff !important;
+    word-break: break-word !important;
+  }
+  #brightdesk-print-root .brightdesk-print-field {
+    display: inline-block !important;
+    min-width: 1.5em;
+    color: #111 !important;
+    white-space: pre-wrap !important;
+  }
+  #brightdesk-print-root .brightdesk-print-slide {
+    display: flex !important;
+    min-height: 230mm !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    padding: 12mm !important;
+    border: 1px solid #c8ccd4 !important;
+    break-after: page;
+    page-break-after: always;
+  }
+  #brightdesk-print-root .brightdesk-print-slide:last-child {
+    break-after: auto;
+    page-break-after: auto;
+  }
+  #brightdesk-print-root .brightdesk-print-slide-number {
+    margin: 0 0 12mm !important;
+    color: #5b6472 !important;
+    font-size: 9pt !important;
+  }
+  #brightdesk-print-root .brightdesk-print-slide h2 {
+    margin: 0 0 8mm !important;
+    color: #24243d !important;
+    font-size: 28pt !important;
+    text-align: center !important;
+  }
+  #brightdesk-print-root .brightdesk-print-slide-body {
+    margin: 0 !important;
+    color: #44445f !important;
+    font-size: 17pt !important;
+    line-height: 1.5 !important;
+    text-align: center !important;
+    white-space: pre-wrap !important;
+  }
+  #brightdesk-print-root .todo-app,
+  #brightdesk-print-root .lists-app,
+  #brightdesk-print-root .forms-app,
+  #brightdesk-print-root .planner-app,
+  #brightdesk-print-root .database-app,
+  #brightdesk-print-root .workspace-app {
+    display: block !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: #fff !important;
+    color: #111 !important;
+  }
+  #brightdesk-print-root .todo-sidebar,
+  #brightdesk-print-root .todo-search-label,
+  #brightdesk-print-root .todo-search,
+  #brightdesk-print-root .todo-create-form,
+  #brightdesk-print-root .todo-task-actions,
+  #brightdesk-print-root #todo-status,
+  #brightdesk-print-root .lists-sidebar,
+  #brightdesk-print-root .lists-toolbar,
+  #brightdesk-print-root #lists-record-form,
+  #brightdesk-print-root .lists-column-panel,
+  #brightdesk-print-root .lists-status,
+  #brightdesk-print-root .lists-main details,
+  #brightdesk-print-root .forms-sidebar,
+  #brightdesk-print-root .forms-tabs,
+  #brightdesk-print-root #forms-details-form,
+  #brightdesk-print-root #forms-add-question-form,
+  #brightdesk-print-root .planner-sidebar,
+  #brightdesk-print-root .planner-tools,
+  #brightdesk-print-root #planner-new-bucket,
+  #brightdesk-print-root #planner-new-task,
+  #brightdesk-print-root #planner-status,
+  #brightdesk-print-root .database-sidebar,
+  #brightdesk-print-root .database-toolbar,
+  #brightdesk-print-root .database-heading-actions,
+  #brightdesk-print-root .database-panel,
+  #brightdesk-print-root #database-status,
+  #brightdesk-print-root .workspace-sidebar,
+  #brightdesk-print-root .workspace-heading-actions,
+  #brightdesk-print-root #workspace-add-block,
+  #brightdesk-print-root #workspace-page-search-results,
+  #brightdesk-print-root #workspace-status,
+  #brightdesk-print-root .notes-hint {
+    display: none !important;
+  }
+  #brightdesk-print-root .todo-content,
+  #brightdesk-print-root .lists-main,
+  #brightdesk-print-root .forms-main,
+  #brightdesk-print-root .planner-main,
+  #brightdesk-print-root .database-main,
+  #brightdesk-print-root .workspace-main,
+  #brightdesk-print-root .notes-wrap textarea {
+    display: block !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    padding: 0 !important;
+    overflow: visible !important;
+  }
+  #brightdesk-print-root .todo-task-list,
+  #brightdesk-print-root .lists-table-scroll,
+  #brightdesk-print-root .database-grid-wrap,
+  #brightdesk-print-root .workspace-block-list {
+    display: block !important;
+    width: 100% !important;
+    overflow: visible !important;
+  }
+  #brightdesk-print-root .todo-task-card,
+  #brightdesk-print-root .lists-table tr,
+  #brightdesk-print-root .forms-question-card,
+  #brightdesk-print-root .forms-response-card,
+  #brightdesk-print-root .planner-task-card {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+  #brightdesk-print-root .planner-board {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    grid-auto-flow: row !important;
+    grid-auto-columns: auto !important;
+    gap: 5mm !important;
+    overflow: visible !important;
+  }
+  #brightdesk-print-root .planner-column {
+    min-width: 0 !important;
+    background: #fff !important;
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+  #brightdesk-print-root table {
+    width: 100% !important;
+    max-width: 100% !important;
+    border-collapse: collapse !important;
+  }
+  #brightdesk-print-root img {
+    max-width: 100% !important;
+    height: auto !important;
+  }
+}
