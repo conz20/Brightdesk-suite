@@ -321,3 +321,34 @@ test("uses product-aware print orientation for pages, sheets and decks", () => {
   assert.match(app, /if \(state\.app === "sheets"\) \{\s*printRequest\.orientation = "landscape"/);
   assert.match(app, /if \(state\.app === "slides"\) \{\s*printRequest\.orientation = "landscape"/);
 });
+
+
+test("every approved product print target resolves to a real product content element", () => {
+  const app = read("src/app.js");
+  const html = read("src/index.html");
+  const targets = {
+    pages: "editor",
+    sheets: "sheet-wrap",
+    slides: "slide-wrap",
+    notes: "notes-wrap",
+    database: "database-wrap",
+    forms: "forms-wrap",
+    lists: "lists-wrap",
+    planner: "planner-wrap",
+    todo: "todo-wrap",
+    loop: "workspace-app-wrap"
+  };
+  for (const [product, targetId] of Object.entries(targets)) {
+    assert.match(
+      app,
+      new RegExp(`\\b${product}: ["']${targetId}["']`),
+      `Missing print target mapping for ${product}`
+    );
+    assert.match(
+      html,
+      new RegExp(`id=["']${targetId}["']`),
+      `Print target element ${targetId} for ${product} is missing from the product UI`
+    );
+  }
+  assert.equal(Object.keys(targets).length, 10);
+});
