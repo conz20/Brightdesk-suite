@@ -57,6 +57,12 @@
             </div>
             <button type="button" class="secondary small-action" id="refresh-configured-printers-button" data-i18n="printing.refreshPrinters">Refresh printer list</button>
           </header>
+          <div class="print-printer-selection">
+            <label for="print-printer-select">Printer to use</label>
+            <select id="print-printer-select" aria-describedby="configured-printer-status">
+              <option value="">Choose a printer</option>
+            </select>
+          </div>
           <p id="configured-printer-status" role="status" aria-live="polite" data-i18n="printing.configuredPrompt">Choose Refresh printer list to see printers already set up on this device.</p>
           <ul class="configured-printer-list" id="configured-printer-list" aria-label="Configured printer capabilities"></ul>
         </section>
