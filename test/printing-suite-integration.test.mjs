@@ -366,3 +366,25 @@ test("print snapshots preserve live form values and remove interactive controls"
   assert.match(app, /content\.querySelectorAll\("\[hidden\]"\)\.forEach\(\(element\) => element\.remove\(\)\)/);
   assert.match(app, /original\.type === "hidden"/);
 });
+
+
+test("print stylesheet lays out the ten product workspaces and paginates long content safely", () => {
+  const css = read("src/styles.css");
+  assert.match(css, /#brightdesk-print-root\s*\{\s*display:\s*none/);
+  assert.match(css, /@media print\s*\{/);
+  for (const productClass of [
+    "todo-app",
+    "lists-app",
+    "forms-app",
+    "planner-app",
+    "database-app",
+    "workspace-app"
+  ]) {
+    assert.ok(css.includes(`#brightdesk-print-root .${productClass}`), `Missing print layout for ${productClass}`);
+  }
+  assert.match(css, /#brightdesk-print-root \.sheet\s*\{/);
+  assert.match(css, /#brightdesk-print-root table\s*\{/);
+  assert.match(css, /break-inside:\s*avoid/);
+  assert.match(css, /break-after:\s*page/);
+  assert.match(css, /#brightdesk-print-root img\s*\{/);
+});
