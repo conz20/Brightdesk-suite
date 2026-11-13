@@ -115,7 +115,9 @@
       "TERMS_AND_CONDITIONS.txt"
     ],
     "asarUnpack": [
-      "native/brightdesk_engine.node"
+      "native/brightdesk_engine.node",
+      "src/printing-package/native/macos/brightdesk-ipp-discovery",
+      "src/printing-package/native/windows/brightdesk-ipp-discovery.exe"
     ],
     "directories": {
       "output": "release",
@@ -144,7 +146,15 @@
       ],
       "category": "public.app-category.productivity",
       "artifactName": "Brightdesk-Office-Suite-${version}-${arch}.${ext}",
-      "icon": "suite.svg"
+      "icon": "suite.svg",
+      "extendInfo": {
+        "NSBonjourServices": [
+          "_ipp._tcp",
+          "_ipps._tcp",
+          "_printer._tcp"
+        ],
+        "NSLocalNetworkUsageDescription": "Brightdesk uses your local network to discover printers you choose to use."
+      }
     },
     "dmg": {
       "sign": false,
