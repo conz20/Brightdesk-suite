@@ -1111,8 +1111,13 @@ async function printCurrent() {
       setStatus('No printer is available yet. Use Printer settings to add one, then try again.');
       return;
     }
+    const selectedPrinter = $('print-printer-select').value;
+    if (!selectedPrinter) {
+      setStatus('Choose a printer in Find network printers before printing.');
+      return;
+    }
     printDocument = createBrightdeskPrintDocument();
-    const printRequest = { printBackground: true };
+    const printRequest = { printBackground: true, printerName: selectedPrinter };
     if (state.app === "slides") {
       printRequest.orientation = "landscape";
     }
@@ -1336,13 +1341,37 @@ async function refreshConfiguredPrinters() {
   $('configured-printer-status').textContent = t('printing.loadingPrinters');
   $('configured-printer-list').replaceChildren();
   try {
-    const printers = await window.brightdesk.printing.listPrinters();
-    renderConfiguredPrinterList(Array.isArray(printers) ? printers : []);
-    $('configured-printer-status').textContent = printers?.length
+    const result = await window.brightdesk.printing.listPrinters();
+    const printers = Array.isArray(result) ? result : [];
+    renderConfiguredPrinterList(printers);
+    const select = $('print-printer-select');
+    const availableSelection = printers.some(printer => printer.systemName === select.value)
+      ? select.value
+      : '';
+    select.replaceChildren();
+    const placeholder = document.createElement('option');
+    placeholder.value = '';
+    placeholder.textContent = 'Choose a printer';
+    select.append(placeholder);
+    for (const printer of printers) {
+      const option = document.createElement('option');
+      option.value = printer.systemName;
+      option.textContent = String(printer.displayName || printer.systemName);
+      select.append(option);
+    }
+    select.value = availableSelection;
+    $('configured-printer-status').textContent = printers.length
       ? t('printing.configuredComplete')
       : t('printing.noConfiguredPrinters');
+    return printers;
   } catch (error) {
     $('configured-printer-status').textContent = error?.message || t('printing.configuredFailed');
+    $('print-printer-select').replaceChildren();
+    const placeholder = document.createElement('option');
+    placeholder.value = '';
+    placeholder.textContent = 'Choose a printer';
+    $('print-printer-select').append(placeholder);
+    return [];
   } finally {
     button.disabled = false;
   }
