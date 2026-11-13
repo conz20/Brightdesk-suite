@@ -149,4 +149,7 @@ test("prints every Decks slide as a themed 16:9 slide in landscape orientation",
   assert.ok(css.includes("aspect-ratio: 16 / 9 !important;"));
   assert.ok(css.includes("#brightdesk-print-root .brightdesk-print-slide.theme-midnight .slide-title"));
   assert.ok(css.includes("#brightdesk-print-root .brightdesk-print-slide.theme-midnight .slide-body"));
+  assert.ok(css.includes(".theme-midnight{background:#242746}"));
+  assert.ok(css.includes(".theme-paper{background:#fff;border:1px solid #e1e1e1}"));
+  assert.ok(!css.includes('  #brightdesk-print-root[data-app="slides"] .brightdesk-print-slide {\n    background: #fff !important;'));
 });
