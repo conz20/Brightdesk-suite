@@ -23,10 +23,7 @@ docker --context "$CONTEXT" info >/dev/null
 docker --context "$CONTEXT" build --platform linux/amd64 --tag "$IMAGE" \
   --file "$ROOT/tools/release-cross-build/Dockerfile" "$ROOT/tools/release-cross-build"
 
-architecture="$(docker --context "$CONTEXT" run --rm \
-  --platform linux/amd64 \
-  --entrypoint /bin/uname \
-  "$IMAGE" -m)"
+architecture="$(docker --context "$CONTEXT" run --rm --platform linux/amd64 --entrypoint /bin/uname "$IMAGE" -m)"
 if [[ "$architecture" != "x86_64" ]]; then
   echo "Cross-build image is not executing as x86_64 under QEMU binfmt: $architecture" >&2
   exit 1
