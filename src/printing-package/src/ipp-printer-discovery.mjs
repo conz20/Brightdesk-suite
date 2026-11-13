@@ -49,7 +49,7 @@ function normalizeWindowsWsdService(line) {
   if (!deviceId || !displayName) return null;
 
   const id = createOpaquePrinterId("wsd", deviceId);
-  WSD_DEVICE_ID_BY_PUBLIC_ID.set(id, deviceId);
+  rememberWsdDeviceId(id, deviceId);
 
   return {
     id,
@@ -66,6 +66,18 @@ function normalizeWindowsWsdService(line) {
 function createOpaquePrinterId(namespace, value) {
   const scopedValue = `${namespace}\\0${value}`;
   return `${namespace}:${createHmac("sha256", DISCOVERY_ID_KEY).update(scopedValue, "utf8").digest("hex")}`;
+}
+
+function rememberWsdDeviceId(publicId, deviceId) {
+  // Keep selections usable across independent Suite windows and refreshes,
+  // while bounding memory and never exposing the underlying Windows ID.
+  WSD_DEVICE_ID_BY_PUBLIC_ID.delete(publicId);
+  WSD_DEVICE_ID_BY_PUBLIC_ID.set(publicId, deviceId);
+  while (WSD_DEVICE_ID_BY_PUBLIC_ID.size > 4096) {
+    const oldestId = WSD_DEVICE_ID_BY_PUBLIC_ID.keys().next().value;
+    if (oldestId === undefined) break;
+    WSD_DEVICE_ID_BY_PUBLIC_ID.delete(oldestId);
+  }
 }
 
 function normalizePrinterService(uri) {
@@ -160,8 +172,6 @@ export async function discoverNetworkPrinterServices({
       `Network printer DNS-SD discovery is not implemented for platform "${platform}".`,
     );
   }
-
-  if (platform === "win32") WSD_DEVICE_ID_BY_PUBLIC_ID.clear();
 
   const { command, args } = getDiscoveryCommand(platform);
   let result;
