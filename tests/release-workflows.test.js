@@ -301,7 +301,7 @@ test('Mac runner setup documentation explains scope, token handling and no-servi
   assert.ok(releaseGuide.includes('Start-Brightdesk-Mac-Foundation-Runners.sh'));
   assert.ok(releaseGuide.includes('Brightdesk-Printing'));
   assert.ok(releaseGuide.includes('brightdesk-printing-ci'));
-  assert.ok(releaseGuide.includes('twelve repository-scoped runners'));
+  assert.ok(releaseGuide.includes('those twelve repositories'));
   assert.match(releaseGuide, /Brightdesk-Common-Actions/);
   assert.ok(instructions.includes('these twelve repositories'));
   assert.ok(instructions.includes('Brightdesk-Printing receives the separate "brightdesk-printing-ci" label'));
