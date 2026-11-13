@@ -95,4 +95,12 @@ test("macOS printer discovery helper is a universal Apple Silicon and Intel exec
  assert.match(macBuild,/xcrun lipo -create/);
  assert.ok(macBuild.includes('lipo "$OUTPUT" -verify_arch arm64 x86_64'));
  assert.equal(upstream.localPatches.macOSBuildScript.sourceCommit,"1b1d7264413520885b400884103095196377a659");
+
+ const windowsBuild=read("src/printing-package/tools/build-windows-printer-discovery.ps1");
+ assert.ok(windowsBuild.includes('$TempDir = Join-Path'));
+ assert.ok(windowsBuild.includes('$Object = Join-Path $TempDir'));
+ assert.ok(windowsBuild.includes('finally {'));
+ assert.ok(windowsBuild.includes('Remove-Item -LiteralPath $TempDir -Recurse -Force'));
+ assert.equal(upstream.localPatches.windowsBuildScript.sourceCommit,"bb057ac192faa714e92deb218768506301d21367");
+
 });
