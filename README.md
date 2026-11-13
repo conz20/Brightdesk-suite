@@ -186,3 +186,8 @@ The helper covers Common Actions, Developer Tools, Extensions, Wiki, Release Too
 ## Repository hygiene
 
 Generated build output and Cargo `target` directories are excluded from the tracked source tree. Build products are recreated by the local build and CI workflows; they are not committed as product source.
+
+
+## Customer Help
+
+The desktop header includes a **Help** link. It opens the Brightdesk Help home page. Help opens in the customer's normal browser. The customer help website is not yet published, so this link is not ready for customer release. Brightdesk remains usable offline; no document or product data is sent when Help is opened.
