@@ -103,7 +103,12 @@ test("macOS printer discovery helper is a universal Apple Silicon and Intel exec
  assert.ok(windowsBuild.includes('$Object = Join-Path $TempDir'));
  assert.ok(windowsBuild.includes('finally {'));
  assert.ok(windowsBuild.includes('Remove-Item -LiteralPath $TempDir -Recurse -Force'));
- assert.equal(upstream.localPatches.windowsBuildScript.sourceCommit,"bb057ac192faa714e92deb218768506301d21367");
+ assert.ok(windowsBuild.includes('vswhere.exe'));
+ assert.ok(windowsBuild.includes('VsDevCmd.bat'));
+ assert.ok(windowsBuild.includes('-arch=x64 -host_arch=x64'));
+ assert.ok(windowsBuild.includes('WindowsSdkDir'));
+ assert.doesNotMatch(windowsBuild,/Run this script from a Visual Studio Developer PowerShell/);
+ assert.equal(upstream.localPatches.windowsBuildScript.sourceCommit,"7cf74214a8b0dd732ec5c703fa47c4a25a1a40d2");
 
 });
 
