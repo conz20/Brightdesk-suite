@@ -36,12 +36,14 @@ BEFORE YOU START
 
 RUN THE SETUP
 -------------
-From a Brightdesk-suite checkout that contains this helper, use the terminal fallback below. Enter the temporary token without echoing or saving it, run the script, then clear the variable:
+From a Brightdesk-suite checkout that contains this helper, start a Bash subshell first. This avoids zsh's different `read` options in the default macOS Terminal. Enter the temporary token without echoing or saving it, run the script, then clear the variable:
 
+   bash
    read -r -s -p "Temporary GitHub token: " GH_TOKEN; echo
    export GH_TOKEN
    bash tools/runner-setup/macos/Start-Brightdesk-Mac-Product-Runners.sh
    unset GH_TOKEN
+   exit
 
 The script then asks you to type REGISTER. Press Enter to cancel without registering anything.
 
