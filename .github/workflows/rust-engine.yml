@@ -10,7 +10,6 @@ permissions:
   contents: read
 concurrency:
   group: brightdesk-rust-native-${{ github.ref }}
-  queue: max
   cancel-in-progress: false
 jobs:
   native:
