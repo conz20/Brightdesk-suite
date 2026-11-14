@@ -553,3 +553,46 @@ test("Forms retains the selected Responses panel when no blank questionnaire vie
   const app = read("src/app.js");
   assert.match(app, /if \(formsPrintView\) content\.replaceChildren\(formsPrintView\)/);
 });
+
+
+test("Forms print view provides suitable writing space for long text and date questions", async () => {
+  const { JSDOM } = await import("jsdom");
+  const helper = read("src/printing-dom.js");
+  const dom = new JSDOM(`<!doctype html>
+    <section class="forms-app">
+      <h2 id="forms-title">Appointment request</h2>
+      <p id="forms-description">Choose a date and describe what you need.</p>
+      <form class="forms-question-card">
+        <input name="label" value="Preferred date">
+        <select name="type"><option value="date" selected>Date</option></select>
+        <input name="options" value="">
+        <input name="required" type="checkbox">
+      </form>
+      <form class="forms-question-card">
+        <input name="label" value="More details">
+        <select name="type"><option value="long-text" selected>Long answer</option></select>
+        <input name="options" value="">
+        <input name="required" type="checkbox" checked>
+      </form>
+      <form class="forms-question-card">
+        <input name="label" value="Preferred contact method">
+        <select name="type"><option value="choice" selected>Single choice</option></select>
+        <input name="options" value="Email, Phone">
+        <input name="required" type="checkbox">
+      </form>
+    </section>`, { runScripts: "outside-only" });
+  dom.window.eval(helper);
+  const app = dom.window.document.querySelector(".forms-app");
+  const view = dom.window.BrightdeskPrintDom.createFormsPrintView(app);
+  assert.equal(view.querySelectorAll(".brightdesk-print-question").length, 3);
+  assert.equal(view.querySelectorAll(".brightdesk-print-answer-line").length, 1);
+  assert.equal(view.querySelectorAll(".brightdesk-print-answer-space").length, 1);
+  assert.deepEqual(
+    Array.from(view.querySelectorAll(".brightdesk-print-answer-options li"), item => item.textContent.trim()),
+    ["□ Email", "□ Phone"]
+  );
+  assert.match(view.textContent, /Preferred date/);
+  assert.match(view.textContent, /More details/);
+  assert.match(view.textContent, /Preferred contact method/);
+  dom.window.close();
+});
