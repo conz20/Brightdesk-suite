@@ -54,6 +54,12 @@ test('registration uses per-repository short-lived tokens without installing a b
   assert.doesNotMatch(script, /launchctl|sudo\s|systemctl|--token-file/i);
 });
 
+test('repository-scoped runners rely on the repository default rather than an explicit organisation runner group', () => {
+  assert.match(script, /--url "\$repository_url"/);
+  assert.match(script, /--runnergroup/); // option is absent from the full config argument list below
+  assert.doesNotMatch(script, /--runnergroup\s/);
+});
+
 test('setup requires a temporary fine-grained token and a clean CLI configuration directory', () => {
   assert.match(script, /\[\[ -n "\$\{GH_TOKEN:-\}" \]\]/);
   assert.match(script, /GH_CONFIG_DIR=/);
