@@ -805,6 +805,21 @@ body.suite-home .app-manager.home-view .manager-hero .eyebrow { display: none; }
     max-width: 100% !important;
     border-collapse: collapse !important;
   }
+  #brightdesk-print-root .lists-table,
+  #brightdesk-print-root .database-data-grid {
+    width: 100% !important;
+    min-width: 0 !important;
+    white-space: normal !important;
+  }
+  #brightdesk-print-root .lists-table th,
+  #brightdesk-print-root .lists-table td,
+  #brightdesk-print-root .database-data-grid th,
+  #brightdesk-print-root .database-data-grid td {
+    min-width: 0 !important;
+    white-space: normal !important;
+    overflow-wrap: anywhere !important;
+    word-break: break-word !important;
+  }
   #brightdesk-print-root img {
     max-width: 100% !important;
     height: auto !important;
