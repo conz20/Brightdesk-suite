@@ -398,7 +398,7 @@ test("print stylesheet lays out the ten product workspaces and paginates long co
 test("print DOM removes action-only table columns without losing row data", async () => {
   const { JSDOM } = await import("jsdom");
   const helper = read("src/printing-dom.js");
-  const dom = new JSDOM("<!doctype html><table><thead><tr><th>Name</th><th>Actions</th></tr></thead><tbody><tr><td>Meeting</td><td><button>Edit</button><button>Delete</button></td></tr><tr><td colspan='2'>No records</td></tr></tbody></table>", { runScripts: "outside-only" });
+  const dom = new JSDOM("<!doctype html><table class='lists-table'><thead><tr><th>Name</th><th>Actions</th></tr></thead><tbody><tr><td>Meeting</td><td><button>Edit</button><button>Delete</button></td></tr><tr><td colspan='2'>No records</td></tr></tbody></table>", { runScripts: "outside-only" });
   dom.window.eval(helper);
   const table = dom.window.document.querySelector("table");
   dom.window.BrightdeskPrintDom.removeActionColumns(table);
@@ -406,6 +406,21 @@ test("print DOM removes action-only table columns without losing row data", asyn
     [{ text: "Name", colspan: 1 }],
     [{ text: "Meeting", colspan: 1 }],
     [{ text: "No records", colspan: 1 }]
+  ]);
+  dom.window.close();
+});
+
+
+test("print cleanup preserves Actions columns in customer-authored tables", async () => {
+  const { JSDOM } = await import("jsdom");
+  const helper = read("src/printing-dom.js");
+  const dom = new JSDOM("<!doctype html><table><thead><tr><th>Task</th><th>Actions</th></tr></thead><tbody><tr><td>Review notes</td><td>Keep this text</td></tr></tbody></table>", { runScripts: "outside-only" });
+  dom.window.eval(helper);
+  const table = dom.window.document.querySelector("table");
+  dom.window.BrightdeskPrintDom.removeActionColumns(table);
+  assert.deepEqual(Array.from(table.querySelectorAll("tr"), row => Array.from(row.cells, cell => cell.textContent.trim())), [
+    ["Task", "Actions"],
+    ["Review notes", "Keep this text"]
   ]);
   dom.window.close();
 });
