@@ -98,13 +98,16 @@ test('signing and notarisation secrets are limited to main or explicit version t
   assert.match(installerCert, /matrix\.platform == 'macOS'/, 'macOS installer certificate is macOS-only');
   assert.match(appleId, /matrix\.platform == 'macOS'/, 'Apple notarisation identity is macOS-only');
 });
-test('release publishing requires a version tag matching the checked-out package version', () => {
+test('release publishing requires the exact package version tag and all platform asset uploads', () => {
   const workflow = read('.github/workflows/build-release.yml');
   assert.doesNotMatch(workflow, /workflow_dispatch:|inputs\.publish_release/);
-  assert.ok(workflow.includes("if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v') && github.ref == format('refs/tags/v{0}', needs.collect.outputs.version)"));
-  assert.ok(workflow.includes('tag_name: ${{ github.ref_name }}'));
+  assert.ok(workflow.includes("if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')"));
+  assert.ok(workflow.includes('EXPECTED_TAG="v$VERSION"'));
+  assert.ok(workflow.includes('GITHUB_REF_NAME'));
+  assert.match(workflow, /needs: release-assets/);
+  assert.match(workflow, /draft: false/);
   assert.match(workflow, /contents: write/);
-  assert.match(workflow, /needs: collect/);
+  assert.match(workflow, /uses: softprops\/action-gh-release@8a0cd651e5b2365bd640854a3fa5dfc70e4875f3 # v3\.0\.4/);
 });
 test('Linux builds do not receive Windows or macOS signing credentials', () => {
   const workflow = read('.github/workflows/build-release.yml');
@@ -117,25 +120,21 @@ test('Linux builds do not receive Windows or macOS signing credentials', () => {
   }
 });
 
-test('platform release artifacts remain in separate folders and release lock metadata is retained', () => {
+test('platform release files attach directly to an unpublished GitHub Release without Actions artifacts', () => {
   const workflow = read('.github/workflows/build-release.yml');
-  for (const [platform, folder] of [['Linux', 'release/Linux'], ['Windows', 'release/Windows'], ['macOS', 'release/macOS']]) {
-    assert.match(workflow, new RegExp(`name: Download verified ${platform} build`));
-    assert.ok(workflow.includes(`path: ${folder}`), `${platform} is downloaded into its own folder`);
-  }
-  assert.ok(workflow.includes('name: Check out the exact release source'));
-  assert.ok(workflow.includes('ref: ${{ github.sha }}'));
-  assert.ok(workflow.includes('node-version: 24.22.2'));
-  assert.ok(workflow.includes('name: Preserve the committed dependency lock in release metadata'));
-  assert.ok(workflow.includes('cp package-lock.json release/build-metadata/package-lock.json'));
-  assert.match(workflow, /files: release\/\*\*\/\*/);
-  assert.doesNotMatch(workflow, /merge-multiple: true/);
+  assert.match(workflow, /release-assets:[\s\S]*?Place verified files in platform folder/);
+  assert.match(workflow, /release-assets:[\s\S]*?files: \|[\s\S]*?release\/\$\{\{ matrix\.platform \}\}\/\*\*/);
+  assert.match(workflow, /release-assets:[\s\S]*?fail_on_unmatched_files: true/);
+  assert.match(workflow, /release-assets:[\s\S]*?draft: true/);
+  assert.match(workflow, /publish-release:[\s\S]*?needs: release-assets[\s\S]*?draft: false/);
+  assert.ok(workflow.includes('cp package-lock.json release/macOS/build-metadata/package-lock.json'));
+  assert.doesNotMatch(workflow, /actions\/(?:upload|download)-artifact/, 'installer delivery must not consume Actions artifact storage');
+  assert.doesNotMatch(workflow, /collect:|brightdesk-Linux|brightdesk-Windows|brightdesk-macOS/);
   const prepare = read('scripts/prepare-release-assets.js');
   assert.match(prepare, /Brightdesk-\$\{label\}-LICENSE\.txt/);
   const verifier = read('scripts/verify-release-artifacts.js');
   assert.match(verifier, /Brightdesk-SHA256SUMS-\$\{platform\.toUpperCase\(\)\}/);
 });
-
 test('Node.js runtime is pinned consistently to the current 24 LTS patch', () => {
   const manifest = JSON.parse(read('package.json'));
   assert.equal(manifest.engines.node, '24.22.2');
@@ -391,18 +390,18 @@ test('self-hosted CI disables checkout credentials and registers post-job cleanu
   assert.ok(!workflow.includes('run: node scripts/cleanup-runner-workspace.js'));
 });
 
-test('release collector checkout uses one valid with block and preserves the exact commit checkout', () => {
+test('tag release preparation checks out the exact tagged commit without persistent checkout credentials', () => {
   const workflow = read('.github/workflows/build-release.yml');
   const start = workflow.indexOf('- name: Check out the exact release source');
   const end = workflow.indexOf('- name: Set up required Node.js version', start);
-  assert.ok(start >= 0 && end > start, 'release collector checkout exists');
+  assert.ok(start >= 0 && end > start, 'tag release source checkout exists');
   const checkout = workflow.slice(start, end);
   assert.ok(checkout.includes('persist-credentials: false'));
   assert.ok(checkout.includes('ref: ${{ github.sha }}'));
   assert.equal(checkout.split('        with:').length - 1, 1);
+  assert.ok(workflow.includes('prepare-release:'));
+  assert.ok(workflow.includes('needs: [prepare, prepare-release]'));
 });
-
-
 test('every self-hosted workflow registers post-job source cleanup before other actions', () => {
   const expected = [
     ['.github/workflows/build-release.yml', 4],
