@@ -133,6 +133,8 @@ Repository presence is not the same as completed integration. Shared packages an
 
 ## Development
 
+See the [approved version compatibility standard](docs/VERSION_COMPATIBILITY.md) before reusing older code, APIs or dependency examples. The portfolio baseline is enforced by Brightdesk Developer Tools.
+
 Use Node.js **24.22.2** for development, tests and release builds. Customers do not need to install Node.js; the desktop package includes its Electron runtime.
 
 Install the locked dependencies and run the main checks:
