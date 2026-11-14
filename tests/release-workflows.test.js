@@ -256,6 +256,7 @@ test('private Mac runner bootstrap is pinned, repository-scoped and token-safe',
   assert.ok(setup.includes('The existing runner folder already contains runner configuration:'));
   assert.ok(setup.includes('A compatible Mac runner is already registered but offline'));
   assert.ok(setup.includes('brightdesk-product-ci'));
+  assert.ok(setup.includes("if [[ \"$repository\" == 'Brightdesk-suite' ]]; then\n    runner_name='Brightdesk-Brightdesk-Suite-Mac-ARM64'\n  elif [[ \"$repository\" == 'Brightdesk-Lists' ]]; then\n    runner_name='Brightdesk-Brightdesk-Lists-Mac-ARM64'\n  fi"), 'Suite and Lists retain their existing registered runner names');
   for (const repository of repositories) assert.ok(setup.includes("'" + repository + "'"), repository);
   assert.ok(!setup.includes('ubuntu-latest'));
   assert.ok(!setup.includes('windows-latest'));

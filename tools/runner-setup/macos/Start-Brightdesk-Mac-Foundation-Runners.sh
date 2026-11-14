@@ -125,6 +125,8 @@ for repository in "${REPOSITORIES[@]}"; do
   runner_name="Brightdesk-Mac-$repository"
   if [[ "$repository" == 'Brightdesk-suite' ]]; then
     runner_name='Brightdesk-Brightdesk-Suite-Mac-ARM64'
+  elif [[ "$repository" == 'Brightdesk-Lists' ]]; then
+    runner_name='Brightdesk-Brightdesk-Lists-Mac-ARM64'
   fi
   runner_home="$RUNNER_ROOT/$repository"
   repository_url="https://github.com/$OWNER/$repository"

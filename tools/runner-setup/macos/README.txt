@@ -15,6 +15,7 @@ The setup covers these ten repositories:
 - Brightdesk-Services
 - Brightdesk-Assets
 - Brightdesk-Lists
+- Brightdesk-Voice
 
 Brightdesk Suite uses the runner name `Brightdesk-Brightdesk-Suite-Mac-ARM64` with the standard self-hosted, macOS and ARM64 labels. Brightdesk-Lists receives the additional label "brightdesk-product-ci" because its quality workflow requires that label. All runners retain GitHub's normal self-hosted, macOS and ARM64 labels.
 
