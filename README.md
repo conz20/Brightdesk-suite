@@ -23,7 +23,7 @@ These are the only products in the approved suite. Outlook, OneDrive, Teams and 
 
 ## The Brightdesk experience
 
-<p align="center"><img src="assets/product-experience/brightdesk-home.svg" alt="Brightdesk Office Suite production Home screen: Home, Apps and Files sidebar, ten product cards, Notifications and Settings" width="100%"></p>
+<p align="center"><img src="assets/product-experience/brightdesk-home.svg" alt="Brightdesk Office Suite Home screen: Home, Apps and Files sidebar, discreet Help link, ten product cards, Notifications and Settings" width="100%"></p>
 
 The SVG above is the approved production Home screen design and the single visual source of truth for the desktop interface. It defines the exact Home heading, Home–Apps–Files sidebar, ten original product cards, Notifications and Settings controls, spacing and visual treatment. This is the intended customer-facing design; the live desktop interface and this artwork must remain aligned.
 
