@@ -89,7 +89,7 @@ A runner process remains active after its terminal window closes. It does not au
 
 If an existing compatible runner is offline but its local files are not in the product helper's folder, the helper deliberately stops short of creating another registration. Inspect the runner in GitHub Settings > Actions > Runners and restart it from its existing local runner folder instead.
 
-If GitHub CLI does not have the required repository administration access, the script stops. Resolve the access problem through the normal account owner process; do not weaken repository permissions, change visibility or enable paid runners as a workaround.
+If the temporary fine-grained token does not have the required repository administration access, the script stops. Resolve the access problem through the normal account owner process; do not weaken repository permissions, change visibility or enable paid runners as a workaround.
 
 SHARED-HOST SECURITY BOUNDARY
 -----------------------------
