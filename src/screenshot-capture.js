@@ -194,7 +194,7 @@ async function runScreenshotCaptureTest({ app, packageVersion, readTerms, readBu
         'new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)))',
         true
       );
-      const image = await captureWindow.webContents.capturePage();
+      const image = await captureWindow.webContents.capturePage(undefined, { stayHidden: true });
       const size = image.getSize();
       if (image.isEmpty() || size.width < 1000 || size.height < 650) {
         throw new Error(target.productName + ' capture is empty or too small (' + size.width + ' × ' + size.height + ').');
