@@ -1,11 +1,30 @@
 const { app, BrowserWindow, Menu, ipcMain, dialog, Notification } = require('electron');
 const packageConfig = require('../package.json');
 const nativeEngine = require('./rust-engine');
-const { assertPackagedVersion, assertMainWindowReady } = require('./startup-smoke');
+const { assertPackagedVersion, assertMainWindowReady, assertProductWindowReady } = require('./startup-smoke');
+const { captureGuideScreenshot } = require('./guide-screenshots');
 const path = require('node:path');
 const crypto = require('node:crypto');
 const fsNative = require('node:fs');
 const fs = require('node:fs/promises');
+const guideScreenshotMode = process.env.BRIGHTDESK_GUIDE_SCREENSHOT_MODE === '1';
+if (guideScreenshotMode) {
+  const profileRoot = process.env.BRIGHTDESK_GUIDE_DATA_DIR;
+  if (typeof profileRoot !== 'string' || profileRoot.trim().length === 0) {
+    throw new Error('Brightdesk guide screenshot mode requires an isolated data directory.');
+  }
+  const isolatedPaths = {
+    appData: path.join(profileRoot, 'app-data'),
+    userData: path.join(profileRoot, 'user-data'),
+    sessionData: path.join(profileRoot, 'session-data')
+  };
+  for (const directory of Object.values(isolatedPaths)) {
+    fsNative.mkdirSync(directory, { recursive: true, mode: 0o700 });
+  }
+  app.setPath('appData', isolatedPaths.appData);
+  app.setPath('userData', isolatedPaths.userData);
+  app.setPath('sessionData', isolatedPaths.sessionData);
+}
 const { openOfficeFile, exportOfficeFile, cleanFileName, ensureExtension } = require('./file-service');
 const { BUILTIN_LANGUAGES, validateLanguagePack, getBuiltinLanguage } = require('./language-service');
 const { DictionaryService } = require('./dictionary-service');
@@ -113,7 +132,7 @@ function createSuiteProductWindow(requestedApplicationId) {
     height: 920,
     minWidth: 980,
     minHeight: 680,
-    show: true,
+    show: !guideScreenshotMode,
     title: `Brightdesk ${entry.name}`,
     icon: path.join(__dirname, 'assets', 'icons', entry.iconAsset),
     backgroundColor: '#f5f6fa',
@@ -534,6 +553,79 @@ ipcMain.handle('updates:set-settings', async (event, payload) => {
   return settings;
 });
 
+async function waitForSuiteWorkspaceReady(window) {
+  const script = [
+    'new Promise((resolve, reject) => {',
+    '  const deadline = Date.now() + 20000;',
+    '  function inspect() {',
+    "    const footer = document.querySelector('#footer-version')?.textContent?.trim() || '';",
+    "    if (document.title === 'Brightdesk Office Suite' && footer.startsWith('Brightdesk ')) { resolve(true); return; }",
+    "    if (Date.now() >= deadline) { reject(new Error('Timed out waiting for the Suite workspace to finish rendering.')); return; }",
+    '    setTimeout(inspect, 100);',
+    '  }',
+    '  inspect();',
+    '})'
+  ].join('\\n');
+  await window.webContents.executeJavaScript(script);
+  await window.webContents.executeJavaScript('new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)))');
+}
+
+async function waitForProductWorkspaceReady(window, applicationId, applicationName) {
+  const script = [
+    'new Promise((resolve, reject) => {',
+    `  const expectedApplicationId = ${JSON.stringify(applicationId)};`,
+    `  const expectedApplicationName = ${JSON.stringify(applicationName)};`,
+    '  const deadline = Date.now() + 20000;',
+    '  function inspect() {',
+    "    const workspace = document.querySelector('#workspace');",
+    "    const state = { title: document.title, appTitle: document.querySelector('#app-title')?.textContent?.trim() || '', launchAppId: window.brightdesk?.launchAppId || null, suiteLaunchedProduct: window.brightdesk?.suiteLaunchedProduct === true, hasSidebar: Boolean(document.querySelector('.sidebar')), hasWorkspace: Boolean(workspace && !workspace.hidden) };",
+    '    if (state.title === \'Brightdesk Office Suite\' && state.appTitle === expectedApplicationName && state.launchAppId === expectedApplicationId && state.suiteLaunchedProduct && state.hasSidebar && state.hasWorkspace) { resolve(state); return; }',
+    '    if (Date.now() >= deadline) { reject(new Error(\'Timed out waiting for Brightdesk \' + expectedApplicationName + \' workspace to finish rendering.\')); return; }',
+    '    setTimeout(inspect, 100);',
+    '  }',
+    '  inspect();',
+    '})'
+  ].join('\\n');
+  const state = await window.webContents.executeJavaScript(script);
+  assertProductWindowReady(state, applicationId, applicationName);
+  await window.webContents.executeJavaScript('new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)))');
+  return state;
+}
+
+async function captureGuideScreenshotSet() {
+  const outputDirectory = process.env.BRIGHTDESK_GUIDE_SCREENSHOT_DIR;
+  if (typeof outputDirectory !== 'string' || outputDirectory.trim().length === 0) {
+    throw new Error('Brightdesk guide screenshot mode requires an output directory.');
+  }
+  const allowedApplicationIds = [...supportedApplications];
+  const captures = [];
+  await waitForSuiteWorkspaceReady(mainWindow);
+  captures.push(await captureGuideScreenshot({
+    window: mainWindow,
+    applicationId: 'suite',
+    allowedApplicationIds,
+    outputDirectory
+  }));
+  for (const requestedApplicationId of allowedApplicationIds) {
+    const opened = productWindowManager.open(requestedApplicationId);
+    try {
+      await opened.ready;
+      const entry = PRODUCT_MANIFEST[requestedApplicationId];
+      await waitForProductWorkspaceReady(opened.window, requestedApplicationId, entry.name);
+      captures.push(await captureGuideScreenshot({
+        window: opened.window,
+        applicationId: requestedApplicationId,
+        allowedApplicationIds,
+        outputDirectory
+      }));
+    } finally {
+      if (!opened.window.isDestroyed()) opened.window.close();
+    }
+  }
+  console.log('Captured ' + captures.length + ' Brightdesk source-runtime screenshots: ' + captures.map(item => item.applicationId + '.png').join(', '));
+  return captures;
+}
+
 async function runPackagedStartupSmokeTest() {
   try {
     assertPackagedVersion(app.getVersion(), packageConfig.version);
@@ -547,11 +639,12 @@ async function runPackagedStartupSmokeTest() {
       hasLanguageManager: Boolean(document.querySelector('#language-manager'))
     })`);
     assertMainWindowReady(startupState);
+    if (guideScreenshotMode) await captureGuideScreenshotSet();
     if (mainWindow && !mainWindow.isDestroyed()) mainWindow.destroy();
     app.exit(0);
   } catch (error) {
     console.error('Brightdesk packaged startup smoke test failed:', error.message);
-    if (mainWindow && !mainWindow.isDestroyed()) mainWindow.destroy();
+    BrowserWindow.getAllWindows().forEach(window => { if (!window.isDestroyed()) window.destroy(); });
     app.exit(1);
   }
 }
