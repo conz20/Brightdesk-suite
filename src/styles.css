@@ -554,6 +554,10 @@ body.suite-home .app-manager.home-view .manager-grid {
 }
 
 
+/* Keep the external Help link legible against the approved deep-navy sidebar. */
+.sidebar .help-nav { color: #D7E1F1; }
+.sidebar .help-nav:hover { background: rgba(255, 255, 255, .08); }
+
 /* Keep the Home sidebar as clean as the production artwork. */
 body.suite-home .sidebar > .nav small { display: none; }
 body.suite-home .main > footer { display: none; }
