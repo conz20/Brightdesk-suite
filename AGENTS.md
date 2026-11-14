@@ -1,5 +1,9 @@
 # Brightdesk contributor instructions
 
+## Read the shared standards first
+
+Before changing a repository, read its README and the applicable Brightdesk standards. The portfolio-wide engineering, release and product-boundary rules are in [docs/ENGINEERING_AND_RELEASE_STANDARD.md](docs/ENGINEERING_AND_RELEASE_STANDARD.md); exact toolchain and migration rules are in [docs/VERSION_COMPATIBILITY.md](docs/VERSION_COMPATIBILITY.md). Apply the current approved versions and product requirements, not older instructions copied from previous projects.
+
 ## Runtime
 
 Use exactly Node.js **24.22.2 LTS**. Do not change the pinned runtime in package.json, .nvmrc, .node-version, .npmrc, the dev container or GitHub Actions without explicit project-owner approval.
@@ -14,7 +18,7 @@ Follow [docs/VERSION_COMPATIBILITY.md](docs/VERSION_COMPATIBILITY.md) for the co
 
 ## Product scope
 
-Keep the approved ten-app catalogue unchanged:
+Keep the approved ten-product catalogue unchanged:
 - Pages
 - Sheets
 - Decks
@@ -26,17 +30,21 @@ Keep the approved ten-app catalogue unchanged:
 - To Do
 - Workspace
 
-All ten app modules are now integrated into the main suite. Keep their availability and implementation claims accurate; integration does not mean final acceptance, accessibility, persistence, installer or cross-platform verification is complete.
+Brightdesk Office Suite is the shared desktop experience, not an additional product. Brightdesk-AI is private engineering tooling, not a customer product. Do not add Outlook, OneDrive, Teams or any other unapproved product.
 
-Do not add Outlook, OneDrive, Teams or any other unapproved app.
+All ten product modules are integrated into the main Suite. Keep availability and implementation claims accurate; integration does not mean final acceptance, accessibility, persistence, installer or cross-platform verification is complete.
 
-## Product identity
+## Product and service boundaries
 
-Brightdesk is an independent product. Use original names, source code, interface design and artwork. Do not claim Microsoft affiliation or copy proprietary Microsoft code or assets.
+Brightdesk is free forever. Do not introduce subscriptions, trials, paid tiers, billing, customer accounts, sign-in, passwords, profiles, activation codes, serial numbers or licence servers.
+
+Do not add telemetry, analytics, advertising, crash reporting, cloud storage, cloud sync, hosted collaboration, remote AI processing or customer-content uploads. Internet access is limited to official Brightdesk product updates and Brightdesk-controlled language-resource discovery, downloads and updates. Do not add third-party runtime dictionary downloads.
+
+Use original Brightdesk names and artwork. Do not add Adobe applications, services, dependencies or integrations. Do not copy Microsoft, Adobe or other third-party logos, code, assets or distinctive trade dress.
 
 ## Development quality
 
-Read the README before each development stage and update it whenever implementation status, commands, requirements or release readiness changes. Add or update tests for behavioral changes. Run the repository's focused tests and full test suite whenever the available environment permits. Never claim tests or builds passed unless they were actually run successfully.
+Add or update tests for behavioral changes. Run the repository's focused tests and full test suite whenever the available environment permits. Never claim tests or builds passed unless they were actually run successfully. Update the README and affected documentation when implementation, requirements or release readiness changes.
 
 ## Release safety and cost
 
