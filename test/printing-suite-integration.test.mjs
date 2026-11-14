@@ -482,3 +482,26 @@ test("Forms print view renders readable questions and answer choices", async () 
   assert.equal(view.querySelector("input, select, button, form"), null);
   dom.window.close();
 });
+
+
+test("Forms print keeps the saved responses view when the Responses tab is selected", async () => {
+  const { JSDOM } = await import("jsdom");
+  const helper = read("src/printing-dom.js");
+  const dom = new JSDOM(`<!doctype html>
+    <section class="forms-app">
+      <nav><button data-forms-tab="responses" class="active">Responses</button></nav>
+      <h2 id="forms-title">Visitor questionnaire</h2>
+      <div class="forms-question-card">
+        <input name="label" value="Your name">
+        <select name="type"><option value="short-text">Short answer</option></select>
+        <input name="required" type="checkbox">
+      </div>
+      <section id="forms-responses-panel">
+        <article class="forms-response-card"><b>Response 1</b><p>Your name: Alex</p></article>
+      </section>
+    </section>`, { runScripts: "outside-only" });
+  dom.window.eval(helper);
+  const app = dom.window.document.querySelector(".forms-app");
+  assert.equal(dom.window.BrightdeskPrintDom.createFormsPrintView(app), null);
+  dom.window.close();
+});
