@@ -111,3 +111,8 @@ test('Finder launcher verifies the owner account and writes private logs without
   assert.doesNotMatch(launcher, /open -a Terminal|osascript.*Terminal/);
   assert.doesNotMatch(launcher, /sudo\s|launchctl|systemctl/);
 });
+
+test('runner storage cannot be redirected to chmod an unrelated directory', () => {
+  assert.match(script, /^RUNNER_BASE="\$\{HOME\}\/\.brightdesk-product-ci-runners"$/m);
+  assert.doesNotMatch(script, /BRIGHTDESK_RUNNER_ROOT/);
+});
