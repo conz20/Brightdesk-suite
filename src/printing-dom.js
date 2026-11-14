@@ -1,25 +1,48 @@
 (() => {
+  function cellContainsOnlyActionButtons(cell, buttonSelector) {
+    const buttons = Array.from(cell.querySelectorAll(buttonSelector));
+    if (!buttons.length) return false;
+    return Array.from(cell.childNodes).every((node) => {
+      if (node.nodeType === 3) return !node.textContent.trim();
+      return node.nodeType === 1 && node.matches(buttonSelector);
+    });
+  }
+
   function removeActionColumns(root) {
     if (!root || typeof root.querySelectorAll !== "function") return;
     const selector = "table.lists-table, table.database-data-grid";
     const tables = [...(root.matches?.(selector) ? [root] : []), ...root.querySelectorAll(selector)];
     tables.forEach((table) => {
       const headerRows = Array.from(table.querySelectorAll("thead tr"));
-      const actionIndexes = new Set();
+      const finalHeader = headerRows[headerRows.length - 1];
+      if (!finalHeader?.cells.length) return;
+
+      // The generated action column is appended last. A user field may also
+      // be named "Actions", so never remove an earlier matching data column.
+      const actionIndex = finalHeader.cells.length - 1;
+      if (!/^actions?$/i.test(finalHeader.cells[actionIndex].textContent.trim())) return;
+
+      const buttonSelector = table.matches("table.lists-table")
+        ? "button.lists-row-action"
+        : "button.database-remove";
+      const bodyRows = Array.from(table.tBodies).flatMap((body) => Array.from(body.rows));
+      const dataRows = bodyRows.filter((row) => !(row.cells.length === 1 && row.cells[0].colSpan > actionIndex));
+
+      // Keep the column unless every populated row proves it contains only
+      // Brightdesk's own Edit/Delete controls. This protects customer data.
+      if (dataRows.some((row) => !row.cells[actionIndex] || !cellContainsOnlyActionButtons(row.cells[actionIndex], buttonSelector))) {
+        return;
+      }
+
       headerRows.forEach((row) => {
-        Array.from(row.cells).forEach((cell, index) => {
-          if (/^actions?$/i.test(cell.textContent.trim())) actionIndexes.add(index);
-        });
+        if (row.cells[actionIndex]) row.deleteCell(actionIndex);
       });
-      if (!actionIndexes.size) return;
-      Array.from(table.rows).forEach((row) => {
-        Array.from(actionIndexes).sort((a, b) => b - a).forEach((index) => {
-          if (row.cells.length === 1 && row.cells[0].colSpan > 1) {
-            row.cells[0].colSpan -= 1;
-          } else if (row.cells[index]) {
-            row.deleteCell(index);
-          }
-        });
+      bodyRows.forEach((row) => {
+        if (row.cells.length === 1 && row.cells[0].colSpan > actionIndex) {
+          row.cells[0].colSpan -= 1;
+        } else if (row.cells[actionIndex]) {
+          row.deleteCell(actionIndex);
+        }
       });
     });
   }
