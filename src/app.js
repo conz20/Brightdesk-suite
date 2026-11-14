@@ -1032,7 +1032,7 @@ function createBrightdeskPrintDocument() {
   root.id = "brightdesk-print-root";
   root.dataset.app = appId;
 
-  if (appId !== "slides") {
+  if (appId !== "slides" && appId !== "forms") {
     const heading = document.createElement("header");
     heading.className = "brightdesk-print-heading";
     const titleElement = document.createElement("h1");
@@ -1096,6 +1096,10 @@ function createBrightdeskPrintDocument() {
 
     content.querySelectorAll("button").forEach((button) => button.remove());
     window.BrightdeskPrintDom?.removeActionColumns(content);
+    if (appId === "forms") {
+      const formsPrintView = window.BrightdeskPrintDom?.createFormsPrintView(source);
+      if (formsPrintView) content.replaceChildren(formsPrintView);
+    }
     content.querySelectorAll("[hidden]").forEach((element) => element.remove());
     root.append(content);
   }
