@@ -106,8 +106,8 @@ test('README explains the dedicated runner account and narrow temporary token re
     instructions.indexOf('RUN THE SETUP'),
     instructions.indexOf('NO-TERMINAL OPTION')
   );
-  assert.match(terminalFallback, /\\n   bash\\n   read -r -s -p/);
-  assert.match(terminalFallback, /\\n   exit\\n/);
+  assert.match(terminalFallback, /\n   bash\n   read -r -s -p/);
+  assert.match(terminalFallback, /\n   exit\n/);
 });
 
 test('runner folders are separated from shared infrastructure and duplicate registrations are avoided', () => {
