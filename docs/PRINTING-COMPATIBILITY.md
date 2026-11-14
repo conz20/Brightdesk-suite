@@ -59,7 +59,7 @@ No physical printer acceptance test is recorded by this matrix. Windows native b
 
 ## Priority order
 
-1. Make network discovery and its results visible in all ten products, with an explicit user action to add/pair a discovered device and then refresh OS queues.
-2. Correct Decks to print real slide visuals and add the appropriate slide/notes/handout layouts.
-3. Add print-specific workflows for Sheets, Forms, Database, Pages, To Do, Lists, Planner, Notes, and Workspace as listed above.
-4. Run the complete app-by-app and OS-by-OS acceptance matrix with real printers. Keep every pull request draft until the relevant evidence is complete.
+1. Complete exact-head verification of the existing network-discovery panel, Windows WSD pairing, capability display and privacy safeguards across their matching operating systems. Keep a discovered device separate from a configured, usable print queue.
+2. Correct Decks to print real slide visuals and add the appropriate slide/notes/handout layouts when the product data model supports them.
+3. Complete the remaining product-specific print workflows listed above, including Sheets print areas, Database reports, explicit Forms response modes, Pages page ranges, and the relevant product pagination checks.
+4. Run the full app-by-app and OS-by-OS acceptance matrix with real printers. Keep every pull request draft until the relevant code, CI, native-build and hardware evidence is complete.
