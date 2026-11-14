@@ -29,6 +29,15 @@ test('renderer seed creates fictional local records for all ten approved product
     assert.equal(result.installedApps, 10);
     assert.deepEqual(setup.installedApps, ['pages','sheets','slides','notes','database','forms','lists','planner','todo','loop']);
     assert.equal(docs.pages.title, 'Project brief');
+    assert.match(docs.pages.html, /Website launch brief/);
+    assert.equal(docs.sheets.title, 'Delivery tracker');
+    assert.deepEqual(docs.sheets.cells[0].slice(0, 4), ['Work item', 'Owner', 'Status', 'Hours']);
+    assert.equal(docs.sheets.cells[1][0], 'Review Help guides');
+    assert.equal(docs.sheets.cells[4][3], '=SUM(D2:D4)');
+    assert.equal(docs.slides.title, 'Release roadmap');
+    assert.equal(docs.slides.slides.length, 3);
+    assert.equal(docs.slides.slides[0].title, 'A clearer Help experience');
+    assert.match(docs.notes.text, /Review each product guide/);
     assert.equal(docs.todo.tasks.length, 3);
     assert.equal(docs.todo.tasks.filter(item => item.myDay).length, 2);
     assert.equal(docs.lists.lists[0].items.length, 2);
