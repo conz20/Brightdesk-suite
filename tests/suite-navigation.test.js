@@ -184,7 +184,7 @@ test('Home sidebar footer and navigation match the production artwork', () => {
   const preload = read('src/preload.js');
   assert.ok(preload.includes('platform: process.platform,'));
   assert.ok(!app.includes("$('version-label').textContent ="));
-  assert.ok(styles.includes('body.suite-home .sidebar > .nav small { display: none; }'));
+  assert.ok(styles.includes('.sidebar > .nav small { display: none; }'));
   assert.ok(styles.includes('body.suite-home .main > footer { display: none; }'));
   assert.ok(readme.includes('with no secondary captions'));
 });
@@ -197,4 +197,20 @@ test('Home product section uses one clear heading without the Apps eyebrow', () 
   assert.ok(styles.includes('body.suite-home .app-manager.home-view .manager-hero .eyebrow { display: none; }'));
   assert.ok(readme.includes('redundant **MY APPS** label is hidden on Home'));
   assert.ok(guide.includes('Do not place an additional eyebrow label above this heading.'));
+});
+
+
+test('Suite Home, Apps and Files share clean navigation and truthful product actions', () => {
+  const app = read('src/app.js');
+  const styles = read('src/styles.css');
+  const home = read('assets/product-experience/brightdesk-home.svg');
+
+  assert.match(app, /\$\('sidebar-section-label'\)\.hidden = Boolean\(launchAppId\) \|\| suitePage;/);
+  assert.ok(styles.includes('.sidebar > .nav small { display: none; }'));
+
+  assert.equal((home.match(/>IN YOUR SUITE<\/text>/g) || []).length, 6);
+  assert.equal((home.match(/>Remove from Suite<\/text>/g) || []).length, 6);
+  assert.equal((home.match(/>AVAILABLE TO ADD<\/text>/g) || []).length, 4);
+  assert.equal((home.match(/>Add to Suite<\/text>/g) || []).length, 4);
+  assert.doesNotMatch(home, /INSTALLED|Uninstall|AVAILABLE TO INSTALL/);
 });
