@@ -67,6 +67,13 @@ test('unregistered local runner folders are never executed or reused', () => {
   assert.doesNotMatch(script, /Reusing previously verified product runner files/);
 });
 
+test('runner PID files are trusted only when the process command belongs to that runner folder', () => {
+  assert.match(script, /ps -p "\$runner_pid" -o command=/);
+  assert.match(script, /runner_command.*\*".*runner_home.*"\*/);
+  assert.match(script, /nohup "\$runner_home\/run\.sh"/);
+  assert.match(script, /index\(\$0, runner_home\) && \/run\\.sh\|Runner\\.Listener\//);
+});
+
 test('runner-label discovery uses three self-contained jq filters with no unbound variables', () => {
   const requiredLabels = 'contains(["self-hosted","macOS","ARM64","brightdesk-product-ci"])';
   assert.equal(script.split(requiredLabels).length - 1, 3);
