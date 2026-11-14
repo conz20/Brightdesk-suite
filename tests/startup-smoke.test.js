@@ -4,7 +4,7 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
-const { assertPackagedVersion, assertMainWindowReady, assertProductWindowReady } = require('../src/startup-smoke');
+const { assertPackagedVersion, assertMainWindowReady, assertProductWindowReady, assertSuiteAppManagerReady } = require('../src/startup-smoke');
 
 const root = path.join(__dirname, '..');
 
@@ -45,6 +45,35 @@ test('packaged startup rejects a partial or unloaded interface', () => {
     assert.throws(
       () => assertMainWindowReady(state),
       /did not load its required workspace controls/
+    );
+  }
+});
+
+test('Suite screenshot preparation requires the exact ten approved products on its home screen', () => {
+  const productNames = [
+    'Pages', 'Sheets', 'Decks', 'Notes', 'Database',
+    'Forms', 'Lists', 'Planner', 'To Do', 'Workspace'
+  ];
+  assert.equal(assertSuiteAppManagerReady({
+    title: 'Brightdesk Office Suite',
+    hasAppManager: true,
+    isHomeView: true,
+    productNames
+  }, productNames), true);
+
+  for (const invalidNames of [
+    productNames.slice(0, 9),
+    [...productNames, 'Wiki'],
+    [...productNames].reverse()
+  ]) {
+    assert.throws(
+      () => assertSuiteAppManagerReady({
+        title: 'Brightdesk Office Suite',
+        hasAppManager: true,
+        isHomeView: true,
+        productNames: invalidNames
+      }, productNames),
+      /did not render exactly the approved ten products/
     );
   }
 });
