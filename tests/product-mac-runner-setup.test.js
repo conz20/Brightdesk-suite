@@ -128,6 +128,12 @@ test('unregistered local runner folders are never executed or reused', () => {
 test('runner PID files are trusted only when the process command belongs to that runner folder', () => {
   assert.match(script, /ps -p "\$runner_pid" -o command=/);
   assert.match(script, /runner_command.*\*".*runner_home.*"\*/);
+  const pidFileCheck = script.slice(
+    script.indexOf('if [[ -f "$runner_pid_file" ]]'),
+    script.indexOf('runner_pid="$(ps -axo', script.indexOf('if [[ -f "$runner_pid_file" ]]'))
+  );
+  assert.match(pidFileCheck, /runner_command.*run\\.sh/);
+  assert.match(pidFileCheck, /runner_command.*Runner\\.Listener/);
   assert.match(script, /nohup "\$runner_home\/run\.sh"/);
   assert.ok(script.includes("index($0, runner_home) && /run[.]sh|Runner[.]Listener/"));
 });
