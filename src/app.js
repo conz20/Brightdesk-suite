@@ -819,7 +819,7 @@ function render() {
   const languages = state.view === 'languages';
   const suitePage = home || manager || files;
   $('sidebar-section-label').textContent = languages ? t('sidebar.settings') : (suitePage ? t('sidebar.workspace') : t('sidebar.yourApps'));
-  $('sidebar-section-label').hidden = Boolean(launchAppId);
+  $('sidebar-section-label').hidden = Boolean(launchAppId) || suitePage;
   $('home-nav').hidden = !suitePage || Boolean(launchAppId);
   $('app-centre-nav').hidden = !suitePage || Boolean(launchAppId);
   $('files-nav').hidden = !suitePage || Boolean(launchAppId);
