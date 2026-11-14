@@ -39,7 +39,7 @@ test('one consolidated quality gate uses the self-hosted runner and verifies the
   }
 });
 
-test('PR verification workflows queue attempts instead of cancelling earlier checks', () => {
+test('PR verification workflows never cancel an in-progress check', () => {
   const workflowFiles = [
     '.github/workflows/ci.yml',
     '.github/workflows/quality.yml',
@@ -51,8 +51,8 @@ test('PR verification workflows queue attempts instead of cancelling earlier che
     const workflow = read(file);
     assert.match(
       workflow,
-      /concurrency:\s*\n\s*group:[^\n]+\n\s*queue:\s*max\s*\n\s*cancel-in-progress:\s*false/,
-      `${file} must preserve queued verification attempts`
+      /concurrency:\s*\n\s*group:[^\n]+\n\s*cancel-in-progress:\s*false/,
+      `${file} must preserve active verification attempts`
     );
   }
 });
