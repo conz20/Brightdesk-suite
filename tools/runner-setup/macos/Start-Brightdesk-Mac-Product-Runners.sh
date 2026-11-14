@@ -7,7 +7,7 @@ RUNNER_VERSION='2.338.2'
 ARCHIVE_NAME="actions-runner-osx-arm64-${RUNNER_VERSION}.tar.gz"
 ARCHIVE_URL="https://github.com/actions/runner/releases/download/v${RUNNER_VERSION}/${ARCHIVE_NAME}"
 ARCHIVE_SHA256='25a065af409ffa317ab4d5a3b614dd15fc9c40f2172bc1b35a1b1258e919a388'
-RUNNER_BASE="${BRIGHTDESK_RUNNER_ROOT:-${HOME}/.brightdesk-product-ci-runners}"
+RUNNER_BASE="${HOME}/.brightdesk-product-ci-runners"
 RUNNER_ROOT="$RUNNER_BASE/products"
 
 REPOSITORIES=(
