@@ -9,6 +9,7 @@ ARCHIVE_URL="https://github.com/actions/runner/releases/download/v${RUNNER_VERSI
 ARCHIVE_SHA256='25a065af409ffa317ab4d5a3b614dd15fc9c40f2172bc1b35a1b1258e919a388'
 RUNNER_BASE="${HOME}/.brightdesk-product-ci-runners"
 RUNNER_ROOT="$RUNNER_BASE/products"
+GH_NO_CREDENTIALS_CONFIG="$RUNNER_BASE/gh-config-no-credentials"
 
 REPOSITORIES=(
   'Brightdesk-Pages'
@@ -74,9 +75,6 @@ for command_name in gh curl tar shasum nohup ps awk tr head; do
   command -v "$command_name" >/dev/null 2>&1 || fail "Required command not found: $command_name."
 done
 
-gh auth status --hostname github.com >/dev/null 2>&1 || fail 'Sign in to GitHub CLI first with: gh auth login --hostname github.com'
-github_user="$(gh api user --jq '.login' 2>/dev/null)" || fail 'GitHub CLI could not read the authenticated account.'
-[[ "$github_user" == "$OWNER" ]] || fail "GitHub CLI is authenticated as '$github_user', not '$OWNER'."
 
 say ''
 say 'BRIGHTDESK CUSTOMER-PRODUCT MAC RUNNER SETUP'
@@ -102,9 +100,20 @@ chmod 700 "$RUNNER_BASE"
 [[ ! -L "$RUNNER_ROOT" ]] || fail 'The product runner path is a symbolic link; inspect it before continuing.'
 mkdir -p "$RUNNER_ROOT"
 chmod 700 "$RUNNER_ROOT"
+[[ ! -L "$GH_NO_CREDENTIALS_CONFIG" ]] || fail 'The runner GitHub CLI config path is a symbolic link.'
+mkdir -p "$GH_NO_CREDENTIALS_CONFIG"
+chmod 700 "$GH_NO_CREDENTIALS_CONFIG"
 
 temp_directory="$(mktemp -d "${TMPDIR:-/tmp}/brightdesk-product-runners.XXXXXX")"
-trap 'rm -rf -- "$temp_directory"; unset registration_token config_args 2>/dev/null || true' EXIT
+trap 'rm -rf -- "$temp_directory"; unset registration_token config_args GH_TOKEN 2>/dev/null || true' EXIT
+export GH_CONFIG_DIR="$temp_directory/gh-config"
+mkdir -m 700 "$GH_CONFIG_DIR"
+
+[[ -n "${GH_TOKEN:-}" ]] || fail 'Setup requires a temporary fine-grained GitHub token in GH_TOKEN. Do not use a stored interactive GitHub CLI login.'
+gh auth status --hostname github.com >/dev/null 2>&1 || fail 'The temporary GitHub token was rejected. Check its owner, repository selection, permissions and expiry.'
+github_user="$(gh api user --jq '.login' 2>/dev/null)" || fail 'GitHub could not validate the temporary token.'
+[[ "$github_user" == "$OWNER" ]] || fail "The temporary token belongs to '$github_user', not '$OWNER'."
+
 archive_path="$temp_directory/$ARCHIVE_NAME"
 
 say ''
@@ -119,6 +128,7 @@ say ''
 started_count=0
 already_online_count=0
 manual_recovery_count=0
+RUNNERS_TO_START=()
 
 for repository in "${REPOSITORIES[@]}"; do
   runner_name="Brightdesk-Product-Mac-$repository"
@@ -142,8 +152,7 @@ for repository in "${REPOSITORIES[@]}"; do
     if [[ "$registered_status" == 'offline' && "$registered_labels_match" == 'true' &&
           ! -L "$runner_home" && -f "$runner_home/.runner" && ! -L "$runner_home/.runner" && -x "$runner_home/run.sh" ]]; then
       say "Restarting the already-registered product runner for $repository..."
-      start_runner "$runner_home" || fail "Could not restart $runner_name."
-      started_count=$((started_count + 1))
+      RUNNERS_TO_START+=("$runner_home")
     else
       say "Registered product runner '$runner_name' is $registered_status or has different labels."
       say "No duplicate registration was created. Inspect its labels and local folder: $runner_home"
@@ -186,7 +195,15 @@ for repository in "${REPOSITORIES[@]}"; do
   fi
   unset registration_token config_args
 
-  start_runner "$runner_home" || fail "Could not start $runner_name."
+  RUNNERS_TO_START+=("$runner_home")
+done
+
+# Clear the temporary repository-administration credential before any runner can execute workflow code.
+unset GH_TOKEN
+export GH_CONFIG_DIR="$GH_NO_CREDENTIALS_CONFIG"
+
+for runner_home in "${RUNNERS_TO_START[@]}"; do
+  start_runner "$runner_home" || fail "Could not start or restart runner for $(basename "$runner_home")."
   started_count=$((started_count + 1))
 done
 
