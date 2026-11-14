@@ -6,7 +6,7 @@ The Suite and its ten product windows use the shared adapter from the private
 ## Shared source
 
 - Upstream: `conz20/Brightdesk-Printing`
-- Mirrored source revision: `70d41095616c6d1cd3473c0ad73a6ecb5a596c05`
+- Mirrored source revision: `956024bccffc08cb85c9e8eadef5b0163fb9f9a6`
 - Snapshot location: `src/printing-package/`
 - Provenance: `src/printing-package/UPSTREAM.json`
 
@@ -56,14 +56,23 @@ user adds or pairs it through the operating system, then Brightdesk refreshes
 the configured queue list. Brightdesk does not silently create queues or
 install drivers.
 
-## Verification boundary
+## Hardware-free verification and acceptance
 
-The Suite integration includes virtual-printer tests and source/configuration
-checks. Native helper compilation must be verified on its matching operating
-system, and real printer discovery, setup, capability reporting and physical
-print acceptance still require platform hardware testing on macOS, Windows and
-Linux. A virtual queue or successful OS submission callback is not evidence
-that a physical page printed.
+No contributor or product owner needs to own, borrow or be near a printer. The
+normal acceptance path uses deterministic virtual-printer tests, simulated OS
+queue/callback outcomes, product print-layout assertions, IPC and privacy
+checks, packaging checks, and native helper build/contract checks on the
+matching operating-system runner.
 
-Do not merge the integration until the current branch's checks pass and the
-three platform build and hardware acceptance gaps have been recorded honestly.
+A virtual queue or successful simulated OS submission callback is not evidence
+that a physical page printed. Real printer discovery, capability reporting and
+physical output remain **Not physically verified** until optional device
+access is available. Those spot checks may add compatibility evidence, but
+must not block source acceptance or the normal software release gate. Never
+claim a specific printer model or universal hardware compatibility without
+actual evidence.
+
+Keep the integration draft until the current-head automated checks and the
+required platform-native build/contract checks pass. Record unavailable
+physical-device testing as a separate limitation, not as a requirement placed
+on the contributor.
