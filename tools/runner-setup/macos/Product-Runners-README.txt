@@ -36,9 +36,7 @@ BEFORE YOU START
 
 RUN THE SETUP
 -------------
-From a Brightdesk-suite checkout that contains this helper, run:
-
-    a temporary token in `GH_TOKEN`. Enter it without echoing or saving it, run the script, then clear the variable:
+From a Brightdesk-suite checkout that contains this helper, use the terminal fallback below. Enter the temporary token without echoing or saving it, run the script, then clear the variable:
 
    read -r -s -p "Temporary GitHub token: " GH_TOKEN; echo
    export GH_TOKEN
