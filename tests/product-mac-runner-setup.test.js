@@ -94,6 +94,12 @@ test('Finder launcher displays the approval dialog before providing REGISTER to 
   assert.match(launcher, /\[\[ "\$choice" == "Register" \]\] \|\| exit 0/);
 });
 
+test('setup documentation explains that product runners share one macOS user security boundary', () => {
+  assert.match(instructions, /same signed-in macOS user/);
+  assert.match(instructions, /does not create an operating-system security boundary/);
+  assert.match(instructions, /separate macOS accounts or separate hosts/);
+});
+
 test('Finder launcher verifies the owner account and writes private logs without opening Terminal', () => {
   const launcherPath = path.join(root, 'tools/runner-setup/macos/Brightdesk-Product-Runner-Setup.app/Contents/MacOS/BrightdeskProductRunnerSetup');
   const launcher = fs.readFileSync(launcherPath, 'utf8');
