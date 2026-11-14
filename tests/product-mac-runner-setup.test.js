@@ -63,13 +63,14 @@ test('setup requires a temporary fine-grained token and a clean CLI configuratio
 
 test('all registrations finish and the temporary GitHub token is cleared before any runner starts', () => {
   const tokenClear = script.indexOf('unset GH_TOKEN');
-  const loopEnd = script.indexOf('\n done', script.indexOf('for repository in'));
+  const registrationLoopStart = script.lastIndexOf('for repository in');
+  const loopEnd = script.indexOf('\ndone\n\n# Clear the temporary', registrationLoopStart);
   const firstStart = script.indexOf('start_runner "$runner_home"', tokenClear);
   assert.ok(tokenClear >= 0, 'temporary token is explicitly cleared');
   assert.ok(loopEnd >= 0, 'registration loop has completed');
   assert.ok(tokenClear > loopEnd, 'token is cleared after registration loop');
   assert.ok(firstStart > tokenClear, 'runner processes start only after token clearing');
-  assert.doesNotMatch(script.slice(script.indexOf('for repository in'), loopEnd), /start_runner "\$runner_home"/);
+  assert.doesNotMatch(script.slice(registrationLoopStart, loopEnd), /start_runner "\$runner_home"/);
 });
 
 test('Finder launcher collects the token with a hidden-answer prompt and does not use stored gh login', () => {
@@ -145,7 +146,7 @@ test('setup documentation explains that product runners share one macOS user sec
   assert.match(instructions, /separate macOS accounts or separate hosts/);
 });
 
-test('Finder launcher passes a temporary token, uses a clean config directory and writes private logs without opening Terminal', () => {
+test('Finder launcher passes a temporary token and writes private logs without opening Terminal', () => {
   const launcherPath = path.join(root, 'tools/runner-setup/macos/Brightdesk-Product-Runner-Setup.app/Contents/MacOS/BrightdeskProductRunnerSetup');
   const launcher = fs.readFileSync(launcherPath, 'utf8');
   assert.match(launcher, /gh auth status --hostname github\.com/);
