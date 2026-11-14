@@ -30,6 +30,7 @@ start_runner() {
   local runner_home="$1"
   local runner_pid_file="$runner_home/runner.pid"
   local runner_pid=''
+  local runner_command=''
 
   if [[ -f "$runner_pid_file" ]]; then
     runner_pid="$(cat "$runner_pid_file" 2>/dev/null || true)"
