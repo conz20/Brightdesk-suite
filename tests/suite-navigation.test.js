@@ -231,3 +231,17 @@ test('Home product cards match the approved concise artwork while Apps retains d
     'Your connected workspace'
   ]) assert.ok(catalog.includes("subtitle: '" + subtitle + "'"), subtitle);
 });
+
+
+test('Home product cards use the artwork vertical hierarchy and action proportions', () => {
+  const app = read('src/app.js');
+  const styles = read('src/styles.css');
+  assert.ok(app.includes("open.dataset.action = 'open';"));
+  assert.ok(app.includes("action.dataset.action = isInstalled ? 'remove-from-suite' : 'add-to-suite';"));
+  assert.ok(styles.includes('.app-manager.home-view .app-card-header {'));
+  assert.ok(styles.includes('flex-direction: column;'));
+  assert.ok(styles.includes('flex: 0 0 70px;'));
+  assert.ok(styles.includes('font-size: 19px;'));
+  assert.ok(styles.includes('.app-manager.home-view .app-card-footer [data-action="remove-from-suite"]'));
+  assert.ok(styles.includes('.app-manager.home-view .app-card-footer [data-action="add-to-suite"]'));
+});
