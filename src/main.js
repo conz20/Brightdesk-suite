@@ -122,12 +122,13 @@ function createWindow({ show = true } = {}) {
 
 function createSuiteProductWindow(requestedApplicationId) {
   const entry = PRODUCT_MANIFEST[requestedApplicationId];
+  const screenshotCapture = process.env.BRIGHTDESK_SCREENSHOT_CAPTURE_TEST === '1';
   const window = registerApplicationWindow(new BrowserWindow({
     width: 1440,
     height: 920,
     minWidth: 980,
     minHeight: 680,
-    show: true,
+    show: !screenshotCapture,
     title: `Brightdesk ${entry.name}`,
     icon: path.join(__dirname, 'assets', 'icons', entry.iconAsset),
     backgroundColor: '#f5f6fa',
@@ -584,7 +585,12 @@ app.whenReady().then(async () => {
       readTerms,
       readBundledLanguagePack,
       createWindow,
-      getMainWindow: () => mainWindow
+      getMainWindow: () => mainWindow,
+      openProductWindow: async applicationId => {
+        const opened = productWindowManager.open(applicationId);
+        await opened.ready;
+        return opened.window;
+      }
     });
     return;
   }
