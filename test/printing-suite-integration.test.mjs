@@ -6,6 +6,14 @@ import path from "node:path";
 const root = process.cwd();
 const read = (file) => fs.readFileSync(path.join(root, file), "utf8");
 
+test("configured-printer refresh returns queues and preserves lookup errors in the Print action", () => {
+  const app = read("src/app.js");
+  assert.ok(app.includes("async function refreshConfiguredPrinters({ throwOnError = false } = {})"));
+  assert.ok(app.includes("return printers;"));
+  assert.ok(app.includes("if (throwOnError) throw error;"));
+  assert.ok(app.includes("refreshConfiguredPrinters({ throwOnError: true })"));
+});
+
 test("all ten product windows expose the common Print and Printer settings actions", () => {
   const html = read("src/index.html");
   const app = read("src/app.js");
