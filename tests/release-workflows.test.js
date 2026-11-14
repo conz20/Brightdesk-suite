@@ -60,10 +60,10 @@ test('PR verification workflows never cancel an in-progress check', () => {
 test('release workflow builds and verifies all three desktop platforms on private self-hosted runners', () => {
   const workflow = read('.github/workflows/build-release.yml');
   for (const platform of ['Linux', 'Windows', 'macOS']) {
-    assert.match(workflow, new RegExp(\`platform: \${platform}\`));
+    assert.match(workflow, new RegExp(`platform: ${platform}`));
   }
   for (const command of ['dist:linux', 'dist:win', 'dist:mac', 'dist:apps:linux', 'dist:apps:win', 'dist:apps:mac', 'release:verify:linux', 'release:verify:win', 'release:verify:mac', 'release:verify:products:linux', 'release:verify:products:win', 'release:verify:products:mac']) {
-    assert.ok(workflow.includes(command), \`workflow includes \${command}\`);
+    assert.ok(workflow.includes(command), `workflow includes ${command}`);
   }
   assert.match(workflow, /node-version: 24\.22\.2/);
   assert.match(workflow, /pull_request:\s*\n\s*branches: \[main\]/);
@@ -88,10 +88,10 @@ test('signing and notarisation secrets are limited to main or explicit version t
   const buildStep = workflow.split('- name: Build Suite and all ten standalone product installers')[1];
   assert.ok(buildStep, 'build installer step exists');
   for (const secret of ['CSC_LINK', 'CSC_KEY_PASSWORD', 'CSC_INSTALLER_LINK', 'CSC_INSTALLER_KEY_PASSWORD', 'APPLE_ID', 'APPLE_APP_SPECIFIC_PASSWORD', 'APPLE_TEAM_ID']) {
-    const line = buildStep.split('\n').find((item) => item.trimStart().startsWith(\`\${secret}:\`));
-    assert.ok(line, \`\${secret} is configured for the build step\`);
-    assert.match(line, /github\.event_name == 'push'/, \`\${secret} is limited to push builds\`);
-    assert.match(line, /github\.ref == 'refs\/heads\/main' \|\| startsWith\(github\.ref, 'refs\/tags\/v'\)/, \`\${secret} is available only on main or explicit version tags\`);
+    const line = buildStep.split('\n').find((item) => item.trimStart().startsWith(`${secret}:`));
+    assert.ok(line, `${secret} is configured for the build step`);
+    assert.match(line, /github\.event_name == 'push'/, `${secret} is limited to push builds`);
+    assert.match(line, /github\.ref == 'refs\/heads\/main' \|\| startsWith\(github\.ref, 'refs\/tags\/v'\)/, `${secret} is available only on main or explicit version tags`);
   }
   const installerCert = buildStep.split('\n').find((item) => item.trimStart().startsWith('CSC_INSTALLER_LINK:'));
   const appleId = buildStep.split('\n').find((item) => item.trimStart().startsWith('APPLE_ID:'));
@@ -102,7 +102,7 @@ test('release publishing requires a version tag matching the checked-out package
   const workflow = read('.github/workflows/build-release.yml');
   assert.doesNotMatch(workflow, /workflow_dispatch:|inputs\.publish_release/);
   assert.ok(workflow.includes("if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v') && github.ref == format('refs/tags/v{0}', needs.collect.outputs.version)"));
-  assert.ok(workflow.includes('tag_name: \${{ github.ref_name }}'));
+  assert.ok(workflow.includes('tag_name: ${{ github.ref_name }}'));
   assert.match(workflow, /contents: write/);
   assert.match(workflow, /needs: collect/);
 });
