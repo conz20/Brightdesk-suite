@@ -97,7 +97,7 @@ test('README explains the dedicated runner account and narrow temporary token re
   assert.match(instructions, /dedicated (?:standard )?macOS user account/i);
   assert.match(instructions, /Fine-grained personal access token/i);
   assert.match(instructions, /Administration: Read and write/i);
-  assert.match(instructions, /Revoke the fine-grained token in GitHub Settings immediately after setup completes/i);
+  assert.match(instructions, /Revoke the fine-grained token in GitHub Settings immediately after the setup attempt, whether it succeeds or fails/i);
   assert.match(instructions, /exactly (?:the|these) ten/i);
   assert.match(instructions, /shortest expiry GitHub offers/i);
   assert.match(instructions, /not stored in the macOS keychain/i);
