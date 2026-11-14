@@ -73,7 +73,10 @@ test('all registrations finish and the temporary GitHub token is cleared before 
   assert.doesNotMatch(script.slice(registrationLoopStart, loopEnd), /start_runner "\$runner_home"/);
   assert.match(script, /GH_TOKEN="\$registration_api_token" gh api/);
   assert.match(script, /registration_api_token="\$GH_TOKEN"\nunset GH_TOKEN/);
-  assert.doesNotMatch(script.slice(script.indexOf('if ! (cd "$runner_home"'), script.indexOf('RUNNERS_TO_START+=("$runner_home")', registrationLoopStart)), /GH_TOKEN=/);
+  const configureStart = script.indexOf('if ! (cd "$runner_home"');
+  const configureEnd = script.indexOf('unset registration_token config_args', configureStart);
+  assert.ok(configureStart >= 0 && configureEnd > configureStart);
+  assert.doesNotMatch(script.slice(configureStart, configureEnd), /GH_TOKEN=/);
 });
 
 test('Finder launcher collects the token with a hidden-answer prompt and does not use stored gh login', () => {
@@ -89,7 +92,7 @@ test('README explains the dedicated runner account and narrow temporary token re
   assert.match(instructions, /dedicated macOS user account/i);
   assert.match(instructions, /Fine-grained personal access token/i);
   assert.match(instructions, /Administration.*write/i);
-  assert.match(instructions, /exactly the ten/i);
+  assert.match(instructions, /exactly (?:the|these) ten/i);
   assert.match(instructions, /one day|1 day/i);
   assert.match(instructions, /not stored in the macOS keychain/i);
 });
