@@ -71,3 +71,32 @@ test('runner-label discovery uses self-contained jq filters with no unbound vari
   assert.equal(script.split(requiredLabels).length - 1, 3);
   assert.doesNotMatch(script, /contains\\(\\$required_labels\\)/);
 });
+
+test('Finder launcher is a valid macOS app bundle with its own executable', () => {
+  const appRoot = path.join(root, 'tools/runner-setup/macos/Brightdesk-Product-Runner-Setup.app');
+  const appInfo = fs.readFileSync(path.join(appRoot, 'Contents/Info.plist'), 'utf8');
+  const launcher = fs.readFileSync(path.join(appRoot, 'Contents/MacOS/BrightdeskProductRunnerSetup'), 'utf8');
+  assert.match(appInfo, /CFBundlePackageType[\\s\\S]*?APPL/);
+  assert.match(appInfo, /CFBundleExecutable[\\s\\S]*?BrightdeskProductRunnerSetup/);
+  assert.match(launcher, /^#!\\/bin\\/bash/);
+});
+
+test('Finder launcher shows GUI confirmation before passing REGISTER to the setup script', () => {
+  const launcher = fs.readFileSync(path.join(root, 'tools/runner-setup/macos/Brightdesk-Product-Runner-Setup.app/Contents/MacOS/BrightdeskProductRunnerSetup'), 'utf8');
+  const confirmation = launcher.indexOf('display dialog');
+  const registration = launcher.indexOf("printf 'REGISTER\\\\n'");
+  assert.ok(confirmation >= 0);
+  assert.ok(registration > confirmation);
+  assert.match(launcher, /cancel/i);
+});
+
+test('Finder launcher checks the authenticated owner account and saves private logs without opening Terminal', () => {
+  const launcher = fs.readFileSync(path.join(root, 'tools/runner-setup/macos/Brightdesk-Product-Runner-Setup.app/Contents/MacOS/BrightdeskProductRunnerSetup'), 'utf8');
+  assert.match(launcher, /gh auth status --hostname github\\.com/);
+  assert.match(launcher, /gh api user --jq/);
+  assert.match(launcher, /conz20/);
+  assert.match(launcher, /Library\\/Logs\\/Brightdesk/);
+  assert.match(launcher, /umask 077/);
+  assert.doesNotMatch(launcher, /open -a Terminal|osascript.*Terminal/);
+  assert.doesNotMatch(launcher, /sudo\\s|launchctl|systemctl/);
+});
