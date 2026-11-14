@@ -52,3 +52,24 @@ jobs:
 
       - name: Run automated tests
         run: npm test
+
+      - name: Capture optional Suite and product source-runtime screenshots
+        id: guide_screenshots
+        continue-on-error: true
+        env:
+          BRIGHTDESK_STARTUP_SMOKE_TEST: '1'
+          BRIGHTDESK_GUIDE_SCREENSHOT_MODE: '1'
+          BRIGHTDESK_GUIDE_SCREENSHOT_DIR: ${{ runner.temp }}/brightdesk-guide-screenshots-${{ github.run_id }}
+          BRIGHTDESK_GUIDE_DATA_DIR: ${{ runner.temp }}/brightdesk-guide-profile-${{ github.run_id }}
+        run: |
+          rm -rf "$BRIGHTDESK_GUIDE_SCREENSHOT_DIR" "$BRIGHTDESK_GUIDE_DATA_DIR"
+          npx electron .
+
+      - name: Upload Suite and product source-runtime screenshots
+        if: steps.guide_screenshots.outcome == 'success'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        with:
+          name: brightdesk-guide-screenshots-${{ github.run_id }}
+          path: ${{ runner.temp }}/brightdesk-guide-screenshots-${{ github.run_id }}/*.png
+          if-no-files-found: error
+          retention-days: 14
