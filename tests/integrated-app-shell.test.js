@@ -19,6 +19,7 @@ test('provides a safe external link to Brightdesk Help from the Suite sidebar',(
   const pageHtml=require('node:fs').readFileSync(require('node:path').join(__dirname,'..','src','index.html'),'utf8');
   const mainSource=require('node:fs').readFileSync(require('node:path').join(__dirname,'..','src','main.js'),'utf8');
   const helpIcon=require('node:fs').readFileSync(require('node:path').join(__dirname,'..','src','assets','icons','help.svg'),'utf8');
+  const styles=require('node:fs').readFileSync(require('node:path').join(__dirname,'..','src','styles.css'),'utf8');
   const sidebarStart=pageHtml.indexOf('<aside class="sidebar">');
   const sidebarEnd=pageHtml.indexOf('</aside>',sidebarStart);
   const linkStart=pageHtml.indexOf('<a class="nav help-nav" id="help-link"',sidebarStart);
@@ -38,4 +39,5 @@ test('provides a safe external link to Brightdesk Help from the Suite sidebar',(
   assert.ok(mainSource.includes("!allowedBrightdeskHelpPaths.has(target.pathname)"),'external navigation is restricted to the Suite Help homepage only');
   assert.ok(mainSource.includes('target.search || target.hash'),'unexpected query strings and fragments are rejected');
   assert.ok(mainSource.includes('shell.openExternal(target.href)'),'approved Help navigation opens in the system browser');
+  assert.match(styles, /\.sidebar\s+\.help-nav\s*\{[^}]*color:\s*#D7E1F1/i, 'Help label remains readable against the approved deep-navy sidebar');
 });
