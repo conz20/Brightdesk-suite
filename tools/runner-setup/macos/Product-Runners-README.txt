@@ -108,6 +108,12 @@ OFFICIAL REFERENCES
 GitHub self-hosted runner setup:
 https://docs.github.com/en/actions/how-tos/manage-runners/self-hosted-runners/add-runners
 
+Fine-grained personal access tokens, expiry and security:
+https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens
+
+Create a registration token for a repository (requires repository Administration: write; returned registration token expires after one hour):
+https://docs.github.com/en/rest/actions/self-hosted-runners#create-a-registration-token-for-a-repository
+
 Pinned GitHub Actions runner release:
 https://github.com/actions/runner/releases/tag/v2.338.2
 
