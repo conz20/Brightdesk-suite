@@ -22,7 +22,7 @@ async function captureGuideScreenshot({
     throw new Error('A Brightdesk guide screenshot output directory is required.');
   }
 
-  const image = await window.webContents.capturePage();
+  const image = await window.webContents.capturePage(undefined, { stayHidden: true });
   const png = image?.toPNG?.();
   if (!Buffer.isBuffer(png) || png.length === 0) {
     throw new Error('Electron returned an empty screenshot.');
