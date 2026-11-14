@@ -103,8 +103,8 @@ test('rejects an empty capture instead of saving a misleading screenshot', async
 
 
 const allApprovedCaptureIds = [
-  'suite', 'pages', 'sheets', 'decks', 'notes', 'database',
-  'forms', 'lists', 'planner', 'todo', 'workspace'
+  'suite', 'pages', 'sheets', 'slides', 'notes', 'database',
+  'forms', 'lists', 'planner', 'todo', 'loop'
 ];
 
 function createCaptureRecords() {
@@ -162,6 +162,10 @@ test('builds a provenance manifest for the Suite and exactly ten product screens
   assert.equal(manifest.screenshots.length, 11);
   assert.deepEqual(manifest.screenshots.map(item => item.applicationId), allApprovedCaptureIds);
   assert.equal(manifest.screenshots[0].fileName, 'suite.png');
+  assert.equal(manifest.screenshots.find(item => item.applicationId === 'slides').productName, 'Decks');
+  assert.equal(manifest.screenshots.find(item => item.applicationId === 'slides').fileName, 'decks.png');
+  assert.equal(manifest.screenshots.find(item => item.applicationId === 'loop').productName, 'Workspace');
+  assert.equal(manifest.screenshots.find(item => item.applicationId === 'loop').fileName, 'workspace.png');
   assert.equal(manifest.screenshots[0].sha256, 'a'.repeat(64));
   assert.equal(manifest.screenshots[0].bytes, 2048);
 });
