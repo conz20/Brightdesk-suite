@@ -42,7 +42,7 @@ test('renderer seed creates fictional local records for all ten approved product
 });
 
 test('product navigation resolves only when the requested real workspace is active', async () => {
-  const dom = new JSDOM('<nav><button class="nav" data-app="pages"></button></nav><main id="workspace"><section id="editor"></section></main>', { url: 'https://brightdesk.local' });
+  const dom = new JSDOM('<nav><button class="nav" data-app="pages"></button></nav><main id="workspace"><section id="editor"></section></main>', { url: 'https://brightdesk.local', runScripts: 'outside-only' });
   dom.window.requestAnimationFrame = callback => dom.window.setTimeout(callback, 0);
   dom.window.document.querySelector('[data-app="pages"]').addEventListener('click', () => {
     dom.window.document.querySelector('[data-app="pages"]').classList.add('active');
@@ -50,7 +50,7 @@ test('product navigation resolves only when the requested real workspace is acti
   try {
     const state = await dom.window.eval('(' + switchToProduct.toString() + ')("pages","#editor")');
     assert.deepEqual({ active:state.active,workspaceVisible:state.workspaceVisible,productViewVisible:state.productViewVisible }, { active:true,workspaceVisible:true,productViewVisible:true });
-    const homeDom = new JSDOM('<main id="app-manager"><div id="app-manager-grid">' + '<div></div>'.repeat(10) + '</div></main><button id="home-nav" class="active"></button>', { url: 'https://brightdesk.local' });
+    const homeDom = new JSDOM('<main id="app-manager"><div id="app-manager-grid">' + '<div></div>'.repeat(10) + '</div></main><button id="home-nav" class="active"></button>', { url: 'https://brightdesk.local', runScripts: 'outside-only' });
     const home = await homeDom.window.eval('(' + waitForSuiteHome.toString() + ')()');
     assert.equal(home.productCards, 10);
     homeDom.window.close();
