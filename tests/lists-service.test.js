@@ -75,3 +75,14 @@ test('renames a list and rejects duplicate custom column names', () => {
   assert.equal(list.title, 'New name');
   assert.throws(() => lists.addColumn(list, { name: 'Status', type: 'text' }), /already exists/i);
 });
+
+test('maps the Lists status filter controls to the record statuses', () => {
+  let list = lists.createList({ title: 'My tasks' }, fixed);
+  list = lists.addItem(list, { values: { title: 'Prepare report', status: 'In progress' } }, { id: '1' });
+  list = lists.addItem(list, { values: { title: 'Buy supplies', status: 'Not started' } }, { id: '2' });
+  list = lists.addItem(list, { values: { title: 'Send report', status: 'Done' } }, { id: '3' });
+
+  assert.deepEqual(lists.filterItems(list, { status: 'active' }).map(item => item.id), ['1', '2']);
+  assert.deepEqual(lists.filterItems(list, { status: 'done' }).map(item => item.id), ['3']);
+  assert.deepEqual(lists.filterItems(list, { status: 'In progress' }).map(item => item.id), ['1']);
+});
