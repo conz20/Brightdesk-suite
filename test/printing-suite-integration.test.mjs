@@ -589,7 +589,7 @@ test("Forms print view provides suitable writing space for long text and date qu
   assert.equal(view.querySelectorAll(".brightdesk-print-answer-space").length, 1);
   assert.deepEqual(
     Array.from(view.querySelectorAll(".brightdesk-print-answer-options li"), item => item.textContent.trim()),
-    ["□ Email", "□ Phone"]
+    ["○ Email", "○ Phone"]
   );
   assert.match(view.textContent, /Preferred date/);
   assert.match(view.textContent, /More details/);
