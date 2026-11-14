@@ -77,7 +77,8 @@
     "release:prepare:icons": "node scripts/prepare-platform-icons.js",
     "release:verify:products:win": "node scripts/verify-product-artifacts.js win",
     "release:verify:products:mac": "node scripts/verify-product-artifacts.js mac",
-    "release:verify:products:linux": "node scripts/verify-product-artifacts.js linux"
+    "release:verify:products:linux": "node scripts/verify-product-artifacts.js linux",
+    "capture:screenshots": "node scripts/capture-suite-screenshots.js"
   },
   "devDependencies": {
     "jsdom": "^30.1.3",

@@ -90,9 +90,13 @@ The Rust toolchain is pinned to **1.99.1**. macOS native builds produce both App
 
 ## Product screenshots and verification
 
-The approved Home SVG is the visual specification for the customer-facing interface and is kept aligned with the desktop source. It is not presented as a runtime screenshot. The older `assets/hero-showcase.png` file is a composed promotional collage, not a capture of the current running suite, so it is not used as evidence of working screens. No verified screenshot set from the current running desktop build is published yet. Do not treat design artwork or the older v0.1.0 source archive as proof of current desktop behaviour.
+The approved Home SVG is the visual specification for the customer-facing interface and is kept aligned with the desktop source. It is not presented as a runtime screenshot. The older `assets/hero-showcase.png` file is a composed promotional collage, not a capture of the current running suite, so it is not used as evidence of working screens. No screenshot is considered verified until the current desktop workflow and the image itself have been reviewed.
 
-A genuine screenshot should be captured directly from the current Electron build after launching the product and checking its primary workflow. The capture must show the real interface without composited controls or fabricated UI. Use non-sensitive sample data, retain the full product window, and label the image with the tested build or commit. See the [visual standard](docs/BRIGHTDESK_VISUAL_STANDARD.md).
+The **Brightdesk Suite CI** workflow now has a non-blocking capture step on pushes to `main`. It launches the current Electron build in a disposable profile, seeds only fictional sample records through the real product services, and captures the Suite Home plus the ten integrated product workspaces. The workflow uploads PNGs with per-image JSON provenance to a private GitHub Actions artifact retained for 14 days. Captures are marked `captured-pending-review`; they are not committed, published to the customer Help site, or treated as workflow acceptance.
+
+The automated capture records the full Brightdesk renderer content area through Electron's `webContents.capturePage()`. It does not include native operating-system window chrome. Images must be inspected for layout, readability, accidental sensitive content and correct product identity before any is copied into a product repository or customer guide. This automated first look is not a replacement for native install and workflow acceptance. See the [visual standard](docs/BRIGHTDESK_VISUAL_STANDARD.md).
+
+A genuine screenshot must come from the current Electron build with non-sensitive sample data, retain the complete Brightdesk workspace content, and be labelled with the tested build or commit. Do not crop away errors or incomplete controls, composite other images, or present approved SVG design references as runtime screenshots.
 
 ## Installer agreement
 

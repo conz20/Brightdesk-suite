@@ -127,7 +127,8 @@ Genuine screenshots must:
 - Show the real product window and actual controls, not a mockup or composite.
 - Demonstrate a real first-use workflow with clearly fictitious sample content.
 - Avoid personal data, secrets, developer tools, debug overlays and unrelated desktop clutter.
-- Retain the full application frame at a readable resolution; do not crop away errors or incomplete controls.
+- Retain the complete Brightdesk application content area at a readable resolution, including its own navigation, top bar, workspace and controls; do not crop away errors or incomplete controls.
+- Automated Electron captures may use `webContents.capturePage()` and therefore exclude native operating-system window chrome. Record the capture method and do not use these images to claim that native title-bar, Dock, taskbar or desktop integration has been visually checked.
 - Be labelled with the product name and the tested version or commit.
 - Be captured only after the visible workflow has been checked against the product's acceptance criteria.
 

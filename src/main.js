@@ -2,10 +2,24 @@ const { app, BrowserWindow, Menu, ipcMain, dialog, Notification } = require('ele
 const packageConfig = require('../package.json');
 const nativeEngine = require('./rust-engine');
 const { assertPackagedVersion, assertMainWindowReady } = require('./startup-smoke');
+const { runScreenshotCaptureTest } = require('./screenshot-capture');
 const path = require('node:path');
 const crypto = require('node:crypto');
 const fsNative = require('node:fs');
 const fs = require('node:fs/promises');
+
+if (process.env.BRIGHTDESK_SCREENSHOT_CAPTURE_TEST === '1') {
+  const profileRoot = process.env.BRIGHTDESK_SCREENSHOT_TEST_DATA_DIR;
+  if (!profileRoot || !path.isAbsolute(profileRoot)) {
+    throw new Error('Screenshot capture requires an absolute disposable profile directory.');
+  }
+  const userDataPath = path.join(profileRoot, 'user-data');
+  const appDataPath = path.join(profileRoot, 'app-data');
+  fsNative.mkdirSync(userDataPath, { recursive: true });
+  fsNative.mkdirSync(appDataPath, { recursive: true });
+  app.setPath('userData', userDataPath);
+  app.setPath('appData', appDataPath);
+}
 const { openOfficeFile, exportOfficeFile, cleanFileName, ensureExtension } = require('./file-service');
 const { BUILTIN_LANGUAGES, validateLanguagePack, getBuiltinLanguage } = require('./language-service');
 const { DictionaryService } = require('./dictionary-service');
@@ -563,6 +577,17 @@ app.whenReady().then(async () => {
   const sharedResources = await ensureSharedResourcesDirectory();
   dictionaryService = new DictionaryService(sharedResources);
   Menu.setApplicationMenu(null);
+  if (process.env.BRIGHTDESK_SCREENSHOT_CAPTURE_TEST === '1') {
+    await runScreenshotCaptureTest({
+      app,
+      packageVersion: packageConfig.version,
+      readTerms,
+      readBundledLanguagePack,
+      createWindow,
+      getMainWindow: () => mainWindow
+    });
+    return;
+  }
   if (process.env.BRIGHTDESK_STARTUP_SMOKE_TEST === '1') {
     await runPackagedStartupSmokeTest();
     return;
