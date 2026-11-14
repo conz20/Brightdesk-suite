@@ -691,8 +691,8 @@ function renderDictionaryManager() {
   }
   select.value = state.selectedDictionary;
   $('dictionary-status').textContent = state.installedDictionaries.length
-    ? `${state.installedDictionaries.length} spelling dictionary/dictionaries installed. The built-in OS spell checker remains available too.`
-    : 'No separate dictionaries installed yet. Install one from the catalogue or import a compatible .bddict bundle.';
+    ? `${state.installedDictionaries.length} spelling dictionary/dictionaries installed and available offline. The built-in OS spell checker remains available too.`
+    : 'No additional dictionaries are installed. The built-in OS spell checker remains available; additional dictionary files are supplied only through official Brightdesk updates.';
   renderAvailableDictionaryCatalogue();
   renderToolbar();
 }
@@ -709,8 +709,8 @@ function renderAvailableDictionaryCatalogue() {
   const visible = query ? matching.slice(0, 30) : matching.slice(0, 18);
   grid.innerHTML = '';
   count.textContent = query
-    ? `${matching.length} matching dictionaries${matching.length > visible.length ? ` · showing first ${visible.length}` : ''}`
-    : `Showing ${visible.length} of ${matching.length} dictionaries. Search to find more.`;
+    ? `${matching.length} matching catalogue entries${matching.length > visible.length ? ` · showing first ${visible.length}` : ''}`
+    : `Showing ${visible.length} of ${matching.length} catalogue entries. Search to find more.`;
 
   for (const item of visible) {
     const card = document.createElement('article'); card.className = 'app-card language-card';
@@ -724,10 +724,7 @@ function renderAvailableDictionaryCatalogue() {
     const source = document.createElement('small'); source.className = 'dictionary-source'; source.textContent = `Source: ${item.upstream} · revision ${item.upstreamRevision.slice(0, 8)}`;
     const footer = document.createElement('div'); footer.className = 'app-card-footer';
     const status = document.createElement('span'); status.className = item.installed ? 'app-state installed' : 'app-state';
-    status.textContent = item.installed ? 'Installed' : 'Available'; footer.append(status);
-    const install = document.createElement('button'); install.className = item.installed ? 'secondary small-action' : 'primary small-action';
-    install.textContent = item.installed ? 'Installed' : 'Install'; install.disabled = item.installed; install.dataset.dictionaryId = item.id;
-    install.addEventListener('click', () => installCatalogueDictionary(item.id)); footer.append(install);
+    status.textContent = item.installed ? 'Installed' : 'Not included in this build'; footer.append(status);
     card.append(header, description, source, footer); grid.append(card);
   }
   if (!visible.length) {
@@ -735,21 +732,6 @@ function renderAvailableDictionaryCatalogue() {
   }
 }
 
-async function installCatalogueDictionary(id) {
-  const item = state.dictionaryCatalogue.find(entry => entry.id === id);
-  if (!item) { $('dictionary-status').textContent = 'That dictionary is not available in the catalogue.'; return; }
-  const button = [...document.querySelectorAll('#available-dictionary-grid button')].find(element => element.dataset.dictionaryId === id);
-  if (button) { button.disabled = true; button.textContent = 'Installing…'; }
-  $('dictionary-status').textContent = `Downloading ${item.name} (${item.locale}) from its pinned open-source source…`;
-  try {
-    const result = await window.brightdesk.installCatalogueDictionary(id);
-    await refreshDictionaries(); render();
-    $('dictionary-status').textContent = `${result.name} (${result.locale}) installed. Original licence retained: ${result.license}.`;
-  } catch (error) {
-    if (button) { button.disabled = false; button.textContent = 'Install'; }
-    $('dictionary-status').textContent = `Could not install ${item.locale}: ${error.message}`;
-  }
-}
 function currentDocumentText() {
   if (state.app === 'pages') return editor.innerText || '';
   if (state.app === 'notes') return $('notes-editor').value || '';

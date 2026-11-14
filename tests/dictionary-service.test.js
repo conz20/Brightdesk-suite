@@ -1,6 +1,7 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs/promises');
+const fsSync = require('node:fs');
 const os = require('node:os');
 const path = require('node:path');
 const crypto = require('node:crypto');
@@ -171,25 +172,83 @@ test('catalogue installation rejects unknown IDs before making a network request
 });
 
 
-test('pinned catalogue downloader rejects URLs outside its fixed upstream repository', async () => {
+test('catalogue dictionaries not included in the build cannot trigger runtime network downloads', async () => {
+  const userData = await fs.mkdtemp(path.join(os.tmpdir(), 'brightdesk-dictionary-offline-catalogue-'));
   let networkCalls = 0;
-  const service = new DictionaryService('/tmp/brightdesk-dictionary-url-test', {
-    fetch: async () => { networkCalls += 1; return new Response('ok'); }
+  const service = new DictionaryService(userData, {
+    fetch: async () => { networkCalls += 1; throw new Error('unexpected network request'); }
   });
-  await assert.rejects(() => service.fetchUpstreamFile('https://example.com/dictionaries/bg/index.aff', 100), /pinned, approved upstream sources/);
-  await assert.rejects(() => service.fetchUpstreamFile('https://raw.githubusercontent.com/wooorm/dictionaries/main/dictionaries/bg/index.aff', 100), /pinned, approved upstream sources/);
-  await assert.rejects(() => service.fetchUpstreamFile('https://raw.githubusercontent.com/spdx/license-list-data/main/text/GPL-2.0-only.txt', 100), /pinned, approved upstream sources/);
-  assert.equal(networkCalls, 0);
+  try {
+    await assert.rejects(
+      () => service.installCatalogueEntry('bg'),
+      /not included in this Brightdesk build/
+    );
+    assert.equal(networkCalls, 0);
+    assert.equal(typeof service.fetchUpstreamFile, 'undefined');
+  } finally {
+    await fs.rm(userData, { recursive: true, force: true });
+  }
 });
 
-test('pinned catalogue downloader accepts a bounded file from an approved source', async () => {
-  const service = new DictionaryService('/tmp/brightdesk-dictionary-download-test', {
-    fetch: async () => new Response('SET UTF-8\n')
+test('legacy dictionaries without integrity metadata are rejected offline without changing files', async () => {
+  const userData = await fs.mkdtemp(path.join(os.tmpdir(), 'brightdesk-dictionary-legacy-offline-'));
+  let networkCalls = 0;
+  const service = new DictionaryService(userData, {
+    fetch: async () => { networkCalls += 1; throw new Error('unexpected network request'); }
   });
-  const bytes = await service.fetchUpstreamFile('https://raw.githubusercontent.com/wooorm/dictionaries/8cfea406b505e4d7df52d5a19bce525df98c54ab/dictionaries/bg/index.aff', 100);
-  assert.equal(bytes.toString('utf8'), 'SET UTF-8\n');
+  const entry = service.catalogue().find(item => item.id === 'bg');
+  const folder = path.join(userData, 'dictionaries', entry.locale);
+  const manifest = {
+    schemaVersion: 1,
+    catalogueId: entry.id,
+    locale: entry.locale,
+    name: entry.name,
+    nativeName: entry.nativeName,
+    authors: 'Original authors are listed in the bundled attribution file.',
+    affFile: 'index.aff',
+    dicFile: 'index.dic',
+    licenseFile: 'LICENSE.txt',
+    readmeFile: 'UPSTREAM_README.md',
+    license: entry.license,
+    licenseUrl: entry.licenseUrl,
+    licenseSource: entry.licenseSource,
+    sourceUrl: entry.sourceUrl,
+    upstream: entry.upstream,
+    upstreamRevision: entry.upstreamRevision
+  };
+  const originalManifest = JSON.stringify(manifest, null, 2);
+  const originalAff = 'legacy dictionary file';
+  try {
+    await fs.mkdir(folder, { recursive: true });
+    await fs.writeFile(path.join(folder, 'manifest.json'), originalManifest);
+    await fs.writeFile(path.join(folder, 'dictionary.aff'), originalAff);
+    await assert.rejects(
+      () => service.installCatalogueEntry('bg'),
+      /cannot be verified offline/
+    );
+    assert.equal(networkCalls, 0);
+    assert.equal(await fs.readFile(path.join(folder, 'manifest.json'), 'utf8'), originalManifest);
+    assert.equal(await fs.readFile(path.join(folder, 'dictionary.aff'), 'utf8'), originalAff);
+  } finally {
+    await fs.rm(userData, { recursive: true, force: true });
+  }
 });
 
+test('the dictionary catalogue is browse-only and exposes no runtime download bridge', () => {
+  const root = path.join(__dirname, '..');
+  const app = fsSync.readFileSync(path.join(root, 'src', 'app.js'), 'utf8');
+  const main = fsSync.readFileSync(path.join(root, 'src', 'main.js'), 'utf8');
+  const preload = fsSync.readFileSync(path.join(root, 'src', 'preload.js'), 'utf8');
+  const start = app.indexOf('function renderAvailableDictionaryCatalogue()');
+  const end = app.indexOf('function currentDocumentText()', start);
+  assert.ok(start >= 0 && end > start, 'dictionary catalogue renderer must exist');
+  const renderer = app.slice(start, end);
+  assert.match(renderer, /Not included in this build/);
+  assert.doesNotMatch(renderer, /installCatalogueDictionary|Downloading/);
+  assert.doesNotMatch(app, /installCatalogueDictionary/);
+  assert.doesNotMatch(main, /dictionaries:install-catalog/);
+  assert.doesNotMatch(preload, /installCatalogueDictionary|dictionaries:install-catalog/);
+});
 
 test('the two licence-file exceptions use bundled canonical GNU texts', async () => {
   const gpl = await fs.readFile(path.join(__dirname, '..', 'src', 'licenses', 'GPL-2.0.txt'), 'utf8');
