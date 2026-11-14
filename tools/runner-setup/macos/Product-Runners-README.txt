@@ -30,7 +30,7 @@ BEFORE YOU START
    - Repository permissions: `Administration: Read and write` only
    - Expiration: one day (the shortest available option)
    - Add no other permissions
-5. Keep the token private. The Finder app requests it through a hidden-answer dialog. The script uses it only to request each repository's short-lived runner registration token, clears it before starting any runner, and does not write it to the log or a config file.
+5. Keep the token private. The Finder app requests it through a hidden-answer dialog. It is supplied through `GH_TOKEN` and is not stored in the macOS keychain, a config file or the setup log. The script uses it only for registration API calls and clears it before starting any runner.
 6. Keep normal macOS security protections enabled. Never send your token, sign-in code or runner registration token to ChatGPT or anyone else.
 7. A self-hosted runner executes workflow code from its matching private repository. These runners share the dedicated macOS account and are not isolated from one another. Keep them limited to trusted Brightdesk workflow code. Do not use them for public repositories or untrusted fork/third-party workflow code.
 
