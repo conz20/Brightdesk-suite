@@ -98,6 +98,8 @@ The automated capture records the full Brightdesk renderer content area through 
 
 The capture harness has regression tests for all eleven targets, fictional local sample-data seeding (including Database schema field IDs and saved record values), product navigation, the isolated profile path, required provenance fields and SHA-256 image checks. Capture tests do not set the evidence record to verified.
 
+The evidence writer and capture-set verifier reject incomplete or altered provenance. Each record must match its product and source repository, include the app version and exact 40-character source commit, identify the operating-system name, version and architecture, use a canonical ISO 8601 capture timestamp, describe the inspected workflow and fictional sample data, identify the Electron capture method, and match the PNG SHA-256 digest. Automated capture must leave workflow inspection and sensitive-data review incomplete; only a later human review may approve an image.
+
 A genuine screenshot must come from the current Electron build with non-sensitive sample data, retain the complete Brightdesk workspace content, and be labelled with the tested build or commit. Do not crop away errors or incomplete controls, composite other images, or present approved SVG design references as runtime screenshots.
 
 ## Installer agreement
