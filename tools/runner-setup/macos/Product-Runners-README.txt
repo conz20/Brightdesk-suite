@@ -36,6 +36,25 @@ From a Brightdesk-suite checkout that contains this helper, run:
 
 Read the security notice and type REGISTER to continue. Press Enter to cancel without registering anything.
 
+NO-TERMINAL OPTION — FINDER APP
+-------------------------------
+A Finder-launched macOS app is included at:
+
+   tools/runner-setup/macos/Brightdesk-Product-Runner-Setup.app
+
+To use it without opening Terminal:
+1. In GitHub, open the Brightdesk-suite branch `chore/product-mac-runners-2026-11-14` and use Code → Download ZIP.
+2. Extract the ZIP in Finder. Keep the app bundle beside `Start-Brightdesk-Mac-Product-Runners.sh`; the app calls that sibling script.
+3. Double-click `Brightdesk-Product-Runner-Setup.app`.
+4. The app checks that GitHub CLI is installed and already authenticated as `conz20`. It stops without changes if either check fails.
+5. Review the on-screen warning and choose Register or Cancel. Cancel exits without requesting any runner token.
+6. The app runs the setup in the background and displays whether the script completed. It does not open Terminal.
+
+The Finder app does not install GitHub CLI or sign in to GitHub. Those must already be configured for the current macOS user. It adds no repository permissions or secrets. Setup logs are stored with owner-only permissions in:
+`~/Library/Logs/Brightdesk/Product-Runner-Setup/`
+
+This draft app bundle is not code-signed or notarised. Do not bypass a macOS security warning unless you have reviewed and approved the exact source in this private repository. The app must remain beside the shell script extracted from the same reviewed branch.
+
 The script:
 - Verifies Apple-silicon macOS and confirms GitHub CLI is authenticated as `conz20`.
 - Downloads the official GitHub Actions runner v2.338.2 macOS ARM64 archive and checks it against the pinned SHA-256 digest used by the existing Brightdesk Mac runner setup.
