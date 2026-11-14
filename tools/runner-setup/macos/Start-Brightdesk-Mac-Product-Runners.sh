@@ -214,7 +214,7 @@ for repository in "${REPOSITORIES[@]}"; do
   [[ -n "$registration_token" && "$registration_token" != 'null' ]] ||
     fail "GitHub returned no registration token for $repository."
 
-  config_args=(--url "$repository_url" --token "$registration_token" --name "$runner_name" --runnergroup 'Default' --work '_work' --labels 'brightdesk-product-ci' --unattended)
+  config_args=(--url "$repository_url" --token "$registration_token" --name "$runner_name" --work '_work' --labels 'brightdesk-product-ci' --unattended)
   if ! (cd "$runner_home" && ./config.sh "${config_args[@]}"); then
     unset registration_token config_args
     fail "Runner configuration failed for $repository. Review the configurator message above; the short-lived registration token was not printed or saved."
