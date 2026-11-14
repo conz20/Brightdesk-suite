@@ -424,3 +424,18 @@ test("print cleanup preserves Actions columns in customer-authored tables", asyn
   ]);
   dom.window.close();
 });
+
+
+test("print cleanup removes the generated action column from Database tables", async () => {
+  const { JSDOM } = await import("jsdom");
+  const helper = read("src/printing-dom.js");
+  const dom = new JSDOM("<!doctype html><table class='database-data-grid'><thead><tr><th>Record</th><th>Actions</th></tr></thead><tbody><tr><td>Customer 1</td><td><button>Delete</button></td></tr></tbody></table>", { runScripts: "outside-only" });
+  dom.window.eval(helper);
+  const table = dom.window.document.querySelector("table");
+  dom.window.BrightdeskPrintDom.removeActionColumns(table);
+  assert.deepEqual(Array.from(table.querySelectorAll("tr"), row => Array.from(row.cells, cell => cell.textContent.trim())), [
+    ["Record"],
+    ["Customer 1"]
+  ]);
+  dom.window.close();
+});
