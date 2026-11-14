@@ -4,6 +4,14 @@
 
 Use exactly Node.js **24.22.2 LTS**. Do not change the pinned runtime in package.json, .nvmrc, .node-version, .npmrc, the dev container or GitHub Actions without explicit project-owner approval.
 
+## Version compatibility
+
+Also pin Electron **45.2.1**, electron-builder **26.18.0** and Rust **1.99.1** wherever those tools apply. Keep manifests, lockfiles, runtime selector files, development containers, build scripts and CI workflows aligned.
+
+Do not reuse older-version code or API guidance unchanged. Port required work to the currently approved API, then update tests, configuration and documentation. Do not mix old/new major-version APIs or run tests with an older runtime to force a pass. Changing the baseline requires explicit owner approval.
+
+Follow [docs/VERSION_COMPATIBILITY.md](docs/VERSION_COMPATIBILITY.md) for the complete cross-repository policy and migration checks.
+
 ## Product scope
 
 Keep the approved ten-app catalogue unchanged:
