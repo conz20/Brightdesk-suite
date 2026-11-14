@@ -1095,6 +1095,7 @@ function createBrightdeskPrintDocument() {
     });
 
     content.querySelectorAll("button").forEach((button) => button.remove());
+    window.BrightdeskPrintDom?.removeActionColumns(content);
     content.querySelectorAll("[hidden]").forEach((element) => element.remove());
     root.append(content);
   }
