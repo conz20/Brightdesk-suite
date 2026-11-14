@@ -9,7 +9,7 @@ const forms = require('../src/forms-service');
 const planner = require('../src/planner-service');
 const database = require('../src/database-service');
 const workspace = require('../src/workspace-service');
-const { seedRendererStorage, switchToProduct, waitForSuiteHome } = require('../src/screenshot-capture');
+const { seedRendererStorage, waitForProductWorkspace, waitForSuiteHome } = require('../src/screenshot-capture');
 const { SCREENSHOT_TARGETS } = require('../src/screenshot-evidence');
 
 test('renderer seed creates fictional local records for all ten approved products', () => {
@@ -46,19 +46,29 @@ test('renderer seed creates fictional local records for all ten approved product
   }
 });
 
-test('product navigation resolves only when the requested real workspace is active', async () => {
-  const dom = new JSDOM('<nav><button class="nav" data-app="pages"></button></nav><main id="workspace"><section id="editor"></section></main>', { url: 'https://brightdesk.local', runScripts: 'outside-only' });
-  dom.window.requestAnimationFrame = callback => dom.window.setTimeout(callback, 0);
-  dom.window.document.querySelector('[data-app="pages"]').addEventListener('click', () => {
-    dom.window.document.querySelector('[data-app="pages"]').classList.add('active');
-  });
+test('product capture waits for its dedicated Suite-launched product window', async () => {
+  const dom = new JSDOM('<main id="workspace"><section id="editor"></section></main>', { url: 'https://brightdesk.local', runScripts: 'outside-only' });
+  dom.window.document.title = 'Brightdesk Pages';
+  dom.window.brightdesk = { launchAppId: 'pages', suiteLaunchedProduct: true };
   try {
-    const state = await dom.window.eval('(' + switchToProduct.toString() + ')("pages","#editor")');
-    assert.deepEqual({ active:state.active,workspaceVisible:state.workspaceVisible,productViewVisible:state.productViewVisible }, { active:true,workspaceVisible:true,productViewVisible:true });
-    const homeDom = new JSDOM('<main id="app-manager"><div id="app-manager-grid">' + '<div></div>'.repeat(10) + '</div></main><button id="home-nav" class="active"></button>', { url: 'https://brightdesk.local', runScripts: 'outside-only' });
-    const home = await homeDom.window.eval('(' + waitForSuiteHome.toString() + ')()');
-    assert.equal(home.productCards, 10);
-    homeDom.window.close();
+    const state = await dom.window.eval('(' + waitForProductWorkspace.toString() + ')("pages","#editor",100)');
+    assert.deepEqual(
+      { appId:state.appId, active:state.active, workspaceVisible:state.workspaceVisible, productViewVisible:state.productViewVisible },
+      { appId:'pages', active:true, workspaceVisible:true, productViewVisible:true }
+    );
+  } finally {
+    dom.window.close();
+  }
+});
+
+test('product capture rejects a different product window even when its workspace is visible', async () => {
+  const dom = new JSDOM('<main id="workspace"><section id="editor"></section></main>', { url: 'https://brightdesk.local', runScripts: 'outside-only' });
+  dom.window.brightdesk = { launchAppId: 'sheets', suiteLaunchedProduct: true };
+  try {
+    await assert.rejects(
+      dom.window.eval('(' + waitForProductWorkspace.toString() + ')("pages","#editor",50)'),
+      /Pages workspace did not load in its own Suite product window/
+    );
   } finally {
     dom.window.close();
   }
