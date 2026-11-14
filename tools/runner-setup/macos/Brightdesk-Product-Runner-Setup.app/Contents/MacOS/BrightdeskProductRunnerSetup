@@ -1,0 +1,64 @@
+#!/bin/bash
+set -u
+
+export PATH="/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+OWNER="conz20"
+
+EXECUTABLE_DIR="$(cd "$(dirname "$0")" && pwd -P)"
+CONTENTS_DIR="$(cd "$EXECUTABLE_DIR/.." && pwd -P)"
+APP_DIR="$(cd "$CONTENTS_DIR/.." && pwd -P)"
+TOOLS_DIR="$(cd "$APP_DIR/.." && pwd -P)"
+SETUP_SCRIPT="$TOOLS_DIR/Start-Brightdesk-Mac-Product-Runners.sh"
+
+show_error() {
+  /usr/bin/osascript -e "display dialog \"$1\" buttons {\"OK\"} default button \"OK\" with icon stop" >/dev/null 2>&1 || true
+}
+
+if [[ ! -f "$SETUP_SCRIPT" || -L "$SETUP_SCRIPT" ]]; then
+  show_error "The runner setup script is missing or is a symbolic link. Keep the app beside the Brightdesk setup script and try again."
+  exit 1
+fi
+
+if ! command -v gh >/dev/null 2>&1; then
+  show_error "GitHub CLI is not installed or is not available in the standard Homebrew paths. Install GitHub CLI and sign in as conz20 before using this setup."
+  exit 1
+fi
+
+if ! gh auth status --hostname github.com >/dev/null 2>&1; then
+  show_error "GitHub CLI is not signed in. Sign in to GitHub CLI as conz20 before using this setup. No runners were registered."
+  exit 1
+fi
+
+github_user="$(gh api user --jq '.login' 2>/dev/null)" || {
+  show_error "GitHub CLI could not verify the signed-in account. No runners were registered."
+  exit 1
+}
+
+if [[ "$github_user" != "$OWNER" ]]; then
+  show_error "GitHub CLI is signed in as $github_user, not $OWNER. No runners were registered."
+  exit 1
+fi
+
+choice="$(/usr/bin/osascript -e 'button returned of (display dialog "This will register up to ten repository-scoped GitHub Actions runners for the ten approved Brightdesk customer products on this Mac. Each runner can execute workflow code from its matching private repository. No repository permissions, secrets, settings, visibility or billing options will be changed. Continue?" buttons {"Cancel", "Register"} default button "Register" cancel button "Cancel" with icon caution)' 2>/dev/null)" || exit 0
+[[ "$choice" == "Register" ]] || exit 0
+
+LOG_DIR="$HOME/Library/Logs/Brightdesk/Product-Runner-Setup"
+umask 077
+mkdir -p "$LOG_DIR" || {
+  show_error "The private setup log folder could not be created. No runners were registered."
+  exit 1
+}
+chmod 700 "$LOG_DIR" || {
+  show_error "The private setup log folder permissions could not be secured. No runners were registered."
+  exit 1
+}
+LOG_FILE="$LOG_DIR/setup-$(date +%Y%m%d-%H%M%S).log"
+
+if printf 'REGISTER\n' | /usr/bin/env PATH="$PATH" /bin/bash "$SETUP_SCRIPT" >"$LOG_FILE" 2>&1; then
+  chmod 600 "$LOG_FILE" || true
+  /usr/bin/osascript -e 'display dialog "The setup script finished. Open Settings > Actions > Runners in each of the ten product repositories and confirm its runner is Idle/Online with the required brightdesk-product-ci label. This does not mean the queued tests have passed." buttons {"OK"} default button "OK" with icon note' >/dev/null 2>&1 || true
+else
+  chmod 600 "$LOG_FILE" || true
+  show_error "Runner setup stopped before completing. No success is being reported. Check the private log in Library/Logs/Brightdesk/Product-Runner-Setup and do not share it without checking that it contains no sensitive information."
+  exit 1
+fi
