@@ -12,3 +12,32 @@ test('the integrated app shell loads every feature module before app.js',()=>{co
 test('the fixed product catalogue remains exactly ten approved apps',()=>{assert.deepEqual(catalog.map(x=>x.id),['pages','sheets','slides','notes','database','forms','lists','planner','todo','loop']);assert.equal(catalog.length,10);for(const id of ['outlook','onedrive','teams'])assert.equal(catalog.some(x=>x.id===id),false);});
 test('all ten approved apps are available in the integrated suite',()=>{assert.ok(catalog.every(x=>x.availability==='available'),'every approved app must be marked available once its implementation is integrated');});
 test('the app shell routes each app away from the generic editor',()=>{for(const id of ['todo','lists','forms','planner','database','loop'])assert.ok(app.includes("state.app === '"+id+"'")||app.includes("state.app==='")+id+"'",id+' routing');});
+
+
+test('provides a safe external link to Brightdesk Help from the Suite sidebar',()=>{
+  const helpUrl='https://help.brightdesk.com/';
+  const pageHtml=require('node:fs').readFileSync(require('node:path').join(__dirname,'..','src','index.html'),'utf8');
+  const mainSource=require('node:fs').readFileSync(require('node:path').join(__dirname,'..','src','main.js'),'utf8');
+  const helpIcon=require('node:fs').readFileSync(require('node:path').join(__dirname,'..','src','assets','icons','help.svg'),'utf8');
+  const styles=require('node:fs').readFileSync(require('node:path').join(__dirname,'..','src','styles.css'),'utf8');
+  const sidebarStart=pageHtml.indexOf('<aside class="sidebar">');
+  const sidebarEnd=pageHtml.indexOf('</aside>',sidebarStart);
+  const linkStart=pageHtml.indexOf('<a class="nav help-nav" id="help-link"',sidebarStart);
+  const linkEnd=pageHtml.indexOf('</a>',linkStart);
+  assert.notEqual(sidebarStart,-1,'Suite sidebar exists');
+  assert.ok(linkStart>sidebarStart&&linkStart<sidebarEnd,'Help is in the persistent Suite sidebar');
+  assert.notEqual(linkEnd,-1,'Help link is complete');
+  const link=pageHtml.slice(linkStart,linkEnd+4);
+  assert.ok(link.includes('href="'+helpUrl+'"'),'Help opens the Wiki homepage');
+  assert.ok(link.includes('target="_blank"')&&link.includes('rel="noopener noreferrer"'),'Help opens safely outside the Suite');
+  assert.ok(link.includes('<b>Help</b>')&&link.includes('Guides and how-to'),'Help has a discreet, clear label');
+  assert.ok(link.includes('src="assets/icons/help.svg"'),'Help uses the shared original SVG icon');
+  assert.match(helpIcon, /<svg\b/);
+  assert.match(helpIcon, /viewBox="0 0 24 24"/);
+  assert.ok(!pageHtml.slice(pageHtml.indexOf('<header class="topbar">'),pageHtml.indexOf('</header>')).includes('id="help-link"'),'Help is not duplicated in the top bar');
+  assert.ok(mainSource.includes("target.origin !== 'https://help.brightdesk.com'"),'external navigation is restricted to the approved Brightdesk Help domain');
+  assert.ok(mainSource.includes("!allowedBrightdeskHelpPaths.has(target.pathname)"),'external navigation is restricted to the Suite Help homepage only');
+  assert.ok(mainSource.includes('target.search || target.hash'),'unexpected query strings and fragments are rejected');
+  assert.ok(mainSource.includes('shell.openExternal(target.href)'),'approved Help navigation opens in the system browser');
+  assert.match(styles, /\.sidebar\s+\.help-nav\s*\{[^}]*color:\s*#D7E1F1/i, 'Help label remains readable against the approved deep-navy sidebar');
+});

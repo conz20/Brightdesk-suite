@@ -23,13 +23,13 @@ These are the only products in the approved suite. Outlook, OneDrive, Teams and 
 
 ## The Brightdesk experience
 
-<p align="center"><img src="assets/product-experience/brightdesk-home.svg" alt="Brightdesk Office Suite production Home screen: Home, Apps and Files sidebar, ten product cards, Notifications and Settings" width="100%"></p>
+<p align="center"><img src="assets/product-experience/brightdesk-home.svg" alt="Brightdesk Office Suite Home screen: Home, Apps and Files sidebar, discreet Help link, ten product cards, Notifications and Settings" width="100%"></p>
 
 The SVG above is the approved production Home screen design and the single visual source of truth for the desktop interface. It defines the exact Home heading, Home–Apps–Files sidebar, ten original product cards, Notifications and Settings controls, spacing and visual treatment. This is the intended customer-facing design; the live desktop interface and this artwork must remain aligned.
 
 **Current implementation alignment:** the desktop source uses the original Brightdesk wordmark, the separate four-tile Apps icon, and the responsive icon-first product cards shown in the approved Home artwork. The Home top bar reads **Your apps**; the product grid is headed **Your products** with the line **Ten focused tools, connected by one Brightdesk experience.** The redundant **MY APPS** label is hidden on Home so the section has one clear heading. At the 1600 × 900 reference size, the shell uses a 238 px deep-navy sidebar, a 46 px Suite mark, a 25 px wordmark, a 34 px Home heading, 38 px circular Notifications and Settings controls, and 240 px product cards with 16 px column and 18 px row gaps. The grid presents five cards per row at this size and adapts to fewer columns on narrower screens. The **Home** screen opens to the ten-product grid, **Apps** opens product management, and **Files** provides local Open file and Save project actions. The Files screen is a local file-access page, not a full file browser or recent-files list. In an active product workspace, suite navigation is replaced by the **Switch product** list.
 
-The approved sidebar uses **Home**, **Apps** and **Files**, with no secondary captions; the **Files** icon is a recognisable open folder with a visible stack of documents, matching the local file-opening and project-saving actions rather than an unexplained rectangle. There is no Create button, no online-service navigation and no cloud storage. The sidebar footer reinforces that Brightdesk is local-first; the current software version remains available in the product footer outside Home. Installed products belong in the **Switch product** group only while a product workspace is open. The original product icons remain consistent across the Home cards and product workspaces. The separate four-tile launcher icon identifies Apps. Suite branding remains in the installed application window and native application identity, not in this Home artwork.
+The approved sidebar uses **Home**, **Apps** and **Files**, with no secondary captions. A small **Help** link sits discreetly near the bottom of the sidebar, above the local-first footer; the **Files** icon is a recognisable open folder with a visible stack of documents, matching the local file-opening and project-saving actions rather than an unexplained rectangle. There is no Create button, no online-service navigation and no cloud storage. The sidebar footer reinforces that Brightdesk is local-first; the current software version remains available in the product footer outside Home. Installed products belong in the **Switch product** group only while a product workspace is open. The original product icons remain consistent across the Home cards and product workspaces. The separate four-tile launcher icon identifies Apps. Suite branding remains in the installed application window and native application identity, not in this Home artwork.
 
 **Updates:** Home does not contain separate Install or Update information panels. When a Brightdesk Suite update is reported by the update service, a desktop notification appears and the alert is saved in the Notifications bell history. The alert offers **Download update** when available and **Install update** after the download completes. Downloading and installing always require a deliberate action. The current suite has no configured GitHub update publishing provider, so live release delivery is not active or verified.
 
@@ -100,7 +100,7 @@ The Windows NSIS installer and macOS DMG/PKG present the Brightdesk Terms and Co
 
 ## Local-first desktop software
 
-Brightdesk is designed to keep product data on the current device. The first-use features described above do not require an account, cloud workspace or online collaboration. Some tasks such as downloads and update checks may use network access when explicitly requested.
+Brightdesk is designed to keep product data on the current device. The first-use features described above do not require an account, cloud workspace or online collaboration. Official update checks/downloads and customer-selected Help access may use the internet when explicitly requested. Help opens in the normal browser; no document or product data is sent, and updated Wiki guides do not require a new Brightdesk installer.
 
 ## Product repositories
 
@@ -186,3 +186,8 @@ The helper covers Common Actions, Developer Tools, Extensions, Wiki, Release Too
 ## Repository hygiene
 
 Generated build output and Cargo `target` directories are excluded from the tracked source tree. Build products are recreated by the local build and CI workflows; they are not committed as product source.
+
+
+## Customer Help
+
+The left sidebar includes a small, discreet **Help** link near the bottom. It opens the Brightdesk Help homepage at the reserved address `https://help.brightdesk.com/` in the customer's normal browser. The website is not live or verified yet, so this draft must not be released until the production address and all customer pages have been verified. The Wiki is updated independently: approved guide changes appear the next time a customer opens Help and do not require a Brightdesk installer update. Opening Help sends no document or product data.

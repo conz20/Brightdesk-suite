@@ -35,3 +35,8 @@ Brightdesk uses original names, code, interface design and artwork. Application 
 Use Node.js **24.22.2** for development, testing and release builds. Read the repository's README and contributor instructions before making changes. Keep release claims accurate: a concept preview is not a running screenshot, a committed build script is not proof of a successful installer, and no public release should be published without the owner's approval.
 
 See [the main suite README](README.md), [the product scope lock](PRODUCT_SCOPE_LOCK.md) and [the shared visual standard](docs/BRIGHTDESK_VISUAL_STANDARD.md) for the canonical requirements.
+
+
+## Customer Help
+
+Brightdesk customer help content is maintained separately in Brightdesk Wiki. It is a free, read-only customer resource, not an eleventh product and not an installer dependency. The Suite and each approved product expose a small **Help** link near the bottom of their persistent navigation sidebar; each link opens the matching guide in the customer's normal browser. The intended customer address is `https://help.brightdesk.com`, but the production domain and deployment are not live or verified yet. Do not release the in-app links until the exact public destination is confirmed. Approved Wiki guide changes are published independently and do not require a new Brightdesk installer.
