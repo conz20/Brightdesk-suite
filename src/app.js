@@ -1111,7 +1111,7 @@ function createBrightdeskPrintDocument() {
 async function printCurrent() {
   let printDocument;
   try {
-    const printers = await refreshConfiguredPrinters();
+    const printers = await refreshConfiguredPrinters({ throwOnError: true });
     if (!Array.isArray(printers) || printers.length === 0) {
       setStatus('No printer is available yet. Use Printer settings to add one, then try again.');
       return;
@@ -1348,7 +1348,7 @@ async function loadPrinterCapabilities(systemName, actionButton, container) {
   }
 }
 
-async function refreshConfiguredPrinters() {
+async function refreshConfiguredPrinters({ throwOnError = false } = {}) {
   const button = $('refresh-configured-printers-button');
   button.disabled = true;
   $('configured-printer-status').textContent = t('printing.loadingPrinters');
@@ -1384,6 +1384,7 @@ async function refreshConfiguredPrinters() {
     placeholder.value = '';
     placeholder.textContent = 'Choose a printer';
     $('print-printer-select').append(placeholder);
+    if (throwOnError) throw error;
     return [];
   } finally {
     button.disabled = false;
