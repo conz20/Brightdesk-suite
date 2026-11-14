@@ -66,8 +66,8 @@ test('the packaged launch path checks the actual hidden window and protected res
 test('screenshot capture mode isolates Electron profile paths and invokes the real capture process', () => {
   const source = fs.readFileSync(path.join(root, 'src', 'main.js'), 'utf8');
   assert.match(source, /BRIGHTDESK_SCREENSHOT_CAPTURE_TEST === '1'/);
-  assert.match(source, /app\\.setPath\\('userData', userDataPath\\)/);
-  assert.match(source, /app\\.setPath\\('appData', appDataPath\\)/);
+  assert.ok(source.includes("app.setPath('userData', userDataPath)"));
+  assert.ok(source.includes("app.setPath('appData', appDataPath)"));
   assert.match(source, /await runScreenshotCaptureTest/);
 });
 
@@ -75,8 +75,8 @@ test('main-branch CI uploads only pending-review screenshot evidence', () => {
   const workflow = fs.readFileSync(path.join(root, '.github', 'workflows', 'ci.yml'), 'utf8');
   const manifest = require('../package.json');
   assert.equal(manifest.scripts['capture:screenshots'], 'node scripts/capture-suite-screenshots.js');
-  assert.match(workflow, /github\\.event_name == 'push' && github\\.ref == 'refs\\/heads\\/main'/);
-  assert.match(workflow, /actions\\/upload-artifact@[a-f0-9]{40}/);
-  assert.match(workflow, /retention-days: 14/);
-  assert.match(workflow, /continue-on-error: true/);
+  assert.ok(workflow.includes("if: github.event_name == 'push' && github.ref == 'refs/heads/main'"));
+  assert.match(workflow, /actions\/upload-artifact@[a-f0-9]{40}/);
+  assert.ok(workflow.includes('retention-days: 14'));
+  assert.ok(workflow.includes('continue-on-error: true'));
 });
