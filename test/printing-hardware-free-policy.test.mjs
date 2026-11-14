@@ -22,5 +22,6 @@ test("hardware-free printing evidence uses virtual queues and platform-specific 
 
 test("virtual acceptance never claims that a physical page was printed", () => {
   assert.match(matrix, /it never proves that paper printed/i);
+  assert.match(matrix, /that optional check is not part of software acceptance/i);
   assert.match(integration, /not evidence\s*that a physical page printed/i);
 });

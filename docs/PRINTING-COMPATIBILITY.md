@@ -48,7 +48,7 @@ A product is not considered print-ready merely because its Print button exists. 
 3. **Visible printer selection:** the operating system's print dialog appears and allows the user to choose any configured printer and the options supported by that printer.
 4. **Honest queue state:** no configured printer produces a clear message and a route to OS printer settings. A discovered device is never described as ready until it has a usable OS queue.
 5. **Safe device setup:** discovery and any pairing are started by the user; no queue or driver is installed silently.
-6. **Accurate result:** Brightdesk reports OS submission acceptance only. Physical completion requires a real printer test.
+6. **Accurate result:** Brightdesk reports OS submission acceptance only. Physical completion may be claimed only when separately evidenced by an actual printer test; that optional check is not part of software acceptance.
 7. **Platform evidence:** run automated adapter, OS-API contract, packaging, and native-helper build checks available for macOS, Windows, and Linux separately. Use virtual queues and controlled test doubles; physical printer access is not required for this acceptance gate.
 
 ## Hardware-free acceptance policy
