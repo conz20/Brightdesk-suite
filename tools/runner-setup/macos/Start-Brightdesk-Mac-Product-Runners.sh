@@ -110,7 +110,8 @@ say 'Customer products:'
 for repository in "${REPOSITORIES[@]}"; do printf '  - %s\n' "$repository"; done
 say ''
 say 'A temporary fine-grained GitHub token for conz20 is required.'
-say 'It must be limited to exactly these ten repositories with Administration: write permission and a one-day expiry.'
+say 'It must be limited to exactly these ten repositories with Administration: write permission and the shortest expiry GitHub offers.'
+say 'Revoke the fine-grained token in GitHub Settings immediately after setup completes.'
 say 'The token is used only for registration and is cleared before any runner process starts.'
 say ''
 if [[ "${BRIGHTDESK_RUNNER_SETUP_CONFIRMED:-}" == 'REGISTER' ]]; then
