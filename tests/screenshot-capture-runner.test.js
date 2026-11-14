@@ -32,6 +32,7 @@ test('screenshot capture targets the real Suite product windows instead of switc
   assert.match(main, /openProductWindow:\s*async\s+applicationId\s*=>\s*\{/);
   assert.match(main, /productWindowManager\.open\(applicationId\)/);
   assert.match(capture, /openProductWindow\(target\.appId\)/);
-  assert.match(capture, /activeProductWindow\.webContents\.capturePage\(\)/);
+  assert.match(capture, /captureWindow = activeProductWindow/);
+  assert.match(capture, /captureWindow\.webContents\.capturePage\(\)/);
   assert.doesNotMatch(capture, /switchToProduct/);
 });
