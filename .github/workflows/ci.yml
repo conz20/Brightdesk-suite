@@ -54,6 +54,7 @@ jobs:
         run: npm test
 
       - name: Capture optional Suite and product source-runtime screenshots
+        if: github.event_name == 'pull_request' && startsWith(github.head_ref, 'feat/guide-screenshot-capture-')
         id: guide_screenshots
         continue-on-error: true
         env:
