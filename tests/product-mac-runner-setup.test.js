@@ -105,6 +105,15 @@ test('runner folders are separated from shared infrastructure and duplicate regi
   assert.match(instructions, /does not create a duplicate/i);
 });
 
+test('each runner uses its own empty owner-only GitHub CLI config folder', () => {
+  assert.match(script, /runner_gh_config="\$runner_home\/gh-config-no-credentials"/);
+  assert.match(script, /find "\$runner_gh_config" -mindepth 1 -maxdepth 1/);
+  assert.match(script, /Refusing to start with a non-empty GitHub CLI config folder/);
+  assert.match(script, /GH_CONFIG_DIR="\$runner_gh_config" nohup/);
+  assert.doesNotMatch(script, /GH_NO_CREDENTIALS_CONFIG/);
+  assert.match(instructions, /Each runner receives its own owner-only GitHub CLI configuration folder/);
+});
+
 test('unregistered local runner folders are never executed or reused', () => {
   assert.match(script, /An unregistered runner folder already exists.*Nothing was executed or overwritten/);
   assert.doesNotMatch(script, /Reusing previously verified product runner files/);
