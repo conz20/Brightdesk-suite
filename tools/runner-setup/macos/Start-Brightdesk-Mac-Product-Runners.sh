@@ -119,10 +119,9 @@ for repository in "${REPOSITORIES[@]}"; do
   runner_name="Brightdesk-Product-Mac-$repository"
   runner_home="$RUNNER_ROOT/$repository"
   repository_url="https://github.com/$OWNER/$repository"
-  required_labels='["self-hosted","macOS","ARM64","brightdesk-product-ci"]'
   runners_endpoint="repos/$OWNER/$repository/actions/runners?per_page=100"
 
-  online_runner="$(gh api "$runners_endpoint" --jq "[.runners[]? | select(.status == \"online\") | ([.labels[].name] | contains($required_labels))] | any" 2>/dev/null)" ||
+  online_runner="$(gh api "$runners_endpoint" --jq "[.runners[]? | select(.status == \"online\") | ([.labels[].name] | contains(["self-hosted","macOS","ARM64","brightdesk-product-ci"]))] | any" 2>/dev/null)" ||
     fail "Cannot inspect registered runners for $repository. Check GitHub repository administration access."
   if [[ "$online_runner" == 'true' ]]; then
     say "Already has an online runner with the required product CI labels: $repository"
@@ -133,7 +132,7 @@ for repository in "${REPOSITORIES[@]}"; do
   registered_status="$(gh api "$runners_endpoint" --jq ".runners[]? | select(.name == \"$runner_name\") | .status" 2>/dev/null | head -n 1)" ||
     fail "Cannot inspect runner '$runner_name' in $repository."
   if [[ -n "$registered_status" ]]; then
-    registered_labels_match="$(gh api "$runners_endpoint" --jq ".runners[]? | select(.name == \"$runner_name\") | ([.labels[].name] | contains($required_labels))" 2>/dev/null | head -n 1)" ||
+    registered_labels_match="$(gh api "$runners_endpoint" --jq ".runners[]? | select(.name == \"$runner_name\") | ([.labels[].name] | contains(["self-hosted","macOS","ARM64","brightdesk-product-ci"]))" 2>/dev/null | head -n 1)" ||
       fail "Cannot inspect labels for runner '$runner_name'."
     if [[ "$registered_status" == 'offline' && "$registered_labels_match" == 'true' &&
           ! -L "$runner_home" && -f "$runner_home/.runner" && ! -L "$runner_home/.runner" && -x "$runner_home/run.sh" ]]; then
@@ -148,7 +147,7 @@ for repository in "${REPOSITORIES[@]}"; do
     continue
   fi
 
-  offline_compatible_runner="$(gh api "$runners_endpoint" --jq "[.runners[]? | select(.status == \"offline\") | ([.labels[].name] | contains($required_labels))] | any" 2>/dev/null)" ||
+  offline_compatible_runner="$(gh api "$runners_endpoint" --jq "[.runners[]? | select(.status == \"offline\") | ([.labels[].name] | contains(["self-hosted","macOS","ARM64","brightdesk-product-ci"]))] | any" 2>/dev/null)" ||
     fail "Cannot inspect offline runner registrations for $repository."
   if [[ "$offline_compatible_runner" == 'true' ]]; then
     say "A compatible macOS product CI runner is already registered but offline for $repository."
