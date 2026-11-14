@@ -71,7 +71,7 @@ test('runner PID files are trusted only when the process command belongs to that
   assert.match(script, /ps -p "\$runner_pid" -o command=/);
   assert.match(script, /runner_command.*\*".*runner_home.*"\*/);
   assert.match(script, /nohup "\$runner_home\/run\.sh"/);
-  assert.match(script, /index\(\$0, runner_home\) && \/run\\.sh\|Runner\\.Listener\//);
+  assert.ok(script.includes("index($0, runner_home) && /run\\.sh|Runner.Listener/"));
 });
 
 test('runner-label discovery uses three self-contained jq filters with no unbound variables', () => {
