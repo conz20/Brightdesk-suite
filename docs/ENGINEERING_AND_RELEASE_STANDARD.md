@@ -14,6 +14,16 @@ The customer packages use the repository-pinned Node.js **24.22.2** toolchain. R
 
 Each product repository must keep its own evidence-based language inventory. Re-scan tracked source files and toolchain manifests as the code changes. File presence alone does not prove that code builds, is used at runtime or passes tests.
 
+## Version compatibility and migrations
+
+The approved runtime and build-tool versions are exact portfolio pins, not suggestions or loose minimums. Use Node.js **24.22.2**, Electron **45.2.1**, electron-builder **26.18.0** and Rust **1.99.1** where those tools apply. Keep package manifests, lockfiles, runtime selector files, development containers, build scripts and GitHub Actions aligned. A support repository that does not use Electron must not add Electron merely for consistency.
+
+Do not bring an older implementation, API example or tutorial into a newer Brightdesk project unchanged. Check which versions it targets, then port useful work to the currently approved APIs and update its tests, configuration and documentation together. Never mix incompatible major-version APIs or use an older runtime to make a test pass.
+
+Changing the approved baseline requires explicit owner approval and a coordinated compatibility review across the Suite, all ten products and relevant engineering repositories. Do not automatically chase upstream releases.
+
+The detailed rules, migration checklist and read-only compatibility checks are in the [Version Compatibility Standard](VERSION_COMPATIBILITY.md). Cargo's `rust-version` field describes an MSRV floor; it is not the selected compiler. The active compiler is the version pinned by `rust-toolchain.toml` and CI.
+
 ## Required engineering practice
 
 - Make the smallest safe change on a dedicated feature branch; do not commit routine work directly to the default branch.
