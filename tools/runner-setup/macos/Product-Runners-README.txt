@@ -22,11 +22,17 @@ Brightdesk-AI and shared infrastructure repositories are not included. This does
 BEFORE YOU START
 ----------------
 1. Use an Apple-silicon Mac. This setup is not for Intel Macs, Windows or Linux.
-2. Install GitHub CLI (`gh`) from the official GitHub distribution and sign in as `conz20`:
-   gh auth login --hostname github.com
-3. The signed-in account must have repository administration access to all ten named private product repositories, including permission to register repository-level self-hosted runners.
-4. Keep normal macOS security protections enabled. Never send your GitHub CLI credential, sign-in code or runner registration token to ChatGPT or anyone else.
-5. A self-hosted runner executes workflow code from its matching private repository. Keep these runners limited to the named private Brightdesk repositories. Do not use them for public repositories or untrusted fork code.
+2. Use a **dedicated standard macOS user account for runners**. Do not use the normal day-to-day account. The runner account must not have your personal GitHub CLI login, SSH keys or other saved credentials.
+3. Install GitHub CLI (`gh`) for that runner account, but **do not run `gh auth login`**.
+4. Create a temporary fine-grained personal access token in GitHub Settings → Developer settings → Personal access tokens → Fine-grained tokens:
+   - Resource owner: `conz20`
+   - Repository access: select **only** the ten approved product repositories listed above
+   - Repository permissions: `Administration: Read and write` only
+   - Expiration: one day (the shortest available option)
+   - Add no other permissions
+5. Keep the token private. The Finder app requests it through a hidden-answer dialog. The script uses it only to request each repository's short-lived runner registration token, clears it before starting any runner, and does not write it to the log or a config file.
+6. Keep normal macOS security protections enabled. Never send your token, sign-in code or runner registration token to ChatGPT or anyone else.
+7. A self-hosted runner executes workflow code from its matching private repository. These runners share the dedicated macOS account and are not isolated from one another. Keep them limited to trusted Brightdesk workflow code. Do not use them for public repositories or untrusted fork/third-party workflow code.
 
 RUN THE SETUP
 -------------
@@ -34,7 +40,14 @@ From a Brightdesk-suite checkout that contains this helper, run:
 
    bash tools/runner-setup/macos/Start-Brightdesk-Mac-Product-Runners.sh
 
-Read the security notice and type REGISTER to continue. Press Enter to cancel without registering anything.
+This terminal route requires a temporary token in `GH_TOKEN`. Enter it without echoing or saving it, run the script, then clear the variable:
+
+   read -r -s -p "Temporary GitHub token: " GH_TOKEN; echo
+   export GH_TOKEN
+   bash tools/runner-setup/macos/Start-Brightdesk-Mac-Product-Runners.sh
+   unset GH_TOKEN
+
+The script then asks you to type REGISTER. Press Enter to cancel without registering anything.
 
 NO-TERMINAL OPTION — FINDER APP
 -------------------------------
@@ -46,11 +59,12 @@ To use it without opening Terminal:
 1. In GitHub, open the Brightdesk-suite branch `chore/product-mac-runners-2026-11-14` and use Code → Download ZIP.
 2. Extract the ZIP in Finder. Keep the app bundle beside `Start-Brightdesk-Mac-Product-Runners.sh`; the app calls that sibling script.
 3. Double-click `Brightdesk-Product-Runner-Setup.app`.
-4. The app checks that GitHub CLI is installed and already authenticated as `conz20`. It stops without changes if either check fails.
-5. Review the on-screen warning and choose Register or Cancel. Cancel exits without requesting any runner token.
-6. The app runs the setup in the background and displays whether the script completed. It does not open Terminal.
+4. The app checks that GitHub CLI is installed. It does not use a saved GitHub CLI login.
+5. Review the dedicated-account warning, choose Continue or Cancel, then enter the temporary fine-grained token in the hidden-answer dialog.
+6. The app passes the token to the setup process without printing it. The script checks that it belongs to `conz20`, registers each repository runner, clears the token, and only then starts/restarts runner processes.
+7. The app runs the setup in the background and displays whether the script completed. It does not open Terminal.
 
-The Finder app does not install GitHub CLI or sign in to GitHub. Those must already be configured for the current macOS user. It adds no repository permissions or secrets. Setup logs are stored with owner-only permissions in:
+The Finder app does not install GitHub CLI, create a token, or sign in to GitHub. Create the temporary fine-grained token yourself in GitHub and use only the dedicated runner account. Do not use your normal macOS login or its saved GitHub credentials. Setup logs are stored with owner-only permissions in:
 `~/Library/Logs/Brightdesk/Product-Runner-Setup/`
 
 This draft app bundle is not code-signed or notarised. Do not bypass a macOS security warning unless you have reviewed and approved the exact source in this private repository. The app must remain beside the shell script extracted from the same reviewed branch.
