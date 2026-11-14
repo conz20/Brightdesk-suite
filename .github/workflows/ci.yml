@@ -53,7 +53,7 @@ jobs:
       - name: Run automated tests
         run: npm test
 
-      - name: Capture optional Suite and product source-runtime screenshots
+      - name: Capture required Suite and product source-runtime screenshots
         if: github.event_name == 'pull_request' && startsWith(github.head_ref, 'feat/guide-screenshot-capture-')
         id: guide_screenshots
         env:
