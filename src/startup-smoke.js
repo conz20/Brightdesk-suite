@@ -41,7 +41,7 @@ function assertSuiteAppManagerReady(state, expectedProductNames) {
 function assertProductWindowReady(state, expectedApplicationId, expectedApplicationName) {
   if (!state || state.title !== SUITE_DOCUMENT_TITLE ||
       state.launchAppId !== expectedApplicationId ||
-      state.appTitle !== expectedApplicationName ||
+      state.appTitle !== `Brightdesk ${expectedApplicationName}` ||
       state.suiteLaunchedProduct !== true ||
       state.hasSidebar !== true ||
       state.hasWorkspace !== true) {
