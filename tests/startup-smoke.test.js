@@ -51,8 +51,8 @@ test('packaged startup rejects a partial or unloaded interface', () => {
 
 test('Suite screenshot preparation requires the exact ten approved products on its home screen', () => {
   const productNames = [
-    'Pages', 'Sheets', 'Decks', 'Notes', 'Database',
-    'Forms', 'Lists', 'Planner', 'To Do', 'Workspace'
+    'Brightdesk Pages', 'Brightdesk Sheets', 'Brightdesk Decks', 'Brightdesk Notes', 'Brightdesk Database',
+    'Brightdesk Forms', 'Brightdesk Lists', 'Brightdesk Planner', 'Brightdesk To Do', 'Brightdesk Workspace'
   ];
   assert.equal(assertSuiteAppManagerReady({
     title: 'Brightdesk Office Suite',
@@ -81,7 +81,7 @@ test('Suite screenshot preparation requires the exact ten approved products on i
 test('packaged startup accepts each dedicated product workspace only when its identity is correct', () => {
   assert.equal(assertProductWindowReady({
     title: 'Brightdesk Office Suite',
-    appTitle: 'Pages',
+    appTitle: 'Brightdesk Pages',
     launchAppId: 'pages',
     suiteLaunchedProduct: true,
     hasSidebar: true,
@@ -100,7 +100,7 @@ test('packaged startup rejects a product window with the wrong identity or missi
   };
   for (const patch of [
     { title: 'Unexpected page' },
-    { appTitle: 'Sheets' },
+    { appTitle: 'Brightdesk Sheets' },
     { launchAppId: 'sheets' },
     { suiteLaunchedProduct: false },
     { hasSidebar: false },
