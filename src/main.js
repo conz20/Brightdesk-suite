@@ -1,11 +1,30 @@
 const { app, BrowserWindow, Menu, ipcMain, dialog, Notification } = require('electron');
 const packageConfig = require('../package.json');
 const nativeEngine = require('./rust-engine');
-const { assertPackagedVersion, assertMainWindowReady } = require('./startup-smoke');
+const { assertPackagedVersion, assertMainWindowReady, assertSuiteAppManagerReady, assertProductWindowReady } = require('./startup-smoke');
+const { captureGuideScreenshot, buildGuideScreenshotManifest } = require('./guide-screenshots');
 const path = require('node:path');
 const crypto = require('node:crypto');
 const fsNative = require('node:fs');
 const fs = require('node:fs/promises');
+const guideScreenshotMode = process.env.BRIGHTDESK_GUIDE_SCREENSHOT_MODE === '1';
+if (guideScreenshotMode) {
+  const profileRoot = process.env.BRIGHTDESK_GUIDE_DATA_DIR;
+  if (typeof profileRoot !== 'string' || profileRoot.trim().length === 0) {
+    throw new Error('Brightdesk guide screenshot mode requires an isolated data directory.');
+  }
+  const isolatedPaths = {
+    appData: path.join(profileRoot, 'app-data'),
+    userData: path.join(profileRoot, 'user-data'),
+    sessionData: path.join(profileRoot, 'session-data')
+  };
+  for (const directory of Object.values(isolatedPaths)) {
+    fsNative.mkdirSync(directory, { recursive: true, mode: 0o700 });
+  }
+  app.setPath('appData', isolatedPaths.appData);
+  app.setPath('userData', isolatedPaths.userData);
+  app.setPath('sessionData', isolatedPaths.sessionData);
+}
 const { openOfficeFile, exportOfficeFile, cleanFileName, ensureExtension } = require('./file-service');
 const { BUILTIN_LANGUAGES, validateLanguagePack, getBuiltinLanguage } = require('./language-service');
 const { DictionaryService } = require('./dictionary-service');
@@ -113,7 +132,7 @@ function createSuiteProductWindow(requestedApplicationId) {
     height: 920,
     minWidth: 980,
     minHeight: 680,
-    show: true,
+    show: !guideScreenshotMode,
     title: `Brightdesk ${entry.name}`,
     icon: path.join(__dirname, 'assets', 'icons', entry.iconAsset),
     backgroundColor: '#f5f6fa',
@@ -534,6 +553,117 @@ ipcMain.handle('updates:set-settings', async (event, payload) => {
   return settings;
 });
 
+async function waitForSuiteAppManagerReady(window, expectedProductNames, expectedHomeView) {
+  const script = [
+    'new Promise((resolve, reject) => {',
+    `  const expectedProductNames = ${JSON.stringify(expectedProductNames)};`,
+    `  const expectedHomeView = ${JSON.stringify(expectedHomeView)};`,
+    '  const deadline = Date.now() + 20000;',
+    '  function inspect() {',
+    "    const footer = document.querySelector('#footer-version')?.textContent?.trim() || '';",
+    "    const appManager = document.querySelector('#app-manager');",
+    "    const productNames = Array.from(document.querySelectorAll('#app-manager-grid .app-card .app-card-heading b')).map(item => item.textContent.trim());",
+    '    const state = { title: document.title, hasAppManager: Boolean(appManager && !appManager.hidden), isHomeView: Boolean(appManager && appManager.classList.contains(\'home-view\')), productNames };',
+    '    const productNamesMatch = productNames.length === expectedProductNames.length && productNames.every((name, index) => name === expectedProductNames[index]);',
+    "    if (state.title === 'Brightdesk Office Suite' && footer.startsWith('Brightdesk ') && state.hasAppManager && state.isHomeView === expectedHomeView && productNamesMatch) { resolve(state); return; }",
+    "    if (Date.now() >= deadline) { reject(new Error('Timed out waiting for the Suite app centre to render the approved product cards.')); return; }",
+    '    setTimeout(inspect, 100);',
+    '  }',
+    '  inspect();',
+    '})'
+  ].join('\n');
+  const state = await window.webContents.executeJavaScript(script);
+  await window.webContents.executeJavaScript('new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)))');
+  return state;
+}
+async function waitForProductWorkspaceReady(window, applicationId, applicationName) {
+  const script = [
+    'new Promise((resolve, reject) => {',
+    `  const expectedApplicationId = ${JSON.stringify(applicationId)};`,
+    `  const expectedApplicationName = ${JSON.stringify(applicationName)};`,
+    '  const deadline = Date.now() + 20000;',
+    '  function inspect() {',
+    "    const workspace = document.querySelector('#workspace');",
+    "    const state = { title: document.title, appTitle: document.querySelector('#app-title')?.textContent?.trim() || '', launchAppId: window.brightdesk?.launchAppId || null, suiteLaunchedProduct: window.brightdesk?.suiteLaunchedProduct === true, hasSidebar: Boolean(document.querySelector('.sidebar')), hasWorkspace: Boolean(workspace && !workspace.hidden) };",
+    '    if (state.title === \'Brightdesk Office Suite\' && state.appTitle === `Brightdesk ${expectedApplicationName}` && state.launchAppId === expectedApplicationId && state.suiteLaunchedProduct && state.hasSidebar && state.hasWorkspace) { resolve(state); return; }',
+    '    if (Date.now() >= deadline) { reject(new Error(\'Timed out waiting for Brightdesk \' + expectedApplicationName + \' workspace to finish rendering.\')); return; }',
+    '    setTimeout(inspect, 100);',
+    '  }',
+    '  inspect();',
+    '})'
+  ].join('\n');
+  const state = await window.webContents.executeJavaScript(script);
+  assertProductWindowReady(state, applicationId, applicationName);
+  await window.webContents.executeJavaScript('new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)))');
+  return state;
+}
+
+async function captureGuideScreenshotSet() {
+  const outputDirectory = process.env.BRIGHTDESK_GUIDE_SCREENSHOT_DIR;
+  if (typeof outputDirectory !== 'string' || outputDirectory.trim().length === 0) {
+    throw new Error('Brightdesk guide screenshot mode requires an output directory.');
+  }
+  const allowedApplicationIds = [...supportedApplications];
+  const captures = [];
+  const expectedProductNames = Object.values(PRODUCT_MANIFEST).map(entry => `Brightdesk ${entry.name}`);
+  await waitForSuiteAppManagerReady(mainWindow, expectedProductNames, false);
+  await mainWindow.webContents.executeJavaScript("document.querySelector('#finish-app-setup')?.click()");
+  const suiteHomeState = await waitForSuiteAppManagerReady(mainWindow, expectedProductNames, true);
+  assertSuiteAppManagerReady(suiteHomeState, expectedProductNames);
+  captures.push(await captureGuideScreenshot({
+    window: mainWindow,
+    applicationId: 'suite',
+    allowedApplicationIds,
+    outputDirectory
+  }));
+  for (const requestedApplicationId of allowedApplicationIds) {
+    const opened = productWindowManager.open(requestedApplicationId);
+    try {
+      await opened.ready;
+      const entry = PRODUCT_MANIFEST[requestedApplicationId];
+      await waitForProductWorkspaceReady(opened.window, requestedApplicationId, entry.name);
+      captures.push(await captureGuideScreenshot({
+        window: opened.window,
+        applicationId: requestedApplicationId,
+        allowedApplicationIds,
+        outputDirectory
+      }));
+    } finally {
+      if (!opened.window.isDestroyed()) opened.window.close();
+    }
+  }
+  const workflowRunId = process.env.GITHUB_RUN_ID;
+  const workflowRunUrl = [
+    process.env.GITHUB_SERVER_URL,
+    process.env.GITHUB_REPOSITORY,
+    'actions/runs',
+    workflowRunId
+  ].join('/');
+  const captureManifest = buildGuideScreenshotManifest({
+    captures,
+    repository: process.env.GITHUB_REPOSITORY,
+    appVersion: app.getVersion(),
+    workflowCommit: process.env.GITHUB_SHA,
+    pullRequestHeadCommit: process.env.BRIGHTDESK_GUIDE_PR_HEAD_SHA,
+    pullRequestBaseCommit: process.env.BRIGHTDESK_GUIDE_PR_BASE_SHA,
+    platform: process.platform,
+    architecture: process.arch,
+    runnerOS: process.env.RUNNER_OS,
+    runnerArchitecture: process.env.RUNNER_ARCH,
+    workflowName: process.env.GITHUB_WORKFLOW,
+    workflowRunId,
+    workflowRunUrl,
+    capturedAt: new Date().toISOString()
+  });
+  await fs.writeFile(
+    path.join(outputDirectory, 'capture-manifest.json'),
+    JSON.stringify(captureManifest, null, 2) + '\n',
+    { mode: 0o600 }
+  );
+  console.log('Captured ' + captures.length + ' Brightdesk source-runtime screenshots: ' + captures.map(item => item.applicationId + '.png').join(', '));
+  return captures;
+}
+
 async function runPackagedStartupSmokeTest() {
   try {
     assertPackagedVersion(app.getVersion(), packageConfig.version);
@@ -547,11 +677,12 @@ async function runPackagedStartupSmokeTest() {
       hasLanguageManager: Boolean(document.querySelector('#language-manager'))
     })`);
     assertMainWindowReady(startupState);
+    if (guideScreenshotMode) await captureGuideScreenshotSet();
     if (mainWindow && !mainWindow.isDestroyed()) mainWindow.destroy();
     app.exit(0);
   } catch (error) {
     console.error('Brightdesk packaged startup smoke test failed:', error.message);
-    if (mainWindow && !mainWindow.isDestroyed()) mainWindow.destroy();
+    BrowserWindow.getAllWindows().forEach(window => { if (!window.isDestroyed()) window.destroy(); });
     app.exit(1);
   }
 }

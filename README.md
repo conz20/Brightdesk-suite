@@ -92,7 +92,9 @@ The Rust toolchain is pinned to **1.99.1**. macOS native builds produce both App
 
 The approved Home SVG is the visual specification for the customer-facing interface and is kept aligned with the desktop source. It is not presented as a runtime screenshot. The older `assets/hero-showcase.png` file is a composed promotional collage, not a capture of the current running suite, so it is not used as evidence of working screens. No verified screenshot set from the current running desktop build is published yet. Do not treat design artwork or the older v0.1.0 source archive as proof of current desktop behaviour.
 
-A genuine screenshot should be captured directly from the current Electron build after launching the product and checking its primary workflow. The capture must show the real interface without composited controls or fabricated UI. Use non-sensitive sample data, retain the full product window, and label the image with the tested build or commit. See the [visual standard](docs/BRIGHTDESK_VISUAL_STANDARD.md).
+A genuine screenshot should be captured directly from the current Electron build after launching the product and checking its primary workflow. The capture must show the real interface without composited controls or fabricated UI. Use non-sensitive sample data, retain the full product window, and label the image with the tested build or commit.
+
+The dedicated CI capture path opens the real Suite Home and each of the ten product workspaces in live Electron windows. It saves one PNG per workspace plus a `capture-manifest.json` containing the app version, workflow commit, PR head and base commits, runtime and runner platforms, workflow run URL, capture timestamp, and SHA-256 digest for every image. Screenshot capture is a required step for that dedicated capture branch; a failed capture fails its workflow rather than being reported as complete. These are source-runtime captures, not packaged-installer screenshots. See the [visual standard](docs/BRIGHTDESK_VISUAL_STANDARD.md).
 
 ## Installer agreement
 
@@ -119,9 +121,9 @@ Each approved product has its own repository and product documentation:
 
 ## Connected developer ecosystem
 
-The Suite coordinates ten independently maintained product repositories: Pages, Sheets, Decks, Notes, Database, Forms, Lists, Planner, To Do and Workspace. The private [Brightdesk-AI](https://github.com/connormolloy12/Brightdesk-AI) repository supports engineering analysis and approved development workflows; it is not included in customer downloads and is not required to use the products.
+The Suite coordinates ten independently maintained product repositories: Pages, Sheets, Decks, Notes, Database, Forms, Lists, Planner, To Do and Workspace. The private [Brightdesk-AI](https://github.com/conz20/Brightdesk-AI) repository supports engineering analysis and approved development workflows; it is not included in customer downloads and is not required to use the products.
 
-The ten existing shared infrastructure repositories are [Design System](https://github.com/connormolloy12/Brightdesk-Design-System), [Fonts](https://github.com/connormolloy12/Brightdesk-Fonts), [Localization](https://github.com/connormolloy12/Brightdesk-Localization), [Engine](https://github.com/connormolloy12/Brightdesk-Engine), [Common Libraries](https://github.com/connormolloy12/Brightdesk-Common-Libs), [Common Actions](https://github.com/connormolloy12/Brightdesk-Common-Actions), [Developer Tools](https://github.com/connormolloy12/Brightdesk-Developer-Tools), [Extensions](https://github.com/connormolloy12/Brightdesk-Extensions), [Wiki](https://github.com/connormolloy12/Brightdesk-Wiki) and [Release Tools](https://github.com/connormolloy12/Brightdesk-Release-Tools). Release Tools now exists as a private repository with an initial README; its release tooling implementation is still outstanding.
+The thirteen shared and engineering repositories are [Design System](https://github.com/conz20/Brightdesk-Design-System), [Fonts](https://github.com/conz20/Brightdesk-Fonts), [Localization](https://github.com/conz20/Brightdesk-Localization), [Engine](https://github.com/conz20/Brightdesk-Engine), [Common Libraries](https://github.com/conz20/Brightdesk-Common-Libs), [Common Actions](https://github.com/conz20/Brightdesk-Common-Actions), [Developer Tools](https://github.com/conz20/Brightdesk-Developer-Tools), [Extensions](https://github.com/conz20/Brightdesk-Extensions), [Wiki](https://github.com/conz20/Brightdesk-Wiki), [Release Tools](https://github.com/conz20/Brightdesk-Release-Tools), [Services](https://github.com/conz20/Brightdesk-Services), [Printing](https://github.com/conz20/Brightdesk-Printing) and [Voice](https://github.com/conz20/Brightdesk-Voice). Release Tools now has a read-only release-manifest and installer-artifact audit implementation, a JSON Schema, regression tests and CI workflow; it does not build, publish or change customer releases. Services remains an experimental optional owner-operated tool and is not a customer runtime dependency. The two supporting repositories are [Type Preview](https://github.com/conz20/Brightdesk-Type-Preview) and [Assets](https://github.com/conz20/Brightdesk-Assets).
 
 Repository presence is not the same as completed integration. Shared packages and interfaces will be connected only after their source, tests, language compatibility and versioning are verified. Existing JavaScript, TypeScript, Rust and other languages remain supported; no language is being removed as part of this work. See the [developer ecosystem architecture](docs/DEVELOPER_ECOSYSTEM_ARCHITECTURE.md) for ownership, dependency direction and the safe integration sequence.
 
@@ -135,10 +137,10 @@ Install the locked dependencies and run the main checks:
 npm ci
 npm run check:node
 npm test
-
-The catalogue and shell tests also check the shared release-version source, the current Home footer wording, and the bundled original SVG icon artwork. The customer-facing package version is shown in the product footer outside Home; the Home sidebar keeps its local-first message.
 npm run build
 ```
+
+The catalogue and shell tests also check the shared release-version source, the current Home footer wording, and the bundled original SVG icon artwork. The customer-facing package version is shown in the product footer outside Home; the Home sidebar keeps its local-first message.
 
 Build and verify the Rust engine:
 
