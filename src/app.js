@@ -83,6 +83,7 @@ function saveAppSetup() {
 }
 function installedApp(id) { return state.installedApps.includes(id); }
 function appLabel(id) { return catalog.find(item => item.id === id)?.name || id; }
+function productCardName(item) { return item.name.startsWith('Brightdesk ') ? item.name.slice('Brightdesk '.length) : item.name; }
 function appIconPath(item) {
   return `assets/icons/${item.iconAsset}`;
 }
@@ -483,7 +484,7 @@ function renderAppManager() {
     const header = document.createElement('div'); header.className = 'app-card-header';
     const icon = document.createElement('img'); icon.className = 'app-icon-image app-card-app-icon'; icon.src = appIconPath(item); icon.alt = `${item.name} icon`; icon.width = 48; icon.height = 48;
     const heading = document.createElement('div'); heading.className = 'app-card-heading';
-    const name = document.createElement('b'); name.textContent = item.name;
+    const name = document.createElement('b'); name.textContent = productCardName(item);
     const subtitle = document.createElement('small'); subtitle.textContent = item.subtitle;
     const stateChip = document.createElement('span'); stateChip.className = `app-status-chip ${!canInstall ? 'development' : (isInstalled ? 'installed' : 'available')}`;
     stateChip.textContent = !canInstall ? 'In development' : t(isInstalled ? 'manager.inWorkspace' : 'manager.notInstalled');
@@ -510,7 +511,7 @@ function renderAppManager() {
     const description = document.createElement('p'); description.textContent = item.description;
     const footer = document.createElement('div'); footer.className = 'app-card-footer app-card-actions';
     const version = document.createElement('span'); version.className = 'module-version'; version.textContent = `Module ${item.moduleVersion}`;
-    footer.append(version);
+    if (!homeView) footer.append(version);
     if (!canInstall) {
       const comingSoon = document.createElement('span'); comingSoon.className = 'app-state'; comingSoon.textContent = 'In development'; footer.append(comingSoon);
     } else if (!state.setupComplete) {
@@ -523,18 +524,21 @@ function renderAppManager() {
     } else {
       if (isInstalled) {
         const open = document.createElement('button'); open.className = 'primary small-action app-install-action';
-        open.textContent = 'Open'; open.setAttribute('aria-label', `Open ${item.name}`);
+        open.textContent = 'Open'; open.dataset.action = 'open'; open.setAttribute('aria-label', `Open ${item.name}`);
         open.addEventListener('click', async () => {
           try { await window.brightdesk.openApplication(item.id); }
           catch (error) { alert(error.message || `Could not open ${item.name}.`); }
         }); footer.append(open);
       }
       const action = document.createElement('button'); action.className = isInstalled ? 'secondary small-action app-install-action' : 'primary small-action app-install-action';
+      action.dataset.action = isInstalled ? 'remove-from-suite' : 'add-to-suite';
       action.textContent = t(isInstalled ? 'manager.remove' : 'manager.install');
       action.setAttribute('aria-label', `${t(isInstalled ? 'manager.remove' : 'manager.install')} ${item.name}`);
       action.addEventListener('click', () => toggleAppInstall(item.id)); footer.append(action);
     }
-    card.append(header, description, footer); grid.append(card);
+    card.append(header);
+    if (!homeView) card.append(description);
+    card.append(footer); grid.append(card);
   });
 }
 function toggleAppInstall(id) {
@@ -819,7 +823,7 @@ function render() {
   const languages = state.view === 'languages';
   const suitePage = home || manager || files;
   $('sidebar-section-label').textContent = languages ? t('sidebar.settings') : (suitePage ? t('sidebar.workspace') : t('sidebar.yourApps'));
-  $('sidebar-section-label').hidden = Boolean(launchAppId);
+  $('sidebar-section-label').hidden = Boolean(launchAppId) || suitePage;
   $('home-nav').hidden = !suitePage || Boolean(launchAppId);
   $('app-centre-nav').hidden = !suitePage || Boolean(launchAppId);
   $('files-nav').hidden = !suitePage || Boolean(launchAppId);
