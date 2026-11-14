@@ -2,7 +2,7 @@ const { app, BrowserWindow, Menu, ipcMain, dialog, Notification } = require('ele
 const packageConfig = require('../package.json');
 const nativeEngine = require('./rust-engine');
 const { assertPackagedVersion, assertMainWindowReady, assertSuiteAppManagerReady, assertProductWindowReady } = require('./startup-smoke');
-const { captureGuideScreenshot } = require('./guide-screenshots');
+const { captureGuideScreenshot, buildGuideScreenshotManifest } = require('./guide-screenshots');
 const path = require('node:path');
 const crypto = require('node:crypto');
 const fsNative = require('node:fs');
@@ -632,6 +632,34 @@ async function captureGuideScreenshotSet() {
       if (!opened.window.isDestroyed()) opened.window.close();
     }
   }
+  const workflowRunId = process.env.GITHUB_RUN_ID;
+  const workflowRunUrl = [
+    process.env.GITHUB_SERVER_URL,
+    process.env.GITHUB_REPOSITORY,
+    'actions/runs',
+    workflowRunId
+  ].join('/');
+  const captureManifest = buildGuideScreenshotManifest({
+    captures,
+    repository: process.env.GITHUB_REPOSITORY,
+    appVersion: app.getVersion(),
+    workflowCommit: process.env.GITHUB_SHA,
+    pullRequestHeadCommit: process.env.BRIGHTDESK_GUIDE_PR_HEAD_SHA,
+    pullRequestBaseCommit: process.env.BRIGHTDESK_GUIDE_PR_BASE_SHA,
+    platform: process.platform,
+    architecture: process.arch,
+    runnerOS: process.env.RUNNER_OS,
+    runnerArchitecture: process.env.RUNNER_ARCH,
+    workflowName: process.env.GITHUB_WORKFLOW,
+    workflowRunId,
+    workflowRunUrl,
+    capturedAt: new Date().toISOString()
+  });
+  await fs.writeFile(
+    path.join(outputDirectory, 'capture-manifest.json'),
+    JSON.stringify(captureManifest, null, 2) + '\n',
+    { mode: 0o600 }
+  );
   console.log('Captured ' + captures.length + ' Brightdesk source-runtime screenshots: ' + captures.map(item => item.applicationId + '.png').join(', '));
   return captures;
 }
