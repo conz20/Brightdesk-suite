@@ -585,7 +585,7 @@ async function waitForProductWorkspaceReady(window, applicationId, applicationNa
     '  function inspect() {',
     "    const workspace = document.querySelector('#workspace');",
     "    const state = { title: document.title, appTitle: document.querySelector('#app-title')?.textContent?.trim() || '', launchAppId: window.brightdesk?.launchAppId || null, suiteLaunchedProduct: window.brightdesk?.suiteLaunchedProduct === true, hasSidebar: Boolean(document.querySelector('.sidebar')), hasWorkspace: Boolean(workspace && !workspace.hidden) };",
-    '    if (state.title === \'Brightdesk Office Suite\' && state.appTitle === expectedApplicationName && state.launchAppId === expectedApplicationId && state.suiteLaunchedProduct && state.hasSidebar && state.hasWorkspace) { resolve(state); return; }',
+    '    if (state.title === \'Brightdesk Office Suite\' && state.appTitle === `Brightdesk ${expectedApplicationName}` && state.launchAppId === expectedApplicationId && state.suiteLaunchedProduct && state.hasSidebar && state.hasWorkspace) { resolve(state); return; }',
     '    if (Date.now() >= deadline) { reject(new Error(\'Timed out waiting for Brightdesk \' + expectedApplicationName + \' workspace to finish rendering.\')); return; }',
     '    setTimeout(inspect, 100);',
     '  }',
@@ -605,7 +605,7 @@ async function captureGuideScreenshotSet() {
   }
   const allowedApplicationIds = [...supportedApplications];
   const captures = [];
-  const expectedProductNames = Object.values(PRODUCT_MANIFEST).map(entry => entry.name);
+  const expectedProductNames = Object.values(PRODUCT_MANIFEST).map(entry => `Brightdesk ${entry.name}`);
   await waitForSuiteAppManagerReady(mainWindow, expectedProductNames, false);
   await mainWindow.webContents.executeJavaScript("document.querySelector('#finish-app-setup')?.click()");
   const suiteHomeState = await waitForSuiteAppManagerReady(mainWindow, expectedProductNames, true);
