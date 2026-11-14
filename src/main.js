@@ -571,7 +571,7 @@ async function waitForSuiteAppManagerReady(window, expectedProductNames, expecte
     '  }',
     '  inspect();',
     '})'
-  ].join('\\n');
+  ].join('\n');
   const state = await window.webContents.executeJavaScript(script);
   await window.webContents.executeJavaScript('new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)))');
   return state;
