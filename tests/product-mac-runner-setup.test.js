@@ -62,15 +62,18 @@ test('setup requires a temporary fine-grained token and a clean CLI configuratio
 });
 
 test('all registrations finish and the temporary GitHub token is cleared before any runner starts', () => {
-  const tokenClear = script.indexOf('unset GH_TOKEN');
   const registrationLoopStart = script.lastIndexOf('for repository in');
   const loopEnd = script.indexOf('\ndone\n\n# Clear the temporary', registrationLoopStart);
+  const tokenClear = script.indexOf('unset GH_TOKEN registration_api_token', loopEnd);
   const firstStart = script.indexOf('start_runner "$runner_home"', tokenClear);
   assert.ok(tokenClear >= 0, 'temporary token is explicitly cleared');
   assert.ok(loopEnd >= 0, 'registration loop has completed');
   assert.ok(tokenClear > loopEnd, 'token is cleared after registration loop');
   assert.ok(firstStart > tokenClear, 'runner processes start only after token clearing');
   assert.doesNotMatch(script.slice(registrationLoopStart, loopEnd), /start_runner "\$runner_home"/);
+  assert.match(script, /GH_TOKEN="\$registration_api_token" gh api/);
+  assert.match(script, /registration_api_token="\$GH_TOKEN"\nunset GH_TOKEN/);
+  assert.doesNotMatch(script.slice(script.indexOf('if ! (cd "$runner_home"'), script.indexOf('RUNNERS_TO_START+=("$runner_home")', registrationLoopStart)), /GH_TOKEN=/);
 });
 
 test('Finder launcher collects the token with a hidden-answer prompt and does not use stored gh login', () => {
