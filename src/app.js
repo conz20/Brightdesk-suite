@@ -1094,8 +1094,8 @@ function createBrightdeskPrintDocument() {
       control.replaceWith(value);
     });
 
-    content.querySelectorAll("button").forEach((button) => button.remove());
     window.BrightdeskPrintDom?.removeActionColumns(content);
+    content.querySelectorAll("button").forEach((button) => button.remove());
     if (appId === "forms") {
       const formsPrintView = window.BrightdeskPrintDom?.createFormsPrintView(source);
       if (formsPrintView) content.replaceChildren(formsPrintView);
