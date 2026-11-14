@@ -38,9 +38,7 @@ RUN THE SETUP
 -------------
 From a Brightdesk-suite checkout that contains this helper, run:
 
-   bash tools/runner-setup/macos/Start-Brightdesk-Mac-Product-Runners.sh
-
-This terminal route requires a temporary token in `GH_TOKEN`. Enter it without echoing or saving it, run the script, then clear the variable:
+    a temporary token in `GH_TOKEN`. Enter it without echoing or saving it, run the script, then clear the variable:
 
    read -r -s -p "Temporary GitHub token: " GH_TOKEN; echo
    export GH_TOKEN
@@ -70,16 +68,16 @@ The Finder app does not install GitHub CLI, create a token, or sign in to GitHub
 This draft app bundle is not code-signed or notarised. Do not bypass a macOS security warning unless you have reviewed and approved the exact source in this private repository. The app must remain beside the shell script extracted from the same reviewed branch.
 
 The script:
-- Verifies Apple-silicon macOS and confirms GitHub CLI is authenticated as `conz20`.
+- Verifies Apple-silicon macOS and checks the temporary fine-grained token belongs to `conz20`.
 - Downloads the official GitHub Actions runner v2.338.2 macOS ARM64 archive and checks it against the pinned SHA-256 digest used by the existing Brightdesk Mac runner setup.
 - Checks registered online/offline runners and required labels before adding anything. It does not create a duplicate if a matching online or offline product runner already exists.
-- Requests a short-lived registration token separately for each product repository using GitHub CLI. The GitHub CLI credential itself is never passed to the runner configurator.
+- Requests a short-lived registration token separately for each product repository using GitHub CLI. The fine-grained personal access token is not passed to the runner configurator; only the repository's short-lived runner registration token is.
 - Configures each runner only for its matching private repository and adds the `brightdesk-product-ci` label.
 - Starts configured runners with `nohup`. It does not install a launchd service, elevate privileges or change repository settings.
 - Keeps each runner's files and logs under `~/.brightdesk-product-ci-runners/products/<repository>/` with owner-only directory permissions.
 - Restarts only a matching registered offline runner whose labels and local configuration match. It refuses to execute or reuse an unregistered existing runner folder, and refuses symbolic links or unexpected paths; inspect and move an unregistered folder aside before retrying.
 
-The helper processes repositories sequentially. The runner registration token is temporary; the script does not print or write it to a file and clears its variable after configuration. The token is necessarily passed to GitHub's official runner configurator during setup.
+The helper registers repositories sequentially and queues all runner starts until registration is complete. It clears `GH_TOKEN` before starting any runner and switches the runner process to an empty, owner-only GitHub CLI configuration directory. The temporary fine-grained token is not printed or written to the setup log/config. Each short-lived runner registration token is passed only to GitHub's official runner configurator and cleared immediately after configuration.
 
 AFTER SETUP
 -----------
@@ -97,7 +95,7 @@ If GitHub CLI does not have the required repository administration access, the s
 
 SHARED-HOST SECURITY BOUNDARY
 -----------------------------
-All ten runner processes started by this helper run as the same signed-in macOS user. Registering each runner to a separate GitHub repository limits which repository can send jobs to that runner, but it does not create an operating-system security boundary between the runners. Workflow code running under this account may be able to read or change other files that this macOS user can access, including files in the other product runner folders.
+All ten runner processes started by this helper run as the same dedicated macOS user. Registering each runner to a separate GitHub repository limits which repository can send jobs to that runner, but it does not create an operating-system security boundary between the runners. Workflow code running under this account may be able to read or change other files that this macOS user can access, including files in the other product runner folders.
 
 Use these runners only for trusted Brightdesk workflow code. Do not attach them to public repositories, accept untrusted fork workflows, or run third-party workflow code on this shared account. For stronger isolation, use separate macOS accounts or separate hosts for different repositories, or use appropriately isolated ephemeral runners, before running code that is not fully trusted.
 
