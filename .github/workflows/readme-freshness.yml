@@ -10,6 +10,11 @@ on:
 permissions:
   contents: read
 
+# Keep only the latest pending README check for this PR/ref; never cancel an active check.
+concurrency:
+  group: brightdesk-readme-freshness-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: false
+
 jobs:
   readme-freshness:
     name: Require README updates for product changes

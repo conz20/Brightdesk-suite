@@ -559,3 +559,371 @@ body.suite-home .sidebar > .nav small { display: none; }
 body.suite-home .main > footer { display: none; }
 
 body.suite-home .app-manager.home-view .manager-hero .eyebrow { display: none; }
+
+
+/* Product-aware print output. The OS still owns the printer and print settings. */
+#brightdesk-print-root { display: none; }
+
+@media print {
+  @page { margin: 12mm; }
+  html, body {
+    display: block !important;
+    width: auto !important;
+    height: auto !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: visible !important;
+    background: #fff !important;
+    color: #111 !important;
+  }
+  body > :not(#brightdesk-print-root) { display: none !important; }
+  body > #brightdesk-print-root {
+    display: block !important;
+    position: static !important;
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+    background: #fff !important;
+    color: #111 !important;
+    font: 10pt/1.45 Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif !important;
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+  #brightdesk-print-root * {
+    box-sizing: border-box !important;
+    max-height: none !important;
+    overflow: visible !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+    animation: none !important;
+    transition: none !important;
+  }
+  #brightdesk-print-root .brightdesk-print-heading {
+    display: block !important;
+    margin: 0 0 8mm !important;
+    padding: 0 0 4mm !important;
+    border-bottom: 1px solid #b8bec8 !important;
+  }
+  #brightdesk-print-root .brightdesk-print-heading h1 {
+    margin: 0 !important;
+    color: #111 !important;
+    font-size: 18pt !important;
+  }
+  #brightdesk-print-root h1,
+  #brightdesk-print-root h2,
+  #brightdesk-print-root h3 {
+    break-after: avoid;
+    page-break-after: avoid;
+  }
+  #brightdesk-print-root .editor {
+    display: block !important;
+    min-height: 0 !important;
+    padding: 0 !important;
+    overflow: visible !important;
+    color: #111 !important;
+  }
+  #brightdesk-print-root .sheet-wrap,
+  #brightdesk-print-root .slide-wrap,
+  #brightdesk-print-root .notes-wrap {
+    display: block !important;
+    min-height: 0 !important;
+    padding: 0 !important;
+    overflow: visible !important;
+  }
+  #brightdesk-print-root .sheet {
+    width: 100% !important;
+    min-width: 0 !important;
+    border-collapse: collapse !important;
+    table-layout: auto !important;
+    white-space: normal !important;
+  }
+  #brightdesk-print-root .sheet th,
+  #brightdesk-print-root .sheet td {
+    min-width: 0 !important;
+    height: auto !important;
+    padding: 4px !important;
+    border: 1px solid #9ca3af !important;
+    color: #111 !important;
+    background: #fff !important;
+    word-break: break-word !important;
+  }
+  #brightdesk-print-root .brightdesk-print-field {
+    display: inline-block !important;
+    min-width: 1.5em;
+    color: #111 !important;
+    white-space: pre-wrap !important;
+  }
+  #brightdesk-print-root[data-app="slides"] .brightdesk-print-slide {
+    display: flex !important;
+    width: 100% !important;
+    max-width: none !important;
+    min-height: 0 !important;
+    aspect-ratio: 16 / 9 !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    margin: 4mm auto !important;
+    padding: 8% !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    break-after: page;
+    page-break-after: always;
+  }
+  #brightdesk-print-root .brightdesk-print-slide:last-child {
+    break-after: auto;
+    page-break-after: auto;
+  }
+  #brightdesk-print-root .brightdesk-print-slide.theme-paper {
+    border: 1px solid #e1e1e1 !important;
+  }
+  #brightdesk-print-root .brightdesk-print-slide-number {
+    margin: 0 0 12mm !important;
+    color: #5b6472 !important;
+    font-size: 9pt !important;
+  }
+  #brightdesk-print-root .brightdesk-print-slide .slide-title {
+    margin: 0 0 8mm !important;
+    min-height: 0 !important;
+    color: #24243d !important;
+    font-size: 28pt !important;
+    font-weight: 750 !important;
+    line-height: 1.15 !important;
+    text-align: center !important;
+  }
+  #brightdesk-print-root .brightdesk-print-slide .slide-body {
+    margin: 0 !important;
+    min-height: 0 !important;
+    color: #44445f !important;
+    font-size: 17pt !important;
+    line-height: 1.5 !important;
+    text-align: center !important;
+    white-space: pre-wrap !important;
+  }
+  #brightdesk-print-root .brightdesk-print-slide.theme-midnight .slide-title {
+    color: #fff !important;
+  }
+  #brightdesk-print-root .brightdesk-print-slide.theme-midnight .slide-body {
+    color: #d9dcf4 !important;
+  }
+  #brightdesk-print-root .todo-app,
+  #brightdesk-print-root .lists-app,
+  #brightdesk-print-root .forms-app,
+  #brightdesk-print-root .planner-app,
+  #brightdesk-print-root .database-app,
+  #brightdesk-print-root .workspace-app {
+    display: block !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: #fff !important;
+    color: #111 !important;
+  }
+  #brightdesk-print-root .todo-sidebar,
+  #brightdesk-print-root .todo-search-label,
+  #brightdesk-print-root .todo-search,
+  #brightdesk-print-root .todo-create-form,
+  #brightdesk-print-root .todo-task-actions,
+  #brightdesk-print-root #todo-status,
+  #brightdesk-print-root .lists-sidebar,
+  #brightdesk-print-root .lists-toolbar,
+  #brightdesk-print-root #lists-record-form,
+  #brightdesk-print-root .lists-column-panel,
+  #brightdesk-print-root .lists-status,
+  #brightdesk-print-root .lists-main details,
+  #brightdesk-print-root .forms-sidebar,
+  #brightdesk-print-root .forms-status,
+  #brightdesk-print-root .forms-tabs,
+  #brightdesk-print-root #forms-details-form,
+  #brightdesk-print-root #forms-add-question-form,
+  #brightdesk-print-root .planner-sidebar,
+  #brightdesk-print-root .planner-tools,
+  #brightdesk-print-root #planner-new-bucket,
+  #brightdesk-print-root #planner-new-task,
+  #brightdesk-print-root #planner-status,
+  #brightdesk-print-root .database-sidebar,
+  #brightdesk-print-root .database-toolbar,
+  #brightdesk-print-root .database-heading-actions,
+  #brightdesk-print-root .database-panel,
+  #brightdesk-print-root #database-status,
+  #brightdesk-print-root .workspace-sidebar,
+  #brightdesk-print-root .workspace-block-tools,
+  #brightdesk-print-root .workspace-check-add,
+  #brightdesk-print-root .workspace-heading-actions,
+  #brightdesk-print-root #workspace-add-block,
+  #brightdesk-print-root #workspace-page-search-results,
+  #brightdesk-print-root #workspace-status,
+  #brightdesk-print-root .notes-hint {
+    display: none !important;
+  }
+  #brightdesk-print-root .todo-content,
+  #brightdesk-print-root .lists-main,
+  #brightdesk-print-root .forms-main,
+  #brightdesk-print-root .planner-main,
+  #brightdesk-print-root .database-main,
+  #brightdesk-print-root .workspace-main,
+  #brightdesk-print-root .notes-wrap textarea {
+    display: block !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    padding: 0 !important;
+    overflow: visible !important;
+  }
+  #brightdesk-print-root .todo-task-list,
+  #brightdesk-print-root .lists-table-scroll,
+  #brightdesk-print-root .database-grid-wrap,
+  #brightdesk-print-root .workspace-block-list {
+    display: block !important;
+    width: 100% !important;
+    overflow: visible !important;
+  }
+  #brightdesk-print-root .todo-task-card,
+  #brightdesk-print-root .lists-table tr,
+  #brightdesk-print-root .forms-question-card,
+  #brightdesk-print-root .forms-response-card,
+  #brightdesk-print-root .planner-task-card {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+  #brightdesk-print-root .planner-board {
+    display: block !important;
+    width: 100% !important;
+    overflow: visible !important;
+  }
+  #brightdesk-print-root .planner-column {
+    min-width: 0 !important;
+    margin: 0 0 5mm !important;
+    background: #fff !important;
+    break-inside: auto;
+    page-break-inside: auto;
+  }
+  #brightdesk-print-root table {
+    width: 100% !important;
+    max-width: 100% !important;
+    border-collapse: collapse !important;
+  }
+  #brightdesk-print-root .lists-table,
+  #brightdesk-print-root .database-data-grid {
+    width: 100% !important;
+    min-width: 0 !important;
+    white-space: normal !important;
+  }
+  #brightdesk-print-root .lists-table th,
+  #brightdesk-print-root .lists-table td,
+  #brightdesk-print-root .database-data-grid th,
+  #brightdesk-print-root .database-data-grid td {
+    min-width: 0 !important;
+    white-space: normal !important;
+    overflow-wrap: anywhere !important;
+    word-break: break-word !important;
+  }
+  #brightdesk-print-root .notes-wrap .brightdesk-print-field,
+  #brightdesk-print-root .workspace-block-content.brightdesk-print-field {
+    display: block !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    white-space: pre-wrap !important;
+    overflow-wrap: anywhere !important;
+    word-break: break-word !important;
+  }
+  #brightdesk-print-root .brightdesk-print-form {
+    display: block !important;
+    width: 100% !important;
+    color: #111 !important;
+  }
+  #brightdesk-print-root .brightdesk-print-form h2 {
+    margin: 0 0 3mm !important;
+    font-size: 17pt !important;
+    color: #111 !important;
+  }
+  #brightdesk-print-root .brightdesk-print-form-description {
+    margin: 0 0 8mm !important;
+    color: #444 !important;
+  }
+  #brightdesk-print-root .brightdesk-print-questions {
+    margin: 0 !important;
+    padding: 0 !important;
+    list-style: none !important;
+  }
+  #brightdesk-print-root .brightdesk-print-question {
+    margin: 0 0 7mm !important;
+    padding: 0 0 4mm !important;
+    border-bottom: 1px solid #d1d5db !important;
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+  #brightdesk-print-root .brightdesk-print-question h3 {
+    margin: 0 0 2mm !important;
+    font-size: 11pt !important;
+    color: #111 !important;
+  }
+  #brightdesk-print-root .brightdesk-print-required {
+    margin: 0 0 2mm !important;
+    color: #555 !important;
+    font-size: 8pt !important;
+  }
+  #brightdesk-print-root .brightdesk-print-answer-options {
+    margin: 2mm 0 0 !important;
+    padding: 0 !important;
+    list-style: none !important;
+  }
+  #brightdesk-print-root .brightdesk-print-answer-options li {
+    margin: 2mm 0 !important;
+    break-inside: avoid;
+  }
+  #brightdesk-print-root .brightdesk-print-answer-line {
+    width: 100% !important;
+    min-height: 9mm !important;
+    margin-top: 3mm !important;
+    border-bottom: 1px solid #9ca3af !important;
+  }
+  #brightdesk-print-root .brightdesk-print-answer-space {
+    width: 100% !important;
+    min-height: 28mm !important;
+    margin-top: 3mm !important;
+    border-bottom: 1px solid #9ca3af !important;
+  }
+  #brightdesk-print-root img {
+    max-width: 100% !important;
+    height: auto !important;
+  }
+}
+
+
+
+/* User-invoked local network printer discovery */
+.network-printer-panel{margin:18px 0 0}
+.network-printer-panel[hidden]{display:none}
+.network-printer-panel-card{background:#fff;border:1px solid #e5e6ee;border-radius:14px;padding:20px 22px;box-shadow:0 5px 25px #25264a08}
+.network-printer-panel-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:18px}
+.network-printer-panel-heading h2{font-size:17px;letter-spacing:-.3px;margin:0 0 6px;color:#292c40}
+.network-printer-panel-heading p{font-size:12px;line-height:1.55;color:#777b8e;margin:0;max-width:680px}
+.network-printer-panel-actions{display:flex;align-items:center;gap:14px;margin-top:16px}
+.network-printer-panel-actions p{font-size:11px;color:#777b8e;margin:0}
+.network-printer-results{list-style:none;padding:0;margin:14px 0 0;display:grid;gap:8px}
+.network-printer-result{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:13px 14px;border:1px solid #ececf2;border-radius:10px;background:#fcfcfe}
+.network-printer-result-details{display:grid;gap:4px;min-width:0}
+.network-printer-result-details strong{font-size:13px;color:#34374b;overflow-wrap:anywhere}
+.network-printer-kind{font-size:10px;font-weight:700;color:#5b57b8;letter-spacing:.2px}
+.network-printer-result-details p{font-size:11px;line-height:1.5;color:#85899a;margin:0}
+.network-printer-result-actions{flex-shrink:0}
+@media(max-width:760px){.network-printer-panel-card{padding:16px}.network-printer-panel-actions,.network-printer-result{align-items:stretch;flex-direction:column}.network-printer-result-actions .secondary{width:100%}.network-printer-panel-heading{gap:10px}}
+
+.configured-printer-section{border-top:1px solid #ececf2;margin-top:18px;padding-top:16px}
+.configured-printer-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:16px}
+.configured-printer-heading h3{font-size:13px;color:#34374b;margin:0 0 5px}
+.configured-printer-heading p{font-size:11px;line-height:1.5;color:#85899a;margin:0}
+.print-printer-selection{display:grid;gap:6px;max-width:420px;margin-top:14px}.print-printer-selection label{font-size:11px;font-weight:650;color:#55596d}.print-printer-selection select{width:100%;min-height:38px;border:1px solid #d9dbe5;border-radius:8px;padding:8px 10px;background:#fff;color:#34374b;font:inherit}
+#configured-printer-status{font-size:11px;line-height:1.5;color:#777b8e;margin:12px 0 0}
+.configured-printer-list{list-style:none;padding:0;margin:10px 0 0;display:grid;gap:9px}
+.configured-printer-item{border:1px solid #ececf2;border-radius:10px;padding:12px 14px;background:#fff;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px 14px;align-items:center}
+.configured-printer-details{display:flex;align-items:center;gap:9px;min-width:0;flex-wrap:wrap}
+.configured-printer-details strong{font-size:12px;color:#34374b;overflow-wrap:anywhere}
+.configured-printer-default{font-size:10px;color:#5b57b8;font-weight:650}
+.printer-capability-report{grid-column:1/-1}
+.printer-capability-grid{display:grid;grid-template-columns:minmax(120px,180px) minmax(0,1fr);gap:6px 14px;margin:4px 0 0;padding-top:10px;border-top:1px solid #f0f0f5}
+.printer-capability-grid dt{font-size:11px;font-weight:650;color:#777b8e}
+.printer-capability-grid dd{font-size:11px;color:#34374b;margin:0;overflow-wrap:anywhere}
+@media(max-width:760px){.configured-printer-heading,.configured-printer-item{align-items:stretch;display:flex;flex-direction:column}.configured-printer-item .secondary{width:100%}.printer-capability-grid{grid-template-columns:1fr;gap:3px}.printer-capability-grid dd{margin-bottom:8px}}

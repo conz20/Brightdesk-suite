@@ -1,4 +1,4 @@
-const { app, BrowserWindow, Menu, ipcMain, dialog, Notification } = require('electron');
+const { app, BrowserWindow, Menu, ipcMain, dialog, Notification, shell } = require('electron');
 const packageConfig = require('../package.json');
 const nativeEngine = require('./rust-engine');
 const { assertPackagedVersion, assertMainWindowReady } = require('./startup-smoke');
@@ -13,6 +13,7 @@ const { DEFAULT_UPDATE_SETTINGS, normalizeUpdateSettings, getUpdaterPreferences 
 const { shouldRequireFirstLaunchTerms } = require('./installer-terms-policy');
 const { launchProduct, PRODUCT_MANIFEST } = require('./product-launcher');
 const { createProductWindowManager } = require('./product-window-manager');
+const { registerPrintingIpcHandlers } = require('./printing-ipc.cjs');
 let mainWindow;
 let agreementWindow;
 let termsAccepted = false;
@@ -140,6 +141,22 @@ function senderIsMain(event) {
       && !event.sender.isDestroyed()
   );
 }
+
+const printingAdapters = new WeakMap();
+async function getPrintingAdapter(webContents) {
+  let adapterPromise = printingAdapters.get(webContents);
+  if (!adapterPromise) {
+    adapterPromise = import('./printing-package/index.mjs').then(({ createElectronPrintAdapter }) => (
+      createElectronPrintAdapter(webContents, { platform: process.platform, shell })
+    ));
+    printingAdapters.set(webContents, adapterPromise);
+  }
+  return adapterPromise;
+}
+registerPrintingIpcHandlers(ipcMain, {
+  isAuthorizedSender: senderIsMain,
+  getAdapter: getPrintingAdapter
+});
 ipcMain.handle('apps:open', async (event, requestedApplicationId) => {
   if (!senderIsMain(event)) throw new Error('Invalid sender.');
   if (!supportedApplications.has(requestedApplicationId)) throw new Error('Unsupported Brightdesk application.');

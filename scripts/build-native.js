@@ -25,6 +25,36 @@ function run(command, args) {
   if (result.status !== 0) process.exit(result.status ?? 1);
 }
 
+function runDirect(command, args) {
+  const result = spawnSync(command, args, {
+    cwd: root,
+    stdio: 'inherit',
+    shell: false,
+    env: process.env
+  });
+  if (result.error) throw result.error;
+  if (result.status !== 0) process.exit(result.status ?? 1);
+}
+
+function buildPrintingDiscovery() {
+  const toolsDir = path.join(root, 'src', 'printing-package', 'tools');
+
+  if (process.platform === 'darwin') {
+    runDirect('bash', [path.join(toolsDir, 'build-macos-printer-discovery.sh')]);
+    return;
+  }
+
+  if (process.platform === 'win32') {
+    runDirect('powershell.exe', [
+      '-NoProfile',
+      '-ExecutionPolicy',
+      'Bypass',
+      '-File',
+      path.join(toolsDir, 'build-windows-printer-discovery.ps1')
+    ]);
+  }
+}
+
 if (!nativeNames[process.platform]) {
   console.error('Brightdesk Rust Native Engine does not support this operating system.');
   process.exit(2);
@@ -62,3 +92,6 @@ if (process.platform === 'darwin') {
 }
 
 console.log('Built Brightdesk universal/native Node-API module:', destination);
+
+
+buildPrintingDiscovery();

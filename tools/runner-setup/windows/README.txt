@@ -21,7 +21,7 @@ WHAT THIS PACKAGE DOES
 - Registers it only to Brightdesk-suite and retains GitHub's default labels: self-hosted, Windows and X64.
 - Installs and starts the runner as a Windows service.
 
-You do NOT need to open the runner setup page or copy/paste a registration token. The GitHub CLI sign-in credential stays on this Windows PC. The temporary registration token is requested and used automatically by the installer.
+You do NOT need to open the runner setup page or copy/paste a registration token. The GitHub CLI sign-in credential stays on this Windows PC. The temporary registration token is requested and used automatically by the installer. The launcher verifies the PowerShell installer beside it against its pinned SHA-256 digest before starting it; both files must stay together.
 
 It does NOT change the Brightdesk release workflow, publish a release, or install Docker, Linux, or other development tools.
 
@@ -29,15 +29,16 @@ BEFORE YOU START
 ----------------
 1. Use a 64-bit Windows 10 or Windows 11 PC. The setup uses Windows Package Manager (winget). If the setup says winget is missing, install or update **App Installer** from the Microsoft Store, then run the same file again.
 2. Make sure you can sign in to GitHub as **conz20** and that this account has administrator access to the private Brightdesk-suite repository.
-3. Download only Start-Brightdesk-Windows-Runner.cmd to your Windows PC:
-   https://raw.githubusercontent.com/conz20/Brightdesk-suite/main/tools/runner-setup/windows/Start-Brightdesk-Windows-Runner.cmd
+3. Download both files from this private repository to the Windows PC and keep them in the same folder:
+   https://github.com/conz20/Brightdesk-suite/blob/feat/printing-suite-integration-2026-11-13/tools/runner-setup/windows/Start-Brightdesk-Windows-Runner.cmd
+   https://github.com/conz20/Brightdesk-suite/blob/feat/printing-suite-integration-2026-11-13/tools/runner-setup/windows/Install-Brightdesk-Windows-Runner.ps1
 
-   You do not need to download the PowerShell file separately. The launcher downloads the PowerShell installer automatically from a pinned Brightdesk commit, verifies its SHA-256 checksum, and only then starts it. There is no setup ZIP.
+   There is no setup ZIP and no external private-file download; the launcher verifies and runs the checked-in PowerShell file beside it.
 
 RUN THE SETUP
 -------------
-1. Double-click Start-Brightdesk-Windows-Runner.cmd.
-2. The launcher downloads the pinned PowerShell installer and verifies its SHA-256 checksum. If download or verification fails, setup stops.
+1. Keep Start-Brightdesk-Windows-Runner.cmd and Install-Brightdesk-Windows-Runner.ps1 in the same folder.
+2. Double-click Start-Brightdesk-Windows-Runner.cmd. It verifies the PowerShell file's pinned SHA-256 digest before running it.
 3. Approve the Windows User Account Control prompt.
 4. Read the security note and type REGISTER when prompted.
 5. The installer checks for Git for Windows and GitHub CLI. It installs either one from the official winget source only when missing.

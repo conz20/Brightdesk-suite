@@ -840,6 +840,10 @@ function render() {
   $('welcome').hidden = suitePage || files || languages || ['todo','lists','forms','planner','database','loop'].includes(state.app);
   $('app-title').textContent = home ? t('home.title') : (manager ? t('sidebar.applications') : (files ? 'Files' : (languages ? t('language.title') : (catalog.find(item => item.id === state.app)?.name || state.app))));
   $('top-actions').hidden = languages;
+  $('print-button').hidden = suitePage || files || languages;
+  $('printer-settings-button').hidden = suitePage || files || languages;
+  $('find-network-printers-button').hidden = suitePage || files || languages;
+  if (suitePage || files || languages) closeNetworkPrinterPanel({ restoreFocus: false });
   $('save-status').hidden = suitePage || files || languages;
   $('open-button').hidden = suitePage || files || languages;
   $('save-project').hidden = suitePage || files || languages;
@@ -1007,6 +1011,385 @@ function exportPayload(){
 }
 async function exportCurrent(){try{const result=await window.brightdesk.exportFile(exportPayload());if(result?.canceled)return;setStatus('Exported successfully');}catch(error){alert(`Export failed: ${error.message}`);}}
 async function exportPdf(){try{const result=await window.brightdesk.exportPdf({title:$('doc-title').value});if(!result?.canceled)setStatus('PDF exported');}catch(error){alert(`PDF export failed: ${error.message}`);}}
+
+const PRINTABLE_APP_TARGETS = Object.freeze({
+  pages: "editor",
+  sheets: "sheet-wrap",
+  slides: "slide-wrap",
+  notes: "notes-wrap",
+  database: "database-wrap",
+  forms: "forms-wrap",
+  lists: "lists-wrap",
+  planner: "planner-wrap",
+  todo: "todo-wrap",
+  loop: "workspace-app-wrap"
+});
+
+function createBrightdeskPrintDocument() {
+  const appId = state.app;
+  const title = String($("doc-title")?.value || activeDoc()?.title || $("app-title")?.textContent || "Brightdesk").trim();
+  const root = document.createElement("main");
+  root.id = "brightdesk-print-root";
+  root.dataset.app = appId;
+
+  if (appId !== "slides" && appId !== "forms") {
+    const heading = document.createElement("header");
+    heading.className = "brightdesk-print-heading";
+    const titleElement = document.createElement("h1");
+    titleElement.textContent = title || "Brightdesk";
+    heading.append(titleElement);
+    root.append(heading);
+  }
+
+  if (appId === "slides") {
+    const slides = Array.isArray(activeDoc()?.slides) ? activeDoc().slides : [];
+    if (!slides.length) throw new Error("There are no slides to print yet.");
+    const slideTheme = ["lavender", "midnight", "paper"].includes(state.slideTheme)
+      ? state.slideTheme
+      : "lavender";
+    slides.forEach((slide, index) => {
+      const page = document.createElement("section");
+      page.className = `brightdesk-print-slide slide-stage theme-${slideTheme}`;
+      const number = document.createElement("p");
+      number.className = "brightdesk-print-slide-number";
+      number.textContent = `Slide ${index + 1} of ${slides.length}`;
+      const slideTitle = document.createElement("h2");
+      slideTitle.className = "slide-title";
+      slideTitle.textContent = String(slide?.title || "");
+      const body = document.createElement("p");
+      body.className = "slide-body";
+      body.textContent = String(slide?.body || "");
+      page.append(number, slideTitle, body);
+      root.append(page);
+    });
+  } else {
+    const targetId = PRINTABLE_APP_TARGETS[appId];
+    const source = targetId ? $(targetId) : null;
+    if (!source || source.hidden) {
+      throw new Error("There is no open product content to print.");
+    }
+
+    const content = source.cloneNode(true);
+    content.removeAttribute("hidden");
+    const sourceControls = Array.from(source.querySelectorAll("input, textarea, select"));
+    const printControls = Array.from(content.querySelectorAll("input, textarea, select"));
+
+    sourceControls.forEach((original, index) => {
+      const control = printControls[index];
+      if (!control) return;
+      if (original instanceof HTMLInputElement && original.type === "hidden") {
+        control.remove();
+        return;
+      }
+
+      const value = document.createElement("span");
+      value.className = "brightdesk-print-field";
+      if (original instanceof HTMLInputElement && ["checkbox", "radio"].includes(original.type)) {
+        value.textContent = original.checked ? "☑" : "☐";
+      } else if (original instanceof HTMLSelectElement) {
+        value.textContent = original.selectedOptions[0]?.textContent || "\u00a0";
+      } else {
+        value.textContent = original.value || "\u00a0";
+      }
+      control.replaceWith(value);
+    });
+
+    window.BrightdeskPrintDom?.removeActionColumns(content);
+    content.querySelectorAll("button").forEach((button) => button.remove());
+    if (appId === "forms") {
+      const formsPrintView = window.BrightdeskPrintDom?.createFormsPrintView(source);
+      if (formsPrintView) content.replaceChildren(formsPrintView);
+    }
+    content.querySelectorAll("[hidden]").forEach((element) => element.remove());
+    root.append(content);
+  }
+
+  document.body.append(root);
+  return root;
+}
+
+async function printCurrent() {
+  let printDocument;
+  try {
+    const printers = await refreshConfiguredPrinters();
+    if (!Array.isArray(printers) || printers.length === 0) {
+      setStatus('No printer is available yet. Use Printer settings to add one, then try again.');
+      return;
+    }
+    const selectedPrinter = $('print-printer-select').value;
+    if (!selectedPrinter) {
+      openNetworkPrinterPanel();
+      $('print-printer-select').focus();
+      setStatus('Choose a printer in Find network printers before printing.');
+      return;
+    }
+    printDocument = createBrightdeskPrintDocument();
+    const printRequest = { printBackground: true, printerName: selectedPrinter };
+    if (state.app === "pages") {
+      printRequest.orientation = pageLayout.normalizePageLayout(activeDoc()?.pageSettings || {}).orientation;
+    }
+    if (state.app === "sheets") {
+      printRequest.orientation = "landscape";
+    }
+    if (state.app === "slides") {
+      printRequest.orientation = "landscape";
+    }
+    const result = await window.brightdesk.printing.print(printRequest);
+    setStatus(result?.status === 'submitted'
+      ? 'Your computer accepted the print request.'
+      : 'The print request was not submitted.');
+  } catch (error) {
+    setStatus(error?.message || 'Brightdesk could not start printing.');
+  } finally {
+    printDocument?.remove();
+  }
+}
+async function openPrinterSettings() {
+  try {
+    await window.brightdesk.printing.openPrinterSettings();
+    setStatus('Printer settings opened. Return to Brightdesk and choose Print.');
+  } catch (error) {
+    setStatus(error?.message || 'Brightdesk could not open printer settings.');
+  }
+}
+
+function openNetworkPrinterPanel() {
+  const panel = $('network-printer-panel');
+  panel.hidden = false;
+  $('find-network-printers-button').setAttribute('aria-expanded', 'true');
+  $('network-printer-status').textContent = t('printing.searchPrompt');
+  $('discover-network-printers-button').focus();
+}
+
+function closeNetworkPrinterPanel({ restoreFocus = true } = {}) {
+  const panel = $('network-printer-panel');
+  if (panel.hidden) return;
+  panel.hidden = true;
+  const trigger = $('find-network-printers-button');
+  trigger.setAttribute('aria-expanded', 'false');
+  if (restoreFocus && !trigger.hidden) trigger.focus();
+}
+
+function renderNetworkPrinterResults(printers) {
+  const results = $('network-printer-results');
+  results.replaceChildren();
+
+  for (const printer of printers) {
+    const item = document.createElement('li');
+    item.className = 'network-printer-result';
+
+    const details = document.createElement('div');
+    details.className = 'network-printer-result-details';
+
+    const name = document.createElement('strong');
+    name.textContent = String(printer?.displayName || t('printing.unnamed'));
+    const kind = document.createElement('span');
+    kind.className = 'network-printer-kind';
+    kind.textContent = printer?.protocol === 'wsd'
+      ? t('printing.windowsWsd')
+      : t('printing.networkService');
+    const explanation = document.createElement('p');
+    explanation.textContent = printer?.protocol === 'wsd' && printer?.isPaired
+      ? t('printing.alreadyPaired')
+      : t('printing.requiresSetup');
+    details.append(name, kind, explanation);
+
+    const actions = document.createElement('div');
+    actions.className = 'network-printer-result-actions';
+    const action = document.createElement('button');
+    action.type = 'button';
+    action.className = 'secondary small-action';
+
+    if (printer?.protocol === 'wsd' && printer?.canPair && !printer?.isPaired) {
+      action.textContent = t('printing.pair');
+      action.addEventListener('click', () => pairNetworkPrinter(printer, action));
+    } else {
+      action.textContent = t('printing.openSettings');
+      action.addEventListener('click', openPrinterSettings);
+    }
+    actions.append(action);
+    item.append(details, actions);
+    results.append(item);
+  }
+}
+
+async function discoverNetworkPrinters() {
+  const searchButton = $('discover-network-printers-button');
+  const results = $('network-printer-results');
+  searchButton.disabled = true;
+  results.replaceChildren();
+  $('network-printer-status').textContent = t('printing.searching');
+
+  try {
+    const discovered = await window.brightdesk.printing.discoverNetworkPrinters();
+    const printers = Array.isArray(discovered) ? discovered : [];
+    renderNetworkPrinterResults(printers);
+    $('network-printer-status').textContent = printers.length
+      ? t('printing.searchComplete')
+      : t('printing.noResults');
+  } catch (error) {
+    $('network-printer-status').textContent = error?.message || t('printing.searchFailed');
+  } finally {
+    searchButton.disabled = false;
+  }
+}
+
+async function pairNetworkPrinter(printer, actionButton) {
+  actionButton.disabled = true;
+  $('network-printer-status').textContent = t('printing.pairing');
+
+  try {
+    const result = await window.brightdesk.printing.pairNetworkPrinter(printer);
+    if (result?.status === 'cancelled') {
+      $('network-printer-status').textContent = t('printing.pairCancelled');
+      return;
+    }
+    if (result?.refreshRequired) {
+      await refreshConfiguredPrinters();
+      $('network-printer-status').textContent = result.status === 'already-paired'
+        ? t('printing.alreadyPaired')
+        : t('printing.paired');
+    } else {
+      $('network-printer-status').textContent = t('printing.pairFailed');
+    }
+  } catch (error) {
+    $('network-printer-status').textContent = error?.message || t('printing.pairFailed');
+  } finally {
+    actionButton.disabled = false;
+  }
+}
+function renderPrinterCapabilities(container, report) {
+  const capabilities = report?.capabilities && typeof report.capabilities === 'object'
+    ? report.capabilities
+    : {};
+  const notReported = t('printing.notReported');
+  const yesNoUnknown = value => value === true
+    ? t('printing.supported')
+    : value === false
+      ? t('printing.notSupported')
+      : notReported;
+  const duplex = capabilities.duplex && typeof capabilities.duplex === 'object'
+    ? capabilities.duplex
+    : {};
+  const duplexText = duplex.supported === true
+    ? `${t('printing.supported')} — ${Array.isArray(duplex.modes) && duplex.modes.length
+      ? duplex.modes.map(mode => mode === 'long-edge' ? t('printing.longEdge') : t('printing.shortEdge')).join(', ')
+      : notReported}`
+    : yesNoUnknown(duplex.supported);
+  const paperSizes = Array.isArray(capabilities.paperSizes) && capabilities.paperSizes.length
+    ? capabilities.paperSizes.join(', ')
+    : notReported;
+  const resolutions = Array.isArray(capabilities.resolutionsDpi) && capabilities.resolutionsDpi.length
+    ? capabilities.resolutionsDpi.map(item => `${item.x} × ${item.y} dpi`).join(', ')
+    : notReported;
+  const copies = Number.isSafeInteger(capabilities.maximumCopies) && capabilities.maximumCopies > 0
+    ? String(capabilities.maximumCopies)
+    : notReported;
+  const rows = [
+    [t('printing.color'), yesNoUnknown(capabilities.color)],
+    [t('printing.duplex'), duplexText],
+    [t('printing.paperSizes'), paperSizes],
+    [t('printing.resolution'), resolutions],
+    [t('printing.maximumCopies'), copies]
+  ];
+  const list = document.createElement('dl');
+  list.className = 'printer-capability-grid';
+  for (const [labelText, valueText] of rows) {
+    const term = document.createElement('dt');
+    term.textContent = labelText;
+    const value = document.createElement('dd');
+    value.textContent = valueText;
+    list.append(term, value);
+  }
+  container.replaceChildren(list);
+}
+
+function renderConfiguredPrinterList(printers) {
+  const list = $('configured-printer-list');
+  list.replaceChildren();
+  for (const printer of printers) {
+    const item = document.createElement('li');
+    item.className = 'configured-printer-item';
+    const details = document.createElement('div');
+    details.className = 'configured-printer-details';
+    const name = document.createElement('strong');
+    name.textContent = String(printer?.displayName || t('printing.unnamed'));
+    const defaultLabel = document.createElement('span');
+    defaultLabel.className = 'configured-printer-default';
+    defaultLabel.textContent = printer?.isDefault ? t('printing.defaultPrinter') : '';
+    details.append(name, defaultLabel);
+    const action = document.createElement('button');
+    action.type = 'button';
+    action.className = 'secondary small-action';
+    action.textContent = t('printing.showCapabilities');
+    const report = document.createElement('div');
+    report.className = 'printer-capability-report';
+    report.hidden = true;
+    action.addEventListener('click', async () => {
+      report.hidden = false;
+      await loadPrinterCapabilities(printer.systemName, action, report);
+    });
+    item.append(details, action, report);
+    list.append(item);
+  }
+}
+
+async function loadPrinterCapabilities(systemName, actionButton, container) {
+  actionButton.disabled = true;
+  container.hidden = false;
+  container.textContent = t('printing.loadingCapabilities');
+  try {
+    const report = await window.brightdesk.printing.getPrinterCapabilities(systemName);
+    renderPrinterCapabilities(container, report);
+  } catch (error) {
+    container.textContent = error?.message || t('printing.capabilityFailed');
+  } finally {
+    actionButton.disabled = false;
+  }
+}
+
+async function refreshConfiguredPrinters() {
+  const button = $('refresh-configured-printers-button');
+  button.disabled = true;
+  $('configured-printer-status').textContent = t('printing.loadingPrinters');
+  $('configured-printer-list').replaceChildren();
+  try {
+    const result = await window.brightdesk.printing.listPrinters();
+    const printers = Array.isArray(result) ? result : [];
+    renderConfiguredPrinterList(printers);
+    const select = $('print-printer-select');
+    const availableSelection = printers.some(printer => printer.systemName === select.value)
+      ? select.value
+      : '';
+    select.replaceChildren();
+    const placeholder = document.createElement('option');
+    placeholder.value = '';
+    placeholder.textContent = 'Choose a printer';
+    select.append(placeholder);
+    for (const printer of printers) {
+      const option = document.createElement('option');
+      option.value = printer.systemName;
+      option.textContent = String(printer.displayName || printer.systemName);
+      select.append(option);
+    }
+    select.value = availableSelection;
+    $('configured-printer-status').textContent = printers.length
+      ? t('printing.configuredComplete')
+      : t('printing.noConfiguredPrinters');
+    return printers;
+  } catch (error) {
+    $('configured-printer-status').textContent = error?.message || t('printing.configuredFailed');
+    $('print-printer-select').replaceChildren();
+    const placeholder = document.createElement('option');
+    placeholder.value = '';
+    placeholder.textContent = 'Choose a printer';
+    $('print-printer-select').append(placeholder);
+    return [];
+  } finally {
+    button.disabled = false;
+  }
+}
+
 function importProject(data){
   if (launchAppId && data?.kind && data.kind !== launchAppId) throw new Error(`This Brightdesk ${appLabel(launchAppId)} installation opens ${appLabel(launchAppId)} files only.`);
   if(data?.docs && typeof data.docs === 'object'){
@@ -1045,6 +1428,15 @@ $('app-centre-nav').addEventListener('click',()=>{if(launchAppId)return;state.vi
 $('files-nav').addEventListener('click',()=>{if(launchAppId)return;state.view = 'files';render();});
 $('files-open-button').addEventListener('click', openFile);
 $('files-save-button').addEventListener('click', saveProject);
+$('print-button').addEventListener('click', printCurrent);
+$('printer-settings-button').addEventListener('click', openPrinterSettings);
+$('find-network-printers-button').addEventListener('click', openNetworkPrinterPanel);
+$('network-printer-panel-close').addEventListener('click', closeNetworkPrinterPanel);
+$('discover-network-printers-button').addEventListener('click', discoverNetworkPrinters);
+$('refresh-configured-printers-button').addEventListener('click', refreshConfiguredPrinters);
+document.addEventListener('keydown', event => {
+  if (event.key === 'Escape' && !$('network-printer-panel').hidden) closeNetworkPrinterPanel();
+});
 $('open-settings').addEventListener('click',()=>{if (launchAppId) return; state.view='manager';render();});
 $('open-notifications').addEventListener('click',()=>{const panel=$('notification-panel');panel.hidden=!panel.hidden;$('open-notifications').setAttribute('aria-expanded',String(!panel.hidden));if(!panel.hidden)markNotificationsRead();});
 $('clear-notifications').addEventListener('click',clearNotifications);

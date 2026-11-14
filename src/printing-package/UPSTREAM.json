@@ -1,0 +1,7 @@
+{
+  "sourceRepository": "conz20/Brightdesk-Printing",
+  "sourcePullRequest": 2,
+  "sourceCommit": "956024bccffc08cb85c9e8eadef5b0163fb9f9a6",
+  "packageVersion": "0.1.0",
+  "syncPolicy": "Brightdesk-Printing is canonical. This offline Suite snapshot is pinned to the exact source commit above; refresh only from a deliberately reviewed commit, never from a moving branch name."
+}

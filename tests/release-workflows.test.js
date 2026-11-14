@@ -39,7 +39,25 @@ test('one consolidated quality gate uses the self-hosted runner and verifies the
   }
 });
 
-test('release workflow builds and verifies all three desktop platforms', () => {
+test('PR verification workflows never cancel an in-progress check', () => {
+  const workflowFiles = [
+    '.github/workflows/ci.yml',
+    '.github/workflows/quality.yml',
+    '.github/workflows/rust-engine.yml',
+    '.github/workflows/verify-macos-installer.yml'
+  ];
+
+  for (const file of workflowFiles) {
+    const workflow = read(file);
+    assert.match(
+      workflow,
+      /concurrency:\s*\n\s*group:[^\n]+\n\s*cancel-in-progress:\s*false/,
+      `${file} must preserve active verification attempts`
+    );
+  }
+});
+
+test('release workflow builds and verifies all three desktop platforms on private self-hosted runners', () => {
   const workflow = read('.github/workflows/build-release.yml');
   for (const platform of ['Linux', 'Windows', 'macOS']) {
     assert.match(workflow, new RegExp(`platform: ${platform}`));
@@ -48,8 +66,21 @@ test('release workflow builds and verifies all three desktop platforms', () => {
     assert.ok(workflow.includes(command), `workflow includes ${command}`);
   }
   assert.match(workflow, /node-version: 24\.22\.2/);
-  assert.match(workflow, /\non:\s*\n\s*workflow_dispatch:/);
-  assert.doesNotMatch(workflow, /^\s+push:/m, 'installer builds must be manual, not automatic on push');
+  assert.match(workflow, /pull_request:\s*\n\s*branches: \[main\]/);
+  const triggers = workflow.slice(workflow.indexOf('on:'), workflow.indexOf('permissions:'));
+  const pushTrigger = triggers.slice(triggers.indexOf('push:'));
+  assert.match(pushTrigger, /push:\s*\n\s*branches: \[main\]/);
+  assert.match(pushTrigger, /tags: \['v\*'\]/);
+  assert.doesNotMatch(workflow, /workflow_dispatch:/, 'installer builds must not require manual dispatch');
+  assert.doesNotMatch(workflow, /windows-latest|macos-latest|ubuntu-latest/, 'platform installer jobs must use private runners');
+  assert.match(workflow, /runner: \["self-hosted", "Linux", "X64"\]/);
+  assert.match(workflow, /runner: \["self-hosted", "Windows", "X64"\]/);
+  assert.match(workflow, /runner: \["self-hosted", "macOS", "ARM64"\]/);
+  assert.match(workflow, /runs-on: \$\{\{ matrix\.runner \}\}/);
+  assert.match(workflow, /queue: max/);
+  assert.match(workflow, /github\.event_name == 'pull_request' && github\.event\.pull_request\.head\.repo\.full_name == github\.repository/);
+  assert.match(workflow, /github\.event_name == 'push' && github\.ref == 'refs\/heads\/main'/);
+  assert.match(workflow, /startsWith\(github\.ref, 'refs\/tags\/v'\)/);
   assert.doesNotMatch(workflow, /npm run lock:prepare/, 'release builds must not regenerate the committed lock');
   assert.match(workflow, /npm run lock:verify/);
   assert.doesNotMatch(workflow, /brightdesk-dependency-lock/, 'the committed lock is read directly from the checked-out source');
@@ -57,29 +88,36 @@ test('release workflow builds and verifies all three desktop platforms', () => {
   assert.match(workflow, /npm test/);
   assert.match(workflow, /npm audit --audit-level=high/);
 });
-
-test('signing and notarisation secrets are limited to main and the matching platform', () => {
+test('signing and notarisation secrets are limited to the correct main or tag build and platform', () => {
   const workflow = read('.github/workflows/build-release.yml');
-  const buildStep = workflow.split('- name: Build Suite and all ten standalone product installers')[1];
-  assert.ok(buildStep, 'build installer step exists');
+  const mainBuild = workflow.slice(workflow.indexOf('  build:'), workflow.indexOf('  prepare-release:'));
+  const taggedBuild = workflow.slice(workflow.indexOf('  release-assets:'), workflow.indexOf('  publish-release:'));
+  assert.ok(mainBuild.includes('Build Suite and all ten standalone product installers'));
   for (const secret of ['CSC_LINK', 'CSC_KEY_PASSWORD', 'CSC_INSTALLER_LINK', 'CSC_INSTALLER_KEY_PASSWORD', 'APPLE_ID', 'APPLE_APP_SPECIFIC_PASSWORD', 'APPLE_TEAM_ID']) {
-    const line = buildStep.split('\n').find((item) => item.trimStart().startsWith(`${secret}:`));
-    assert.ok(line, `${secret} is configured for the build step`);
-    assert.match(line, /github\.ref == 'refs\/heads\/main'/, `${secret} is available only on main`);
-    assert.doesNotMatch(line, /github\.event_name != 'pull_request'/);
+    const line = mainBuild.split('\n').find((item) => item.trimStart().startsWith(`${secret}:`));
+    assert.ok(line, `${secret} is configured for the main build step`);
+    assert.match(line, /github\.event_name == 'push' && github\.ref == 'refs\/heads\/main'/);
+    assert.doesNotMatch(line, /refs\/tags\/v/);
+    const taggedLine = taggedBuild.split('\n').find((item) => item.trimStart().startsWith(`${secret}:`));
+    assert.ok(taggedLine, `${secret} is configured for the tagged release build`);
+    assert.match(taggedLine, /startsWith\(github\.ref, 'refs\/tags\/v'\)/);
   }
-  const installerCert = buildStep.split('\n').find((item) => item.trimStart().startsWith('CSC_INSTALLER_LINK:'));
-  const appleId = buildStep.split('\n').find((item) => item.trimStart().startsWith('APPLE_ID:'));
-  assert.match(installerCert, /matrix\.platform == 'macOS'/, 'macOS installer certificate is macOS-only');
-  assert.match(appleId, /matrix\.platform == 'macOS'/, 'Apple notarisation identity is macOS-only');
+  const installerCert = mainBuild.split('\n').find((item) => item.trimStart().startsWith('CSC_INSTALLER_LINK:'));
+  const appleId = mainBuild.split('\n').find((item) => item.trimStart().startsWith('APPLE_ID:'));
+  assert.match(installerCert, /matrix\.platform == 'macOS'/);
+  assert.match(appleId, /matrix\.platform == 'macOS'/);
 });
-
-test('release publishing is manual, disabled by default, and main-only', () => {
+test('release publishing requires the exact package version tag and all platform asset uploads', () => {
   const workflow = read('.github/workflows/build-release.yml');
-  assert.match(workflow, /publish_release:\s*[\s\S]*?default: false/);
-  assert.ok(workflow.includes("if: github.event_name == 'workflow_dispatch' && inputs.publish_release == true && github.ref == 'refs/heads/main'"));
+  assert.doesNotMatch(workflow, /workflow_dispatch:|inputs\.publish_release/);
+  assert.ok(workflow.includes("if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')"));
+  assert.ok(workflow.includes('EXPECTED_TAG="v$VERSION"'));
+  assert.ok(workflow.includes('GITHUB_REF_NAME'));
+  assert.match(workflow, /needs: release-assets/);
+  assert.match(workflow, /draft: false/);
+  assert.match(workflow, /contents: write/);
+  assert.match(workflow, /uses: softprops\/action-gh-release@8a0cd651e5b2365bd640854a3fa5dfc70e4875f3 # v3\.0\.4/);
 });
-
 test('Linux builds do not receive Windows or macOS signing credentials', () => {
   const workflow = read('.github/workflows/build-release.yml');
   const buildStep = workflow.split('- name: Build Suite and all ten standalone product installers')[1];
@@ -91,25 +129,24 @@ test('Linux builds do not receive Windows or macOS signing credentials', () => {
   }
 });
 
-test('platform release artifacts remain in separate folders and release lock metadata is retained', () => {
+test('platform release files attach directly to an unpublished GitHub Release without Actions artifacts', () => {
   const workflow = read('.github/workflows/build-release.yml');
-  for (const [platform, folder] of [['Linux', 'release/Linux'], ['Windows', 'release/Windows'], ['macOS', 'release/macOS']]) {
-    assert.match(workflow, new RegExp(`name: Download verified ${platform} build`));
-    assert.ok(workflow.includes(`path: ${folder}`), `${platform} is downloaded into its own folder`);
-  }
-  assert.ok(workflow.includes('name: Check out the exact release source'));
-  assert.ok(workflow.includes('ref: ${{ github.sha }}'));
-  assert.ok(workflow.includes('node-version: 24.22.2'));
-  assert.ok(workflow.includes('name: Preserve the committed dependency lock in release metadata'));
-  assert.ok(workflow.includes('cp package-lock.json release/build-metadata/package-lock.json'));
-  assert.match(workflow, /files: release\/\*\*\/\*/);
-  assert.doesNotMatch(workflow, /merge-multiple: true/);
+  const releaseAssets = workflow.slice(workflow.indexOf('  release-assets:'), workflow.indexOf('  publish-release:'));
+  const publish = workflow.slice(workflow.indexOf('  publish-release:'));
+  assert.match(releaseAssets, /Build and attach verified \$\{\{ matrix\.platform \}\} release assets/);
+  assert.match(releaseAssets, /files: \|[\s\S]*?release\/\$\{\{ matrix\.platform \}\}\/\*\*/);
+  assert.match(releaseAssets, /fail_on_unmatched_files: true/);
+  assert.match(releaseAssets, /draft: true/);
+  assert.match(publish, /needs: release-assets/);
+  assert.match(publish, /draft: false/);
+  assert.ok(workflow.includes('cp package-lock.json release/macOS/build-metadata/package-lock.json'));
+  assert.doesNotMatch(workflow, /actions\/(?:upload|download)-artifact/, 'installer delivery must not consume Actions artifact storage');
+  assert.doesNotMatch(workflow, /collect:|brightdesk-Linux|brightdesk-Windows|brightdesk-macOS/);
   const prepare = read('scripts/prepare-release-assets.js');
   assert.match(prepare, /Brightdesk-\$\{label\}-LICENSE\.txt/);
   const verifier = read('scripts/verify-release-artifacts.js');
   assert.match(verifier, /Brightdesk-SHA256SUMS-\$\{platform\.toUpperCase\(\)\}/);
 });
-
 test('Node.js runtime is pinned consistently to the current 24 LTS patch', () => {
   const manifest = JSON.parse(read('package.json'));
   assert.equal(manifest.engines.node, '24.22.2');
@@ -182,6 +219,24 @@ test('README freshness workflow protects the private runner from forked pull req
 });
 
 
+test('all private self-hosted pull-request workflows reject fork-controlled code', () => {
+  const files = [
+    '.github/workflows/ci.yml',
+    '.github/workflows/quality.yml',
+    '.github/workflows/rust-engine.yml',
+    '.github/workflows/verify-macos-installer.yml'
+  ];
+  const guard = "if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository";
+
+  for (const file of files) {
+    const workflow = read(file);
+    assert.match(workflow, /pull_request:/, file + ' must retain pull-request checks');
+    assert.match(workflow, /runs-on:.*self-hosted/, file + ' must use the private runner');
+    assert.ok(workflow.includes(guard), file + ' must not run fork-controlled pull-request code');
+  }
+});
+
+
 test('all third-party workflow actions are pinned to full commit SHAs', () => {
   const workflowDirectory = path.join(root, '.github', 'workflows');
   const workflowFiles = fs.readdirSync(workflowDirectory).filter(file => file.endsWith('.yml'));
@@ -222,6 +277,7 @@ test('private Mac runner bootstrap is pinned, repository-scoped and token-safe',
   const setupPath = path.join(root, 'tools/runner-setup/macos/Start-Brightdesk-Mac-Foundation-Runners.sh');
   const setup = read('tools/runner-setup/macos/Start-Brightdesk-Mac-Foundation-Runners.sh');
   const repositories = [
+    'Brightdesk-suite',
     'Brightdesk-Common-Actions',
     'Brightdesk-Developer-Tools',
     'Brightdesk-Extensions',
@@ -229,10 +285,15 @@ test('private Mac runner bootstrap is pinned, repository-scoped and token-safe',
     'Brightdesk-Release-Tools',
     'Brightdesk-Services',
     'Brightdesk-Assets',
-    'Brightdesk-Lists'
+    'Brightdesk-Printing',
+    'Brightdesk-Lists',
+    'Brightdesk-Pages',
+    'Brightdesk-Database',
+    'Brightdesk-Decks'
   ];
 
   assert.ok(setup.includes("RUNNER_VERSION='2.338.2'"));
+  assert.ok(setup.includes("'Brightdesk-suite'"));
   assert.ok(setup.includes("ARCHIVE_SHA256='25a065af409ffa317ab4d5a3b614dd15fc9c40f2172bc1b35a1b1258e919a388'"));
   assert.ok(setup.includes('actions-runner-osx-arm64-'));
   assert.ok(setup.includes('shasum -a 256'));
@@ -255,6 +316,11 @@ test('private Mac runner bootstrap is pinned, repository-scoped and token-safe',
   assert.ok(setup.includes('The existing runner folder already contains runner configuration:'));
   assert.ok(setup.includes('A compatible Mac runner is already registered but offline'));
   assert.ok(setup.includes('brightdesk-product-ci'));
+  assert.ok(setup.includes('Brightdesk-Lists|Brightdesk-Pages|Brightdesk-Database|Brightdesk-Decks'));
+  assert.ok(setup.includes('Brightdesk-Printing)'));
+  assert.ok(setup.includes("extra_label='brightdesk-printing-ci'"));
+  assert.match(setup, /required_labels=.*\$extra_label/);
+  assert.ok(setup.includes('up to thirteen repository-scoped runners'));
   for (const repository of repositories) assert.ok(setup.includes("'" + repository + "'"), repository);
   assert.ok(!setup.includes('ubuntu-latest'));
   assert.ok(!setup.includes('windows-latest'));
@@ -272,7 +338,35 @@ test('Mac runner setup documentation explains scope, token handling and no-servi
   assert.ok(instructions.includes('It is not printed or saved to a file and is cleared from the setup script immediately after configuration.'));
   assert.ok(instructions.includes('They do not auto-start after logout or reboot.'));
   assert.ok(releaseGuide.includes('Start-Brightdesk-Mac-Foundation-Runners.sh'));
+  assert.ok(releaseGuide.includes('Brightdesk-Printing'));
+  assert.ok(releaseGuide.includes('brightdesk-printing-ci'));
+  assert.ok(releaseGuide.includes('those thirteen repositories'));
   assert.match(releaseGuide, /Brightdesk-Common-Actions/);
+  assert.ok(instructions.includes('these thirteen repositories'));
+  assert.ok(instructions.includes('Brightdesk-Printing receives the separate "brightdesk-printing-ci" label'));
+  assert.ok(instructions.includes('brightdesk-printing-ci'));
+  for (const repository of ['Brightdesk-Pages', 'Brightdesk-Database', 'Brightdesk-Decks']) {
+    assert.ok(instructions.includes(repository), repository);
+    assert.ok(releaseGuide.includes(repository), repository);
+  }
+  for (const repository of ['Brightdesk-Lists', 'Brightdesk-Pages', 'Brightdesk-Database', 'Brightdesk-Decks']) {
+    assert.ok(instructions.includes(repository + ' receives the additional label') || instructions.includes('Brightdesk-Lists, Brightdesk-Pages, Brightdesk-Database and Brightdesk-Decks receive'));
+  }
+});
+
+test('Mac runner setup can be opened from Finder without typing a shell command', () => {
+  const launcherPath = path.join(root, 'tools/runner-setup/macos/Start-Brightdesk-Mac-Foundation-Runners.command');
+  const launcher = read('tools/runner-setup/macos/Start-Brightdesk-Mac-Foundation-Runners.command');
+  const setupPath = path.join(root, 'tools/runner-setup/macos/Start-Brightdesk-Mac-Foundation-Runners.sh');
+
+  assert.ok(fs.statSync(launcherPath).mode & 0o111, 'Finder launcher must be executable');
+  assert.ok(launcher.includes('SCRIPT_DIR='));
+  assert.ok(launcher.includes('Start-Brightdesk-Mac-Foundation-Runners.sh'));
+  assert.ok(launcher.includes('bash "$RUNNER_SETUP"'));
+  assert.ok(launcher.includes('REGISTER only when you are ready'));
+  assert.ok(launcher.includes('read -r -p'));
+  execFileSync('bash', ['-n', launcherPath], { stdio: 'pipe' });
+  execFileSync('bash', ['-n', setupPath], { stdio: 'pipe' });
 });
 
 test('Windows runner setup explicitly supports Windows 10 and Windows 11', () => {
@@ -308,18 +402,18 @@ test('self-hosted CI disables checkout credentials and registers post-job cleanu
   assert.ok(!workflow.includes('run: node scripts/cleanup-runner-workspace.js'));
 });
 
-test('release collector checkout uses one valid with block and preserves the exact commit checkout', () => {
+test('tag release preparation checks out the exact tagged commit without persistent checkout credentials', () => {
   const workflow = read('.github/workflows/build-release.yml');
   const start = workflow.indexOf('- name: Check out the exact release source');
   const end = workflow.indexOf('- name: Set up required Node.js version', start);
-  assert.ok(start >= 0 && end > start, 'release collector checkout exists');
+  assert.ok(start >= 0 && end > start, 'tag release source checkout exists');
   const checkout = workflow.slice(start, end);
   assert.ok(checkout.includes('persist-credentials: false'));
   assert.ok(checkout.includes('ref: ${{ github.sha }}'));
   assert.equal(checkout.split('        with:').length - 1, 1);
+  assert.ok(workflow.includes('prepare-release:'));
+  assert.ok(workflow.includes('needs: [prepare, prepare-release]'));
 });
-
-
 test('every self-hosted workflow registers post-job source cleanup before other actions', () => {
   const expected = [
     ['.github/workflows/build-release.yml', 4],
@@ -378,27 +472,22 @@ test('README freshness exempts internal workflows, runner setup and test-only ch
 });
 
 
-test('Windows runner can be started from one verified download', () => {
+test('Windows runner launcher runs its sibling installer without an unauthenticated private download', () => {
   const instructions = read('tools/runner-setup/windows/README.txt');
   const launcher = read('tools/runner-setup/windows/Start-Brightdesk-Windows-Runner.cmd');
   const installer = read('tools/runner-setup/windows/Install-Brightdesk-Windows-Runner.ps1');
   const releaseGuide = read('docs/LOCAL-RELEASE-VERIFICATION.md');
-  assert.ok(instructions.includes('Download only Start-Brightdesk-Windows-Runner.cmd'));
-  assert.ok(instructions.includes('downloads the PowerShell installer automatically'));
-  assert.ok(instructions.includes('browser/device sign-in flow'));
-  assert.ok(instructions.includes('You do NOT need to open the runner setup page or copy/paste a registration token.'));
-  assert.ok(instructions.includes('only if either is missing'));
-  assert.ok(instructions.includes('There is no setup ZIP.'));
-  const installerUrl = /^set "INSTALLER_URL=(.+)"$/m.exec(launcher)?.[1];
-  assert.ok(installerUrl, 'launcher pins a PowerShell installer URL');
-  assert.match(installerUrl, /\/[a-f0-9]{40}\/tools\/runner-setup\/windows\/Install-Brightdesk-Windows-Runner\.ps1$/);
+
+  assert.ok(instructions.includes('Download both Start-Brightdesk-Windows-Runner.cmd and Install-Brightdesk-Windows-Runner.ps1'));
+  assert.ok(instructions.includes('Keep both files in the same folder'));
+  assert.ok(launcher.includes('set "INSTALLER_PATH=%~dp0Install-Brightdesk-Windows-Runner.ps1"'));
+  assert.ok(launcher.includes('if not exist "%INSTALLER_PATH%"'));
   const expectedInstallerHash = /^set "INSTALLER_SHA256=([a-f0-9]{64})"$/m.exec(launcher)?.[1];
-  assert.ok(expectedInstallerHash, 'launcher pins the PowerShell installer SHA-256');
+  assert.ok(expectedInstallerHash, 'launcher pins the sibling PowerShell installer checksum');
   assert.equal(expectedInstallerHash, createHash('sha256').update(installer, 'utf8').digest('hex'));
-  assert.ok(launcher.includes('Invoke-WebRequest'));
-  assert.ok(launcher.includes('Get-FileHash'));
+  assert.ok(launcher.includes('Get-FileHash -LiteralPath $env:INSTALLER_PATH -Algorithm SHA256'));
   assert.ok(launcher.includes('powershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -File "%INSTALLER_PATH%"'));
-  assert.ok(!launcher.includes('%~dp0Install-Brightdesk-Windows-Runner.ps1'));
+  assert.ok(!/INSTALLER_URL|INSTALLER_SHA256|Invoke-WebRequest|raw\.githubusercontent\.com/i.test(launcher));
   assert.ok(installer.includes('Get-Command git.exe'));
   assert.ok(installer.includes('Get-Command bash.exe'));
   assert.ok(installer.includes('install --id Git.Git'));
@@ -406,5 +495,13 @@ test('Windows runner can be started from one verified download', () => {
   assert.ok(installer.includes('--web'));
   assert.ok(installer.includes('api --method POST $RegistrationEndpoint'));
   assert.ok(installer.includes("'--token', $registrationToken"));
-  assert.ok(releaseGuide.includes('Download only the [single Windows launcher file]'));
+  assert.ok(releaseGuide.includes('Download both the Windows launcher and its PowerShell installer'));
+});
+
+
+test('README freshness keeps only the latest pending PR check without cancelling an active run', () => {
+  const workflow = read('.github/workflows/readme-freshness.yml');
+  assert.ok(workflow.includes('group: brightdesk-readme-freshness-${{ github.event.pull_request.number || github.ref }}'));
+  assert.match(workflow, /concurrency:\s*\n\s*group:[^\n]+\n\s*cancel-in-progress:\s*false/);
+  assert.match(workflow, /runs-on: self-hosted/);
 });

@@ -30,7 +30,7 @@ Run it separately on each operating system you intend to distribute Brightdesk f
 
 ## No-cost GitHub Actions runners
 
-The manual installer workflow uses private self-hosted runners instead of GitHub-hosted runners. This avoids consuming paid hosted-runner minutes and keeps source code on computers controlled by the project owner.
+The installer workflow runs on pull requests to `main`, pushes to `main`, and pushes of version tags (`v*`). It uses private self-hosted runners instead of GitHub-hosted runners, avoiding paid hosted-runner minutes and keeping source code on computers controlled by the project owner. There is no manual installer dispatch.
 
 Register one runner for each required platform in the repository's **Settings → Actions → Runners** page:
 
@@ -38,41 +38,37 @@ Register one runner for each required platform in the repository's **Settings �
 - **Windows:** labels `self-hosted`, `Windows`, `X64` (a 64-bit Windows 10 or Windows 11 PC; GitHub lists both as supported self-hosted runner operating systems).
 - **Linux:** labels `self-hosted`, `Linux`, `X64` (a Linux x64 computer).
 
-GitHub assigns the standard operating-system and architecture labels when each runner is registered. Do not add a custom label in place of the standard labels above. Keep the runner service active while a build is queued. The installer workflow waits for all three matching runners; if a platform runner is offline or not registered, that platform's job remains queued and the full bundle cannot be collected.
+GitHub assigns the standard operating-system and architecture labels when each runner is registered. Do not add a custom label in place of the standard labels above. Keep the runner service active while a build is queued. The installer workflow waits for all three matching runners; if a platform runner is offline or not registered, that platform's job remains queued and the draft release cannot be completed. Pull-request and main-branch builds verify the installers without publishing a release. On a pushed `v*` tag that exactly matches the version in `package.json`, each platform job attaches its verified installer files directly to an unpublished GitHub Release. The final job publishes it only after all three platform builds and uploads succeed. No Actions artifact upload/download is used for installer hand-off.
 
-The existing Mac runner can handle the preparation, collection and macOS build jobs. A Windows runner is required for the native Windows installer, and a Linux x64 runner is required for the native Linux packages. Do not substitute a cross-build from another operating system and call it verified. The workflow does not publish a release unless the manual `publish_release` input is explicitly enabled; its default remains disabled.
+The existing Mac runner handles release preparation and final publication. A Windows runner is required for the native Windows installer, and a Linux x64 runner is required for the native Linux packages. Do not substitute a cross-build from another operating system and call it verified. The workflow does not expose a manual publish input. Pushing the matching version tag is the explicit release approval.
 
 Runner setup requires access to each physical computer and a one-time registration from the repository settings. Never copy a runner registration token into source files, logs, issues or documentation. Keep all runners private to this repository and do not run untrusted fork pull-request code on them.
 
 
 ### Mac foundation runner setup
 
-The private Mac setup helper in [tools/runner-setup/macos](../tools/runner-setup/macos/README.txt) registers repository-scoped runners for the eight infrastructure repositories whose quality checks require a Mac runner: Brightdesk-Common-Actions, Brightdesk-Developer-Tools, Brightdesk-Extensions, Brightdesk-Wiki, Brightdesk-Release-Tools, Brightdesk-Services, Brightdesk-Assets and Brightdesk-Lists. Lists receives the additional `brightdesk-product-ci` label required by its quality workflow.
+The private Mac setup helper in [tools/runner-setup/macos](../tools/runner-setup/macos/README.txt) registers a runner for Brightdesk-suite itself, plus seven infrastructure repositories, four product repositories and the shared Printing repository: Brightdesk-suite, Brightdesk-Common-Actions, Brightdesk-Developer-Tools, Brightdesk-Extensions, Brightdesk-Wiki, Brightdesk-Release-Tools, Brightdesk-Services, Brightdesk-Assets, Brightdesk-Printing, Brightdesk-Lists, Brightdesk-Pages, Brightdesk-Database and Brightdesk-Decks. Lists, Pages, Database and Decks receive the additional `brightdesk-product-ci` label. Printing receives its separate `brightdesk-printing-ci` label.
 
-On the Apple-silicon Mac, first sign in to GitHub CLI as `conz20` with administrator access to those repositories:
+On the Apple-silicon Mac, first sign in to GitHub CLI as `conz20` with administrator access to those thirteen repositories:
 
 ```sh
 gh auth login --hostname github.com
 ```
 
-Then, from the Brightdesk-suite repository root, run:
-
-```sh
-bash tools/runner-setup/macos/Start-Brightdesk-Mac-Foundation-Runners.sh
-```
+In Finder, double-click [Start-Brightdesk-Mac-Foundation-Runners.command](../tools/runner-setup/macos/Start-Brightdesk-Mac-Foundation-Runners.command). macOS opens Terminal and starts the checked-in setup script from the repository checkout. You do not need to type a shell command or navigate to the repository folder.
 
 The helper downloads the official GitHub Actions runner v2.338.2 macOS ARM64 archive, verifies its published SHA-256 digest, checks existing registrations before creating any, and starts configured runners with `nohup`. For each repository, GitHub CLI requests a short-lived registration token through the repository registration-token API. The GitHub CLI credential itself is not passed to the runner configurator. The short-lived token is passed to the official `config.sh --token` option, is not printed or saved, and is cleared immediately after configuration. It is briefly present in the configurator process arguments while that command runs. The helper reuses a complete, unconfigured runner folder left by an interrupted setup but never overwrites an unexpected or configured folder. It does not use launchd or require administrator elevation. It adds repository-scoped Actions runner registrations only; it does not change repository permissions, secrets, variables, workflows, visibility, branch protection or release settings.
 
-Type `REGISTER` only after reviewing the eight-repository list shown by the script. Confirm the runners show as **Idle/Online** under Settings → Actions → Runners in each repository. The processes continue after closing the terminal, but do not auto-start after logout or reboot. Rerun the helper after signing in to restart an existing local runner if it is offline. If the helper reports a registration/folder mismatch, inspect it manually; do not delete a runner registration or local folder blindly.
+Type `REGISTER` only after reviewing the thirteen-repository list shown by the script. Confirm the runners show as **Idle/Online** under Settings → Actions → Runners in each repository. The processes continue after closing the terminal, but do not auto-start after logout or reboot. Rerun the helper after signing in to restart an existing local runner if it is offline. If the helper reports a registration/folder mismatch, inspect it manually; do not delete a runner registration or local folder blindly.
 
 ### Windows runner setup
 
-The click-to-run Windows x64 setup supports 64-bit Windows 10 and Windows 11 and is one file: [Start-Brightdesk-Windows-Runner.cmd](https://raw.githubusercontent.com/conz20/Brightdesk-suite/main/tools/runner-setup/windows/Start-Brightdesk-Windows-Runner.cmd). There is no setup ZIP and no second file to download. The launcher downloads the PowerShell installer from a pinned Brightdesk commit, verifies its SHA-256 checksum, and starts it only after verification succeeds.
+The click-to-run Windows x64 setup supports 64-bit Windows 10 and Windows 11 and uses two files kept together: [Start-Brightdesk-Windows-Runner.cmd](../tools/runner-setup/windows/Start-Brightdesk-Windows-Runner.cmd) and [Install-Brightdesk-Windows-Runner.ps1](../tools/runner-setup/windows/Install-Brightdesk-Windows-Runner.ps1). Download both files from this private repository to the same folder. The CMD launcher verifies the checked-in PowerShell installer beside it against a pinned SHA-256 digest before starting it; it does not attempt an unauthenticated download from the private repository. There is no setup ZIP.
 
 The installer uses Windows Package Manager (winget) to install Git for Windows and GitHub CLI only when either is missing. It adds the Git and Bash directories to the machine PATH for the runner service, then uses GitHub CLI's official browser/device sign-in flow. Sign in as `conz20`, which must have administrator access to the private Brightdesk-suite repository. The installer requests the short-lived repository runner registration token automatically through GitHub CLI and passes it to the official runner configurator; you do not open the runner registration page or copy/paste the token.
 
-1. Download only the [single Windows launcher file](https://raw.githubusercontent.com/conz20/Brightdesk-suite/main/tools/runner-setup/windows/Start-Brightdesk-Windows-Runner.cmd) to the Windows PC.
-2. Double-click it and approve the Windows administrator prompt.
+1. Download both the Windows launcher and its PowerShell installer from the private repository to the same folder. The Windows setup README contains direct file-page links for both.
+2. Double-click `Start-Brightdesk-Windows-Runner.cmd` and approve the Windows administrator prompt.
 3. Read the security notice and type `REGISTER`.
 4. Allow the installer to add Git for Windows and GitHub CLI if they are missing. If it reports that winget is unavailable, install or update **App Installer** from the Microsoft Store and run the same launcher again.
 5. When GitHub CLI asks, complete the official browser/device sign-in as `conz20`.

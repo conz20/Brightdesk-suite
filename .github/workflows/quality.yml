@@ -18,12 +18,14 @@ permissions:
 
 concurrency:
   group: brightdesk-quality-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   quality:
     name: Validate Brightdesk Office Suite
     # Use the existing private Mac runner; do not consume paid GitHub-hosted minutes.
+    # Do not execute fork-controlled pull-request code on this private runner.
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
     runs-on: self-hosted
     timeout-minutes: 45
     steps:

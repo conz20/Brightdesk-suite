@@ -16,11 +16,13 @@ permissions:
 
 concurrency:
   group: brightdesk-macos-installer-pr-${{ github.event.pull_request.number }}
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   build-macos:
     name: Build and verify macOS universal installer
+    # Do not execute fork-controlled pull-request code on this private runner.
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ["self-hosted", "macOS", "ARM64"]
     timeout-minutes: 90
     steps:

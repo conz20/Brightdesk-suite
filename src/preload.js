@@ -48,5 +48,13 @@ contextBridge.exposeInMainWorld('brightdesk', {
   listDictionaries: () => ipcRenderer.invoke('dictionaries:list'),
   listDictionaryCatalogue: () => ipcRenderer.invoke('dictionaries:catalog'),
   installCatalogueDictionary: (id) => ipcRenderer.invoke('dictionaries:install-catalog', id),
-  checkSpelling: (payload) => ipcRenderer.invoke('dictionaries:check', payload)
+  checkSpelling: (payload) => ipcRenderer.invoke('dictionaries:check', payload),
+  printing: {
+    listPrinters: () => ipcRenderer.invoke('printing:list-printers'),
+    discoverNetworkPrinters: () => ipcRenderer.invoke('printing:discover-network-printers'),
+    pairNetworkPrinter: (printer) => ipcRenderer.invoke('printing:pair-network-printer', printer),
+    getPrinterCapabilities: (systemName) => ipcRenderer.invoke('printing:get-capabilities', systemName),
+    openPrinterSettings: () => ipcRenderer.invoke('printing:open-settings'),
+    print: (request) => ipcRenderer.invoke('printing:print', request)
+  }
 });

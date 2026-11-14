@@ -1,26 +1,24 @@
 name: Build and verify Brightdesk installers
 
 on:
-  workflow_dispatch:
-    inputs:
-      publish_release:
-        description: 'Publish a GitHub Release after all installers pass verification'
-        type: boolean
-        required: true
-        default: false
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+    tags: ['v*']
 
 permissions:
   contents: read
-  actions: read
 
 concurrency:
   group: brightdesk-installer-build-${{ github.ref }}
+  queue: max
   cancel-in-progress: false
 
 jobs:
   prepare:
     name: Test and lock dependencies
-    # Run on an already registered private runner; no hosted minutes are consumed.
+    if: (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository) || (github.event_name == 'push' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')))
     runs-on: self-hosted
     timeout-minutes: 60
     steps:
@@ -68,7 +66,8 @@ jobs:
         run: npm audit --audit-level=high
 
   build:
-    name: Build ${{ matrix.platform }} installer
+    name: Build and verify ${{ matrix.platform }} installer
+    if: (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository) || (github.event_name == 'push' && github.ref == 'refs/heads/main')
     needs: prepare
     strategy:
       fail-fast: false
@@ -84,6 +83,8 @@ jobs:
             runner: ["self-hosted", "macOS", "ARM64"]
             script: mac
     runs-on: ${{ matrix.runner }}
+    permissions:
+      contents: read
     steps:
       - name: Register post-job workspace cleanup
         uses: conz20/Brightdesk-suite/.github/actions/runner-workspace-cleanup@7727da85c4e6e660f3376b5b330d78b6782c1976
@@ -112,16 +113,150 @@ jobs:
 
       - name: Build Suite and all ten standalone product installers
         env:
-          WIN_CSC_LINK: ${{ github.ref == 'refs/heads/main' && matrix.platform == 'Windows' && secrets.WIN_CSC_LINK || '' }}
-          MAC_APP_CSC_LINK: ${{ github.ref == 'refs/heads/main' && matrix.platform == 'macOS' && secrets.MAC_APP_CSC_LINK || '' }}
-          MAC_INSTALLER_CSC_LINK: ${{ github.ref == 'refs/heads/main' && matrix.platform == 'macOS' && secrets.MAC_INSTALLER_CSC_LINK || '' }}
-          CSC_LINK: ${{ github.ref == 'refs/heads/main' && matrix.platform == 'Windows' && secrets.WIN_CSC_LINK || github.ref == 'refs/heads/main' && matrix.platform == 'macOS' && secrets.MAC_APP_CSC_LINK || '' }}
-          CSC_KEY_PASSWORD: ${{ github.ref == 'refs/heads/main' && matrix.platform == 'Windows' && secrets.WIN_CSC_KEY_PASSWORD || github.ref == 'refs/heads/main' && matrix.platform == 'macOS' && secrets.MAC_APP_CSC_KEY_PASSWORD || '' }}
-          CSC_INSTALLER_LINK: ${{ github.ref == 'refs/heads/main' && matrix.platform == 'macOS' && secrets.MAC_INSTALLER_CSC_LINK || '' }}
-          CSC_INSTALLER_KEY_PASSWORD: ${{ github.ref == 'refs/heads/main' && matrix.platform == 'macOS' && secrets.MAC_INSTALLER_CSC_KEY_PASSWORD || '' }}
-          APPLE_ID: ${{ github.ref == 'refs/heads/main' && matrix.platform == 'macOS' && secrets.APPLE_ID || '' }}
-          APPLE_APP_SPECIFIC_PASSWORD: ${{ github.ref == 'refs/heads/main' && matrix.platform == 'macOS' && secrets.APPLE_APP_SPECIFIC_PASSWORD || '' }}
-          APPLE_TEAM_ID: ${{ github.ref == 'refs/heads/main' && matrix.platform == 'macOS' && secrets.APPLE_TEAM_ID || '' }}
+          WIN_CSC_LINK: ${{ (github.event_name == 'push' && github.ref == 'refs/heads/main') && matrix.platform == 'Windows' && secrets.WIN_CSC_LINK || '' }}
+          MAC_APP_CSC_LINK: ${{ (github.event_name == 'push' && github.ref == 'refs/heads/main') && matrix.platform == 'macOS' && secrets.MAC_APP_CSC_LINK || '' }}
+          MAC_INSTALLER_CSC_LINK: ${{ (github.event_name == 'push' && github.ref == 'refs/heads/main') && matrix.platform == 'macOS' && secrets.MAC_INSTALLER_CSC_LINK || '' }}
+          CSC_LINK: ${{ (github.event_name == 'push' && github.ref == 'refs/heads/main') && matrix.platform == 'Windows' && secrets.WIN_CSC_LINK || (github.event_name == 'push' && github.ref == 'refs/heads/main') && matrix.platform == 'macOS' && secrets.MAC_APP_CSC_LINK || '' }}
+          CSC_KEY_PASSWORD: ${{ (github.event_name == 'push' && github.ref == 'refs/heads/main') && matrix.platform == 'Windows' && secrets.WIN_CSC_KEY_PASSWORD || (github.event_name == 'push' && github.ref == 'refs/heads/main') && matrix.platform == 'macOS' && secrets.MAC_APP_CSC_KEY_PASSWORD || '' }}
+          CSC_INSTALLER_LINK: ${{ (github.event_name == 'push' && github.ref == 'refs/heads/main') && matrix.platform == 'macOS' && secrets.MAC_INSTALLER_CSC_LINK || '' }}
+          CSC_INSTALLER_KEY_PASSWORD: ${{ (github.event_name == 'push' && github.ref == 'refs/heads/main') && matrix.platform == 'macOS' && secrets.MAC_INSTALLER_CSC_KEY_PASSWORD || '' }}
+          APPLE_ID: ${{ (github.event_name == 'push' && github.ref == 'refs/heads/main') && matrix.platform == 'macOS' && secrets.APPLE_ID || '' }}
+          APPLE_APP_SPECIFIC_PASSWORD: ${{ (github.event_name == 'push' && github.ref == 'refs/heads/main') && matrix.platform == 'macOS' && secrets.APPLE_APP_SPECIFIC_PASSWORD || '' }}
+          APPLE_TEAM_ID: ${{ (github.event_name == 'push' && github.ref == 'refs/heads/main') && matrix.platform == 'macOS' && secrets.APPLE_TEAM_ID || '' }}
+        shell: bash
+        run: |
+          if [ -z "${CSC_LINK:-}" ]; then unset CSC_LINK CSC_KEY_PASSWORD; fi
+          if [ -z "${CSC_INSTALLER_LINK:-}" ]; then unset CSC_INSTALLER_LINK CSC_INSTALLER_KEY_PASSWORD; fi
+          if [ "${{ matrix.platform }}" = "macOS" ] && [ -z "${CSC_LINK:-}" ]; then export CSC_IDENTITY_AUTO_DISCOVERY=false; fi
+          if [ "${{ matrix.script }}" = "linux" ]; then npm run dist:linux && npm run dist:apps:linux; fi
+          if [ "${{ matrix.script }}" = "win" ]; then npm run dist:win && npm run dist:apps:win; fi
+          if [ "${{ matrix.script }}" = "mac" ]; then npm run dist:mac && npm run dist:apps:mac; fi
+          npm run release:prepare -- ${{ matrix.script }}
+
+      - name: Require and test native Rust engine on this platform
+        shell: bash
+        env:
+          BRIGHTDESK_REQUIRE_NATIVE_ENGINE: "1"
+        run: node --test test/rust-engine.test.mjs test/embedding-bridge.test.mjs
+
+      - name: Verify Linux suite and product installers
+        if: matrix.platform == 'Linux'
+        run: |
+          npm run release:verify:linux
+          npm run release:verify:products:linux
+
+      - name: Verify Windows suite and product installers
+        if: matrix.platform == 'Windows'
+        run: |
+          npm run release:verify:win
+          npm run release:verify:products:win
+
+      - name: Verify macOS suite and product installers
+        if: matrix.platform == 'macOS'
+        run: |
+          npm run release:verify:mac
+          npm run release:verify:products:mac
+
+  prepare-release:
+    name: Prepare unpublished Brightdesk release
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+    needs: prepare
+    runs-on: [self-hosted, macOS, ARM64, brightdesk-product-ci]
+    permissions:
+      contents: write
+    steps:
+      - name: Register post-job workspace cleanup
+        uses: conz20/Brightdesk-suite/.github/actions/runner-workspace-cleanup@7727da85c4e6e660f3376b5b330d78b6782c1976
+
+      - name: Check out the exact release source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          ref: ${{ github.sha }}
+
+      - name: Set up required Node.js version
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24.22.2
+
+      - name: Require the exact package version tag
+        shell: bash
+        run: |
+          VERSION="$(node -p "require('./package.json').version")"
+          EXPECTED_TAG="v$VERSION"
+          if [ "$GITHUB_REF_NAME" != "$EXPECTED_TAG" ]; then
+            echo "Refusing release: expected $EXPECTED_TAG, received $GITHUB_REF_NAME."
+            exit 1
+          fi
+
+      - name: Create the unpublished release
+        uses: softprops/action-gh-release@8a0cd651e5b2365bd640854a3fa5dfc70e4875f3 # v3.0.4
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: Brightdesk ${{ github.ref_name }}
+          target_commitish: ${{ github.sha }}
+          draft: true
+          generate_release_notes: true
+
+  release-assets:
+    name: Build and attach verified ${{ matrix.platform }} release assets
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+    needs: [prepare, prepare-release]
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: Linux
+            runner: ["self-hosted", "Linux", "X64"]
+            script: linux
+          - platform: Windows
+            runner: ["self-hosted", "Windows", "X64"]
+            script: win
+          - platform: macOS
+            runner: ["self-hosted", "macOS", "ARM64"]
+            script: mac
+    runs-on: ${{ matrix.runner }}
+    permissions:
+      contents: write
+    steps:
+      - name: Register post-job workspace cleanup
+        uses: conz20/Brightdesk-suite/.github/actions/runner-workspace-cleanup@7727da85c4e6e660f3376b5b330d78b6782c1976
+
+      - name: Check out the exact release source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          ref: ${{ github.sha }}
+
+      - name: Set up required Node.js version
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24.22.2
+
+      - name: Set up the pinned Rust toolchain
+        uses: dtolnay/rust-toolchain@683b588c487a69d01f6c6ddf40f036ff682cc2c8 # pinned action revision
+        with:
+          toolchain: 1.99.1
+          components: rustfmt, clippy
+
+      - name: Verify dependency lock
+        run: npm run lock:verify
+
+      - name: Install locked dependencies
+        run: npm ci --no-audit --no-fund
+
+      - name: Build Suite and all ten standalone product installers
+        env:
+          WIN_CSC_LINK: ${{ startsWith(github.ref, 'refs/tags/v') && matrix.platform == 'Windows' && secrets.WIN_CSC_LINK || '' }}
+          MAC_APP_CSC_LINK: ${{ startsWith(github.ref, 'refs/tags/v') && matrix.platform == 'macOS' && secrets.MAC_APP_CSC_LINK || '' }}
+          MAC_INSTALLER_CSC_LINK: ${{ startsWith(github.ref, 'refs/tags/v') && matrix.platform == 'macOS' && secrets.MAC_INSTALLER_CSC_LINK || '' }}
+          CSC_LINK: ${{ startsWith(github.ref, 'refs/tags/v') && matrix.platform == 'Windows' && secrets.WIN_CSC_LINK || startsWith(github.ref, 'refs/tags/v') && matrix.platform == 'macOS' && secrets.MAC_APP_CSC_LINK || '' }}
+          CSC_KEY_PASSWORD: ${{ startsWith(github.ref, 'refs/tags/v') && matrix.platform == 'Windows' && secrets.WIN_CSC_KEY_PASSWORD || startsWith(github.ref, 'refs/tags/v') && matrix.platform == 'macOS' && secrets.MAC_APP_CSC_KEY_PASSWORD || '' }}
+          CSC_INSTALLER_LINK: ${{ startsWith(github.ref, 'refs/tags/v') && matrix.platform == 'macOS' && secrets.MAC_INSTALLER_CSC_LINK || '' }}
+          CSC_INSTALLER_KEY_PASSWORD: ${{ startsWith(github.ref, 'refs/tags/v') && matrix.platform == 'macOS' && secrets.MAC_INSTALLER_CSC_KEY_PASSWORD || '' }}
+          APPLE_ID: ${{ startsWith(github.ref, 'refs/tags/v') && matrix.platform == 'macOS' && secrets.APPLE_ID || '' }}
+          APPLE_APP_SPECIFIC_PASSWORD: ${{ startsWith(github.ref, 'refs/tags/v') && matrix.platform == 'macOS' && secrets.APPLE_APP_SPECIFIC_PASSWORD || '' }}
+          APPLE_TEAM_ID: ${{ startsWith(github.ref, 'refs/tags/v') && matrix.platform == 'macOS' && secrets.APPLE_TEAM_ID || '' }}
         shell: bash
         run: |
           if [ -z "${CSC_LINK:-}" ]; then unset CSC_LINK CSC_KEY_PASSWORD; fi
@@ -163,104 +298,33 @@ jobs:
         run: |
           mkdir -p "release/$BRIGHTDESK_PLATFORM"
           node -e "const fs=require('node:fs');const p=require('node:path');const root='release';const dest=p.join(root,process.env.BRIGHTDESK_PLATFORM);for(const name of fs.readdirSync(root)){if(name===process.env.BRIGHTDESK_PLATFORM)continue;const source=p.join(root,name);if(fs.statSync(source).isFile())fs.renameSync(source,p.join(dest,name));}"
+          if [ "$BRIGHTDESK_PLATFORM" = "macOS" ]; then
+            mkdir -p release/macOS/build-metadata
+            cp package-lock.json release/macOS/build-metadata/package-lock.json
+          fi
 
-      - name: Upload verified platform build
-        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+      - name: Attach verified platform files to the unpublished release
+        uses: softprops/action-gh-release@8a0cd651e5b2365bd640854a3fa5dfc70e4875f3 # v3.0.4
         with:
-          name: brightdesk-${{ matrix.platform }}
-          path: release/${{ matrix.platform }}/**
-          if-no-files-found: error
-          retention-days: 14
-
-  collect:
-    name: Collect verified installers
-    needs: [prepare, build]
-    # Collect on the existing private runner to avoid hosted-runner billing.
-    runs-on: self-hosted
-    timeout-minutes: 30
-    outputs:
-      version: ${{ steps.release-version.outputs.version }}
-    steps:
-      - name: Register post-job workspace cleanup
-        uses: conz20/Brightdesk-suite/.github/actions/runner-workspace-cleanup@7727da85c4e6e660f3376b5b330d78b6782c1976
-
-      - name: Check out the exact release source
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
-          ref: ${{ github.sha }}
-
-      - name: Set up required Node.js version
-        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
-        with:
-          node-version: 24.22.2
-
-      - name: Download verified Linux build
-        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
-        with:
-          name: brightdesk-Linux
-          path: release/Linux
-
-      - name: Download verified Windows build
-        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
-        with:
-          name: brightdesk-Windows
-          path: release/Windows
-
-      - name: Download verified macOS build
-        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
-        with:
-          name: brightdesk-macOS
-          path: release/macOS
-
-      - name: Preserve the committed dependency lock in release metadata
-        run: |
-          mkdir -p release/build-metadata
-          cp package-lock.json release/build-metadata/package-lock.json
-
-      - name: Read the official product version
-        id: release-version
-        shell: bash
-        run: |
-          VERSION="$(node -p "require('./package.json').version")"
-          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
-
-      - name: Upload complete Brightdesk installer bundle
-        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
-        with:
-          name: Brightdesk-${{ steps.release-version.outputs.version }}-Installers
-          path: release/**/**
-          if-no-files-found: error
-          retention-days: 30
+          tag_name: ${{ github.ref_name }}
+          draft: true
+          files: |
+            release/${{ matrix.platform }}/**
+          fail_on_unmatched_files: true
+          overwrite_files: true
 
   publish-release:
-    name: Publish GitHub Release (manual approval only)
-    needs: collect
-    if: github.event_name == 'workflow_dispatch' && inputs.publish_release == true && github.ref == 'refs/heads/main'
-    # Publishing remains manual and uses the private runner too.
-    runs-on: self-hosted
-    timeout-minutes: 15
+    name: Publish the verified Brightdesk release
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+    needs: release-assets
+    runs-on: [self-hosted, macOS, ARM64, brightdesk-product-ci]
     permissions:
       contents: write
     steps:
-      - name: Register post-job workspace cleanup
-        uses: conz20/Brightdesk-suite/.github/actions/runner-workspace-cleanup@7727da85c4e6e660f3376b5b330d78b6782c1976
-
-      - name: Set up required Node.js version
-        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
-        with:
-          node-version: 24.22.2
-
-      - name: Download complete verified installer bundle
-        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
-        with:
-          name: Brightdesk-${{ needs.collect.outputs.version }}-Installers
-          path: release
-
-      - name: Publish verified installer files
+      - name: Publish after all platform files have been attached
         uses: softprops/action-gh-release@8a0cd651e5b2365bd640854a3fa5dfc70e4875f3 # v3.0.4
         with:
-          tag_name: v${{ needs.collect.outputs.version }}
-          name: Brightdesk ${{ needs.collect.outputs.version }}
+          tag_name: ${{ github.ref_name }}
+          name: Brightdesk ${{ github.ref_name }}
+          draft: false
           generate_release_notes: true
-          files: release/**/**
