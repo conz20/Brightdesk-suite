@@ -38,6 +38,15 @@ start_runner() {
   local runner_command=''
   local runner_gh_config="$runner_home/gh-config-no-credentials"
 
+  if [[ -L "$runner_pid_file" ]]; then
+    say "Refusing a symbolic-link runner PID file: $runner_pid_file"
+    return 1
+  fi
+  if [[ -e "$runner_pid_file" && ! -f "$runner_pid_file" ]]; then
+    say "Refusing a non-regular runner PID path: $runner_pid_file"
+    return 1
+  fi
+
   if [[ -f "$runner_pid_file" ]]; then
     runner_pid="$(cat "$runner_pid_file" 2>/dev/null || true)"
     if [[ "$runner_pid" =~ ^[0-9]+$ ]]; then
