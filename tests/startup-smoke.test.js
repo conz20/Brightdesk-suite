@@ -4,7 +4,7 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
-const { assertPackagedVersion, assertMainWindowReady } = require('../src/startup-smoke');
+const { assertPackagedVersion, assertMainWindowReady, assertProductWindowReady } = require('../src/startup-smoke');
 
 const root = path.join(__dirname, '..');
 
@@ -28,7 +28,7 @@ test('packaged startup rejects a missing or mismatched runtime version', () => {
 
 test('packaged startup accepts the loaded Brightdesk navigation shell', () => {
   assert.equal(assertMainWindowReady({
-    title: 'Brightdesk',
+    title: 'Brightdesk Office Suite',
     hasSidebar: true,
     hasAppManager: true,
     hasLanguageManager: true
@@ -45,6 +45,41 @@ test('packaged startup rejects a partial or unloaded interface', () => {
     assert.throws(
       () => assertMainWindowReady(state),
       /did not load its required workspace controls/
+    );
+  }
+});
+
+test('packaged startup accepts each dedicated product workspace only when its identity is correct', () => {
+  assert.equal(assertProductWindowReady({
+    title: 'Brightdesk Office Suite',
+    appTitle: 'Pages',
+    launchAppId: 'pages',
+    suiteLaunchedProduct: true,
+    hasSidebar: true,
+    hasWorkspace: true
+  }, 'pages', 'Pages'), true);
+});
+
+test('packaged startup rejects a product window with the wrong identity or missing workspace', () => {
+  const valid = {
+    title: 'Brightdesk Office Suite',
+    appTitle: 'Pages',
+    launchAppId: 'pages',
+    suiteLaunchedProduct: true,
+    hasSidebar: true,
+    hasWorkspace: true
+  };
+  for (const patch of [
+    { title: 'Unexpected page' },
+    { appTitle: 'Sheets' },
+    { launchAppId: 'sheets' },
+    { suiteLaunchedProduct: false },
+    { hasSidebar: false },
+    { hasWorkspace: false }
+  ]) {
+    assert.throws(
+      () => assertProductWindowReady({ ...valid, ...patch }, 'pages', 'Pages'),
+      /product workspace did not load its required controls/
     );
   }
 });
