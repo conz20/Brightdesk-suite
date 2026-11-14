@@ -60,14 +60,17 @@ test('PR verification workflows never cancel an in-progress check', () => {
 test('release workflow builds and verifies all three desktop platforms on private self-hosted runners', () => {
   const workflow = read('.github/workflows/build-release.yml');
   for (const platform of ['Linux', 'Windows', 'macOS']) {
-    assert.match(workflow, new RegExp(`platform: ${platform}`));
+    assert.match(workflow, new RegExp(\`platform: \${platform}\`));
   }
   for (const command of ['dist:linux', 'dist:win', 'dist:mac', 'dist:apps:linux', 'dist:apps:win', 'dist:apps:mac', 'release:verify:linux', 'release:verify:win', 'release:verify:mac', 'release:verify:products:linux', 'release:verify:products:win', 'release:verify:products:mac']) {
-    assert.ok(workflow.includes(command), `workflow includes ${command}`);
+    assert.ok(workflow.includes(command), \`workflow includes \${command}\`);
   }
   assert.match(workflow, /node-version: 24\.22\.2/);
   assert.match(workflow, /pull_request:\s*\n\s*branches: \[main\]/);
-  assert.match(workflow, /push:\s*\n\s*branches: \[main\]\s*\n\s*tags: \['v\*'\]/);
+  const triggers = workflow.slice(workflow.indexOf('on:'), workflow.indexOf('permissions:'));
+  const pushTrigger = triggers.slice(triggers.indexOf('push:'));
+  assert.match(pushTrigger, /^push:\s*$/m);
+  assert.doesNotMatch(pushTrigger, /branches:|tags:/, 'push event must not combine branch and tag filters');
   assert.doesNotMatch(workflow, /workflow_dispatch:/, 'installer builds must not require manual dispatch');
   assert.doesNotMatch(workflow, /windows-latest|macos-latest|ubuntu-latest/, 'platform installer jobs must use private runners');
   assert.match(workflow, /runner: \["self-hosted", "Linux", "X64"\]/);
@@ -75,7 +78,9 @@ test('release workflow builds and verifies all three desktop platforms on privat
   assert.match(workflow, /runner: \["self-hosted", "macOS", "ARM64"\]/);
   assert.match(workflow, /runs-on: \$\{\{ matrix\.runner \}\}/);
   assert.match(workflow, /queue: max/);
-  assert.match(workflow, /github\.event_name != 'pull_request' \|\| github\.event\.pull_request\.head\.repo\.full_name == github\.repository/);
+  assert.match(workflow, /github\.event_name == 'pull_request' && github\.event\.pull_request\.head\.repo\.full_name == github\.repository/);
+  assert.match(workflow, /github\.event_name == 'push' && github\.ref == 'refs\/heads\/main'/);
+  assert.match(workflow, /startsWith\(github\.ref, 'refs\/tags\/v'\)/);
   assert.doesNotMatch(workflow, /npm run lock:prepare/, 'release builds must not regenerate the committed lock');
   assert.match(workflow, /npm run lock:verify/);
   assert.doesNotMatch(workflow, /brightdesk-dependency-lock/, 'the committed lock is read directly from the checked-out source');
@@ -83,20 +88,24 @@ test('release workflow builds and verifies all three desktop platforms on privat
   assert.match(workflow, /npm test/);
   assert.match(workflow, /npm audit --audit-level=high/);
 });
-test('signing and notarisation secrets are limited to main or explicit version tags and the matching platform', () => {
+test('signing and notarisation secrets are limited to the correct main or tag build and platform', () => {
   const workflow = read('.github/workflows/build-release.yml');
-  const buildStep = workflow.split('- name: Build Suite and all ten standalone product installers')[1];
-  assert.ok(buildStep, 'build installer step exists');
+  const mainBuild = workflow.slice(workflow.indexOf('  build:'), workflow.indexOf('  prepare-release:'));
+  const taggedBuild = workflow.slice(workflow.indexOf('  release-assets:'), workflow.indexOf('  publish-release:'));
+  assert.ok(mainBuild.includes('Build Suite and all ten standalone product installers'));
   for (const secret of ['CSC_LINK', 'CSC_KEY_PASSWORD', 'CSC_INSTALLER_LINK', 'CSC_INSTALLER_KEY_PASSWORD', 'APPLE_ID', 'APPLE_APP_SPECIFIC_PASSWORD', 'APPLE_TEAM_ID']) {
-    const line = buildStep.split('\n').find((item) => item.trimStart().startsWith(`${secret}:`));
-    assert.ok(line, `${secret} is configured for the build step`);
-    assert.match(line, /github\.event_name == 'push'/, `${secret} is limited to push builds`);
-    assert.match(line, /github\.ref == 'refs\/heads\/main' \|\| startsWith\(github\.ref, 'refs\/tags\/v'\)/, `${secret} is available only on main or explicit version tags`);
+    const line = mainBuild.split('\n').find((item) => item.trimStart().startsWith(\`\${secret}:\`));
+    assert.ok(line, \`\${secret} is configured for the main build step\`);
+    assert.match(line, /github\.event_name == 'push' && github\.ref == 'refs\/heads\/main'/);
+    assert.doesNotMatch(line, /refs\/tags\/v/);
+    const taggedLine = taggedBuild.split('\n').find((item) => item.trimStart().startsWith(\`\${secret}:\`));
+    assert.ok(taggedLine, \`\${secret} is configured for the tagged release build\`);
+    assert.match(taggedLine, /startsWith\(github\.ref, 'refs\/tags\/v'\)/);
   }
-  const installerCert = buildStep.split('\n').find((item) => item.trimStart().startsWith('CSC_INSTALLER_LINK:'));
-  const appleId = buildStep.split('\n').find((item) => item.trimStart().startsWith('APPLE_ID:'));
-  assert.match(installerCert, /matrix\.platform == 'macOS'/, 'macOS installer certificate is macOS-only');
-  assert.match(appleId, /matrix\.platform == 'macOS'/, 'Apple notarisation identity is macOS-only');
+  const installerCert = mainBuild.split('\n').find((item) => item.trimStart().startsWith('CSC_INSTALLER_LINK:'));
+  const appleId = mainBuild.split('\n').find((item) => item.trimStart().startsWith('APPLE_ID:'));
+  assert.match(installerCert, /matrix\.platform == 'macOS'/);
+  assert.match(appleId, /matrix\.platform == 'macOS'/);
 });
 test('release publishing requires the exact package version tag and all platform asset uploads', () => {
   const workflow = read('.github/workflows/build-release.yml');
@@ -122,11 +131,14 @@ test('Linux builds do not receive Windows or macOS signing credentials', () => {
 
 test('platform release files attach directly to an unpublished GitHub Release without Actions artifacts', () => {
   const workflow = read('.github/workflows/build-release.yml');
-  assert.match(workflow, /release-assets:[\s\S]*?Place verified files in platform folder/);
-  assert.match(workflow, /release-assets:[\s\S]*?files: \|[\s\S]*?release\/\$\{\{ matrix\.platform \}\}\/\*\*/);
-  assert.match(workflow, /release-assets:[\s\S]*?fail_on_unmatched_files: true/);
-  assert.match(workflow, /release-assets:[\s\S]*?draft: true/);
-  assert.match(workflow, /publish-release:[\s\S]*?needs: release-assets[\s\S]*?draft: false/);
+  const releaseAssets = workflow.slice(workflow.indexOf('  release-assets:'), workflow.indexOf('  publish-release:'));
+  const publish = workflow.slice(workflow.indexOf('  publish-release:'));
+  assert.match(releaseAssets, /Build and attach verified \$\{\{ matrix\.platform \}\} release assets/);
+  assert.match(releaseAssets, /files: \|[\s\S]*?release\/\$\{\{ matrix\.platform \}\}\/\*\*/);
+  assert.match(releaseAssets, /fail_on_unmatched_files: true/);
+  assert.match(releaseAssets, /draft: true/);
+  assert.match(publish, /needs: release-assets/);
+  assert.match(publish, /draft: false/);
   assert.ok(workflow.includes('cp package-lock.json release/macOS/build-metadata/package-lock.json'));
   assert.doesNotMatch(workflow, /actions\/(?:upload|download)-artifact/, 'installer delivery must not consume Actions artifact storage');
   assert.doesNotMatch(workflow, /collect:|brightdesk-Linux|brightdesk-Windows|brightdesk-macOS/);
