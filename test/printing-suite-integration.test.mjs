@@ -21,7 +21,7 @@ test("all ten product windows expose the common Print and Printer settings actio
   assert.match(html, /id="printer-settings-button"/);
   assert.match(app, /\$('print-button')\.addEventListener\('click', printCurrent\)/);
   assert.match(app, /\$('printer-settings-button')\.addEventListener\('click', openPrinterSettings\)/);
-  assert.match(app, /const printRequest = \{ printBackground: true \}/);
+  assert.ok(app.includes("const printRequest = { printBackground: true, printerName: selectedPrinter };"));
   assert.match(app, /window\.brightdesk\.printing\.print\(printRequest\)/);
   assert.match(app, /printRequest\.orientation = "landscape"/);
   assert.match(app, /window\.brightdesk\.printing\.openPrinterSettings\(\)/);
