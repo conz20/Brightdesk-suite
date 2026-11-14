@@ -26,7 +26,7 @@ BEFORE YOU START
 3. Install GitHub CLI (`gh`) for that runner account, but **do not run `gh auth login`**.
 4. Create a temporary fine-grained personal access token in GitHub Settings → Developer settings → Personal access tokens → Fine-grained tokens:
    - Resource owner: `conz20`
-   - Repository access: select **only** the ten approved product repositories listed above
+   - Repository access: select **exactly these ten** approved product repositories listed above
    - Repository permissions: `Administration: Read and write` only
    - Expiration: choose the shortest expiry GitHub offers in your token-creation screen; GitHub's available lifetime choices can vary
    - Add no other permissions
