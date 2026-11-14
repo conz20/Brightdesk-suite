@@ -748,6 +748,8 @@ body.suite-home .app-manager.home-view .manager-hero .eyebrow { display: none; }
   #brightdesk-print-root .database-panel,
   #brightdesk-print-root #database-status,
   #brightdesk-print-root .workspace-sidebar,
+  #brightdesk-print-root .workspace-block-tools,
+  #brightdesk-print-root .workspace-check-add,
   #brightdesk-print-root .workspace-heading-actions,
   #brightdesk-print-root #workspace-add-block,
   #brightdesk-print-root #workspace-page-search-results,
