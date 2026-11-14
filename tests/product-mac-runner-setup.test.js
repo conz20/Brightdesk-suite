@@ -88,6 +88,7 @@ test('Finder launcher collects the token with a hidden-answer prompt and does no
   const launcherPath = path.join(root, 'tools/runner-setup/macos/Brightdesk-Product-Runner-Setup.app/Contents/MacOS/BrightdeskProductRunnerSetup');
   const launcher = fs.readFileSync(launcherPath, 'utf8');
   assert.match(launcher, /with hidden answer/);
+  assert.match(launcher, /Revoke the token in GitHub Settings immediately after this setup attempt, even if setup fails/);
   assert.match(launcher, /GH_TOKEN=/);
   assert.doesNotMatch(launcher, /gh auth status|gh api user/);
   assert.doesNotMatch(launcher, /echo "\$runner_token"|printf.*runner_token/);
