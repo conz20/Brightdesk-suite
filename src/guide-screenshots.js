@@ -8,15 +8,43 @@ const APPROVED_GUIDE_CAPTURE_IDS = Object.freeze([
   'suite',
   'pages',
   'sheets',
-  'decks',
+  'slides',
   'notes',
   'database',
   'forms',
   'lists',
   'planner',
   'todo',
-  'workspace'
+  'loop'
 ]);
+
+const PRODUCT_NAMES_BY_ID = Object.freeze({
+  suite: 'Brightdesk Office Suite',
+  pages: 'Pages',
+  sheets: 'Sheets',
+  slides: 'Decks',
+  notes: 'Notes',
+  database: 'Database',
+  forms: 'Forms',
+  lists: 'Lists',
+  planner: 'Planner',
+  todo: 'To Do',
+  loop: 'Workspace'
+});
+
+const SCREENSHOT_FILE_NAMES_BY_ID = Object.freeze({
+  suite: 'suite.png',
+  pages: 'pages.png',
+  sheets: 'sheets.png',
+  slides: 'decks.png',
+  notes: 'notes.png',
+  database: 'database.png',
+  forms: 'forms.png',
+  lists: 'lists.png',
+  planner: 'planner.png',
+  todo: 'todo.png',
+  loop: 'workspace.png'
+});
 
 function requireText(value, label) {
   if (typeof value !== 'string' || value.trim().length === 0) {
@@ -68,7 +96,8 @@ function buildGuideScreenshotManifest({
     seen.add(applicationId);
     return {
       applicationId,
-      fileName: applicationId + '.png',
+      productName: PRODUCT_NAMES_BY_ID[applicationId],
+      fileName: SCREENSHOT_FILE_NAMES_BY_ID[applicationId],
       bytes: capture.bytes,
       sha256: capture.sha256.toLowerCase()
     };
@@ -159,7 +188,8 @@ async function captureGuideScreenshot({
 
   const destinationDirectory = path.resolve(outputDirectory);
   await fs.mkdir(destinationDirectory, { recursive: true });
-  const filePath = path.join(destinationDirectory, applicationId + '.png');
+  const fileName = SCREENSHOT_FILE_NAMES_BY_ID[applicationId];
+  const filePath = path.join(destinationDirectory, fileName);
   await fs.writeFile(filePath, png, { mode: 0o600 });
   const { size } = await fs.stat(filePath);
   if (size === 0) throw new Error('The Brightdesk guide screenshot was written as an empty file.');
