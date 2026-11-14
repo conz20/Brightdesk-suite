@@ -478,3 +478,11 @@ test('Windows runner launcher runs its sibling installer without an unauthentica
   assert.ok(installer.includes("'--token', $registrationToken"));
   assert.ok(releaseGuide.includes('Download both the Windows launcher and its PowerShell installer'));
 });
+
+
+test('README freshness keeps only the latest pending PR check without cancelling an active run', () => {
+  const workflow = read('.github/workflows/readme-freshness.yml');
+  assert.ok(workflow.includes('group: brightdesk-readme-freshness-${{ github.event.pull_request.number || github.ref }}'));
+  assert.match(workflow, /concurrency:\s*\n\s*group:[^\n]+\n\s*cancel-in-progress:\s*false/);
+  assert.match(workflow, /runs-on: self-hosted/);
+});
