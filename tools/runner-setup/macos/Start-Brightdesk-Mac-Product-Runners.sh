@@ -33,13 +33,16 @@ start_runner() {
 
   if [[ -f "$runner_pid_file" ]]; then
     runner_pid="$(cat "$runner_pid_file" 2>/dev/null || true)"
-    if [[ "$runner_pid" =~ ^[0-9]+$ ]] && kill -0 "$runner_pid" 2>/dev/null; then
-      say "Already running: $(basename "$runner_home") (PID $runner_pid)"
-      return 0
+    if [[ "$runner_pid" =~ ^[0-9]+$ ]]; then
+      runner_command="$(ps -p "$runner_pid" -o command= 2>/dev/null || true)"
+      if [[ "$runner_command" == *"$runner_home"* ]]; then
+        say "Already running: $(basename "$runner_home") (PID $runner_pid)"
+        return 0
+      fi
     fi
   fi
 
-  runner_pid="$(ps -axo pid=,command= | awk -v runner_home="$runner_home" 'index($0, runner_home) && /Runner.Listener/ {print $1; exit}' | tr -d '[:space:]')"
+  runner_pid="$(ps -axo pid=,command= | awk -v runner_home="$runner_home" 'index($0, runner_home) && /run\.sh|Runner.Listener/ {print $1; exit}' | tr -d '[:space:]')"
   if [[ "$runner_pid" =~ ^[0-9]+$ ]] && kill -0 "$runner_pid" 2>/dev/null; then
     printf '%s\n' "$runner_pid" > "$runner_pid_file"
     say "Already running: $(basename "$runner_home") (PID $runner_pid)"
@@ -48,12 +51,13 @@ start_runner() {
 
   (
     cd "$runner_home"
-    nohup ./run.sh > "$runner_home/runner.log" 2>&1 < /dev/null &
+    nohup "$runner_home/run.sh" > "$runner_home/runner.log" 2>&1 < /dev/null &
     printf '%s\n' "$!" > "$runner_pid_file"
   )
   runner_pid="$(cat "$runner_pid_file")"
   sleep 2
-  if ! kill -0 "$runner_pid" 2>/dev/null; then
+  runner_command="$(ps -p "$runner_pid" -o command= 2>/dev/null || true)"
+  if [[ "$runner_command" != *"$runner_home"* ]] || ! kill -0 "$runner_pid" 2>/dev/null; then
     say "Runner did not stay running: $(basename "$runner_home")."
     say "Inspect the private local log: $runner_home/runner.log"
     return 1
