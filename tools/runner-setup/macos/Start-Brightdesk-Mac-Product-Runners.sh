@@ -86,13 +86,17 @@ say ''
 say 'Customer products:'
 for repository in "${REPOSITORIES[@]}"; do printf '  - %s\n' "$repository"; done
 say ''
-say 'GitHub CLI must be authenticated as conz20 with repository administration access to these ten repositories.'
-say 'A short-lived registration token is requested separately for each repository.'
-say 'The GitHub CLI credential itself is never passed to the runner configurator.'
+say 'A temporary fine-grained GitHub token for conz20 is required.'
+say 'It must be limited to exactly these ten repositories with Administration: write permission and a one-day expiry.'
+say 'The token is used only for registration and is cleared before any runner process starts.'
 say ''
-printf 'Type REGISTER to continue, or press Enter to cancel: '
-read -r confirmation
-[[ "$confirmation" == 'REGISTER' ]] || { say 'Setup cancelled. No runner was registered.'; exit 0; }
+if [[ "${BRIGHTDESK_RUNNER_SETUP_CONFIRMED:-}" == 'REGISTER' ]]; then
+  say 'Registration was approved in the Finder dialog.'
+else
+  printf 'Type REGISTER to continue, or press Enter to cancel: '
+  read -r confirmation
+  [[ "$confirmation" == 'REGISTER' ]] || { say 'Setup cancelled. No runner was registered.'; exit 0; }
+fi
 
 [[ ! -L "$RUNNER_BASE" ]] || fail 'The runner base path is a symbolic link; inspect it before continuing.'
 mkdir -p "$RUNNER_BASE"
