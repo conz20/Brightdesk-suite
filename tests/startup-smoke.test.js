@@ -36,14 +36,21 @@ test('packaged startup accepts the loaded Brightdesk navigation shell', () => {
 });
 
 test('packaged startup rejects a partial or unloaded interface', () => {
-  for (const state of [
+  const valid = {
+    title: 'Brightdesk Office Suite',
+    hasSidebar: true,
+    hasAppManager: true,
+    hasLanguageManager: true
+  };
+  for (const patch of [
     null,
-    { title: 'Brightdesk', hasSidebar: false, hasAppManager: true, hasLanguageManager: true },
-    { title: 'Brightdesk', hasSidebar: true, hasAppManager: false, hasLanguageManager: true },
-    { title: 'Unexpected page', hasSidebar: true, hasAppManager: true, hasLanguageManager: true }
+    { title: 'Unexpected page' },
+    { hasSidebar: false },
+    { hasAppManager: false },
+    { hasLanguageManager: false }
   ]) {
     assert.throws(
-      () => assertMainWindowReady(state),
+      () => assertMainWindowReady(patch === null ? patch : { ...valid, ...patch }),
       /did not load its required workspace controls/
     );
   }
