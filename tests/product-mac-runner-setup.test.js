@@ -65,3 +65,9 @@ test('unregistered local runner folders are never executed or reused', () => {
   assert.match(script, /An unregistered runner folder already exists.*Nothing was executed or overwritten/);
   assert.doesNotMatch(script, /Reusing previously verified product runner files/);
 });
+
+test('runner-label discovery uses self-contained jq filters with no unbound variables', () => {
+  const requiredLabels = 'contains(["self-hosted","macOS","ARM64","brightdesk-product-ci"])';
+  assert.equal(script.split(requiredLabels).length - 1, 3);
+  assert.doesNotMatch(script, /contains\\(\\$required_labels\\)/);
+});
