@@ -43,7 +43,7 @@ start_runner() {
     fi
   fi
 
-  runner_pid="$(ps -axo pid=,command= | awk -v runner_home="$runner_home" 'index($0, runner_home) && /run\.sh|Runner.Listener/ {print $1; exit}' | tr -d '[:space:]')"
+  runner_pid="$(ps -axo pid=,command= | awk -v runner_home="$runner_home" 'index($0, runner_home) && /run[.]sh|Runner[.]Listener/ {print $1; exit}' | tr -d '[:space:]')"
   if [[ "$runner_pid" =~ ^[0-9]+$ ]] && kill -0 "$runner_pid" 2>/dev/null; then
     printf '%s\n' "$runner_pid" > "$runner_pid_file"
     say "Already running: $(basename "$runner_home") (PID $runner_pid)"
