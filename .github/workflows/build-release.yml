@@ -1,13 +1,11 @@
 name: Build and verify Brightdesk installers
 
 on:
-  workflow_dispatch:
-    inputs:
-      publish_release:
-        description: 'Publish a GitHub Release after all installers pass verification'
-        type: boolean
-        required: true
-        default: false
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+    tags: ['v*']
 
 permissions:
   contents: read
@@ -15,11 +13,14 @@ permissions:
 
 concurrency:
   group: brightdesk-installer-build-${{ github.ref }}
+  queue: max
   cancel-in-progress: false
 
 jobs:
   prepare:
     name: Test and lock dependencies
+    # Only trusted same-repository pull requests may execute on this private runner.
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
     # Run on an already registered private runner; no hosted minutes are consumed.
     runs-on: self-hosted
     timeout-minutes: 60
@@ -112,16 +113,16 @@ jobs:
 
       - name: Build Suite and all ten standalone product installers
         env:
-          WIN_CSC_LINK: ${{ github.ref == 'refs/heads/main' && matrix.platform == 'Windows' && secrets.WIN_CSC_LINK || '' }}
-          MAC_APP_CSC_LINK: ${{ github.ref == 'refs/heads/main' && matrix.platform == 'macOS' && secrets.MAC_APP_CSC_LINK || '' }}
-          MAC_INSTALLER_CSC_LINK: ${{ github.ref == 'refs/heads/main' && matrix.platform == 'macOS' && secrets.MAC_INSTALLER_CSC_LINK || '' }}
-          CSC_LINK: ${{ github.ref == 'refs/heads/main' && matrix.platform == 'Windows' && secrets.WIN_CSC_LINK || github.ref == 'refs/heads/main' && matrix.platform == 'macOS' && secrets.MAC_APP_CSC_LINK || '' }}
-          CSC_KEY_PASSWORD: ${{ github.ref == 'refs/heads/main' && matrix.platform == 'Windows' && secrets.WIN_CSC_KEY_PASSWORD || github.ref == 'refs/heads/main' && matrix.platform == 'macOS' && secrets.MAC_APP_CSC_KEY_PASSWORD || '' }}
-          CSC_INSTALLER_LINK: ${{ github.ref == 'refs/heads/main' && matrix.platform == 'macOS' && secrets.MAC_INSTALLER_CSC_LINK || '' }}
-          CSC_INSTALLER_KEY_PASSWORD: ${{ github.ref == 'refs/heads/main' && matrix.platform == 'macOS' && secrets.MAC_INSTALLER_CSC_KEY_PASSWORD || '' }}
-          APPLE_ID: ${{ github.ref == 'refs/heads/main' && matrix.platform == 'macOS' && secrets.APPLE_ID || '' }}
-          APPLE_APP_SPECIFIC_PASSWORD: ${{ github.ref == 'refs/heads/main' && matrix.platform == 'macOS' && secrets.APPLE_APP_SPECIFIC_PASSWORD || '' }}
-          APPLE_TEAM_ID: ${{ github.ref == 'refs/heads/main' && matrix.platform == 'macOS' && secrets.APPLE_TEAM_ID || '' }}
+          WIN_CSC_LINK: ${{ (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')) && matrix.platform == 'Windows' && secrets.WIN_CSC_LINK || '' }}
+          MAC_APP_CSC_LINK: ${{ (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')) && matrix.platform == 'macOS' && secrets.MAC_APP_CSC_LINK || '' }}
+          MAC_INSTALLER_CSC_LINK: ${{ (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')) && matrix.platform == 'macOS' && secrets.MAC_INSTALLER_CSC_LINK || '' }}
+          CSC_LINK: ${{ (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')) && matrix.platform == 'Windows' && secrets.WIN_CSC_LINK || (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')) && matrix.platform == 'macOS' && secrets.MAC_APP_CSC_LINK || '' }}
+          CSC_KEY_PASSWORD: ${{ (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')) && matrix.platform == 'Windows' && secrets.WIN_CSC_KEY_PASSWORD || (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')) && matrix.platform == 'macOS' && secrets.MAC_APP_CSC_KEY_PASSWORD || '' }}
+          CSC_INSTALLER_LINK: ${{ (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')) && matrix.platform == 'macOS' && secrets.MAC_INSTALLER_CSC_LINK || '' }}
+          CSC_INSTALLER_KEY_PASSWORD: ${{ (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')) && matrix.platform == 'macOS' && secrets.MAC_INSTALLER_CSC_KEY_PASSWORD || '' }}
+          APPLE_ID: ${{ (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')) && matrix.platform == 'macOS' && secrets.APPLE_ID || '' }}
+          APPLE_APP_SPECIFIC_PASSWORD: ${{ (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')) && matrix.platform == 'macOS' && secrets.APPLE_APP_SPECIFIC_PASSWORD || '' }}
+          APPLE_TEAM_ID: ${{ (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')) && matrix.platform == 'macOS' && secrets.APPLE_TEAM_ID || '' }}
         shell: bash
         run: |
           if [ -z "${CSC_LINK:-}" ]; then unset CSC_LINK CSC_KEY_PASSWORD; fi
@@ -234,10 +235,10 @@ jobs:
           retention-days: 30
 
   publish-release:
-    name: Publish GitHub Release (manual approval only)
+    name: Publish GitHub Release for an approved version tag
     needs: collect
-    if: github.event_name == 'workflow_dispatch' && inputs.publish_release == true && github.ref == 'refs/heads/main'
-    # Publishing remains manual and uses the private runner too.
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v') && github.ref == format('refs/tags/v{0}', needs.collect.outputs.version)
+    # A version tag matching package.json is the explicit release approval. Use the private runner.
     runs-on: self-hosted
     timeout-minutes: 15
     permissions:
@@ -260,7 +261,7 @@ jobs:
       - name: Publish verified installer files
         uses: softprops/action-gh-release@8a0cd651e5b2365bd640854a3fa5dfc70e4875f3 # v3.0.4
         with:
-          tag_name: v${{ needs.collect.outputs.version }}
+          tag_name: ${{ github.ref_name }}
           name: Brightdesk ${{ needs.collect.outputs.version }}
           generate_release_notes: true
           files: release/**/**
