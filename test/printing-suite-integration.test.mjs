@@ -1,4 +1,3 @@
-  assert.match(app, /return printers/);
 import test from "node:test";
 import assert from "node:assert/strict";
 import fs from "node:fs";
@@ -387,4 +386,20 @@ test("print stylesheet lays out the ten product workspaces and paginates long co
   assert.match(css, /break-inside:\s*avoid/);
   assert.match(css, /break-after:\s*page/);
   assert.match(css, /#brightdesk-print-root img\s*\{/);
+});
+
+
+test("print DOM removes action-only table columns without losing row data", async () => {
+  const { JSDOM } = await import("jsdom");
+  const helper = read("src/printing-dom.js");
+  const dom = new JSDOM("<!doctype html><table><thead><tr><th>Name</th><th>Actions</th></tr></thead><tbody><tr><td>Meeting</td><td><button>Edit</button><button>Delete</button></td></tr><tr><td colspan='2'>No records</td></tr></tbody></table>", { runScripts: "outside-only" });
+  dom.window.eval(helper);
+  const table = dom.window.document.querySelector("table");
+  dom.window.BrightdeskPrintDom.removeActionColumns(table);
+  assert.deepEqual(Array.from(table.querySelectorAll("tr"), row => Array.from(row.cells, cell => ({ text: cell.textContent.trim(), colspan: cell.colSpan }))), [
+    [{ text: "Name", colspan: 1 }],
+    [{ text: "Meeting", colspan: 1 }],
+    [{ text: "No records", colspan: 1 }]
+  ]);
+  dom.window.close();
 });
