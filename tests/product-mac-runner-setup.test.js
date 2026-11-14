@@ -152,6 +152,11 @@ test('setup documentation explains that product runners share one macOS user sec
   assert.match(instructions, /separate macOS accounts or separate hosts/);
 });
 
+test('README distinguishes product runners from the separate Suite repository runner', () => {
+  assert.match(instructions, /This helper registers runners only in the ten product repositories/);
+  assert.match(instructions, /does not register or start the separate Brightdesk-suite repository runner/);
+});
+
 test('Finder launcher passes a temporary token and writes private logs without opening Terminal', () => {
   const launcherPath = path.join(root, 'tools/runner-setup/macos/Brightdesk-Product-Runner-Setup.app/Contents/MacOS/BrightdeskProductRunnerSetup');
   const launcher = fs.readFileSync(launcherPath, 'utf8');
