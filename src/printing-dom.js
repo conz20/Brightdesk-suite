@@ -103,7 +103,7 @@
         list.className = "brightdesk-print-answer-options";
         options.forEach((option) => {
           const item = doc.createElement("li");
-          item.textContent = `□ ${option}`;
+          item.textContent = `${type === "choice" ? "○" : "□"} ${option}`;
           list.append(item);
         });
         if (!options.length) {
