@@ -19,6 +19,7 @@ REPOSITORIES=(
   'Brightdesk-Services'
   'Brightdesk-Assets'
   'Brightdesk-Lists'
+  'Brightdesk-Voice'
 )
 
 say() {
@@ -80,7 +81,7 @@ github_user="$(gh api user --jq '.login' 2>/dev/null)" || fail 'GitHub CLI could
 
 say ''
 say 'BRIGHTDESK PRIVATE MAC RUNNER SETUP'
-say 'This will prepare up to nine repository-scoped runners on this Apple-silicon Mac.'
+say 'This will prepare up to ten repository-scoped runners on this Apple-silicon Mac.'
 say 'The runners can execute workflows from their matching private Brightdesk repositories.'
 say 'This adds repository-scoped Actions runners only; it does not change permissions, secrets, workflows, visibility, branch protection or releases.'
 say 'The runner registrations are local to this Mac and will not auto-start after a reboot.'
