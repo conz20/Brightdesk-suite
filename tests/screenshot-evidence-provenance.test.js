@@ -69,3 +69,31 @@ test('capture-set verification rejects review flags changed before manual review
     fs.rmSync(directory, { recursive: true, force: true });
   }
 });
+
+test('capture-set verification rejects incomplete or altered runtime provenance fields', () => {
+  const cases = [
+    { name: 'product identity', mutate: evidence => { evidence.productName = 'Different product'; }, expected: /selected target/i },
+    { name: 'source repository', mutate: evidence => { evidence.sourceRepository = 'other/repository'; }, expected: /selected target/i },
+    { name: 'app version', mutate: evidence => { evidence.appVersion = ''; }, expected: /app version/i },
+    { name: 'operating-system details', mutate: evidence => { evidence.operatingSystem.version = ''; }, expected: /operating-system/i },
+    { name: 'capture timestamp', mutate: evidence => { evidence.capturedAt = 'November 14'; }, expected: /ISO 8601/i },
+    { name: 'workflow description', mutate: evidence => { evidence.workflow = ''; }, expected: /workflow/i },
+    { name: 'sample-data description', mutate: evidence => { evidence.sampleDataDescription = ''; }, expected: /sampleDataDescription/i },
+    { name: 'capture method', mutate: evidence => { evidence.captureMethod = 'mockup export'; }, expected: /capture method/i },
+    { name: 'image checksum', mutate: evidence => { evidence.sha256 = '0'.repeat(64); }, expected: /checksum/i }
+  ];
+
+  for (const scenario of cases) {
+    const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'brightdesk-capture-provenance-case-'));
+    try {
+      populateCaptureSet(directory);
+      const evidencePath = path.join(directory, 'pages-evidence.json');
+      const evidence = JSON.parse(fs.readFileSync(evidencePath, 'utf8'));
+      scenario.mutate(evidence);
+      fs.writeFileSync(evidencePath, JSON.stringify(evidence, null, 2));
+      assert.throws(() => verifyScreenshotSet(directory), scenario.expected, scenario.name);
+    } finally {
+      fs.rmSync(directory, { recursive: true, force: true });
+    }
+  }
+});
