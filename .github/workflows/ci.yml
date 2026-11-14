@@ -56,8 +56,9 @@ jobs:
       - name: Capture optional Suite and product source-runtime screenshots
         if: github.event_name == 'pull_request' && startsWith(github.head_ref, 'feat/guide-screenshot-capture-')
         id: guide_screenshots
-        continue-on-error: true
         env:
+          BRIGHTDESK_GUIDE_PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          BRIGHTDESK_GUIDE_PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
           BRIGHTDESK_STARTUP_SMOKE_TEST: '1'
           BRIGHTDESK_GUIDE_SCREENSHOT_MODE: '1'
           BRIGHTDESK_GUIDE_SCREENSHOT_DIR: ${{ runner.temp }}/brightdesk-guide-screenshots-${{ github.run_id }}
@@ -71,6 +72,8 @@ jobs:
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
         with:
           name: brightdesk-guide-screenshots-${{ github.run_id }}
-          path: ${{ runner.temp }}/brightdesk-guide-screenshots-${{ github.run_id }}/*.png
+          path: |
+            ${{ runner.temp }}/brightdesk-guide-screenshots-${{ github.run_id }}/*.png
+            ${{ runner.temp }}/brightdesk-guide-screenshots-${{ github.run_id }}/capture-manifest.json
           if-no-files-found: error
           retention-days: 90
