@@ -214,3 +214,20 @@ test('Suite Home, Apps and Files share clean navigation and truthful product act
   assert.equal((home.match(/>Add to Suite<\/text>/g) || []).length, 4);
   assert.doesNotMatch(home, /INSTALLED|Uninstall|AVAILABLE TO INSTALL/);
 });
+
+
+test('Home product cards match the approved concise artwork while Apps retains details', () => {
+  const app = read('src/app.js');
+  const catalog = read('src/app-catalog.js');
+  assert.ok(app.includes("function productCardName(item) { return item.name.startsWith('Brightdesk ') ? item.name.slice('Brightdesk '.length) : item.name; }"));
+  assert.ok(app.includes('name.textContent = productCardName(item);'));
+  assert.ok(app.includes('if (!homeView) footer.append(version);'));
+  assert.ok(app.includes('if (!homeView) card.append(description);'));
+
+  for (const subtitle of [
+    'Documents & writing', 'Spreadsheets & formulas', 'Presentations & slides',
+    'Notes & ideas', 'Tables & structured records', 'Forms, surveys & quizzes',
+    'Lists & tracking', 'Projects & planning', 'Daily tasks & reminders',
+    'Your connected workspace'
+  ]) assert.ok(catalog.includes("subtitle: '" + subtitle + "'"), subtitle);
+});
