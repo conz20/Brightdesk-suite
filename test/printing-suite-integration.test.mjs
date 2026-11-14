@@ -407,7 +407,7 @@ test("print stylesheet lays out the ten product workspaces and paginates long co
 test("print DOM removes action-only table columns without losing row data", async () => {
   const { JSDOM } = await import("jsdom");
   const helper = read("src/printing-dom.js");
-  const dom = new JSDOM("<!doctype html><table class='lists-table'><thead><tr><th>Name</th><th>Actions</th></tr></thead><tbody><tr><td>Meeting</td><td><button class="lists-row-action">Edit</button><button class="lists-row-action danger">Delete</button></td></tr><tr><td colspan='2'>No records</td></tr></tbody></table>", { runScripts: "outside-only" });
+  const dom = new JSDOM("<!doctype html><table class='lists-table'><thead><tr><th>Name</th><th>Actions</th></tr></thead><tbody><tr><td>Meeting</td><td><button class='lists-row-action'>Edit</button><button class='lists-row-action danger'>Delete</button></td></tr><tr><td colspan='2'>No records</td></tr></tbody></table>", { runScripts: "outside-only" });
   dom.window.eval(helper);
   const table = dom.window.document.querySelector("table");
   dom.window.BrightdeskPrintDom.removeActionColumns(table);
@@ -438,7 +438,7 @@ test("print cleanup preserves Actions columns in customer-authored tables", asyn
 test("print cleanup removes the generated action column from Database tables", async () => {
   const { JSDOM } = await import("jsdom");
   const helper = read("src/printing-dom.js");
-  const dom = new JSDOM("<!doctype html><table class='database-data-grid'><thead><tr><th>Record</th><th>Actions</th></tr></thead><tbody><tr><td>Customer 1</td><td><button class="database-remove">Delete</button></td></tr></tbody></table>", { runScripts: "outside-only" });
+  const dom = new JSDOM("<!doctype html><table class='database-data-grid'><thead><tr><th>Record</th><th>Actions</th></tr></thead><tbody><tr><td>Customer 1</td><td><button class='database-remove'>Delete</button></td></tr></tbody></table>", { runScripts: "outside-only" });
   dom.window.eval(helper);
   const table = dom.window.document.querySelector("table");
   dom.window.BrightdeskPrintDom.removeActionColumns(table);
@@ -516,11 +516,11 @@ test("print cleanup preserves customer Lists and Database fields named Actions",
   const dom = new JSDOM(`<!doctype html>
     <table class="lists-table">
       <thead><tr><th>Actions</th><th>Actions</th></tr></thead>
-      <tbody><tr><td>Customer list value</td><td><button class="lists-row-action">Edit</button></td></tr></tbody>
+      <tbody><tr><td>Customer list value</td><td><button class='lists-row-action'>Edit</button></td></tr></tbody>
     </table>
     <table class="database-data-grid">
       <thead><tr><th>Actions</th><th>Actions</th></tr></thead>
-      <tbody><tr><td>Customer database value</td><td><button class="database-remove">Delete</button></td></tr></tbody>
+      <tbody><tr><td>Customer database value</td><td><button class='database-remove'>Delete</button></td></tr></tbody>
     </table>`, { runScripts: "outside-only" });
   dom.window.eval(helper);
   dom.window.BrightdeskPrintDom.removeActionColumns(dom.window.document);
