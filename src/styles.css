@@ -555,7 +555,7 @@ body.suite-home .app-manager.home-view .manager-grid {
 
 
 /* Keep the Home sidebar as clean as the production artwork. */
-body.suite-home .sidebar > .nav small { display: none; }
+.sidebar > .nav small { display: none; }
 body.suite-home .main > footer { display: none; }
 
 body.suite-home .app-manager.home-view .manager-hero .eyebrow { display: none; }
