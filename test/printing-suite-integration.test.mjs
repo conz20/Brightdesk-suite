@@ -439,3 +439,40 @@ test("print cleanup removes the generated action column from Database tables", a
   ]);
   dom.window.close();
 });
+
+
+test("Forms print view renders readable questions and answer choices", async () => {
+  const { JSDOM } = await import("jsdom");
+  const helper = read("src/printing-dom.js");
+  const dom = new JSDOM(`<!doctype html>
+    <section class="forms-app">
+      <h2 id="forms-title">Visitor questionnaire</h2>
+      <p id="forms-description">Tell us about your visit.</p>
+      <form class="forms-question-card">
+        <input name="label" value="Your name">
+        <select name="type"><option value="short-text">Short answer</option></select>
+        <input name="options" value="">
+        <input name="required" type="checkbox" checked>
+      </form>
+      <form class="forms-question-card">
+        <input name="label" value="Which areas did you visit?">
+        <select name="type"><option value="multi-choice" selected>Multiple choice</option></select>
+        <input name="options" value="Gallery, Garden, Cafe">
+        <input name="required" type="checkbox">
+      </form>
+    </section>`, { runScripts: "outside-only" });
+  dom.window.eval(helper);
+  const app = dom.window.document.querySelector(".forms-app");
+  const view = dom.window.BrightdeskPrintDom.createFormsPrintView(app);
+  assert.equal(view.querySelector("h2").textContent, "Visitor questionnaire");
+  assert.equal(view.querySelector("p").textContent, "Tell us about your visit.");
+  assert.equal(view.querySelectorAll(".brightdesk-print-question").length, 2);
+  assert.match(view.textContent, /Your name/);
+  assert.match(view.textContent, /Which areas did you visit\?/);
+  assert.match(view.textContent, /Gallery/);
+  assert.match(view.textContent, /Garden/);
+  assert.match(view.textContent, /Cafe/);
+  assert.match(view.textContent, /Required/);
+  assert.equal(view.querySelector("input, select, button, form"), null);
+  dom.window.close();
+});
