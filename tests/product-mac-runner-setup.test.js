@@ -50,7 +50,7 @@ test('registration uses per-repository short-lived tokens without installing a b
   assert.match(script, /repos\/\$OWNER\/\$repository\/actions\/runners\/registration-token/);
   assert.match(script, /--token "\$registration_token"/);
   assert.match(script, /unset registration_token config_args/);
-  assert.match(script, /nohup \.\/run\.sh/);
+  assert.match(script, /nohup "\$runner_home\/run\.sh"/);
   assert.doesNotMatch(script, /launchctl|sudo\s|systemctl|--token-file/i);
 });
 
@@ -77,7 +77,6 @@ test('Finder launcher collects the token with a hidden-answer prompt and does no
   const launcher = fs.readFileSync(launcherPath, 'utf8');
   assert.match(launcher, /with hidden answer/);
   assert.match(launcher, /GH_TOKEN=/);
-  assert.match(launcher, /GH_CONFIG_DIR=/);
   assert.doesNotMatch(launcher, /gh auth status|gh api user/);
   assert.doesNotMatch(launcher, /echo "\$runner_token"|printf.*runner_token/);
 });
@@ -131,15 +130,17 @@ test('Finder launcher has a valid app-bundle manifest and executable shell entry
 test('Finder launcher displays the approval dialog before providing REGISTER to the setup script', () => {
   const launcherPath = path.join(root, 'tools/runner-setup/macos/Brightdesk-Product-Runner-Setup.app/Contents/MacOS/BrightdeskProductRunnerSetup');
   const launcher = fs.readFileSync(launcherPath, 'utf8');
-  const confirmation = launcher.indexOf('This will register up to ten');
-  const registration = launcher.indexOf("printf 'REGISTER");
-  assert.ok(confirmation >= 0, 'GUI confirmation text exists');
-  assert.ok(registration > confirmation, 'the explicit confirmation is sent only after approval');
-  assert.match(launcher, /\[\[ "\$choice" == "Register" \]\] \|\| exit 0/);
+  const confirmation = launcher.indexOf('This setup requires a dedicated macOS runner user account');
+  const tokenPrompt = launcher.indexOf('with hidden answer');
+  const registration = launcher.indexOf('BRIGHTDESK_RUNNER_SETUP_CONFIRMED=REGISTER');
+  assert.ok(confirmation >= 0, 'dedicated-account approval dialog exists');
+  assert.ok(tokenPrompt > confirmation, 'token prompt follows the safety confirmation');
+  assert.ok(registration > tokenPrompt, 'registration starts only after the hidden token prompt');
+  assert.match(launcher, /\[\[ "\$choice" == "Continue" \]\] \|\| exit 0/);
 });
 
 test('setup documentation explains that product runners share one macOS user security boundary', () => {
-  assert.match(instructions, /same signed-in macOS user/);
+  assert.match(instructions, /same dedicated macOS user/);
   assert.match(instructions, /does not create an operating-system security boundary/);
   assert.match(instructions, /separate macOS accounts or separate hosts/);
 });
