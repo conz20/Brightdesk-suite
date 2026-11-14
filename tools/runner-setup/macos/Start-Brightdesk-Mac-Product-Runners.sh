@@ -9,7 +9,6 @@ ARCHIVE_URL="https://github.com/actions/runner/releases/download/v${RUNNER_VERSI
 ARCHIVE_SHA256='25a065af409ffa317ab4d5a3b614dd15fc9c40f2172bc1b35a1b1258e919a388'
 RUNNER_BASE="${HOME}/.brightdesk-product-ci-runners"
 RUNNER_ROOT="$RUNNER_BASE/products"
-GH_NO_CREDENTIALS_CONFIG="$RUNNER_BASE/gh-config-no-credentials"
 
 REPOSITORIES=(
   'Brightdesk-Pages'
@@ -37,6 +36,7 @@ start_runner() {
   local runner_pid_file="$runner_home/runner.pid"
   local runner_pid=''
   local runner_command=''
+  local runner_gh_config="$runner_home/gh-config-no-credentials"
 
   if [[ -f "$runner_pid_file" ]]; then
     runner_pid="$(cat "$runner_pid_file" 2>/dev/null || true)"
@@ -56,9 +56,18 @@ start_runner() {
     return 0
   fi
 
+  [[ ! -L "$runner_gh_config" ]] || { say "Refusing a symbolic-link GitHub CLI config path: $runner_gh_config"; return 1; }
+  mkdir -p "$runner_gh_config"
+  chmod 700 "$runner_gh_config"
+  if [[ -n "$(find "$runner_gh_config" -mindepth 1 -maxdepth 1 -print -quit)" ]]; then
+    say "Refusing to start with a non-empty GitHub CLI config folder: $runner_gh_config"
+    say "Remove saved credentials only after reviewing the folder contents."
+    return 1
+  fi
+
   (
     cd "$runner_home"
-    nohup "$runner_home/run.sh" > "$runner_home/runner.log" 2>&1 < /dev/null &
+    GH_CONFIG_DIR="$runner_gh_config" nohup "$runner_home/run.sh" > "$runner_home/runner.log" 2>&1 < /dev/null &
     printf '%s\n' "$!" > "$runner_pid_file"
   )
   runner_pid="$(cat "$runner_pid_file")"
@@ -76,7 +85,7 @@ if [[ "$(uname -s)" != 'Darwin' || "$(uname -m)" != 'arm64' ]]; then
   fail 'This setup is for an Apple-silicon Mac only.'
 fi
 
-for command_name in gh curl tar shasum nohup ps awk tr head; do
+for command_name in gh curl tar shasum nohup ps awk tr head find; do
   command -v "$command_name" >/dev/null 2>&1 || fail "Required command not found: $command_name."
 done
 
@@ -109,10 +118,6 @@ chmod 700 "$RUNNER_BASE"
 [[ ! -L "$RUNNER_ROOT" ]] || fail 'The product runner path is a symbolic link; inspect it before continuing.'
 mkdir -p "$RUNNER_ROOT"
 chmod 700 "$RUNNER_ROOT"
-[[ ! -L "$GH_NO_CREDENTIALS_CONFIG" ]] || fail 'The runner GitHub CLI config path is a symbolic link.'
-mkdir -p "$GH_NO_CREDENTIALS_CONFIG"
-chmod 700 "$GH_NO_CREDENTIALS_CONFIG"
-
 temp_directory="$(mktemp -d "${TMPDIR:-/tmp}/brightdesk-product-runners.XXXXXX")"
 trap 'rm -rf -- "$temp_directory"; unset registration_token config_args registration_api_token GH_TOKEN 2>/dev/null || true' EXIT
 export GH_CONFIG_DIR="$temp_directory/gh-config"
@@ -210,8 +215,7 @@ for repository in "${REPOSITORIES[@]}"; do
 done
 
 # Clear the temporary repository-administration credential before any runner can execute workflow code.
-unset GH_TOKEN registration_api_token
-export GH_CONFIG_DIR="$GH_NO_CREDENTIALS_CONFIG"
+unset GH_TOKEN registration_api_token GH_CONFIG_DIR
 
 for runner_home in "${RUNNERS_TO_START[@]}"; do
   start_runner "$runner_home" || fail "Could not start or restart runner for $(basename "$runner_home")."
