@@ -246,3 +246,19 @@ test('Home product cards use the artwork vertical hierarchy and action proportio
   assert.ok(styles.includes('.app-manager.home-view .app-card-footer [data-action="remove-from-suite"]'));
   assert.ok(styles.includes('.app-manager.home-view .app-card-footer [data-action="add-to-suite"]'));
 });
+
+
+test('English fallback Suite labels match the packaged Australian English language pack', () => {
+  const fallback = read('src/i18n.js');
+  const en = JSON.parse(read('src/languages/en-AU.json')).translations;
+  const expected = {
+    'manager.install': 'Add to Suite',
+    'manager.remove': 'Remove from Suite',
+    'manager.inWorkspace': 'In your Suite',
+    'manager.notInstalled': 'Available to add'
+  };
+  for (const [key, value] of Object.entries(expected)) {
+    assert.equal(en[key], value, `${key} should match the approved Suite wording`);
+    assert.ok(fallback.includes(`'${key}':'${value}'`), `${key} fallback should match the packaged language pack`);
+  }
+});
