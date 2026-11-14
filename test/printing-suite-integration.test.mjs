@@ -386,6 +386,8 @@ test("print stylesheet lays out the ten product workspaces and paginates long co
   assert.match(css, /break-inside:\s*avoid/);
   assert.match(css, /break-after:\s*page/);
   assert.match(css, /#brightdesk-print-root img\s*\{/);
+  assert.match(css, /#brightdesk-print-root \.workspace-block-tools/);
+  assert.match(css, /#brightdesk-print-root \.workspace-check-add/);
 });
 
 
