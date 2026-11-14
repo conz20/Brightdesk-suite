@@ -818,6 +818,15 @@ body.suite-home .app-manager.home-view .manager-hero .eyebrow { display: none; }
     overflow-wrap: anywhere !important;
     word-break: break-word !important;
   }
+  #brightdesk-print-root .notes-wrap .brightdesk-print-field,
+  #brightdesk-print-root .workspace-block-content.brightdesk-print-field {
+    display: block !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    white-space: pre-wrap !important;
+    overflow-wrap: anywhere !important;
+    word-break: break-word !important;
+  }
   #brightdesk-print-root .brightdesk-print-form {
     display: block !important;
     width: 100% !important;
