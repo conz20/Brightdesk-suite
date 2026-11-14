@@ -51,7 +51,8 @@ start_runner() {
     runner_pid="$(cat "$runner_pid_file" 2>/dev/null || true)"
     if [[ "$runner_pid" =~ ^[0-9]+$ ]]; then
       runner_command="$(ps -p "$runner_pid" -o command= 2>/dev/null || true)"
-      if [[ "$runner_command" == *"$runner_home"* ]]; then
+      if [[ "$runner_command" == *"$runner_home"* ]] &&
+         [[ "$runner_command" == *'run.sh'* || "$runner_command" == *'Runner.Listener'* ]]; then
         say "Already running: $(basename "$runner_home") (PID $runner_pid)"
         return 0
       fi
