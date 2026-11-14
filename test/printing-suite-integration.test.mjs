@@ -392,6 +392,7 @@ test("print stylesheet lays out the ten product workspaces and paginates long co
   assert.match(css, /#brightdesk-print-root img\s*\{/);
   assert.match(css, /#brightdesk-print-root \.workspace-block-tools/);
   assert.match(css, /#brightdesk-print-root \.workspace-check-add/);
+  assert.match(css, /#brightdesk-print-root \.forms-status/);
   assert.match(css, /#brightdesk-print-root \.lists-table,/);
   assert.match(css, /#brightdesk-print-root \.database-data-grid\s*\{/);
   assert.match(css, /#brightdesk-print-root \.notes-wrap \.brightdesk-print-field/);
