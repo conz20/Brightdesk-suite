@@ -72,4 +72,4 @@ jobs:
           name: brightdesk-guide-screenshots-${{ github.run_id }}
           path: ${{ runner.temp }}/brightdesk-guide-screenshots-${{ github.run_id }}/*.png
           if-no-files-found: error
-          retention-days: 14
+          retention-days: 90
