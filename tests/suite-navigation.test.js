@@ -241,6 +241,7 @@ test('Home product cards use the artwork vertical hierarchy and action proportio
   assert.ok(styles.includes('.app-manager.home-view .app-card-header {'));
   assert.ok(styles.includes('flex-direction: column;'));
   assert.ok(styles.includes('flex: 0 0 70px;'));
+  assert.ok(styles.includes('padding-right: 0;'));
   assert.ok(styles.includes('font-size: 19px;'));
   assert.ok(styles.includes('.app-manager.home-view .app-card-footer [data-action="remove-from-suite"]'));
   assert.ok(styles.includes('.app-manager.home-view .app-card-footer [data-action="add-to-suite"]'));
