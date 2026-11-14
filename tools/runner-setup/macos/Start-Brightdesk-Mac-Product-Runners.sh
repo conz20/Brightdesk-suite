@@ -27,6 +27,11 @@ REPOSITORIES=(
 say() { printf '%s\n' "$*"; }
 fail() { printf 'SETUP STOPPED: %s\n' "$*" >&2; exit 1; }
 
+
+gh_api() {
+  GH_TOKEN="$registration_api_token" gh api "$@"
+}
+
 start_runner() {
   local runner_home="$1"
   local runner_pid_file="$runner_home/runner.pid"
@@ -109,13 +114,15 @@ mkdir -p "$GH_NO_CREDENTIALS_CONFIG"
 chmod 700 "$GH_NO_CREDENTIALS_CONFIG"
 
 temp_directory="$(mktemp -d "${TMPDIR:-/tmp}/brightdesk-product-runners.XXXXXX")"
-trap 'rm -rf -- "$temp_directory"; unset registration_token config_args GH_TOKEN 2>/dev/null || true' EXIT
+trap 'rm -rf -- "$temp_directory"; unset registration_token config_args registration_api_token GH_TOKEN 2>/dev/null || true' EXIT
 export GH_CONFIG_DIR="$temp_directory/gh-config"
 mkdir -m 700 "$GH_CONFIG_DIR"
 
 [[ -n "${GH_TOKEN:-}" ]] || fail 'Setup requires a temporary fine-grained GitHub token in GH_TOKEN. Do not use a stored interactive GitHub CLI login.'
-gh auth status --hostname github.com >/dev/null 2>&1 || fail 'The temporary GitHub token was rejected. Check its owner, repository selection, permissions and expiry.'
-github_user="$(gh api user --jq '.login' 2>/dev/null)" || fail 'GitHub could not validate the temporary token.'
+registration_api_token="$GH_TOKEN"
+unset GH_TOKEN
+GH_TOKEN="$registration_api_token" gh auth status --hostname github.com >/dev/null 2>&1 || fail 'The temporary GitHub token was rejected. Check its owner, repository selection, permissions and expiry.'
+github_user="$(gh_api user --jq '.login' 2>/dev/null)" || fail 'GitHub could not validate the temporary token.'
 [[ "$github_user" == "$OWNER" ]] || fail "The temporary token belongs to '$github_user', not '$OWNER'."
 
 archive_path="$temp_directory/$ARCHIVE_NAME"
@@ -140,7 +147,7 @@ for repository in "${REPOSITORIES[@]}"; do
   repository_url="https://github.com/$OWNER/$repository"
   runners_endpoint="repos/$OWNER/$repository/actions/runners?per_page=100"
 
-  online_runner="$(gh api "$runners_endpoint" --jq "[.runners[]? | select(.status == \"online\") | ([.labels[].name] | contains(["self-hosted","macOS","ARM64","brightdesk-product-ci"]))] | any" 2>/dev/null)" ||
+  online_runner="$(gh_api "$runners_endpoint" --jq "[.runners[]? | select(.status == \"online\") | ([.labels[].name] | contains(["self-hosted","macOS","ARM64","brightdesk-product-ci"]))] | any" 2>/dev/null)" ||
     fail "Cannot inspect registered runners for $repository. Check GitHub repository administration access."
   if [[ "$online_runner" == 'true' ]]; then
     say "Already has an online runner with the required product CI labels: $repository"
@@ -148,10 +155,10 @@ for repository in "${REPOSITORIES[@]}"; do
     continue
   fi
 
-  registered_status="$(gh api "$runners_endpoint" --jq ".runners[]? | select(.name == \"$runner_name\") | .status" 2>/dev/null | head -n 1)" ||
+  registered_status="$(gh_api "$runners_endpoint" --jq ".runners[]? | select(.name == \"$runner_name\") | .status" 2>/dev/null | head -n 1)" ||
     fail "Cannot inspect runner '$runner_name' in $repository."
   if [[ -n "$registered_status" ]]; then
-    registered_labels_match="$(gh api "$runners_endpoint" --jq ".runners[]? | select(.name == \"$runner_name\") | ([.labels[].name] | contains(["self-hosted","macOS","ARM64","brightdesk-product-ci"]))" 2>/dev/null | head -n 1)" ||
+    registered_labels_match="$(gh_api "$runners_endpoint" --jq ".runners[]? | select(.name == \"$runner_name\") | ([.labels[].name] | contains(["self-hosted","macOS","ARM64","brightdesk-product-ci"]))" 2>/dev/null | head -n 1)" ||
       fail "Cannot inspect labels for runner '$runner_name'."
     if [[ "$registered_status" == 'offline' && "$registered_labels_match" == 'true' &&
           ! -L "$runner_home" && -f "$runner_home/.runner" && ! -L "$runner_home/.runner" && -x "$runner_home/run.sh" ]]; then
@@ -165,7 +172,7 @@ for repository in "${REPOSITORIES[@]}"; do
     continue
   fi
 
-  offline_compatible_runner="$(gh api "$runners_endpoint" --jq "[.runners[]? | select(.status == \"offline\") | ([.labels[].name] | contains(["self-hosted","macOS","ARM64","brightdesk-product-ci"]))] | any" 2>/dev/null)" ||
+  offline_compatible_runner="$(gh_api "$runners_endpoint" --jq "[.runners[]? | select(.status == \"offline\") | ([.labels[].name] | contains(["self-hosted","macOS","ARM64","brightdesk-product-ci"]))] | any" 2>/dev/null)" ||
     fail "Cannot inspect offline runner registrations for $repository."
   if [[ "$offline_compatible_runner" == 'true' ]]; then
     say "A compatible macOS product CI runner is already registered but offline for $repository."
@@ -187,7 +194,7 @@ for repository in "${REPOSITORIES[@]}"; do
 
 
   registration_endpoint="repos/$OWNER/$repository/actions/runners/registration-token"
-  registration_token="$(gh api --method POST "$registration_endpoint" --jq '.token')" ||
+  registration_token="$(gh_api --method POST "$registration_endpoint" --jq '.token')" ||
     fail "GitHub could not issue a registration token for $repository. Check repository administration access and try again."
   [[ -n "$registration_token" && "$registration_token" != 'null' ]] ||
     fail "GitHub returned no registration token for $repository."
@@ -203,7 +210,7 @@ for repository in "${REPOSITORIES[@]}"; do
 done
 
 # Clear the temporary repository-administration credential before any runner can execute workflow code.
-unset GH_TOKEN
+unset GH_TOKEN registration_api_token
 export GH_CONFIG_DIR="$GH_NO_CREDENTIALS_CONFIG"
 
 for runner_home in "${RUNNERS_TO_START[@]}"; do
