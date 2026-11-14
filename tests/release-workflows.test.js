@@ -229,7 +229,8 @@ test('private Mac runner bootstrap is pinned, repository-scoped and token-safe',
     'Brightdesk-Release-Tools',
     'Brightdesk-Services',
     'Brightdesk-Assets',
-    'Brightdesk-Lists'
+    'Brightdesk-Lists',
+    'Brightdesk-Voice'
   ];
 
   assert.ok(setup.includes("RUNNER_VERSION='2.338.2'"));
@@ -273,6 +274,10 @@ test('Mac runner setup documentation explains scope, token handling and no-servi
   assert.ok(instructions.includes('They do not auto-start after logout or reboot.'));
   assert.ok(releaseGuide.includes('Start-Brightdesk-Mac-Foundation-Runners.sh'));
   assert.match(releaseGuide, /Brightdesk-Common-Actions/);
+  assert.ok(instructions.includes('Brightdesk-Voice'));
+  assert.ok(releaseGuide.includes('Brightdesk-Voice'));
+  assert.match(instructions, /all ten private repositories/);
+  assert.match(releaseGuide, /nine infrastructure repositories/);
 });
 
 test('Windows runner setup explicitly supports Windows 10 and Windows 11', () => {
