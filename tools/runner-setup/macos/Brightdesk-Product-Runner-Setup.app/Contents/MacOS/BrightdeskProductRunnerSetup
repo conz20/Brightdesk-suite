@@ -20,7 +20,7 @@ if [[ ! -f "$SETUP_SCRIPT" || -L "$SETUP_SCRIPT" ]]; then
 fi
 
 if ! command -v gh >/dev/null 2>&1; then
-  show_error "GitHub CLI is not installed or is not available in the standard Homebrew paths. Install GitHub CLI and sign in as conz20 before using this setup."
+  show_error "GitHub CLI is not installed or is not available in the standard Homebrew paths. Install GitHub CLI for the dedicated runner account. Do not sign in or save a GitHub credential in that account."
   exit 1
 fi
 
