@@ -69,8 +69,8 @@ test('release workflow builds and verifies all three desktop platforms on privat
   assert.match(workflow, /pull_request:\s*\n\s*branches: \[main\]/);
   const triggers = workflow.slice(workflow.indexOf('on:'), workflow.indexOf('permissions:'));
   const pushTrigger = triggers.slice(triggers.indexOf('push:'));
-  assert.match(pushTrigger, /^push:\s*$/m);
-  assert.doesNotMatch(pushTrigger, /branches:|tags:/, 'push event must not combine branch and tag filters');
+  assert.match(pushTrigger, /push:\s*\n\s*branches: \[main\]/);
+  assert.match(pushTrigger, /tags: \['v\*'\]/);
   assert.doesNotMatch(workflow, /workflow_dispatch:/, 'installer builds must not require manual dispatch');
   assert.doesNotMatch(workflow, /windows-latest|macos-latest|ubuntu-latest/, 'platform installer jobs must use private runners');
   assert.match(workflow, /runner: \["self-hosted", "Linux", "X64"\]/);
