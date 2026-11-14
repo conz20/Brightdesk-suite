@@ -1,7 +1,8 @@
 (() => {
   function removeActionColumns(root) {
     if (!root || typeof root.querySelectorAll !== "function") return;
-    const tables = [...(root.matches?.("table") ? [root] : []), ...root.querySelectorAll("table")];
+    const selector = "table.lists-table, table.database-data-grid";
+    const tables = [...(root.matches?.(selector) ? [root] : []), ...root.querySelectorAll(selector)];
     tables.forEach((table) => {
       const headerRows = Array.from(table.querySelectorAll("thead tr"));
       const actionIndexes = new Set();
