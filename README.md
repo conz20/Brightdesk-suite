@@ -92,7 +92,9 @@ The Rust toolchain is pinned to **1.99.1**. macOS native builds produce both App
 
 The approved Home SVG is the visual specification for the customer-facing interface and is kept aligned with the desktop source. It is not presented as a runtime screenshot. The older `assets/hero-showcase.png` file is a composed promotional collage, not a capture of the current running suite, so it is not used as evidence of working screens. No verified screenshot set from the current running desktop build is published yet. Do not treat design artwork or the older v0.1.0 source archive as proof of current desktop behaviour.
 
-A genuine screenshot should be captured directly from the current Electron build after launching the product and checking its primary workflow. The capture must show the real interface without composited controls or fabricated UI. Use non-sensitive sample data, retain the full product window, and label the image with the tested build or commit. See the [visual standard](docs/BRIGHTDESK_VISUAL_STANDARD.md).
+A genuine screenshot should be captured directly from the current Electron build after launching the product and checking its primary workflow. The capture must show the real interface without composited controls or fabricated UI. Use non-sensitive sample data, retain the full product window, and label the image with the tested build or commit.
+
+The dedicated CI capture path opens the real Suite Home and each of the ten product workspaces in live Electron windows. It saves one PNG per workspace plus a `capture-manifest.json` containing the app version, workflow commit, PR head and base commits, runtime and runner platforms, workflow run URL, capture timestamp, and SHA-256 digest for every image. Screenshot capture is a required step for that dedicated capture branch; a failed capture fails its workflow rather than being reported as complete. These are source-runtime captures, not packaged-installer screenshots. See the [visual standard](docs/BRIGHTDESK_VISUAL_STANDARD.md).
 
 ## Installer agreement
 
