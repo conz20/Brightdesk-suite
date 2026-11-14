@@ -155,8 +155,8 @@ test('setup documentation explains that product runners share one macOS user sec
 test('Finder launcher passes a temporary token and writes private logs without opening Terminal', () => {
   const launcherPath = path.join(root, 'tools/runner-setup/macos/Brightdesk-Product-Runner-Setup.app/Contents/MacOS/BrightdeskProductRunnerSetup');
   const launcher = fs.readFileSync(launcherPath, 'utf8');
-  assert.match(launcher, /gh auth status --hostname github\.com/);
-  assert.match(launcher, /gh api user --jq/);
+  assert.match(launcher, /GH_TOKEN=/);
+  assert.doesNotMatch(launcher, /gh auth status|gh api user/);
   assert.match(launcher, /conz20/);
   assert.match(launcher, /Library\/Logs\/Brightdesk\/Product-Runner-Setup/);
   assert.match(launcher, /umask 077/);
