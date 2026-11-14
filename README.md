@@ -96,6 +96,8 @@ The **Brightdesk Suite CI** workflow now has a non-blocking capture step on push
 
 The automated capture records the full Brightdesk renderer content area through Electron's `webContents.capturePage()`. It does not include native operating-system window chrome. Images must be inspected for layout, readability, accidental sensitive content and correct product identity before any is copied into a product repository or customer guide. This automated first look is not a replacement for native install and workflow acceptance. See the [visual standard](docs/BRIGHTDESK_VISUAL_STANDARD.md).
 
+The capture harness has regression tests for all eleven targets, fictional local sample-data seeding, product navigation, the isolated profile path, required provenance fields and SHA-256 image checks. Capture tests do not set the evidence record to verified.
+
 A genuine screenshot must come from the current Electron build with non-sensitive sample data, retain the complete Brightdesk workspace content, and be labelled with the tested build or commit. Do not crop away errors or incomplete controls, composite other images, or present approved SVG design references as runtime screenshots.
 
 ## Installer agreement
