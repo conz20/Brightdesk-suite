@@ -75,3 +75,15 @@ test('turning automatic checks off stops focus and scheduled background checks',
   assert.match(main, /configureAutomaticUpdateChecks\(settings\.autoCheck !== false\)/);
   assert.match(main, /configureAutomaticUpdateChecks\(settings\.autoCheck\)/);
 });
+
+test('Suite update settings identifies all ten included products', () => {
+  const ui = fs.readFileSync(require('node:path').join(__dirname, '../src/update-settings.js'), 'utf8');
+  for (const product of [
+    'Pages', 'Sheets', 'Decks', 'Notes', 'Database',
+    'Forms', 'Lists', 'Planner', 'To Do', 'Workspace'
+  ]) {
+    assert.ok(ui.includes(product), 'update settings should identify ' + product);
+  }
+  assert.match(ui, /All ten products are updated with the Brightdesk Office Suite release/i);
+  assert.doesNotMatch(ui, /Pages, Sheets, Decks and Notes are updated with the Brightdesk Office Suite release/);
+});
