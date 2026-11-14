@@ -29,6 +29,10 @@ The Brightdesk Terms and Conditions must be accepted before the product workspac
 Choose **Accept** or **Agree** to continue. Choose **Decline** or **Disagree** to cancel. Declining, or closing the blocking first-launch agreement without accepting, prevents the product workspace from opening. The application records acceptance against the current Terms text; changed terms require a fresh acceptance.
 
 The agreement step is designed to produce the same consent outcome on all three operating systems, but its presentation differs where the operating system's package format requires it.
+
+## Removing Brightdesk
+
+Use your operating system's normal uninstall or removal method. Brightdesk is designed to remove the installed program without silently deleting your settings, local language and dictionary packs, or documents saved outside the program folder. See [uninstalling Brightdesk](UNINSTALLATION.md) for each operating system.
 ## Important
 
 - Do not install Node.js just to run Brightdesk.
