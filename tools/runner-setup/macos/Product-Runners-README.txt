@@ -99,7 +99,9 @@ Use these runners only for trusted Brightdesk workflow code. Do not attach them 
 
 IMPORTANT LIMITS
 ----------------
-Registering a runner only makes the matching queued workflow eligible to start. It does not prove the workflow passes. Check the exact PR head, all required workflow results, native platform builds and the outstanding physical-printer acceptance separately. These runners do not replace Windows or Linux verification.
+Registering a runner only makes the matching product-repository workflow eligible to start. It does not prove the workflow passes. Check the exact PR head, all required workflow results, native platform builds and the outstanding physical-printer acceptance separately. These runners do not replace Windows or Linux verification.
+
+This helper registers runners only in the ten product repositories. It does not register or start the separate Brightdesk-suite repository runner. Workflows in Brightdesk-suite itself will remain queued until that repository has its own compatible self-hosted runner online.
 
 OFFICIAL REFERENCES
 -------------------
