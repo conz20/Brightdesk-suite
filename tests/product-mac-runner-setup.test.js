@@ -127,6 +127,14 @@ test('runner PID files are trusted only when the process command belongs to that
   assert.ok(script.includes("index($0, runner_home) && /run[.]sh|Runner[.]Listener/"));
 });
 
+test('runner PID paths reject symlinks and non-regular files before reading or writing', () => {
+  assert.match(script, /\[\[ -L "\$runner_pid_file" \]\]/);
+  assert.match(script, /\[\[ -e "\$runner_pid_file" && ! -f "\$runner_pid_file" \]\]/);
+  const pidGuard = script.indexOf('if [[ -L "$runner_pid_file" ]]');
+  const pidRead = script.indexOf('cat "$runner_pid_file"', pidGuard);
+  assert.ok(pidGuard >= 0 && pidRead > pidGuard, 'PID path validation happens before reading');
+});
+
 test('runner-label discovery uses three self-contained jq filters with no unbound variables', () => {
   const requiredLabels = 'contains(["self-hosted","macOS","ARM64","brightdesk-product-ci"])';
   assert.equal(script.split(requiredLabels).length - 1, 3);
