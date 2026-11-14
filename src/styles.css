@@ -820,6 +820,63 @@ body.suite-home .app-manager.home-view .manager-hero .eyebrow { display: none; }
     overflow-wrap: anywhere !important;
     word-break: break-word !important;
   }
+  #brightdesk-print-root .brightdesk-print-form {
+    display: block !important;
+    width: 100% !important;
+    color: #111 !important;
+  }
+  #brightdesk-print-root .brightdesk-print-form h2 {
+    margin: 0 0 3mm !important;
+    font-size: 17pt !important;
+    color: #111 !important;
+  }
+  #brightdesk-print-root .brightdesk-print-form-description {
+    margin: 0 0 8mm !important;
+    color: #444 !important;
+  }
+  #brightdesk-print-root .brightdesk-print-questions {
+    margin: 0 !important;
+    padding: 0 !important;
+    list-style: none !important;
+  }
+  #brightdesk-print-root .brightdesk-print-question {
+    margin: 0 0 7mm !important;
+    padding: 0 0 4mm !important;
+    border-bottom: 1px solid #d1d5db !important;
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+  #brightdesk-print-root .brightdesk-print-question h3 {
+    margin: 0 0 2mm !important;
+    font-size: 11pt !important;
+    color: #111 !important;
+  }
+  #brightdesk-print-root .brightdesk-print-required {
+    margin: 0 0 2mm !important;
+    color: #555 !important;
+    font-size: 8pt !important;
+  }
+  #brightdesk-print-root .brightdesk-print-answer-options {
+    margin: 2mm 0 0 !important;
+    padding: 0 !important;
+    list-style: none !important;
+  }
+  #brightdesk-print-root .brightdesk-print-answer-options li {
+    margin: 2mm 0 !important;
+    break-inside: avoid;
+  }
+  #brightdesk-print-root .brightdesk-print-answer-line {
+    width: 100% !important;
+    min-height: 9mm !important;
+    margin-top: 3mm !important;
+    border-bottom: 1px solid #9ca3af !important;
+  }
+  #brightdesk-print-root .brightdesk-print-answer-space {
+    width: 100% !important;
+    min-height: 28mm !important;
+    margin-top: 3mm !important;
+    border-bottom: 1px solid #9ca3af !important;
+  }
   #brightdesk-print-root img {
     max-width: 100% !important;
     height: auto !important;
