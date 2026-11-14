@@ -81,6 +81,12 @@ If an existing compatible runner is offline but its local files are not in the p
 
 If GitHub CLI does not have the required repository administration access, the script stops. Resolve the access problem through the normal account owner process; do not weaken repository permissions, change visibility or enable paid runners as a workaround.
 
+SHARED-HOST SECURITY BOUNDARY
+-----------------------------
+All ten runner processes started by this helper run as the same signed-in macOS user. Registering each runner to a separate GitHub repository limits which repository can send jobs to that runner, but it does not create an operating-system security boundary between the runners. Workflow code running under this account may be able to read or change other files that this macOS user can access, including files in the other product runner folders.
+
+Use these runners only for trusted Brightdesk workflow code. Do not attach them to public repositories, accept untrusted fork workflows, or run third-party workflow code on this shared account. For stronger isolation, use separate macOS accounts or separate hosts for different repositories, or use appropriately isolated ephemeral runners, before running code that is not fully trusted.
+
 IMPORTANT LIMITS
 ----------------
 Registering a runner only makes the matching queued workflow eligible to start. It does not prove the workflow passes. Check the exact PR head, all required workflow results, native platform builds and the outstanding physical-printer acceptance separately. These runners do not replace Windows or Linux verification.
