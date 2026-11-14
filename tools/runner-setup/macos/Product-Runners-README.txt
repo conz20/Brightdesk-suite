@@ -75,7 +75,7 @@ The script:
 - Keeps each runner's files and logs under `~/.brightdesk-product-ci-runners/products/<repository>/` with owner-only directory permissions.
 - Restarts only a matching registered offline runner whose labels and local configuration match. It refuses to execute or reuse an unregistered existing runner folder, and refuses symbolic links or unexpected paths; inspect and move an unregistered folder aside before retrying.
 
-The helper registers repositories sequentially and queues all runner starts until registration is complete. It clears `GH_TOKEN` before starting any runner and switches the runner process to an empty, owner-only GitHub CLI configuration directory. The temporary fine-grained token is not printed or written to the setup log/config. Each short-lived runner registration token is passed only to GitHub's official runner configurator and cleared immediately after configuration.
+The helper registers repositories sequentially and queues all runner starts until registration is complete. It clears `GH_TOKEN` and the temporary administration token before starting any runner. Each runner receives its own owner-only GitHub CLI configuration folder, which must be empty before launch; the helper refuses to start a runner if that folder contains files. The temporary fine-grained token is not printed or written to the setup log/config. Each short-lived runner registration token is passed only to GitHub's official runner configurator and cleared immediately after configuration.
 
 AFTER SETUP
 -----------
