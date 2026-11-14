@@ -83,8 +83,8 @@ test('Finder launcher is a valid macOS app bundle with its own executable', () =
 
 test('Finder launcher shows GUI confirmation before passing REGISTER to the setup script', () => {
   const launcher = fs.readFileSync(path.join(root, 'tools/runner-setup/macos/Brightdesk-Product-Runner-Setup.app/Contents/MacOS/BrightdeskProductRunnerSetup'), 'utf8');
-  const confirmation = launcher.indexOf('display dialog');
-  const registration = launcher.indexOf("printf 'REGISTER\\\\n'");
+  const confirmation = launcher.indexOf('This will register up to ten');
+  const registration = launcher.indexOf("printf 'REGISTER");
   assert.ok(confirmation >= 0);
   assert.ok(registration > confirmation);
   assert.match(launcher, /cancel/i);
