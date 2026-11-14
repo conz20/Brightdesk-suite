@@ -539,3 +539,17 @@ test("print cleanup preserves customer Lists and Database fields named Actions",
   assert.deepEqual(headers, [["Actions"], ["Actions"]]);
   dom.window.close();
 });
+
+
+test("print cleanup inspects generated action controls before removing buttons", () => {
+  const app = read("src/app.js");
+  assert.ok(
+    app.indexOf("removeActionColumns(content)") < app.indexOf('content.querySelectorAll("button")'),
+    "generated Lists and Database action buttons must be identified before buttons are removed"
+  );
+});
+
+test("Forms retains the selected Responses panel when no blank questionnaire view is created", () => {
+  const app = read("src/app.js");
+  assert.match(app, /if \(formsPrintView\) content\.replaceChildren\(formsPrintView\)/);
+});
