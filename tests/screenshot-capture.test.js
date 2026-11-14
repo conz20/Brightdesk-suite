@@ -13,7 +13,7 @@ const { seedRendererStorage, switchToProduct, waitForSuiteHome } = require('../s
 const { SCREENSHOT_TARGETS } = require('../src/screenshot-evidence');
 
 test('renderer seed creates fictional local records for all ten approved products', () => {
-  const dom = new JSDOM('<main id="app-manager" hidden><div id="app-manager-grid"></div></main><button id="home-nav"></button>', { url: 'https://brightdesk.local' });
+  const dom = new JSDOM('<main id="app-manager" hidden><div id="app-manager-grid"></div></main><button id="home-nav"></button>', { url: 'https://brightdesk.local', runScripts: 'outside-only' });
   try {
     Object.assign(dom.window, {
       BrightdeskTodoService: todo,
