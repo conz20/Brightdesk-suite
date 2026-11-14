@@ -65,8 +65,16 @@ function seedRendererStorage() {
   database = window.BrightdeskDatabaseService.addField(database, 'capture-projects', { name: 'Project', type: 'text', required: true }, { id: 'capture-project', now });
   database = window.BrightdeskDatabaseService.addField(database, 'capture-projects', { name: 'Status', type: 'select', options: ['Not started', 'In progress', 'Complete'] }, { id: 'capture-status', now });
   database = window.BrightdeskDatabaseService.addField(database, 'capture-projects', { name: 'Owner', type: 'text' }, { id: 'capture-owner', now });
-  database = window.BrightdeskDatabaseService.addRecord(database, 'capture-projects', { project: 'Help refresh', status: 'In progress', owner: 'Sample owner' }, { id: 'capture-project-row-1', now });
-  database = window.BrightdeskDatabaseService.addRecord(database, 'capture-projects', { project: 'Release notes', status: 'Not started', owner: 'Sample owner' }, { id: 'capture-project-row-2', now });
+  database = window.BrightdeskDatabaseService.addRecord(database, 'capture-projects', {
+    'capture-project': 'Help refresh',
+    'capture-status': 'In progress',
+    'capture-owner': 'Sample owner'
+  }, { id: 'capture-project-row-1', now });
+  database = window.BrightdeskDatabaseService.addRecord(database, 'capture-projects', {
+    'capture-project': 'Release notes',
+    'capture-status': 'Not started',
+    'capture-owner': 'Sample owner'
+  }, { id: 'capture-project-row-2', now });
   localStorage.setItem('brightdesk-database-v1', JSON.stringify(database));
 
   let project = window.BrightdeskWorkspaceService.createWorkspace({ name: 'Website launch', description: 'A fictional launch workspace.' }, { id: 'capture-workspace', pageId: 'capture-workspace-page', now });

@@ -34,7 +34,12 @@ test('renderer seed creates fictional local records for all ten approved product
     assert.equal(docs.lists.lists[0].items.length, 2);
     assert.equal(JSON.parse(dom.window.localStorage.getItem('brightdesk-forms-v1'))[0].responses.length, 1);
     assert.equal(JSON.parse(dom.window.localStorage.getItem('brightdesk-planner-v1'))[0].tasks.length, 2);
-    assert.equal(JSON.parse(dom.window.localStorage.getItem('brightdesk-database-v1')).tables[0].rows.length, 2);
+    const seededDatabase = JSON.parse(dom.window.localStorage.getItem('brightdesk-database-v1'));
+    const projectTable = seededDatabase.tables.find(table => table.id === 'capture-projects');
+    assert.equal(projectTable.rows.length, 2);
+    assert.deepEqual(projectTable.rows.map(row => row.values['capture-project']), ['Help refresh', 'Release notes']);
+    assert.deepEqual(projectTable.rows.map(row => row.values['capture-status']), ['In progress', 'Not started']);
+    assert.deepEqual(projectTable.rows.map(row => row.values['capture-owner']), ['Sample owner', 'Sample owner']);
     assert.equal(JSON.parse(dom.window.localStorage.getItem('brightdesk-workspaces-v1'))[0].pages[0].blocks.length, 5);
   } finally {
     dom.window.close();
