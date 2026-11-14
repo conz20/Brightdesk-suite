@@ -127,6 +127,10 @@ test("prepares a content-only print document for every Brightdesk product", () =
   }
   assert.match(app, /brightdesk-print-root/);
   assert.match(css, /#brightdesk-print-root/);
+  assert.match(app, /createFormsPrintView\(source\)/);
+  assert.match(app, /content\.replaceChildren\(formsPrintView\)/);
+  assert.match(app, /appId !== "slides" && appId !== "forms"/);
+  assert.match(css, /#brightdesk-print-root \.brightdesk-print-form/);
   assert.match(css, /data-app=["']slides["']/);
 });
 
@@ -146,7 +150,7 @@ test("Brightdesk Forms includes the preview and response panels required for pri
 test("prints every Decks slide as a themed 16:9 slide in landscape orientation", () => {
   const app = read("src/app.js");
   const css = read("src/styles.css");
-  assert.ok(app.includes('if (appId !== "slides")'));
+  assert.ok(app.includes('if (appId !== "slides" && appId !== "forms")'));
   assert.ok(app.includes("brightdesk-print-slide slide-stage theme-${slideTheme}"));
   assert.ok(app.includes('slideTitle.className = "slide-title"'));
   assert.ok(app.includes('body.className = "slide-body"'));
