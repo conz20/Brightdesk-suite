@@ -1,6 +1,7 @@
 # Brightdesk project memory
 
 The standing project requirement is to use exactly Node.js 24.22.2 LTS for development, testing and release builds.
+The approved portfolio version baseline is Node.js 24.22.2, Electron 45.2.1, electron-builder 26.18.0 and Rust 1.99.1 where those tools apply. Always port older code and documentation to the approved version before reuse; do not mix old APIs or use older runtimes to pass tests. Changing the baseline requires explicit owner approval. See docs/VERSION_COMPATIBILITY.md.
 
 The approved product scope is fixed at ten apps:
 - Pages
