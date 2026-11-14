@@ -89,7 +89,7 @@ test('Finder launcher collects the token with a hidden-answer prompt and does no
 });
 
 test('README explains the dedicated runner account and narrow temporary token requirements', () => {
-  assert.match(instructions, /dedicated macOS user account/i);
+  assert.match(instructions, /dedicated (?:standard )?macOS user account/i);
   assert.match(instructions, /Fine-grained personal access token/i);
   assert.match(instructions, /Administration: Read and write/i);
   assert.match(instructions, /Revoke the fine-grained token in GitHub Settings immediately after setup completes/i);
