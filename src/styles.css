@@ -787,18 +787,16 @@ body.suite-home .app-manager.home-view .manager-hero .eyebrow { display: none; }
     page-break-inside: avoid;
   }
   #brightdesk-print-root .planner-board {
-    display: grid !important;
-    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-    grid-auto-flow: row !important;
-    grid-auto-columns: auto !important;
-    gap: 5mm !important;
+    display: block !important;
+    width: 100% !important;
     overflow: visible !important;
   }
   #brightdesk-print-root .planner-column {
     min-width: 0 !important;
+    margin: 0 0 5mm !important;
     background: #fff !important;
-    break-inside: avoid;
-    page-break-inside: avoid;
+    break-inside: auto;
+    page-break-inside: auto;
   }
   #brightdesk-print-root table {
     width: 100% !important;
