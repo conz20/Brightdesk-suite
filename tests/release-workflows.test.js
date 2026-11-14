@@ -229,7 +229,8 @@ test('private Mac runner bootstrap is pinned, repository-scoped and token-safe',
     'Brightdesk-Release-Tools',
     'Brightdesk-Services',
     'Brightdesk-Assets',
-    'Brightdesk-Lists'
+    'Brightdesk-Lists',
+    'Brightdesk-Voice'
   ];
 
   assert.ok(setup.includes("RUNNER_VERSION='2.338.2'"));
@@ -255,6 +256,7 @@ test('private Mac runner bootstrap is pinned, repository-scoped and token-safe',
   assert.ok(setup.includes('The existing runner folder already contains runner configuration:'));
   assert.ok(setup.includes('A compatible Mac runner is already registered but offline'));
   assert.ok(setup.includes('brightdesk-product-ci'));
+  assert.ok(setup.includes("if [[ \"$repository\" == 'Brightdesk-suite' ]]; then\n    runner_name='Brightdesk-Brightdesk-Suite-Mac-ARM64'\n  elif [[ \"$repository\" == 'Brightdesk-Lists' ]]; then\n    runner_name='Brightdesk-Brightdesk-Lists-Mac-ARM64'\n  fi"), 'Suite and Lists retain their existing registered runner names');
   for (const repository of repositories) assert.ok(setup.includes("'" + repository + "'"), repository);
   assert.ok(!setup.includes('ubuntu-latest'));
   assert.ok(!setup.includes('windows-latest'));
@@ -273,6 +275,10 @@ test('Mac runner setup documentation explains scope, token handling and no-servi
   assert.ok(instructions.includes('They do not auto-start after logout or reboot.'));
   assert.ok(releaseGuide.includes('Start-Brightdesk-Mac-Foundation-Runners.sh'));
   assert.match(releaseGuide, /Brightdesk-Common-Actions/);
+  assert.ok(instructions.includes('Brightdesk-Voice'));
+  assert.ok(releaseGuide.includes('Brightdesk-Voice'));
+  assert.match(instructions, /all ten private repositories/);
+  assert.match(releaseGuide, /nine infrastructure repositories/);
 });
 
 test('Windows runner setup explicitly supports Windows 10 and Windows 11', () => {
