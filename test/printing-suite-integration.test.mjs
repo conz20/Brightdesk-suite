@@ -396,6 +396,8 @@ test("print stylesheet lays out the ten product workspaces and paginates long co
   assert.match(css, /#brightdesk-print-root \.database-data-grid\s*\{/);
   assert.match(css, /overflow-wrap:\s*anywhere/);
   assert.match(css, /min-width:\s*0\s*!important/);
+  assert.match(css, /#brightdesk-print-root \.planner-board\s*\{\s*display:\s*block !important;/);
+  assert.match(css, /#brightdesk-print-root \.planner-column\s*\{[^}]*break-inside:\s*auto/);
 });
 
 
