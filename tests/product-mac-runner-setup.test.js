@@ -102,6 +102,12 @@ test('README explains the dedicated runner account and narrow temporary token re
   assert.match(instructions, /exactly (?:the|these) ten/i);
   assert.match(instructions, /shortest expiry GitHub offers/i);
   assert.match(instructions, /not stored in the macOS keychain/i);
+  const terminalFallback = instructions.slice(
+    instructions.indexOf('RUN THE SETUP'),
+    instructions.indexOf('NO-TERMINAL OPTION')
+  );
+  assert.match(terminalFallback, /\\n   bash\\n   read -r -s -p/);
+  assert.match(terminalFallback, /\\n   exit\\n/);
 });
 
 test('runner folders are separated from shared infrastructure and duplicate registrations are avoided', () => {
