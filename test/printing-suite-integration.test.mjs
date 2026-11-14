@@ -92,11 +92,11 @@ test("macOS Suite and product bundles declare the Bonjour services and local-net
 test("macOS printer discovery helper is a universal Apple Silicon and Intel executable",()=>{
  const macBuild=read("src/printing-package/tools/build-macos-printer-discovery.sh");
  const upstream=JSON.parse(read("src/printing-package/UPSTREAM.json"));
+ assert.equal(Object.hasOwn(upstream,"localPatches"), false);
  assert.match(macBuild,/arm64-apple-macosx/);
  assert.match(macBuild,/x86_64-apple-macosx/);
  assert.match(macBuild,/xcrun lipo -create/);
  assert.ok(macBuild.includes('lipo "$OUTPUT" -verify_arch arm64 x86_64'));
- assert.equal(upstream.localPatches.macOSBuildScript.sourceCommit,"1b1d7264413520885b400884103095196377a659");
 
  const windowsBuild=read("src/printing-package/tools/build-windows-printer-discovery.ps1");
  assert.ok(windowsBuild.includes('$TempDir = Join-Path'));
@@ -108,7 +108,6 @@ test("macOS printer discovery helper is a universal Apple Silicon and Intel exec
  assert.ok(windowsBuild.includes('-arch=x64 -host_arch=x64'));
  assert.ok(windowsBuild.includes('WindowsSdkDir'));
  assert.doesNotMatch(windowsBuild,/Run this script from a Visual Studio Developer PowerShell/);
- assert.equal(upstream.localPatches.windowsBuildScript.sourceCommit,"7cf74214a8b0dd732ec5c703fa47c4a25a1a40d2");
 
 });
 
