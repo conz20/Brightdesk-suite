@@ -202,3 +202,45 @@ test('rejects screenshot provenance when commit, hash or workflow evidence is in
     /HTTPS workflow run URL/
   );
 });
+
+
+test('Electron screenshot capture writes provenance for the exact tested build', async () => {
+  const source = await fs.readFile(new URL('../src/main.js', import.meta.url), 'utf8');
+  const captureStart = source.indexOf('async function captureGuideScreenshotSet');
+  const captureEnd = source.indexOf('async function runPackagedStartupSmokeTest', captureStart);
+  assert.ok(captureStart >= 0 && captureEnd > captureStart, 'missing dedicated screenshot capture path');
+  const captureSource = source.slice(captureStart, captureEnd);
+
+  assert.match(captureSource, /buildGuideScreenshotManifest\\(/);
+  for (const field of [
+    'GITHUB_REPOSITORY',
+    'GITHUB_SHA',
+    'BRIGHTDESK_GUIDE_PR_HEAD_SHA',
+    'BRIGHTDESK_GUIDE_PR_BASE_SHA',
+    'RUNNER_OS',
+    'RUNNER_ARCH',
+    'GITHUB_WORKFLOW',
+    'GITHUB_RUN_ID'
+  ]) {
+    assert.ok(captureSource.includes(field), 'missing screenshot provenance field ' + field);
+  }
+  assert.match(captureSource, /capture-manifest\\.json/);
+});
+
+test('the dedicated screenshot CI step is required and uploads all PNGs plus their manifest', async () => {
+  const workflow = await fs.readFile(new URL('../.github/workflows/ci.yml', import.meta.url), 'utf8');
+  const captureStart = workflow.indexOf('- name: Capture required Suite and product source-runtime screenshots');
+  const uploadStart = workflow.indexOf('- name: Upload Suite and product source-runtime screenshots', captureStart);
+  const afterUpload = workflow.indexOf('      - name:', uploadStart + 1);
+  assert.ok(captureStart >= 0 && uploadStart > captureStart, 'missing dedicated screenshot workflow steps');
+
+  const captureStep = workflow.slice(captureStart, uploadStart);
+  const uploadStep = workflow.slice(uploadStart, afterUpload > uploadStart ? afterUpload : workflow.length);
+  assert.match(captureStep, /BRIGHTDESK_GUIDE_SCREENSHOT_MODE: '1'/);
+  assert.match(captureStep, /npx electron \\./);
+  assert.doesNotMatch(captureStep, /continue-on-error:/);
+  assert.match(uploadStep, /brightdesk-guide-screenshots-\\$\\{\\{ github\\.run_id \\}\\}/);
+  assert.match(uploadStep, /\\*\\.png/);
+  assert.match(uploadStep, /capture-manifest\\.json/);
+  assert.match(uploadStep, /if-no-files-found: error/);
+});
