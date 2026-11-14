@@ -1,7 +1,7 @@
 const { app, BrowserWindow, Menu, ipcMain, dialog, Notification } = require('electron');
 const packageConfig = require('../package.json');
 const nativeEngine = require('./rust-engine');
-const { assertPackagedVersion, assertMainWindowReady, assertProductWindowReady } = require('./startup-smoke');
+const { assertPackagedVersion, assertMainWindowReady, assertSuiteAppManagerReady, assertProductWindowReady } = require('./startup-smoke');
 const { captureGuideScreenshot } = require('./guide-screenshots');
 const path = require('node:path');
 const crypto = require('node:crypto');
@@ -553,23 +553,29 @@ ipcMain.handle('updates:set-settings', async (event, payload) => {
   return settings;
 });
 
-async function waitForSuiteWorkspaceReady(window) {
+async function waitForSuiteAppManagerReady(window, expectedProductNames, expectedHomeView) {
   const script = [
     'new Promise((resolve, reject) => {',
+    `  const expectedProductNames = ${JSON.stringify(expectedProductNames)};`,
+    `  const expectedHomeView = ${JSON.stringify(expectedHomeView)};`,
     '  const deadline = Date.now() + 20000;',
     '  function inspect() {',
     "    const footer = document.querySelector('#footer-version')?.textContent?.trim() || '';",
-    "    if (document.title === 'Brightdesk Office Suite' && footer.startsWith('Brightdesk ')) { resolve(true); return; }",
-    "    if (Date.now() >= deadline) { reject(new Error('Timed out waiting for the Suite workspace to finish rendering.')); return; }",
+    "    const appManager = document.querySelector('#app-manager');",
+    "    const productNames = Array.from(document.querySelectorAll('#app-manager-grid .app-card .app-card-heading b')).map(item => item.textContent.trim());",
+    '    const state = { title: document.title, hasAppManager: Boolean(appManager && !appManager.hidden), isHomeView: Boolean(appManager && appManager.classList.contains(\'home-view\')), productNames };',
+    '    const productNamesMatch = productNames.length === expectedProductNames.length && productNames.every((name, index) => name === expectedProductNames[index]);',
+    "    if (state.title === 'Brightdesk Office Suite' && footer.startsWith('Brightdesk ') && state.hasAppManager && state.isHomeView === expectedHomeView && productNamesMatch) { resolve(state); return; }",
+    "    if (Date.now() >= deadline) { reject(new Error('Timed out waiting for the Suite app centre to render the approved product cards.')); return; }",
     '    setTimeout(inspect, 100);',
     '  }',
     '  inspect();',
     '})'
-  ].join('\n');
-  await window.webContents.executeJavaScript(script);
+  ].join('\\n');
+  const state = await window.webContents.executeJavaScript(script);
   await window.webContents.executeJavaScript('new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)))');
+  return state;
 }
-
 async function waitForProductWorkspaceReady(window, applicationId, applicationName) {
   const script = [
     'new Promise((resolve, reject) => {',
@@ -599,7 +605,11 @@ async function captureGuideScreenshotSet() {
   }
   const allowedApplicationIds = [...supportedApplications];
   const captures = [];
-  await waitForSuiteWorkspaceReady(mainWindow);
+  const expectedProductNames = Object.values(PRODUCT_MANIFEST).map(entry => entry.name);
+  await waitForSuiteAppManagerReady(mainWindow, expectedProductNames, false);
+  await mainWindow.webContents.executeJavaScript("document.querySelector('#finish-app-setup')?.click()");
+  const suiteHomeState = await waitForSuiteAppManagerReady(mainWindow, expectedProductNames, true);
+  assertSuiteAppManagerReady(suiteHomeState, expectedProductNames);
   captures.push(await captureGuideScreenshot({
     window: mainWindow,
     applicationId: 'suite',
