@@ -524,13 +524,14 @@ function renderAppManager() {
     } else {
       if (isInstalled) {
         const open = document.createElement('button'); open.className = 'primary small-action app-install-action';
-        open.textContent = 'Open'; open.setAttribute('aria-label', `Open ${item.name}`);
+        open.textContent = 'Open'; open.dataset.action = 'open'; open.setAttribute('aria-label', `Open ${item.name}`);
         open.addEventListener('click', async () => {
           try { await window.brightdesk.openApplication(item.id); }
           catch (error) { alert(error.message || `Could not open ${item.name}.`); }
         }); footer.append(open);
       }
       const action = document.createElement('button'); action.className = isInstalled ? 'secondary small-action app-install-action' : 'primary small-action app-install-action';
+      action.dataset.action = isInstalled ? 'remove-from-suite' : 'add-to-suite';
       action.textContent = t(isInstalled ? 'manager.remove' : 'manager.install');
       action.setAttribute('aria-label', `${t(isInstalled ? 'manager.remove' : 'manager.install')} ${item.name}`);
       action.addEventListener('click', () => toggleAppInstall(item.id)); footer.append(action);
