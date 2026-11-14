@@ -565,7 +565,7 @@ async function waitForSuiteWorkspaceReady(window) {
     '  }',
     '  inspect();',
     '})'
-  ].join('\\n');
+  ].join('\n');
   await window.webContents.executeJavaScript(script);
   await window.webContents.executeJavaScript('new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)))');
 }
@@ -585,7 +585,7 @@ async function waitForProductWorkspaceReady(window, applicationId, applicationNa
     '  }',
     '  inspect();',
     '})'
-  ].join('\\n');
+  ].join('\n');
   const state = await window.webContents.executeJavaScript(script);
   assertProductWindowReady(state, applicationId, applicationName);
   await window.webContents.executeJavaScript('new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)))');
