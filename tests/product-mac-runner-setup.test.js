@@ -56,7 +56,6 @@ test('registration uses per-repository short-lived tokens without installing a b
 
 test('repository-scoped runners rely on the repository default rather than an explicit organisation runner group', () => {
   assert.match(script, /--url "\$repository_url"/);
-  assert.match(script, /--runnergroup/); // option is absent from the full config argument list below
   assert.doesNotMatch(script, /--runnergroup\s/);
 });
 
