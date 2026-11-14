@@ -10,6 +10,15 @@ const path = require('node:path');
 const root = path.resolve(__dirname, '..');
 const read = (file) => fs.readFileSync(path.join(root, file), 'utf8');
 
+function writeSuiteManifest(release, platformCode, filenames) {
+  const lines = filenames.map(filename => {
+    const contents = fs.readFileSync(path.join(release, filename));
+    const digest = createHash('sha256').update(contents).digest('hex');
+    return `${digest}  ${filename}`;
+  });
+  fs.writeFileSync(path.join(release, `Brightdesk-SHA256SUMS-${platformCode}.txt`), `${lines.join('\n')}\n`);
+}
+
 test('Dependabot checks npm dependencies and GitHub Actions weekly', () => {
   const workflow = read('.github/dependabot.yml');
   assert.match(workflow, /package-ecosystem: npm/);
@@ -103,6 +112,16 @@ test('platform release artifacts remain in separate folders and release lock met
   assert.ok(workflow.includes('name: Preserve the committed dependency lock in release metadata'));
   assert.ok(workflow.includes('cp package-lock.json release/build-metadata/package-lock.json'));
   assert.match(workflow, /files: release\/\*\*\/\*/);
+  const collectIndex = workflow.indexOf('- name: Collect only checksum-verified product installers into the platform bundle');
+  const uploadIndex = workflow.indexOf('- name: Upload verified platform build');
+  assert.ok(collectIndex >= 0 && collectIndex < uploadIndex, 'verified product files are collected before the platform upload');
+  assert.ok(workflow.includes('node scripts/collect-platform-release-files.js ${{ matrix.script }} release'));
+  assert.ok(workflow.includes('path: release/${{ matrix.platform }}/'), 'upload includes the complete platform folder recursively');
+  assert.doesNotMatch(workflow, /readdirSync\(root\)/, 'the old top-level-only move must not return');
+  const collector = read('scripts/collect-platform-release-files.js');
+  assert.match(collector, /Brightdesk-SHA256SUMS-PRODUCTS-/);
+  assert.match(collector, /sha256RegularFile/);
+  assert.match(collector, /verifySuiteManifest/);
   assert.doesNotMatch(workflow, /merge-multiple: true/);
   const prepare = read('scripts/prepare-release-assets.js');
   assert.match(prepare, /Brightdesk-\$\{label\}-LICENSE\.txt/);
@@ -408,3 +427,302 @@ test('Windows runner can be started from one verified download', () => {
   assert.ok(installer.includes("'--token', $registrationToken"));
   assert.ok(releaseGuide.includes('Download only the [single Windows launcher file]'));
 });
+
+
+test('platform bundle collection includes only the verified product installers and preserves their relative paths', () => {
+  const workspace = fs.mkdtempSync(path.join(require('node:os').tmpdir(), 'brightdesk-platform-bundle-'));
+  const release = path.join(workspace, 'release');
+  const productIds = ['pages', 'sheets', 'slides', 'notes', 'database', 'forms', 'lists', 'planner', 'todo', 'loop'];
+  const checksums = [];
+
+  try {
+    fs.mkdirSync(release, { recursive: true });
+    for (const id of productIds) {
+      const productDirectory = path.join(release, 'apps', `org.brightdesk.${id}`);
+      fs.mkdirSync(path.join(productDirectory, 'win-unpacked'), { recursive: true });
+      fs.writeFileSync(path.join(productDirectory, 'win-unpacked', 'resources.asar'), 'build scratch');
+      const filename = `Brightdesk-${id}-0.1.0-x64.exe`;
+      const relative = `apps/org.brightdesk.${id}/${filename}`;
+      const contents = Buffer.from(`verified installer for ${id}`);
+      fs.writeFileSync(path.join(productDirectory, filename), contents);
+      const digest = createHash('sha256').update(contents).digest('hex');
+      checksums.push(`${digest}  ${relative}`);
+    }
+
+    fs.writeFileSync(path.join(release, 'Brightdesk-Office-Suite-0.1.0-x64.exe'), 'suite installer');
+
+    fs.writeFileSync(path.join(release, 'Brightdesk-Windows-LICENSE.txt'), 'licence notice');
+    fs.writeFileSync(path.join(release, 'Brightdesk-Windows-TERMS_AND_CONDITIONS.txt'), 'terms');
+    fs.writeFileSync(path.join(release, 'Brightdesk-Windows-THIRD_PARTY_NOTICES.md'), 'third-party notices');
+    writeSuiteManifest(release, 'WIN', [
+      'Brightdesk-Office-Suite-0.1.0-x64.exe',
+      'Brightdesk-Windows-TERMS_AND_CONDITIONS.txt',
+      'Brightdesk-Windows-LICENSE.txt',
+      'Brightdesk-Windows-THIRD_PARTY_NOTICES.md'
+    ]);
+    fs.writeFileSync(path.join(release, 'Brightdesk-SHA256SUMS-PRODUCTS-WIN.txt'), `${checksums.join('\n')}\n`);
+
+    const collector = path.join(root, 'scripts', 'collect-platform-release-files.js');
+    execFileSync(process.execPath, [collector, 'win', release], { encoding: 'utf8' });
+
+    const platform = path.join(release, 'Windows');
+    assert.ok(fs.existsSync(path.join(platform, 'Brightdesk-Office-Suite-0.1.0-x64.exe')));
+    assert.ok(fs.existsSync(path.join(platform, 'Brightdesk-SHA256SUMS-WIN.txt')));
+    assert.ok(fs.existsSync(path.join(platform, 'Brightdesk-Windows-LICENSE.txt')));
+    assert.ok(fs.existsSync(path.join(platform, 'Brightdesk-SHA256SUMS-PRODUCTS-WIN.txt')));
+
+    for (const id of productIds) {
+      assert.ok(fs.existsSync(path.join(platform, 'apps', `org.brightdesk.${id}`, `Brightdesk-${id}-0.1.0-x64.exe`)), id);
+      assert.ok(!fs.existsSync(path.join(platform, 'apps', `org.brightdesk.${id}`, 'win-unpacked', 'resources.asar')), `scratch output must not be uploaded for ${id}`);
+      assert.ok(fs.existsSync(path.join(release, 'apps', `org.brightdesk.${id}`, 'win-unpacked', 'resources.asar')), `build scratch remains outside the upload folder for ${id}`);
+    }
+  } finally {
+    fs.rmSync(workspace, { recursive: true, force: true });
+  }
+});
+
+
+test('platform collection rejects changed product installers before moving any release files', () => {
+  const workspace = fs.mkdtempSync(path.join(require('node:os').tmpdir(), 'brightdesk-platform-integrity-'));
+  const release = path.join(workspace, 'release');
+  const productIds = ['pages', 'sheets', 'slides', 'notes', 'database', 'forms', 'lists', 'planner', 'todo', 'loop'];
+  const checksums = [];
+
+  try {
+    fs.mkdirSync(release, { recursive: true });
+    for (const id of productIds) {
+      const productDirectory = path.join(release, 'apps', `org.brightdesk.${id}`);
+      fs.mkdirSync(productDirectory, { recursive: true });
+      const filename = `Brightdesk-${id}-0.1.0-x64.exe`;
+      const relative = `apps/org.brightdesk.${id}/${filename}`;
+      const contents = Buffer.from(`verified installer for ${id}`);
+      fs.writeFileSync(path.join(productDirectory, filename), contents);
+      checksums.push(`${createHash('sha256').update(contents).digest('hex')}  ${relative}`);
+    }
+
+    fs.writeFileSync(path.join(release, 'Brightdesk-SHA256SUMS-PRODUCTS-WIN.txt'), `${checksums.join('\n')}\n`);
+    fs.writeFileSync(path.join(release, 'Brightdesk-Office-Suite-0.1.0-x64.exe'), 'suite installer');
+
+    fs.writeFileSync(path.join(release, 'Brightdesk-Windows-TERMS_AND_CONDITIONS.txt'), 'terms');
+    fs.writeFileSync(path.join(release, 'Brightdesk-Windows-LICENSE.txt'), 'licence');
+    fs.writeFileSync(path.join(release, 'Brightdesk-Windows-THIRD_PARTY_NOTICES.md'), 'notices');
+    writeSuiteManifest(release, 'WIN', [
+      'Brightdesk-Office-Suite-0.1.0-x64.exe',
+      'Brightdesk-Windows-TERMS_AND_CONDITIONS.txt',
+      'Brightdesk-Windows-LICENSE.txt',
+      'Brightdesk-Windows-THIRD_PARTY_NOTICES.md'
+    ]);
+    fs.writeFileSync(path.join(release, 'apps', 'org.brightdesk.pages', 'Brightdesk-pages-0.1.0-x64.exe'), 'tampered');
+
+    const collector = path.join(root, 'scripts', 'collect-platform-release-files.js');
+    let failure;
+    try {
+      execFileSync(process.execPath, [collector, 'win', release], { encoding: 'utf8' });
+    } catch (error) {
+      failure = error;
+    }
+    assert.ok(failure, 'tampered product installer must block collection');
+    assert.match(String(failure.stderr), /SHA-256 changed after verification/);
+    assert.equal(fs.existsSync(path.join(release, 'Windows')), false, 'no partial platform bundle should be created');
+    assert.ok(fs.existsSync(path.join(release, 'Brightdesk-Office-Suite-0.1.0-x64.exe')), 'Suite installer remains untouched on failure');
+  } finally {
+    fs.rmSync(workspace, { recursive: true, force: true });
+  }
+});
+
+
+test('platform collection rejects Suite installer changes after Suite checksum verification', () => {
+  const workspace = fs.mkdtempSync(path.join(require('node:os').tmpdir(), 'brightdesk-suite-integrity-'));
+  const release = path.join(workspace, 'release');
+  const productIds = ['pages', 'sheets', 'slides', 'notes', 'database', 'forms', 'lists', 'planner', 'todo', 'loop'];
+  const productChecksums = [];
+
+  try {
+    fs.mkdirSync(release, { recursive: true });
+    for (const id of productIds) {
+      const productDirectory = path.join(release, 'apps', `org.brightdesk.${id}`);
+      fs.mkdirSync(productDirectory, { recursive: true });
+      const filename = `Brightdesk-${id}-0.1.0-x64.exe`;
+      const relative = `apps/org.brightdesk.${id}/${filename}`;
+      const contents = Buffer.from(`verified installer for ${id}`);
+      fs.writeFileSync(path.join(productDirectory, filename), contents);
+      productChecksums.push(`${createHash('sha256').update(contents).digest('hex')}  ${relative}`);
+    }
+
+    const suiteInstaller = 'Brightdesk-Office-Suite-0.1.0-x64.exe';
+    fs.writeFileSync(path.join(release, suiteInstaller), 'verified Suite installer');
+    fs.writeFileSync(path.join(release, 'Brightdesk-Windows-TERMS_AND_CONDITIONS.txt'), 'terms');
+    fs.writeFileSync(path.join(release, 'Brightdesk-Windows-LICENSE.txt'), 'licence');
+    fs.writeFileSync(path.join(release, 'Brightdesk-Windows-THIRD_PARTY_NOTICES.md'), 'notices');
+    writeSuiteManifest(release, 'WIN', [
+      suiteInstaller,
+      'Brightdesk-Windows-TERMS_AND_CONDITIONS.txt',
+      'Brightdesk-Windows-LICENSE.txt',
+      'Brightdesk-Windows-THIRD_PARTY_NOTICES.md'
+    ]);
+    fs.writeFileSync(path.join(release, 'Brightdesk-SHA256SUMS-PRODUCTS-WIN.txt'), productChecksums.join('\n') + '\n');
+    fs.writeFileSync(path.join(release, suiteInstaller), 'tampered Suite installer');
+
+    let failure;
+    try {
+      execFileSync(process.execPath, [path.join(root, 'scripts', 'collect-platform-release-files.js'), 'win', release], { encoding: 'utf8' });
+    } catch (error) {
+      failure = error;
+    }
+    assert.ok(failure, 'changed Suite installer must block collection');
+    assert.match(String(failure.stderr), /Suite release artifact SHA-256 changed after verification/);
+    assert.equal(fs.existsSync(path.join(release, 'Windows')), false, 'no platform folder should be created');
+    assert.ok(fs.existsSync(path.join(release, suiteInstaller)), 'Suite installer stays in place after rejection');
+    assert.ok(fs.existsSync(path.join(release, 'apps', 'org.brightdesk.pages', 'Brightdesk-pages-0.1.0-x64.exe')), 'product installers stay in place after rejection');
+  } finally {
+    fs.rmSync(workspace, { recursive: true, force: true });
+  }
+});
+
+test('platform collection rejects unexpected top-level files before moving any release content', () => {
+  const workspace = fs.mkdtempSync(path.join(require('node:os').tmpdir(), 'brightdesk-platform-unexpected-'));
+  const release = path.join(workspace, 'release');
+  const productIds = ['pages', 'sheets', 'slides', 'notes', 'database', 'forms', 'lists', 'planner', 'todo', 'loop'];
+  const checksums = [];
+
+  try {
+    fs.mkdirSync(release, { recursive: true });
+    for (const id of productIds) {
+      const productDirectory = path.join(release, 'apps', `org.brightdesk.${id}`);
+      fs.mkdirSync(productDirectory, { recursive: true });
+      const filename = `Brightdesk-${id}-0.1.0-x64.exe`;
+      const relative = `apps/org.brightdesk.${id}/${filename}`;
+      const contents = Buffer.from(`verified installer for ${id}`);
+      fs.writeFileSync(path.join(productDirectory, filename), contents);
+      checksums.push(`${createHash('sha256').update(contents).digest('hex')}  ${relative}`);
+    }
+
+    fs.writeFileSync(path.join(release, 'Brightdesk-Office-Suite-0.1.0-x64.exe'), 'suite installer');
+
+    fs.writeFileSync(path.join(release, 'Brightdesk-Windows-TERMS_AND_CONDITIONS.txt'), 'terms');
+    fs.writeFileSync(path.join(release, 'Brightdesk-Windows-LICENSE.txt'), 'licence');
+    fs.writeFileSync(path.join(release, 'Brightdesk-Windows-THIRD_PARTY_NOTICES.md'), 'notices');
+    writeSuiteManifest(release, 'WIN', [
+      'Brightdesk-Office-Suite-0.1.0-x64.exe',
+      'Brightdesk-Windows-TERMS_AND_CONDITIONS.txt',
+      'Brightdesk-Windows-LICENSE.txt',
+      'Brightdesk-Windows-THIRD_PARTY_NOTICES.md'
+    ]);
+    fs.writeFileSync(path.join(release, 'Brightdesk-SHA256SUMS-PRODUCTS-WIN.txt'), `${checksums.join('\n')}\n`);
+    fs.writeFileSync(path.join(release, 'private-build.log'), 'must never be uploaded');
+
+    const collector = path.join(root, 'scripts', 'collect-platform-release-files.js');
+    let failure;
+    try {
+      execFileSync(process.execPath, [collector, 'win', release], { encoding: 'utf8' });
+    } catch (error) {
+      failure = error;
+    }
+
+    assert.ok(failure, 'unexpected top-level files must block collection');
+    assert.match(String(failure.stderr), /Unexpected release file is not permitted: private-build\.log/);
+    assert.equal(fs.existsSync(path.join(release, 'Windows')), false, 'no partial platform folder should be created');
+    assert.ok(fs.existsSync(path.join(release, 'Brightdesk-Office-Suite-0.1.0-x64.exe')), 'Suite installer remains untouched');
+    assert.ok(fs.existsSync(path.join(release, 'apps', 'org.brightdesk.pages', 'Brightdesk-pages-0.1.0-x64.exe')), 'product installer remains untouched');
+  } finally {
+    fs.rmSync(workspace, { recursive: true, force: true });
+  }
+});
+
+
+const crossPlatformBundleCases = [
+  {
+    platform: 'mac',
+    directory: 'macOS',
+    code: 'MAC',
+    formats: ['dmg', 'pkg', 'zip'],
+    suiteArtifacts: [
+      'Brightdesk-Office-Suite-0.1.0-universal.dmg',
+      'Brightdesk-Office-Suite-0.1.0-universal.pkg',
+      'Brightdesk-Office-Suite-0.1.0-universal.zip'
+    ]
+  },
+  {
+    platform: 'linux',
+    directory: 'Linux',
+    code: 'LINUX',
+    formats: ['AppImage', 'deb'],
+    suiteArtifacts: [
+      'Brightdesk-Office-Suite-0.1.0-x64.AppImage',
+      'brightdesk-office-suite-0.1.0-x64.deb'
+    ]
+  }
+];
+
+for (const config of crossPlatformBundleCases) {
+  test('platform bundle collection preserves all ' + config.directory + ' product installers', () => {
+    const workspace = fs.mkdtempSync(path.join(require('node:os').tmpdir(), 'brightdesk-platform-' + config.platform + '-'));
+    const release = path.join(workspace, 'release');
+    const productIds = ['pages', 'sheets', 'slides', 'notes', 'database', 'forms', 'lists', 'planner', 'todo', 'loop'];
+    const checksums = [];
+
+    try {
+      fs.mkdirSync(release, { recursive: true });
+      for (const id of productIds) {
+        const productDirectory = path.join(release, 'apps', 'org.brightdesk.' + id);
+        fs.mkdirSync(path.join(productDirectory, 'unpacked-build'), { recursive: true });
+        fs.writeFileSync(path.join(productDirectory, 'unpacked-build', 'resources.asar'), 'build scratch');
+
+        for (const format of config.formats) {
+          const extension = format === 'AppImage' ? '.AppImage' : '.' + format;
+          const filename = 'Brightdesk-' + id + '-0.1.0-x64' + extension;
+          const relative = 'apps/org.brightdesk.' + id + '/' + filename;
+          const contents = Buffer.from('verified ' + config.platform + ' installer for ' + id + ' (' + format + ')');
+          fs.writeFileSync(path.join(productDirectory, filename), contents);
+          checksums.push(createHash('sha256').update(contents).digest('hex') + '  ' + relative);
+        }
+      }
+
+      for (const filename of config.suiteArtifacts) {
+        fs.writeFileSync(path.join(release, filename), 'verified Suite installer ' + filename);
+      }
+
+      fs.writeFileSync(path.join(release, 'Brightdesk-SHA256SUMS-PRODUCTS-' + config.code + '.txt'), checksums.join('\n') + '\n');
+      fs.writeFileSync(path.join(release, 'Brightdesk-' + config.directory + '-TERMS_AND_CONDITIONS.txt'), 'terms');
+      fs.writeFileSync(path.join(release, 'Brightdesk-' + config.directory + '-LICENSE.txt'), 'licence');
+      fs.writeFileSync(path.join(release, 'Brightdesk-' + config.directory + '-THIRD_PARTY_NOTICES.md'), 'third-party notices');
+      if (config.platform === 'linux') {
+        fs.writeFileSync(path.join(release, 'Brightdesk-Install-Linux.sh'), '#!/bin/sh\nexit 0\n');
+      }
+
+      const suiteFiles = config.suiteArtifacts.concat([
+        'Brightdesk-' + config.directory + '-TERMS_AND_CONDITIONS.txt',
+        'Brightdesk-' + config.directory + '-LICENSE.txt',
+        'Brightdesk-' + config.directory + '-THIRD_PARTY_NOTICES.md',
+        ...(config.platform === 'linux' ? ['Brightdesk-Install-Linux.sh'] : [])
+      ]);
+      writeSuiteManifest(release, config.code, suiteFiles);
+
+      const collector = path.join(root, 'scripts', 'collect-platform-release-files.js');
+      execFileSync(process.execPath, [collector, config.platform, release], { encoding: 'utf8' });
+
+      const platformDirectory = path.join(release, config.directory);
+      assert.ok(fs.existsSync(path.join(platformDirectory, 'Brightdesk-SHA256SUMS-' + config.code + '.txt')));
+      assert.ok(fs.existsSync(path.join(platformDirectory, 'Brightdesk-SHA256SUMS-PRODUCTS-' + config.code + '.txt')));
+      for (const filename of config.suiteArtifacts) {
+        assert.ok(fs.existsSync(path.join(platformDirectory, filename)), filename);
+      }
+
+      for (const id of productIds) {
+        const outputDirectory = path.join(platformDirectory, 'apps', 'org.brightdesk.' + id);
+        for (const format of config.formats) {
+          const extension = format === 'AppImage' ? '.AppImage' : '.' + format;
+          assert.ok(fs.existsSync(path.join(outputDirectory, 'Brightdesk-' + id + '-0.1.0-x64' + extension)), id + ' ' + format);
+        }
+        assert.equal(fs.existsSync(path.join(outputDirectory, 'unpacked-build')), false, 'unpacked output must not be uploaded for ' + id);
+        assert.ok(fs.existsSync(path.join(release, 'apps', 'org.brightdesk.' + id, 'unpacked-build', 'resources.asar')), 'scratch remains outside upload folder for ' + id);
+      }
+
+      if (config.platform === 'linux') {
+        assert.ok(fs.existsSync(path.join(platformDirectory, 'Brightdesk-Install-Linux.sh')));
+      }
+    } finally {
+      fs.rmSync(workspace, { recursive: true, force: true });
+    }
+  });
+}

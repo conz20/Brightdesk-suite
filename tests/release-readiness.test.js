@@ -53,6 +53,36 @@ test('artifact verification requires all expected installer formats and writes S
   }
 });
 
+test('Suite artifact checksums exclude nested product installers and unpacked build scratch', () => {
+  const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'brightdesk-suite-checksums-'));
+  try {
+    for (const [name, contents] of [
+      ['Brightdesk-1.0.0.dmg', 'Suite disk image'],
+      ['Brightdesk-1.0.0.pkg', 'Suite package'],
+      ['Brightdesk-1.0.0.zip', 'Suite archive'],
+      ['Brightdesk-macOS-TERMS_AND_CONDITIONS.txt', 'agreement'],
+      ['Brightdesk-macOS-LICENSE.txt', 'MIT'],
+      ['Brightdesk-macOS-THIRD_PARTY_NOTICES.md', 'notices']
+    ]) fs.writeFileSync(path.join(directory, name), contents);
+
+    const productScratch = path.join(directory, 'apps', 'org.brightdesk.pages');
+    const suiteScratch = path.join(directory, 'mac-unpacked');
+    fs.mkdirSync(productScratch, { recursive: true });
+    fs.mkdirSync(suiteScratch, { recursive: true });
+    fs.writeFileSync(path.join(productScratch, 'Brightdesk-Pages-1.0.0-universal.dmg'), 'product installer');
+    fs.writeFileSync(path.join(productScratch, 'unpacked.pkg'), 'product build scratch');
+    fs.writeFileSync(path.join(suiteScratch, 'runtime.zip'), 'Suite build scratch');
+
+    const result = verifyArtifacts({ directory, platform: 'mac' });
+    const manifest = fs.readFileSync(result.checksumFile, 'utf8');
+    assert.equal(result.files.length, 6, 'only the six top-level Suite/legal files are checksummed');
+    assert.equal(manifest.includes('apps/'), false, 'product installers have their separate product manifest');
+    assert.equal(manifest.includes('mac-unpacked/'), false, 'unpacked build output is not listed as a release artifact');
+  } finally {
+    fs.rmSync(directory, { recursive: true, force: true });
+  }
+});
+
 test('release terms are wired into native installers and the first-launch agreement gate', () => {
   const manifest = require('../package.json');
   assert.equal(manifest.build.nsis.license, 'TERMS_AND_CONDITIONS.txt');
