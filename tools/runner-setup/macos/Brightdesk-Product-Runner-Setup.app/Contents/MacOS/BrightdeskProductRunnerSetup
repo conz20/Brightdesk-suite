@@ -45,7 +45,7 @@ chmod 700 "$LOG_DIR" || {
 }
 LOG_FILE="$LOG_DIR/setup-$(date +%Y%m%d-%H%M%S).log"
 
-if GH_TOKEN="$runner_token" /usr/bin/env PATH="$PATH" /bin/bash "$SETUP_SCRIPT" >"$LOG_FILE" 2>&1; then
+if GH_TOKEN="$runner_token" BRIGHTDESK_RUNNER_SETUP_CONFIRMED=REGISTER /usr/bin/env PATH="$PATH" /bin/bash "$SETUP_SCRIPT" >"$LOG_FILE" 2>&1; then
   unset runner_token
   chmod 600 "$LOG_FILE" || true
   /usr/bin/osascript -e 'display dialog "The setup script finished. The temporary token was cleared before runner processes started. Open Settings > Actions > Runners in each product repository and confirm the runner is Idle/Online with the required labels. This does not mean queued tests have passed." buttons {"OK"} default button "OK" with icon note' >/dev/null 2>&1 || true
