@@ -28,6 +28,7 @@
     if (!source || typeof source.querySelector !== "function") return null;
     const app = source.matches?.(".forms-app") ? source : source.querySelector(".forms-app");
     if (!app) return null;
+    if (app.querySelector('[data-forms-tab="responses"].active')) return null;
     const doc = app.ownerDocument;
     const view = doc.createElement("section");
     view.className = "brightdesk-print-form";
