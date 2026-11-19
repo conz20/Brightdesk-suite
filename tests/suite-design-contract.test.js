@@ -80,3 +80,41 @@ test('visual standard documents the integrated Suite window and separate product
   assert.match(main, /suite-product-window/);
   assert.match(main, /productWindowManager\.open\(requestedApplicationId\)/);
 });
+
+
+test('Home artwork shows the workspace eyebrow once, above Your apps', () => {
+  const home = read('assets/product-experience/brightdesk-home.svg');
+  const html = read('src/index.html');
+  const app = read('src/app.js');
+  assert.equal((home.match(/>YOUR WORKSPACE<\/text>/g) || []).length, 1);
+  assert.ok(home.includes('<text x="270" y="65"'));
+  assert.match(html, /id="sidebar-section-label"/);
+  assert.match(app, /sidebar-section-label.*hidden = Boolean\(launchAppId\) \|\| suitePage/);
+});
+
+test('Home matches the approved 1600 by 900 grid proportions and responsive fallback', () => {
+  const styles = read('src/styles.css');
+  assert.match(styles, /\.sidebar\s*\{\s*width:\s*238px;/);
+  assert.match(styles, /body\.suite-home \.main\s*\{\s*padding:\s*56px 4\.125vw 20px 2vw;/);
+  assert.match(styles, /\.app-manager\.home-view \.manager-grid\s*\{\s*grid-template-columns:\s*repeat\(auto-fit, minmax\(min\(100%, 240px\), 1fr\)\);\s*gap:\s*16px;/);
+  assert.match(styles, /body\.suite-home \.app-manager\.home-view \.manager-grid\s*\{[\s\S]*?column-gap:\s*16px;\s*row-gap:\s*18px;/);
+  assert.match(styles, /\.app-manager\.home-view \.app-card\s*\{\s*min-height:\s*240px;/);
+  assert.match(styles, /@media \(max-width: 700px\)\s*\{\s*\.app-manager\.home-view \.manager-grid \{ grid-template-columns: 1fr;/);
+  const availableWidth = 1600 - 238 - (1600 * 0.02) - (1600 * 0.04125);
+  const fiveCardRowWidth = (5 * 240) + (4 * 16);
+  assert.equal(availableWidth, fiveCardRowWidth, 'five 240px cards and four 16px gaps must fit the 1600px reference width');
+});
+
+test('Home controls retain visible keyboard focus, reduced motion and accessible touch sizes', () => {
+  const styles = read('src/styles.css');
+  const html = read('src/index.html');
+  const app = read('src/app.js');
+  assert.match(styles, /button:focus-visible, a:focus-visible, input:focus-visible/);
+  assert.match(styles, /\.app-card-menu-trigger:focus-visible/);
+  assert.match(styles, /@media \(prefers-reduced-motion: reduce\)/);
+  assert.match(styles, /\.icon-button\s*\{[\s\S]*?width:\s*38px;\s*height:\s*38px;/);
+  assert.match(styles, /\.app-card-menu-trigger\s*\{\s*width:\s*34px;\s*height:\s*34px;/);
+  assert.match(html, /aria-label="Open notifications"/);
+  assert.match(html, /aria-label="Open Brightdesk settings"/);
+  assert.match(app, /More options for/);
+});
