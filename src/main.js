@@ -418,18 +418,6 @@ ipcMain.handle('dictionaries:list', async event => {
   return dictionaryService.installed();
 });
 
-ipcMain.handle('dictionaries:catalog', async event => {
-  if (!senderIsMain(event)) throw new Error('Invalid sender.');
-  const [installed, catalogue] = await Promise.all([dictionaryService.installed(), Promise.resolve(dictionaryService.catalogue())]);
-  const installedCodes = new Set(installed.map(item => item.locale.toLowerCase()));
-  return catalogue.map(item => ({ ...item, installed: installedCodes.has(item.locale.toLowerCase()) }));
-});
-
-ipcMain.handle('dictionaries:install-catalog', async (event, id) => {
-  if (!senderIsMain(event)) throw new Error('Invalid sender.');
-  return dictionaryService.installCatalogueEntry(id);
-});
-
 ipcMain.handle('dictionaries:check', async (event, payload) => {
   if (!senderIsMain(event)) throw new Error('Invalid sender.');
   if (!payload || typeof payload.locale !== 'string' || typeof payload.text !== 'string') throw new Error('A dictionary language and document text are required.');

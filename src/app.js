@@ -38,7 +38,7 @@ const state = {
   slideTheme: 'lavender', focusMode: false, editorZoom: 100, sheetZoom: 100,
   languageCatalog: [], installedLanguagePacks: [], spellCheckerLanguages: [], usesNativeMacSpellChecker: false,
   displayLanguage: 'en-AU', proofingLanguage: 'en-AU',
-  installedDictionaries: [], dictionaryCatalogue: [], selectedDictionary: localStorage.getItem('brightdesk-selected-dictionary') || ''
+  installedDictionaries: [], selectedDictionary: localStorage.getItem('brightdesk-selected-dictionary') || ''
 };
 const editor = $('editor'), sheetWrap = $('sheet-wrap'), slideWrap = $('slide-wrap'), notesWrap = $('notes-wrap');
 const pageLayout = window.BrightdeskPageLayout;
@@ -657,12 +657,8 @@ function renderLanguageManager() {
   renderDictionaryManager();
 }
 async function refreshDictionaries() {
-  const [installed, catalogue] = await Promise.all([
-    window.brightdesk.listDictionaries(),
-    window.brightdesk.listDictionaryCatalogue()
-  ]);
-  state.installedDictionaries = installed;
-  state.dictionaryCatalogue = catalogue;
+  // Only locally installed resources are listed. New packs will appear after an official Brightdesk release.
+  state.installedDictionaries = await window.brightdesk.listDictionaries();
   if (!state.installedDictionaries.some(item => item.locale === state.selectedDictionary)) {
     const matching = state.installedDictionaries.find(item => item.locale.toLowerCase() === state.proofingLanguage.toLowerCase());
     state.selectedDictionary = matching?.locale || state.installedDictionaries[0]?.locale || '';
@@ -688,72 +684,18 @@ function renderDictionaryManager() {
     const subtitle = document.createElement('small'); subtitle.textContent = `${item.nativeName} · ${item.locale}`;
     heading.append(name, subtitle); header.append(mark, heading);
     const description = document.createElement('p'); description.textContent = `Licence: ${item.license} · Engine: ${item.engine}`;
-    const source = document.createElement('small'); source.className = 'dictionary-source'; source.textContent = `Source: ${item.sourceUrl}`;
+    const source = document.createElement('small'); source.className = 'dictionary-source'; source.textContent = 'Original licence and attribution are retained with this installed dictionary.';
     const footer = document.createElement('div'); footer.className = 'app-card-footer';
     const status = document.createElement('span'); status.className = 'app-state installed'; status.textContent = 'Installed · protected'; footer.append(status);
     card.append(header, description, source, footer); grid.append(card);
   }
   select.value = state.selectedDictionary;
   $('dictionary-status').textContent = state.installedDictionaries.length
-    ? `${state.installedDictionaries.length} spelling dictionary/dictionaries installed. The built-in OS spell checker remains available too.`
-    : 'No separate dictionaries installed yet. Install one from the catalogue or import a compatible .bddict bundle.';
-  renderAvailableDictionaryCatalogue();
+    ? `${state.installedDictionaries.length} spelling dictionary/dictionaries installed. Spelling checks run on this device, and installed packs remain usable offline.`
+    : 'No verified spelling dictionaries are installed. Brightdesk-hosted packs are not available yet; the built-in operating-system spell checker remains available.';
   renderToolbar();
 }
 
-function renderAvailableDictionaryCatalogue() {
-  const grid = $('available-dictionary-grid');
-  const search = $('dictionary-search');
-  const count = $('dictionary-catalogue-count');
-  if (!grid || !search || !count) return;
-  const query = search.value.trim().toLocaleLowerCase();
-  const matching = state.dictionaryCatalogue.filter(item =>
-    `${item.name} ${item.nativeName} ${item.locale} ${item.license}`.toLocaleLowerCase().includes(query)
-  );
-  const visible = query ? matching.slice(0, 30) : matching.slice(0, 18);
-  grid.innerHTML = '';
-  count.textContent = query
-    ? `${matching.length} matching dictionaries${matching.length > visible.length ? ` · showing first ${visible.length}` : ''}`
-    : `Showing ${visible.length} of ${matching.length} dictionaries. Search to find more.`;
-
-  for (const item of visible) {
-    const card = document.createElement('article'); card.className = 'app-card language-card';
-    const header = document.createElement('div'); header.className = 'app-card-header';
-    const mark = document.createElement('span'); mark.className = 'language-code-mark'; mark.textContent = item.locale.split('-')[0].toUpperCase();
-    const heading = document.createElement('div'); heading.className = 'app-card-heading';
-    const name = document.createElement('b'); name.textContent = item.name;
-    const subtitle = document.createElement('small'); subtitle.textContent = `${item.nativeName} · ${item.locale}`;
-    heading.append(name, subtitle); header.append(mark, heading);
-    const description = document.createElement('p'); description.textContent = `Licence: ${item.license} · Compatibility: Hunspell subset; advanced rules may need review`;
-    const source = document.createElement('small'); source.className = 'dictionary-source'; source.textContent = `Source: ${item.upstream} · revision ${item.upstreamRevision.slice(0, 8)}`;
-    const footer = document.createElement('div'); footer.className = 'app-card-footer';
-    const status = document.createElement('span'); status.className = item.installed ? 'app-state installed' : 'app-state';
-    status.textContent = item.installed ? 'Installed' : 'Available'; footer.append(status);
-    const install = document.createElement('button'); install.className = item.installed ? 'secondary small-action' : 'primary small-action';
-    install.textContent = item.installed ? 'Installed' : 'Install'; install.disabled = item.installed; install.dataset.dictionaryId = item.id;
-    install.addEventListener('click', () => installCatalogueDictionary(item.id)); footer.append(install);
-    card.append(header, description, source, footer); grid.append(card);
-  }
-  if (!visible.length) {
-    const empty = document.createElement('p'); empty.className = 'language-empty'; empty.textContent = 'No dictionaries match that search.'; grid.append(empty);
-  }
-}
-
-async function installCatalogueDictionary(id) {
-  const item = state.dictionaryCatalogue.find(entry => entry.id === id);
-  if (!item) { $('dictionary-status').textContent = 'That dictionary is not available in the catalogue.'; return; }
-  const button = [...document.querySelectorAll('#available-dictionary-grid button')].find(element => element.dataset.dictionaryId === id);
-  if (button) { button.disabled = true; button.textContent = 'Installing…'; }
-  $('dictionary-status').textContent = `Downloading ${item.name} (${item.locale}) from its pinned open-source source…`;
-  try {
-    const result = await window.brightdesk.installCatalogueDictionary(id);
-    await refreshDictionaries(); render();
-    $('dictionary-status').textContent = `${result.name} (${result.locale}) installed. Original licence retained: ${result.license}.`;
-  } catch (error) {
-    if (button) { button.disabled = false; button.textContent = 'Install'; }
-    $('dictionary-status').textContent = `Could not install ${item.locale}: ${error.message}`;
-  }
-}
 function currentDocumentText() {
   if (state.app === 'pages') return editor.innerText || '';
   if (state.app === 'notes') return $('notes-editor').value || '';
@@ -763,7 +705,7 @@ function currentDocumentText() {
 }
 async function checkCurrentDocumentSpelling() {
   const locale = state.selectedDictionary;
-  if (!locale) { $('dictionary-status').textContent = 'Choose or install a spelling dictionary first.'; return; }
+  if (!locale) { $('dictionary-status').textContent = 'Choose an installed spelling dictionary first. The operating-system spell checker remains available.'; return; }
   try {
     const result = await window.brightdesk.checkSpelling({ locale, text: currentDocumentText() });
     const issues = result.misspellings || [];
@@ -1056,7 +998,6 @@ document.addEventListener('keydown',event=>{if(event.key==='Escape'&&!$('notific
 $('manage-languages').addEventListener('click',openLanguageManager);
 $('display-language').addEventListener('change',event=>changeDisplayLanguage(event.target.value));
 $('proofing-language').addEventListener('change',event=>changeProofingLanguage(event.target.value));
-$('dictionary-search').addEventListener('input',renderAvailableDictionaryCatalogue);
 $('proofing-dictionary').addEventListener('change',event=>{state.selectedDictionary=event.target.value;localStorage.setItem('brightdesk-selected-dictionary',state.selectedDictionary);renderToolbar();});
 $('check-current-document').addEventListener('click',checkCurrentDocumentSpelling);
 $('back-to-apps').addEventListener('click',()=>{state.view='manager';render();});
