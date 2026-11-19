@@ -37,3 +37,20 @@ test('the Suite Wiki does not add unapproved customer products', () => {
   const wiki = fs.readFileSync(path.join(root, 'apps', 'wiki', 'index.html'), 'utf8');
   assert.doesNotMatch(wiki, /Outlook|OneDrive|Teams/);
 });
+
+
+test('Brightdesk stays free forever and does not introduce customer identity or billing', () => {
+  const readme = fs.readFileSync(path.join(root, 'README.md'), 'utf8');
+  const scope = fs.readFileSync(path.join(root, 'PRODUCT_SCOPE_LOCK.md'), 'utf8');
+  assert.match(readme, /Free forever/);
+  assert.match(scope, /Free forever/);
+  assert.match(scope, /No subscriptions, trials, paid tiers or billing/);
+  assert.match(scope, /No customer accounts, sign-in, passwords, profiles, activation codes, serial numbers or licence servers/);
+});
+
+test('Brightdesk stays local-first without telemetry, ads, cloud sync or customer text uploads', () => {
+  const readme = fs.readFileSync(path.join(root, 'README.md'), 'utf8');
+  const scope = fs.readFileSync(path.join(root, 'PRODUCT_SCOPE_LOCK.md'), 'utf8');
+  assert.match(readme, /No telemetry, analytics, advertising, crash reporting, cloud sync or collaboration/);
+  assert.match(scope, /No telemetry, analytics, advertising, crash reporting, cloud sync, collaboration or customer text uploads/);
+});
