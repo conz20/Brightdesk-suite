@@ -183,7 +183,7 @@ textarea:focus-visible, [contenteditable="true"]:focus-visible, [tabindex]:focus
 .sidebar { background: var(--bd-ui-surface); border-color: var(--bd-ui-line); }
 .brand { min-height: 52px; }
 .brand b { color: var(--bd-ui-ink); }
-.section-label, .eyebrow { color: #78869b; letter-spacing: .11em; }
+.section-label, .eyebrow { color: #5F6F88; letter-spacing: .11em; }
 .nav { min-height: 44px; border-radius: 9px; color: var(--bd-ui-text); transition: background .16s ease, color .16s ease, transform .16s ease; }
 .nav:hover { background: #f3f6fb; color: var(--bd-ui-ink); }
 .nav.active { background: color-mix(in srgb, var(--bd-accent, #315fce) 9%, white); color: var(--bd-accent-strong, #234aa8); }
@@ -289,7 +289,7 @@ input:disabled, select:disabled, textarea:disabled, button:disabled { cursor: no
 .app-card-header .app-icon-image { flex: 0 0 42px; width: 42px; height: 42px; padding: 5px; border-radius: 12px; background: var(--app-card-tint); }
 .app-card-heading { min-width: 0; flex: 1; }
 .app-card-heading b { display: block; color: #1f2d43; font-size: 13px; letter-spacing: -.015em; }
-.app-card-heading small { display: block; margin-top: 3px; color: #738198; font-size: 10px; line-height: 1.4; }
+.app-card-heading small { display: block; margin-top: 3px; color: #64728A; font-size: 10px; line-height: 1.4; }
 .app-status-chip {
   display: inline-flex; align-items: center; gap: 5px; width: max-content;
   margin-top: 7px; padding: 4px 7px; border: 1px solid #dce4ed;
@@ -411,7 +411,7 @@ input:disabled, select:disabled, textarea:disabled, button:disabled { cursor: no
 /* Home and Files destinations from the approved Brightdesk shell. */
 .app-manager.home-view .manager-hero{margin:18px 0 0;padding:0;border:0;border-radius:0;background:transparent}
 .app-manager.home-view .manager-hero h2{margin:0 0 5px;font-size:20px;letter-spacing:-.35px;color:#1b2941}
-.app-manager.home-view .manager-hero p{font-size:12px;color:#77859b}
+.app-manager.home-view .manager-hero p{font-size:12px;color:#5F7088}
 .app-manager.home-view .manager-grid{margin-top:16px}
 .files-manager{width:100%;max-width:1180px;flex:1;margin:24px auto 10px}
 .files-hero{padding:28px 30px;border:1px solid #e2e8f1;border-radius:16px;background:linear-gradient(115deg,#edf3ff 0%,#f5f3ff 62%,#f1f8ff 100%)}
