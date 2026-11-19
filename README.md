@@ -4,6 +4,13 @@ Ten focused desktop products. One consistent Brightdesk experience.
 
 Brightdesk is an independent, local-first desktop productivity suite. It uses original product names, code, interface design and artwork. It is not affiliated with Microsoft, Adobe or ArtCraft. The internal Suite Wiki follows the same portfolio and design contract: ten approved products only, integrated Suite-hosted product windows, local-first data and original Brightdesk visual identity. Microsoft productivity conventions are workflow references only.
 
+## Free forever and private by design
+
+Brightdesk is **free forever**. There are no subscriptions, trials, paid tiers or billing. Customers do not create accounts, sign in, set passwords or profiles, enter activation codes or serial numbers, or contact a licence server.
+
+Brightdesk does not include telemetry, analytics, advertising, crash reporting, cloud sync, online collaboration or uploads of customer text and documents. Product data and spelling checks stay on the device. Internet access is limited to Brightdesk-controlled product-update and language-resource services. Dictionary downloads remain disabled until approved, signed Brightdesk-hosted packs are released.
+
+
 ## The ten approved products
 
 | Product | Original icon | Purpose |
