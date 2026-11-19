@@ -24,3 +24,15 @@ test('screenshot capture is optional CI evidence and only runs on main pushes', 
   assert.match(workflow, /retention-days: 14/);
   assert.match(workflow, /continue-on-error: true/);
 });
+
+
+test('screenshot capture targets the real Suite product windows instead of switching the Home renderer', () => {
+  const capture = fs.readFileSync(path.join(root, 'src', 'screenshot-capture.js'), 'utf8');
+  const main = fs.readFileSync(path.join(root, 'src', 'main.js'), 'utf8');
+  assert.match(main, /openProductWindow:\s*async\s+applicationId\s*=>\s*\{/);
+  assert.match(main, /productWindowManager\.open\(applicationId\)/);
+  assert.match(capture, /openProductWindow\(target\.appId\)/);
+  assert.match(capture, /captureWindow = activeProductWindow/);
+  assert.match(capture, /captureWindow\.webContents\.capturePage\(undefined, \{ stayHidden: true \}\)/);
+  assert.doesNotMatch(capture, /switchToProduct/);
+});

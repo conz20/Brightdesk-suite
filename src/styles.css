@@ -183,7 +183,7 @@ textarea:focus-visible, [contenteditable="true"]:focus-visible, [tabindex]:focus
 .sidebar { background: var(--bd-ui-surface); border-color: var(--bd-ui-line); }
 .brand { min-height: 52px; }
 .brand b { color: var(--bd-ui-ink); }
-.section-label, .eyebrow { color: #78869b; letter-spacing: .11em; }
+.section-label, .eyebrow { color: #5F6F88; letter-spacing: .11em; }
 .nav { min-height: 44px; border-radius: 9px; color: var(--bd-ui-text); transition: background .16s ease, color .16s ease, transform .16s ease; }
 .nav:hover { background: #f3f6fb; color: var(--bd-ui-ink); }
 .nav.active { background: color-mix(in srgb, var(--bd-accent, #315fce) 9%, white); color: var(--bd-accent-strong, #234aa8); }
@@ -289,7 +289,7 @@ input:disabled, select:disabled, textarea:disabled, button:disabled { cursor: no
 .app-card-header .app-icon-image { flex: 0 0 42px; width: 42px; height: 42px; padding: 5px; border-radius: 12px; background: var(--app-card-tint); }
 .app-card-heading { min-width: 0; flex: 1; }
 .app-card-heading b { display: block; color: #1f2d43; font-size: 13px; letter-spacing: -.015em; }
-.app-card-heading small { display: block; margin-top: 3px; color: #738198; font-size: 10px; line-height: 1.4; }
+.app-card-heading small { display: block; margin-top: 3px; color: #64728A; font-size: 10px; line-height: 1.4; }
 .app-status-chip {
   display: inline-flex; align-items: center; gap: 5px; width: max-content;
   margin-top: 7px; padding: 4px 7px; border: 1px solid #dce4ed;
@@ -411,7 +411,7 @@ input:disabled, select:disabled, textarea:disabled, button:disabled { cursor: no
 /* Home and Files destinations from the approved Brightdesk shell. */
 .app-manager.home-view .manager-hero{margin:18px 0 0;padding:0;border:0;border-radius:0;background:transparent}
 .app-manager.home-view .manager-hero h2{margin:0 0 5px;font-size:20px;letter-spacing:-.35px;color:#1b2941}
-.app-manager.home-view .manager-hero p{font-size:12px;color:#77859b}
+.app-manager.home-view .manager-hero p{font-size:12px;color:#5F7088}
 .app-manager.home-view .manager-grid{margin-top:16px}
 .files-manager{width:100%;max-width:1180px;flex:1;margin:24px auto 10px}
 .files-hero{padding:28px 30px;border:1px solid #e2e8f1;border-radius:16px;background:linear-gradient(115deg,#edf3ff 0%,#f5f3ff 62%,#f1f8ff 100%)}
@@ -555,7 +555,81 @@ body.suite-home .app-manager.home-view .manager-grid {
 
 
 /* Keep the Home sidebar as clean as the production artwork. */
-body.suite-home .sidebar > .nav small { display: none; }
+.sidebar > .nav small { display: none; }
 body.suite-home .main > footer { display: none; }
 
 body.suite-home .app-manager.home-view .manager-hero .eyebrow { display: none; }
+
+
+/* Match the approved Home card composition without changing the Apps manager cards. */
+.app-manager.home-view .app-card {
+  min-height: 240px;
+  padding: 16px 17px;
+  gap: 0;
+}
+.app-manager.home-view .app-card-header {
+  align-items: flex-start;
+  flex-direction: column;
+  gap: 0;
+  min-height: 0;
+  padding-right: 0;
+  margin-top: 0;
+}
+.app-manager.home-view .app-card-header .app-card-app-icon {
+  flex: 0 0 70px;
+  width: 70px;
+  height: 70px;
+  padding: 0;
+  border-radius: 17px;
+  background: transparent;
+  filter: none;
+}
+.app-manager.home-view .app-card-heading {
+  min-width: 0;
+  width: 100%;
+  padding-top: 10px;
+}
+.app-manager.home-view .app-card-heading b {
+  font-size: 19px;
+  line-height: 1.25;
+  letter-spacing: -.02em;
+}
+.app-manager.home-view .app-card-heading small {
+  margin-top: 5px;
+  font-size: 13px;
+  line-height: 1.35;
+}
+.app-manager.home-view .app-status-chip {
+  min-height: 22px;
+  margin-top: 11px;
+  padding: 4px 9px;
+  font-size: 10px;
+}
+.app-manager.home-view .app-card-footer {
+  align-items: center;
+  justify-content: flex-start;
+  gap: 8px;
+  margin-top: auto;
+  padding-top: 14px;
+  border-top: 0;
+}
+.app-manager.home-view .app-card-footer .app-install-action {
+  min-height: 34px;
+  padding: 8px 10px;
+  font-size: 11px;
+}
+.app-manager.home-view .app-card-footer [data-action="open"] {
+  min-width: 92px;
+}
+.app-manager.home-view .app-card-footer [data-action="remove-from-suite"] {
+  min-width: 106px;
+}
+.app-manager.home-view .app-card-footer [data-action="add-to-suite"] {
+  min-width: 145px;
+}
+@media (max-width: 700px) {
+  .app-manager.home-view .app-card {
+    min-height: 220px;
+    padding: 16px;
+  }
+}

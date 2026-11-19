@@ -122,12 +122,13 @@ function createWindow({ show = true } = {}) {
 
 function createSuiteProductWindow(requestedApplicationId) {
   const entry = PRODUCT_MANIFEST[requestedApplicationId];
+  const screenshotCapture = process.env.BRIGHTDESK_SCREENSHOT_CAPTURE_TEST === '1';
   const window = registerApplicationWindow(new BrowserWindow({
     width: 1440,
     height: 920,
     minWidth: 980,
     minHeight: 680,
-    show: true,
+    show: !screenshotCapture,
     title: `Brightdesk ${entry.name}`,
     icon: path.join(__dirname, 'assets', 'icons', entry.iconAsset),
     backgroundColor: '#f5f6fa',
@@ -417,18 +418,6 @@ ipcMain.handle('dictionaries:list', async event => {
   return dictionaryService.installed();
 });
 
-ipcMain.handle('dictionaries:catalog', async event => {
-  if (!senderIsMain(event)) throw new Error('Invalid sender.');
-  const [installed, catalogue] = await Promise.all([dictionaryService.installed(), Promise.resolve(dictionaryService.catalogue())]);
-  const installedCodes = new Set(installed.map(item => item.locale.toLowerCase()));
-  return catalogue.map(item => ({ ...item, installed: installedCodes.has(item.locale.toLowerCase()) }));
-});
-
-ipcMain.handle('dictionaries:install-catalog', async (event, id) => {
-  if (!senderIsMain(event)) throw new Error('Invalid sender.');
-  return dictionaryService.installCatalogueEntry(id);
-});
-
 ipcMain.handle('dictionaries:check', async (event, payload) => {
   if (!senderIsMain(event)) throw new Error('Invalid sender.');
   if (!payload || typeof payload.locale !== 'string' || typeof payload.text !== 'string') throw new Error('A dictionary language and document text are required.');
@@ -584,7 +573,12 @@ app.whenReady().then(async () => {
       readTerms,
       readBundledLanguagePack,
       createWindow,
-      getMainWindow: () => mainWindow
+      getMainWindow: () => mainWindow,
+      openProductWindow: async applicationId => {
+        const opened = productWindowManager.open(applicationId);
+        await opened.ready;
+        return opened.window;
+      }
     });
     return;
   }

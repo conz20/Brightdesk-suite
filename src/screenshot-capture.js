@@ -114,35 +114,34 @@ function waitForSuiteHome() {
   });
 }
 
-function switchToProduct(appId, workspaceSelector) {
+function waitForProductWorkspace(appId, workspaceSelector, timeoutMs = 10000) {
   return new Promise((resolve, reject) => {
-    const button = document.querySelector('.nav[data-app="' + appId + '"]');
-    if (!button) {
-      reject(new Error('The navigation entry for ' + appId + ' is missing.'));
-      return;
-    }
-    button.click();
-    const deadline = Date.now() + 10000;
+    const timeout = Number.isFinite(timeoutMs) && timeoutMs > 0 ? timeoutMs : 10000;
+    const deadline = Date.now() + timeout;
     function check() {
+      const bridge = window.brightdesk;
       const workspace = document.querySelector('#workspace');
       const productView = document.querySelector(workspaceSelector);
-      if (button.classList.contains('active') && workspace && !workspace.hidden && productView && !productView.hidden) {
+      if (bridge?.launchAppId === appId && bridge?.suiteLaunchedProduct === true &&
+          workspace && !workspace.hidden && productView && !productView.hidden) {
         resolve({ appId, active: true, workspaceVisible: true, productViewVisible: true });
         return;
       }
       if (Date.now() >= deadline) {
-        reject(new Error('The ' + appId + ' workspace did not become active in the screenshot test.'));
+        reject(new Error(appId + ' workspace did not load in its own Suite product window.'));
         return;
       }
-      window.requestAnimationFrame(check);
+      window.setTimeout(check, 50);
     }
-    window.requestAnimationFrame(check);
+    check();
   });
 }
 
-async function runScreenshotCaptureTest({ app, packageVersion, readTerms, readBundledLanguagePack, createWindow, getMainWindow }) {
+async function runScreenshotCaptureTest({ app, packageVersion, readTerms, readBundledLanguagePack, createWindow, getMainWindow, openProductWindow }) {
   let window;
+  let activeProductWindow;
   try {
+    if (typeof openProductWindow !== 'function') throw new Error('Screenshot capture requires the Suite product-window manager.');
     const outputDir = process.env.BRIGHTDESK_SCREENSHOT_OUTPUT_DIR;
     const sourceCommit = process.env.GITHUB_SHA;
     if (!outputDir || !require('node:path').isAbsolute(outputDir)) throw new Error('Screenshot capture requires an absolute output directory.');
@@ -169,27 +168,33 @@ async function runScreenshotCaptureTest({ app, packageVersion, readTerms, readBu
     const osName = ({ darwin: 'macOS', win32: 'Windows', linux: 'Linux' })[process.platform] || process.platform;
     const osInfo = { name: osName, version: require('node:os').release(), architecture: require('node:os').arch() };
     for (const target of SCREENSHOT_TARGETS) {
+      let captureWindow = window;
       if (target.appId) {
-        const state = await window.webContents.executeJavaScript(
-          '(' + switchToProduct.toString() + ')(' + JSON.stringify(target.appId) + ',' + JSON.stringify(target.workspaceSelector) + ')',
+        activeProductWindow = await openProductWindow(target.appId);
+        if (!activeProductWindow || activeProductWindow.isDestroyed()) {
+          throw new Error('The ' + target.productName + ' product window did not open.');
+        }
+        captureWindow = activeProductWindow;
+        const state = await captureWindow.webContents.executeJavaScript(
+          '(' + waitForProductWorkspace.toString() + ')(' + JSON.stringify(target.appId) + ',' + JSON.stringify(target.workspaceSelector) + ')',
           true
         );
         if (!state.active || !state.workspaceVisible || !state.productViewVisible) {
-          throw new Error('The ' + target.productName + ' workspace was not visible before capture.');
+          throw new Error('The ' + target.productName + ' workspace was not ready in its product window.');
         }
       } else {
-        const visible = await window.webContents.executeJavaScript(
+        const visible = await captureWindow.webContents.executeJavaScript(
           'Boolean(document.querySelector("#app-manager") && !document.querySelector("#app-manager").hidden && document.querySelector("#app-manager-grid")?.children.length === 10)',
           true
         );
         if (!visible) throw new Error('Suite Home was not visible before capture.');
       }
 
-      await window.webContents.executeJavaScript(
+      await captureWindow.webContents.executeJavaScript(
         'new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)))',
         true
       );
-      const image = await window.webContents.capturePage();
+      const image = await captureWindow.webContents.capturePage(undefined, { stayHidden: true });
       const size = image.getSize();
       if (image.isEmpty() || size.width < 1000 || size.height < 650) {
         throw new Error(target.productName + ' capture is empty or too small (' + size.width + ' × ' + size.height + ').');
@@ -207,6 +212,8 @@ async function runScreenshotCaptureTest({ app, packageVersion, readTerms, readBu
       });
       writeScreenshotEvidence({ outputDir, targetId: target.id, imageBytes, evidence });
       console.log('Captured pending-review image:', target.productName, size.width + 'x' + size.height);
+      if (activeProductWindow && !activeProductWindow.isDestroyed()) activeProductWindow.destroy();
+      activeProductWindow = null;
     }
     const result = verifyScreenshotSet(outputDir);
     console.log('Brightdesk screenshot capture completed:', result.screenshotCount, 'images with pending-review evidence.');
@@ -214,9 +221,10 @@ async function runScreenshotCaptureTest({ app, packageVersion, readTerms, readBu
     app.exit(0);
   } catch (error) {
     console.error('Brightdesk screenshot capture failed:', error.stack || error.message);
+    if (activeProductWindow && !activeProductWindow.isDestroyed()) activeProductWindow.destroy();
     if (window && !window.isDestroyed()) window.destroy();
     app.exit(1);
   }
 }
 
-module.exports = { seedRendererStorage, waitForSuiteHome, switchToProduct, runScreenshotCaptureTest };
+module.exports = { seedRendererStorage, waitForSuiteHome, waitForProductWorkspace, runScreenshotCaptureTest };

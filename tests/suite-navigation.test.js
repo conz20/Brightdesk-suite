@@ -184,7 +184,7 @@ test('Home sidebar footer and navigation match the production artwork', () => {
   const preload = read('src/preload.js');
   assert.ok(preload.includes('platform: process.platform,'));
   assert.ok(!app.includes("$('version-label').textContent ="));
-  assert.ok(styles.includes('body.suite-home .sidebar > .nav small { display: none; }'));
+  assert.ok(styles.includes('.sidebar > .nav small { display: none; }'));
   assert.ok(styles.includes('body.suite-home .main > footer { display: none; }'));
   assert.ok(readme.includes('with no secondary captions'));
 });
@@ -197,4 +197,68 @@ test('Home product section uses one clear heading without the Apps eyebrow', () 
   assert.ok(styles.includes('body.suite-home .app-manager.home-view .manager-hero .eyebrow { display: none; }'));
   assert.ok(readme.includes('redundant **MY APPS** label is hidden on Home'));
   assert.ok(guide.includes('Do not place an additional eyebrow label above this heading.'));
+});
+
+
+test('Suite Home, Apps and Files share clean navigation and truthful product actions', () => {
+  const app = read('src/app.js');
+  const styles = read('src/styles.css');
+  const home = read('assets/product-experience/brightdesk-home.svg');
+
+  assert.match(app, /\$\('sidebar-section-label'\)\.hidden = Boolean\(launchAppId\) \|\| suitePage;/);
+  assert.ok(styles.includes('.sidebar > .nav small { display: none; }'));
+
+  assert.equal((home.match(/>IN YOUR SUITE<\/text>/g) || []).length, 6);
+  assert.equal((home.match(/>Remove from Suite<\/text>/g) || []).length, 6);
+  assert.equal((home.match(/>AVAILABLE TO ADD<\/text>/g) || []).length, 4);
+  assert.equal((home.match(/>Add to Suite<\/text>/g) || []).length, 4);
+  assert.doesNotMatch(home, /INSTALLED|Uninstall|AVAILABLE TO INSTALL/);
+});
+
+
+test('Home product cards match the approved concise artwork while Apps retains details', () => {
+  const app = read('src/app.js');
+  const catalog = read('src/app-catalog.js');
+  assert.ok(app.includes("function productCardName(item) { return item.name.startsWith('Brightdesk ') ? item.name.slice('Brightdesk '.length) : item.name; }"));
+  assert.ok(app.includes('name.textContent = productCardName(item);'));
+  assert.ok(app.includes('if (!homeView) footer.append(version);'));
+  assert.ok(app.includes('if (!homeView) card.append(description);'));
+
+  for (const subtitle of [
+    'Documents & writing', 'Spreadsheets & formulas', 'Presentations & slides',
+    'Notes & ideas', 'Tables & structured records', 'Forms, surveys & quizzes',
+    'Lists & tracking', 'Projects & planning', 'Daily tasks & reminders',
+    'Your connected workspace'
+  ]) assert.ok(catalog.includes("subtitle: '" + subtitle + "'"), subtitle);
+});
+
+
+test('Home product cards use the artwork vertical hierarchy and action proportions', () => {
+  const app = read('src/app.js');
+  const styles = read('src/styles.css');
+  assert.ok(app.includes("open.dataset.action = 'open';"));
+  assert.ok(app.includes("action.dataset.action = isInstalled ? 'remove-from-suite' : 'add-to-suite';"));
+  assert.ok(styles.includes('.app-manager.home-view .app-card-header {'));
+  assert.ok(styles.includes('flex-direction: column;'));
+  assert.ok(styles.includes('flex: 0 0 70px;'));
+  assert.ok(styles.includes('padding-right: 0;'));
+  assert.ok(styles.includes('font-size: 19px;'));
+  assert.ok(styles.includes('.app-manager.home-view .app-card-footer [data-action="remove-from-suite"]'));
+  assert.ok(styles.includes('.app-manager.home-view .app-card-footer [data-action="add-to-suite"]'));
+});
+
+
+test('English fallback Suite labels match the packaged Australian English language pack', () => {
+  const fallback = read('src/i18n.js');
+  const en = JSON.parse(read('src/languages/en-AU.json')).translations;
+  const expected = {
+    'manager.install': 'Add to Suite',
+    'manager.remove': 'Remove from Suite',
+    'manager.inWorkspace': 'In your Suite',
+    'manager.notInstalled': 'Available to add'
+  };
+  for (const [key, value] of Object.entries(expected)) {
+    assert.equal(en[key], value, `${key} should match the approved Suite wording`);
+    assert.ok(fallback.includes(`'${key}':'${value}'`), `${key} fallback should match the packaged language pack`);
+  }
 });

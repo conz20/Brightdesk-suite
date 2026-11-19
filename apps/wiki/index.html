@@ -28,11 +28,13 @@
       </header>
       <article class="wiki-article" contenteditable="true">
         <h1>Architecture Overview</h1>
-        <p class="lead-text">The Brightdesk Office Suite is engineered as an npm workspaces monorepo containing 10 standalone productivity applications and a shared UI design package.</p>
+        <p class="lead-text">The Brightdesk Office Suite is an npm workspaces monorepo containing the integrated Suite and exactly ten approved product workspaces, together with shared design and engineering packages.</p>
         <h2>Core Principles</h2>
         <ul>
-          <li><strong>Standalone Apps:</strong> Each application operates independently with dedicated app shells and tooling.</li>
-          <li><strong>Enterprise Polish:</strong> Styled to match Microsoft 365, Adobe, and Craft design standards.</li>
+          <li><strong>Ten approved products:</strong> Pages, Sheets, Decks, Notes, Database, Forms, Lists, Planner, To Do and Workspace are the only customer products. Each has its own product workspace, name, original icon and interaction patterns.</li>
+          <li><strong>Integrated Suite windows:</strong> Opening a product from Home creates or focuses its own top-level window; the ten product workspaces appear as separate top-level windows inside the Suite process and share the Suite's local data store. They do not replace Home, Apps or Files. Separately packaged product installations retain their own native application identity.</li>
+          <li><strong>Original design system:</strong> The original Brightdesk design system uses its own icons, typography, colours and interaction patterns. Microsoft productivity conventions may inform familiar workflows, but no other product's logos, code or distinctive trade dress are copied.</li>
+          <li><strong>Local-first by default:</strong> Documents and product data remain on this device. Online access is limited to approved Brightdesk update and language-resource services.</li>
         </ul>
       </article>
     </main>

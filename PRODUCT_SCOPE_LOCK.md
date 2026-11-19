@@ -27,6 +27,21 @@ Integration status must not be presented as final acceptance. Real user workflow
 
 Outlook, OneDrive and Teams are not part of Brightdesk and must not be added.
 
+## Pricing, accounts and privacy lock
+
+- Brightdesk is free forever: no subscriptions, trials, paid tiers or billing.
+- No customer accounts, sign-in, passwords, profiles, activation codes, serial numbers or licence servers.
+- No telemetry, analytics, advertising, crash reporting, cloud sync, online collaboration, remote AI service or customer text/document uploads.
+- Product data, document processing and spelling checks stay on the device.
+- Network access is limited to Brightdesk-controlled product-update and language-resource services. Third-party dictionary downloads are not permitted. Dictionary downloads remain disabled until approved, signed Brightdesk-hosted packs are released.
+
+## External brand and service boundaries
+
+- Do not add Adobe applications, services, runtime dependencies or integrations.
+- Microsoft products may be used as internal workflow references only. Do not use Microsoft or Adobe logos, code or distinctive trade dress.
+- All product names, icons, artwork, typography, colours and interaction design must remain original Brightdesk work.
+
+
 ## Change control
 
 This scope can change only when the user explicitly instructs. Do not infer approval to add apps from a technical dependency, design reference or workflow comparison.
