@@ -1,0 +1,96 @@
+name: Brightdesk AI maintainer
+
+on:
+  schedule:
+    - cron: '23 18 * * *'
+    - cron: '41 18 * * 0'
+  workflow_dispatch:
+    inputs:
+      run_native_build:
+        description: Run the existing Suite installer workflow without publishing a release
+        type: boolean
+        required: true
+        default: false
+
+permissions:
+  contents: read
+  actions: write
+
+concurrency:
+  group: brightdesk-ai-maintainer-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  daily-audit:
+    name: Daily source and release configuration check
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check out Brightdesk
+        uses: actions/checkout@v4
+
+      - name: Set up the pinned Node.js version
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24.22.2
+          cache: npm
+
+      - name: Verify the dependency lock
+        run: npm run lock:verify
+
+      - name: Install the exact locked dependencies
+        run: npm ci --no-audit --no-fund
+
+      - name: Run the complete project test suite
+        run: npm test
+
+      - name: Check release readiness
+        run: npm run release:preflight
+
+      - name: Run the deterministic Brightdesk maintenance audit
+        shell: bash
+        run: |
+          set +e
+          node scripts/brightdesk-ai/audit.js
+          audit_status=$?
+          if [[ -f reports/brightdesk-ai/latest.md ]]; then
+            cat reports/brightdesk-ai/latest.md >> "$GITHUB_STEP_SUMMARY"
+          fi
+          exit "$audit_status"
+
+  weekly-native-build:
+    name: Weekly build using the current Suite installer workflow
+    if: >-
+      (github.event_name == 'schedule' && github.event.schedule == '41 18 * * 0') ||
+      (github.event_name == 'workflow_dispatch' && inputs.run_native_build == true)
+    needs: daily-audit
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check out Brightdesk
+        uses: actions/checkout@v4
+
+      - name: Read current Suite version
+        id: version
+        shell: bash
+        run: |
+          version="$(node -p 'require("./package.json").version')"
+          printf 'value=%s\n' "$version" >> "$GITHUB_OUTPUT"
+
+      - name: Start the existing installer workflow without publishing a release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          VERSION: ${{ steps.version.outputs.value }}
+          REF_NAME: ${{ github.ref_name }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh workflow run build-release.yml \
+            --repo "$REPO" \
+            --ref "$REF_NAME" \
+            --field publish_release=false \
+            --field release_tag="v$VERSION"
+          echo "Started the existing Suite installer workflow for Brightdesk v$VERSION." >> "$GITHUB_STEP_SUMMARY"
+          echo "This uses the current main-branch build workflow. Separate standalone app build coverage remains dependent on the Suite build workflow being updated and verified." >> "$GITHUB_STEP_SUMMARY"
+          echo "The build is verification-only. It does not publish or replace a customer release." >> "$GITHUB_STEP_SUMMARY"
