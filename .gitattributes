@@ -1,0 +1,2 @@
+# Keep Rust source visible and correctly classified in GitHub language statistics.
+*.rs linguist-language=Rust linguist-detectable=true

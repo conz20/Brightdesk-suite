@@ -106,7 +106,7 @@ The Windows NSIS installer and macOS DMG/PKG present the Brightdesk Terms and Co
 
 ## Local-first desktop software
 
-Brightdesk is designed to keep product data on the current device. The first-use features described above do not require an account, cloud workspace or online collaboration. Some tasks such as downloads and update checks may use network access when explicitly requested.
+Brightdesk remains local-first. The current first-use features do not require an account or cloud workspace, and online collaboration is not yet implemented. The proposed opt-in collaboration architecture is documented in [Collaboration Architecture and Ten-Product Rust Rollout](docs/COLLABORATION_ARCHITECTURE.md).
 
 ## Product repositories
 
@@ -167,7 +167,7 @@ npm run verify:local-release
 
 This local process does not publish a GitHub Release or upload artifacts. Run it separately on each operating system you intend to distribute for. The pull-request macOS packaging check also builds and verifies its installers locally on the native runner without uploading duplicate installer bundles to GitHub Actions storage; the build and SHA-256 results remain in the workflow log.
 
-See [installation guidance](docs/INSTALLATION.md), [local release verification](docs/LOCAL-RELEASE-VERIFICATION.md), [versioning](docs/VERSIONING.md), [Rust integration](docs/RUST_ENGINE_INTEGRATION.md), [PRODUCT_SCOPE_LOCK.md](PRODUCT_SCOPE_LOCK.md), [LICENSE](LICENSE) and [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
+See [installation guidance](docs/INSTALLATION.md), [local release verification](docs/LOCAL-RELEASE-VERIFICATION.md), [versioning](docs/VERSIONING.md), [Rust integration](docs/RUST_ENGINE_INTEGRATION.md), [collaboration architecture](docs/COLLABORATION_ARCHITECTURE.md), [PRODUCT_SCOPE_LOCK.md](PRODUCT_SCOPE_LOCK.md), [LICENSE](LICENSE) and [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
 
 ## Integration and release status
 
