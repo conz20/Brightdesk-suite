@@ -9,7 +9,7 @@ const forms = require('../src/forms-service');
 const planner = require('../src/planner-service');
 const database = require('../src/database-service');
 const workspace = require('../src/workspace-service');
-const { seedRendererStorage, switchToProduct, waitForSuiteHome } = require('../src/screenshot-capture');
+const { APP_IDS, seedRendererStorage, switchToProduct, waitForSuiteHome } = require('../src/screenshot-capture');
 const { SCREENSHOT_TARGETS } = require('../src/screenshot-evidence');
 
 test('renderer seed creates fictional local records for all ten approved products', () => {
@@ -23,6 +23,7 @@ test('renderer seed creates fictional local records for all ten approved product
       BrightdeskDatabaseService: database,
       BrightdeskWorkspaceService: workspace
     });
+    dom.window.APP_IDS = APP_IDS;
     const result = dom.window.eval('(' + seedRendererStorage.toString() + ')()');
     const setup = JSON.parse(dom.window.localStorage.getItem('brightdesk-app-setup-v1'));
     const docs = JSON.parse(dom.window.localStorage.getItem('brightdesk-docs-v3'));
