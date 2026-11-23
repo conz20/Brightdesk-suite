@@ -9,7 +9,7 @@ const forms = require('../src/forms-service');
 const planner = require('../src/planner-service');
 const database = require('../src/database-service');
 const workspace = require('../src/workspace-service');
-const { seedRendererStorage, switchToProduct, waitForSuiteHome } = require('../src/screenshot-capture');
+const { APP_IDS, seedRendererStorage, switchToProduct, waitForSuiteHome } = require('../src/screenshot-capture');
 const { SCREENSHOT_TARGETS } = require('../src/screenshot-evidence');
 
 test('renderer seed creates fictional local records for all ten approved products', () => {
@@ -23,12 +23,22 @@ test('renderer seed creates fictional local records for all ten approved product
       BrightdeskDatabaseService: database,
       BrightdeskWorkspaceService: workspace
     });
+    dom.window.APP_IDS = APP_IDS;
     const result = dom.window.eval('(' + seedRendererStorage.toString() + ')()');
     const setup = JSON.parse(dom.window.localStorage.getItem('brightdesk-app-setup-v1'));
     const docs = JSON.parse(dom.window.localStorage.getItem('brightdesk-docs-v3'));
     assert.equal(result.installedApps, 10);
     assert.deepEqual(setup.installedApps, ['pages','sheets','slides','notes','database','forms','lists','planner','todo','loop']);
     assert.equal(docs.pages.title, 'Project brief');
+    assert.match(docs.pages.html, /Website launch brief/);
+    assert.equal(docs.sheets.title, 'Delivery tracker');
+    assert.deepEqual(docs.sheets.cells[0].slice(0, 4), ['Work item', 'Owner', 'Status', 'Hours']);
+    assert.equal(docs.sheets.cells[1][0], 'Review Help guides');
+    assert.equal(docs.sheets.cells[4][3], '=SUM(D2:D4)');
+    assert.equal(docs.slides.title, 'Release roadmap');
+    assert.equal(docs.slides.slides.length, 3);
+    assert.equal(docs.slides.slides[0].title, 'A clearer Help experience');
+    assert.match(docs.notes.text, /Review each product guide/);
     assert.equal(docs.todo.tasks.length, 3);
     assert.equal(docs.todo.tasks.filter(item => item.myDay).length, 2);
     assert.equal(docs.lists.lists[0].items.length, 2);

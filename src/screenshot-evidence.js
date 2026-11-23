@@ -76,16 +76,52 @@ function createScreenshotEvidence(input = {}) {
   };
 }
 
+function validateEvidenceRecord(evidence, target, imageBytes) {
+  if (!evidence || typeof evidence !== 'object' || Array.isArray(evidence)) {
+    throw new Error(`Screenshot evidence is invalid for ${target.productName}.`);
+  }
+  if (evidence.imageFilename !== target.filename || evidence.productId !== target.productId ||
+      evidence.productName !== target.productName || evidence.sourceRepository !== 'conz20/Brightdesk-suite' ||
+      evidence.status !== 'captured-pending-review' || evidence.verified !== false) {
+    throw new Error(`Screenshot evidence does not match the selected target or pending-review state for ${target.productName}.`);
+  }
+  if (typeof evidence.appVersion !== 'string' || !evidence.appVersion.trim()) {
+    throw new Error(`Screenshot evidence requires an app version for ${target.productName}.`);
+  }
+  if (typeof evidence.sourceCommit !== 'string' || !/^[a-f0-9]{40}$/i.test(evidence.sourceCommit)) {
+    throw new Error(`Screenshot evidence requires the exact 40-character source commit for ${target.productName}.`);
+  }
+  const operatingSystem = evidence.operatingSystem;
+  if (!operatingSystem || ['name', 'version', 'architecture'].some(field =>
+    typeof operatingSystem[field] !== 'string' || !operatingSystem[field].trim())) {
+    throw new Error(`Screenshot evidence requires the operating-system name, version and architecture for ${target.productName}.`);
+  }
+  const capturedAt = new Date(evidence.capturedAt);
+  if (typeof evidence.capturedAt !== 'string' || Number.isNaN(capturedAt.getTime()) || capturedAt.toISOString() !== evidence.capturedAt) {
+    throw new Error(`Screenshot evidence requires a valid ISO 8601 capture timestamp for ${target.productName}.`);
+  }
+  for (const field of ['workflow', 'sampleDataDescription']) {
+    if (typeof evidence[field] !== 'string' || !evidence[field].trim()) {
+      throw new Error(`Screenshot evidence requires ${field} for ${target.productName}.`);
+    }
+  }
+  if (evidence.captureMethod !== CAPTURE_METHOD) {
+    throw new Error(`Screenshot evidence has an unsupported capture method for ${target.productName}.`);
+  }
+  if (evidence.primaryWorkflowInspected !== false || evidence.reviewedForSensitiveData !== false || evidence.reviewedBy !== '') {
+    throw new Error(`Screenshot evidence has invalid review flags for ${target.productName}.`);
+  }
+  const expectedHash = crypto.createHash('sha256').update(imageBytes).digest('hex');
+  if (typeof evidence.sha256 !== 'string' || !/^[a-f0-9]{64}$/i.test(evidence.sha256) || evidence.sha256 !== expectedHash) {
+    throw new Error(`Screenshot evidence checksum does not match the PNG for ${target.productName}.`);
+  }
+}
+
 function writeScreenshotEvidence({ outputDir, targetId, imageBytes, evidence }) {
   const target = findScreenshotTarget(targetId);
   validatePng(imageBytes);
   if (!path.isAbsolute(outputDir || '')) throw new Error('Screenshot output directory must be an absolute path.');
-  if (!evidence || evidence.imageFilename !== target.filename || evidence.productId !== target.productId ||
-      evidence.verified !== false || evidence.status !== 'captured-pending-review') {
-    throw new Error('Screenshot evidence does not match the selected target or review state.');
-  }
-  const expectedHash = crypto.createHash('sha256').update(imageBytes).digest('hex');
-  if (evidence.sha256 !== expectedHash) throw new Error('Screenshot evidence checksum does not match the PNG.');
+  validateEvidenceRecord(evidence, target, imageBytes);
   fs.mkdirSync(outputDir, { recursive: true });
   const imagePath = path.join(outputDir, target.filename);
   const evidencePath = path.join(outputDir, `${target.id}-evidence.json`);
@@ -110,13 +146,7 @@ function verifyScreenshotSet(outputDir) {
     const imageBytes = fs.readFileSync(path.join(outputDir, target.filename));
     validatePng(imageBytes);
     const evidence = JSON.parse(fs.readFileSync(path.join(outputDir, `${target.id}-evidence.json`), 'utf8'));
-    if (evidence.imageFilename !== target.filename || evidence.productId !== target.productId ||
-        evidence.status !== 'captured-pending-review' || evidence.verified !== false) {
-      throw new Error(`Screenshot evidence is invalid for ${target.productName}.`);
-    }
-    if (evidence.sha256 !== crypto.createHash('sha256').update(imageBytes).digest('hex')) {
-      throw new Error(`Screenshot checksum mismatch for ${target.productName}.`);
-    }
+    validateEvidenceRecord(evidence, target, imageBytes);
   }
   return { screenshotCount: SCREENSHOT_TARGETS.length, files: expectedFiles };
 }

@@ -219,4 +219,4 @@ async function runScreenshotCaptureTest({ app, packageVersion, readTerms, readBu
   }
 }
 
-module.exports = { seedRendererStorage, waitForSuiteHome, switchToProduct, runScreenshotCaptureTest };
+module.exports = { APP_IDS, seedRendererStorage, waitForSuiteHome, switchToProduct, runScreenshotCaptureTest };
