@@ -7,3 +7,7 @@
 
 dist/
 node_modules/
+
+# Generated licensed font payload is supplied by the verified release build artifact.
+/resources/brightdesk-fonts/*
+!/resources/brightdesk-fonts/README.md
