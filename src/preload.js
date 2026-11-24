@@ -1,5 +1,7 @@
 'use strict';
 
+const fontCatalogue = require('../packages/fonts/catalogue.json');
+
 const { contextBridge, ipcRenderer } = require('electron');
 
 const launchArgument = process.argv.find(argument => argument.startsWith('--brightdesk-app='));
@@ -20,6 +22,7 @@ const supportedApps = new Set([
 
 contextBridge.exposeInMainWorld('brightdesk', {
   launchAppId: supportedApps.has(launchAppId) ? launchAppId : null,
+  fontCatalogue,
   suiteLaunchedProduct,
   openApplication: (applicationId) => ipcRenderer.invoke('apps:open', applicationId),
   platform: process.platform,
