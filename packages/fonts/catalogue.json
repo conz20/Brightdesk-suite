@@ -1,0 +1,98 @@
+{
+  "schemaVersion": 1,
+  "sourcePolicy": "Only fonts with verified redistribution and application-embedding permission may be bundled. System-installed fonts are discovered and used in place; proprietary binaries are never copied without written rights.",
+  "fonts": [
+    {
+      "id": "inter",
+      "family": "Inter",
+      "version": "4.1",
+      "source": {
+        "publisher": "Google Fonts",
+        "repository": "https://github.com/google/fonts",
+        "directory": "https://github.com/google/fonts/tree/main/ofl/inter",
+        "googleFontsRevision": "06bfe0d62a98375cb09c942fa18e68bd32cff057",
+        "upstreamRepository": "https://github.com/rsms/inter",
+        "upstreamRevision": "66647c0bbbe41a850d79d9c76fb13add3378940f",
+        "retrievedAt": "2026-11-24"
+      },
+      "license": {
+        "spdxId": "OFL-1.1",
+        "textFile": "licenses/inter-OFL.txt",
+        "licenseUrl": "https://openfontlicense.org/open-font-license-official-text/",
+        "copyright": "Copyright 2020 The Inter Project Authors (https://github.com/rsms/inter)",
+        "author": "Rasmus Andersson",
+        "redistributionAllowed": true,
+        "applicationEmbeddingAllowed": true,
+        "modificationAllowed": true,
+        "reservedFontName": false
+      },
+      "styles": [
+        "Normal",
+        "Italic"
+      ],
+      "scripts": [
+        "Latin",
+        "Latin Extended",
+        "Greek",
+        "Greek Extended",
+        "Cyrillic",
+        "Cyrillic Extended",
+        "Vietnamese"
+      ],
+      "files": [
+        {
+          "path": "assets/fonts/inter/Inter[opsz,wght].ttf",
+          "format": "ttf",
+          "sha256": "29160a80ff49ddcab2c97711247e08b1fab27a484a329ce8b813d820dc559031",
+          "face": {
+            "id": "inter-variable-normal",
+            "style": "normal",
+            "weight": 400,
+            "italic": false,
+            "oblique": false,
+            "axes": [
+              {
+                "tag": "opsz",
+                "min": 14,
+                "default": 14,
+                "max": 32
+              },
+              {
+                "tag": "wght",
+                "min": 100,
+                "default": 400,
+                "max": 900
+              }
+            ]
+          }
+        },
+        {
+          "path": "assets/fonts/inter/Inter-Italic[opsz,wght].ttf",
+          "format": "ttf",
+          "sha256": "acd98e64795781b2058f07b18475e0ecee2a0fe2b42a49e2f9e37d0d6bf66ce6",
+          "face": {
+            "id": "inter-variable-italic",
+            "style": "italic",
+            "weight": 400,
+            "italic": true,
+            "oblique": false,
+            "axes": [
+              {
+                "tag": "opsz",
+                "min": 14,
+                "default": 14,
+                "max": 32
+              },
+              {
+                "tag": "wght",
+                "min": 100,
+                "default": 400,
+                "max": 900
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

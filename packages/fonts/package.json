@@ -1,0 +1,8 @@
+{
+  "name": "@brightdesk/fonts",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Shared offline-first, licence-reviewed font catalogue and assets for all Brightdesk products",
+  "main": "index.cjs",
+  "files": ["assets", "catalogue.json", "fonts.css", "index.cjs", "licenses"]
+}
