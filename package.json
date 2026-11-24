@@ -168,7 +168,16 @@
     },
     "appImage": {
       "artifactName": "Brightdesk-Office-Suite-${version}-${arch}.${ext}"
-    }
+    },
+    "extraResources": [
+      {
+        "from": "resources/brightdesk-fonts",
+        "to": "brightdesk-fonts",
+        "filter": [
+          "**/*"
+        ]
+      }
+    ]
   },
   "overrides": {
     "pptxgenjs": {
