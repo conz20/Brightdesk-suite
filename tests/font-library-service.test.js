@@ -167,6 +167,34 @@ test('keeps the current shared package intact when an update package fails verif
   assert.equal(service.list().packageVersion, '0.1.0');
 });
 
+test('release preflight accepts only a complete verified first-install font package', t => {
+  const { checkFontPackage } = require('../scripts/release-preflight');
+  const bundle = createPackageFixture(t);
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'brightdesk-font-preflight-'));
+  t.after(() => fs.rmSync(root, { recursive: true, force: true }));
+  const destination = path.join(root, 'resources', 'brightdesk-fonts');
+  fs.mkdirSync(destination, { recursive: true });
+  fs.cpSync(bundle.root, destination, { recursive: true });
+
+  const ready = checkFontPackage(root);
+  assert.equal(ready.passed, true);
+  assert.match(ready.detail, /1 families and 1 font files/);
+
+  fs.writeFileSync(path.join(destination, ...bundle.fontPath.split('/')), 'changed');
+  const blocked = checkFontPackage(root);
+  assert.equal(blocked.passed, false);
+  assert.match(blocked.detail, /SHA-256|size mismatch/i);
+});
+
+test('release preflight blocks a missing first-install font package', t => {
+  const { checkFontPackage } = require('../scripts/release-preflight');
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'brightdesk-font-preflight-empty-'));
+  t.after(() => fs.rmSync(root, { recursive: true, force: true }));
+  const result = checkFontPackage(root);
+  assert.equal(result.passed, false);
+  assert.match(result.detail, /complete, integrity-checked Brightdesk 0.1.0 font package is required/i);
+});
+
 test('returns no file paths or hashes to the renderer', t => {
   const bundle = createPackageFixture(t);
   const shared = fs.mkdtempSync(path.join(os.tmpdir(), 'brightdesk-font-store-'));
