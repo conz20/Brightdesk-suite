@@ -358,7 +358,7 @@ class FontLibraryService {
             ...(Array.isArray(faceDetails.scripts) ? { scripts: faceDetails.scripts } : {})
           };
         });
-        const key = font.family.normalize('NFKC').trim().replace(/\\s+/g, ' ').toLocaleLowerCase('en');
+        const key = font.family.normalize('NFKC').trim().replace(/\s+/g, ' ').toLocaleLowerCase('en');
         const existing = familiesByName.get(key);
         if (!existing) {
           familiesByName.set(key, {
