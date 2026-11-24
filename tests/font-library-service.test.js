@@ -183,6 +183,8 @@ test('all ten product windows receive the same authorised local font library API
     assert.ok(app.includes(applicationId + ':'), 'the shared font selector must target ' + applicationId);
   }
   assert.match(app, /font-library-select/);
+  assert.match(app, /font-library-search/);
+  assert.match(app, /visibleFamilies/);
   assert.match(app, /applySelectedFont\(\)/);
 });
 
