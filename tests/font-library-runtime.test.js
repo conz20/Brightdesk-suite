@@ -140,6 +140,23 @@ test('refuses to replace the same package version with different files', t => {
 });
 
 
+test('release preflight blocks an undersized Google font collection even when its binaries are valid', t => {
+  const { checkFontPackage } = require('../scripts/release-preflight');
+  const source = createFontPackage(t, { family: 'Google Sans Test' });
+  const cataloguePath = path.join(source.root, 'catalogue.json');
+  const catalogue = JSON.parse(fs.readFileSync(cataloguePath, 'utf8'));
+  catalogue.fonts[0].source.publisher = 'Google Fonts';
+  fs.writeFileSync(cataloguePath, JSON.stringify(catalogue, null, 2) + '\\n');
+
+  const blocked = checkFontPackage(source.root, 1900);
+  assert.equal(blocked.passed, false);
+  assert.equal(blocked.googleFamilyCount, 1);
+  assert.match(blocked.detail, /at least 1900/i);
+
+  const fixtureMinimum = checkFontPackage(source.root, 1);
+  assert.equal(fixtureMinimum.passed, true);
+});
+
 test('renderer receives no raw catalogue paths, checksums or upstream source URLs', () => {
   const preload = fs.readFileSync(path.join(__dirname, '../src/preload.js'), 'utf8');
   const renderer = fs.readFileSync(path.join(__dirname, '../src/app.js'), 'utf8');
