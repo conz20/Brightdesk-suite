@@ -44,6 +44,35 @@ const editor = $('editor'), sheetWrap = $('sheet-wrap'), slideWrap = $('slide-wr
 const pageLayout = window.BrightdeskPageLayout;
 
 function clone(value) { return JSON.parse(JSON.stringify(value)); }
+
+const FONT_PREFERENCE_KEY = 'brightdesk-font-family-v1';
+function availableFontFamilies() {
+  return Array.isArray(window.brightdesk.fontCatalogue?.fonts) ? window.brightdesk.fontCatalogue.fonts : [];
+}
+function fontStackFor(family) {
+  if (family === 'system') return 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+  const match = availableFontFamilies().find(font => font.family === family);
+  return match ? '"' + match.family + '", system-ui, sans-serif' : 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+}
+function applyFontPreference(family = localStorage.getItem(FONT_PREFERENCE_KEY) || 'Inter') {
+  const valid = family === 'system' || availableFontFamilies().some(font => font.family === family);
+  const selected = valid ? family : (availableFontFamilies()[0]?.family || 'system');
+  document.documentElement.style.setProperty('--brightdesk-font-family', fontStackFor(selected));
+  localStorage.setItem(FONT_PREFERENCE_KEY, selected);
+  const control = $('font-family-choice');
+  if (control && control.value !== selected) control.value = selected;
+  return selected;
+}
+function populateFontFamilyControl() {
+  const control = $('font-family-choice');
+  if (!control) return;
+  control.replaceChildren();
+  const system = document.createElement('option'); system.value = 'system'; system.textContent = 'System default'; control.append(system);
+  availableFontFamilies().forEach(font => { const option = document.createElement('option'); option.value = font.family; option.textContent = font.family; control.append(option); });
+  control.value = applyFontPreference();
+  control.addEventListener('change', () => applyFontPreference(control.value));
+}
+
 function activeDoc() { return state.docs[state.app]; }
 function setStatus(message) { $('save-status').textContent = message; }
 function persist() {
@@ -144,6 +173,14 @@ function renderToolbar() {
   if (app === 'pages') {
     if (tab === 'home') {
       const font = group('text');
+      const documentFont = document.createElement('select');
+      documentFont.className = 'font-family-select';
+      documentFont.setAttribute('aria-label', 'Document font');
+      const defaultFont = document.createElement('option'); defaultFont.value = ''; defaultFont.textContent = 'Default font'; documentFont.append(defaultFont);
+      availableFontFamilies().forEach(item => { const option = document.createElement('option'); option.value = item.family; option.textContent = item.family; documentFont.append(option); });
+      documentFont.value = activeDoc().fontFamily || '';
+      documentFont.addEventListener('change', () => { activeDoc().fontFamily = documentFont.value; applyPageLayout(); persist(); });
+      font.append(documentFont);
       [[label('bold'),'bold'],[label('italic'),'italic'],[label('underline'),'underline'],[label('heading1'),'heading'],[label('heading2'),'subheading']].forEach(([label, cmd]) => addButton(font, label, () => {
         editor.focus(); if (cmd === 'heading') document.execCommand('formatBlock', false, 'H1'); else if (cmd === 'subheading') document.execCommand('formatBlock', false, 'H2'); else document.execCommand(cmd); persist();
       }, label));
@@ -264,6 +301,7 @@ function applyPageLayout() {
   activeDoc().pageSettings = settings;
   Object.assign(editor.style, pageLayout.getPageStyle(settings));
   editor.style.maxWidth = 'calc(100% - 40px)';
+  editor.style.fontFamily = activeDoc().fontFamily ? fontStackFor(activeDoc().fontFamily) : 'var(--brightdesk-font-family)';
 }
 function changeEditorZoom(delta) { state.editorZoom = Math.max(70, Math.min(160, state.editorZoom + delta)); applyEditorZoom(); }
 function applyEditorZoom() { editor.style.fontSize = `${14 * state.editorZoom / 100}px`; setStatus(`Document zoom ${state.editorZoom}%`); }
@@ -840,6 +878,7 @@ function render() {
   $('welcome').hidden = suitePage || files || languages || ['todo','lists','forms','planner','database','loop'].includes(state.app);
   $('app-title').textContent = home ? t('home.title') : (manager ? t('sidebar.applications') : (files ? 'Files' : (languages ? t('language.title') : (catalog.find(item => item.id === state.app)?.name || state.app))));
   $('top-actions').hidden = languages;
+  $('font-family-control').hidden = suitePage || files || languages;
   $('save-status').hidden = suitePage || files || languages;
   $('open-button').hidden = suitePage || files || languages;
   $('save-project').hidden = suitePage || files || languages;
@@ -1077,6 +1116,7 @@ $('export-button').addEventListener('click',exportCurrent);$('open-button').addE
 $('updates-button').addEventListener('click',async()=>{const msg=$('update-message');msg.hidden=false;msg.textContent=t('common.updateChecking');try{const r=await window.brightdesk.checkForUpdates();if(!r?.ok)msg.textContent=r?.message||'Update checks are not configured yet.';}catch(e){msg.textContent=`Update check failed: ${e.message}`;}});
 window.brightdesk.onUpdateState?.(handleUpdateState);
 loadLocal();
+populateFontFamilyControl();
 (async()=>{
   try {
     const version = await window.brightdesk.getVersion();
