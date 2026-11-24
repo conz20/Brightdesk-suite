@@ -167,6 +167,25 @@ test('keeps the current shared package intact when an update package fails verif
   assert.equal(service.list().packageVersion, '0.1.0');
 });
 
+test('all ten product windows receive the same authorised local font library APIs', () => {
+  const fs = require('node:fs');
+  const path = require('node:path');
+  const main = fs.readFileSync(path.join(__dirname, '../src/main.js'), 'utf8');
+  const preload = fs.readFileSync(path.join(__dirname, '../src/preload.js'), 'utf8');
+  const app = fs.readFileSync(path.join(__dirname, '../src/app.js'), 'utf8');
+
+  assert.match(main, /ipcMain\.handle\('fonts:list', event => \{/);
+  assert.match(main, /if \(!senderIsMain\(event\)\) throw new Error\('Invalid sender\.'\);/);
+  assert.match(main, /fontLibraryService\.initialize\(\{ required: app\.isPackaged \}\)/);
+  assert.match(preload, /listFonts: \(\) => ipcRenderer\.invoke\('fonts:list'\)/);
+  assert.match(preload, /getFontStylesheetUrls: \(\) => ipcRenderer\.invoke\('fonts:stylesheet-urls'\)/);
+  for (const applicationId of ['pages', 'sheets', 'slides', 'notes', 'todo', 'lists', 'forms', 'planner', 'database', 'loop']) {
+    assert.ok(app.includes(applicationId + ':'), 'the shared font selector must target ' + applicationId);
+  }
+  assert.match(app, /font-library-select/);
+  assert.match(app, /applySelectedFont\(\)/);
+});
+
 test('release preflight accepts only a complete verified first-install font package', t => {
   const { checkFontPackage } = require('../scripts/release-preflight');
   const bundle = createPackageFixture(t);
