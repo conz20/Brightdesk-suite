@@ -571,10 +571,11 @@ body.suite-home .app-manager.home-view .manager-hero .eyebrow { display: none; }
   white-space: nowrap;
 }
 
+.font-library-control input,
 .font-library-control select {
+  box-sizing: border-box;
   min-height: 34px;
-  max-width: 190px;
-  padding: 6px 28px 6px 9px;
+  padding: 6px 9px;
   border: 1px solid #e1e4ed;
   border-radius: 8px;
   background: #fff;
@@ -584,6 +585,16 @@ body.suite-home .app-manager.home-view .manager-hero .eyebrow { display: none; }
   font-weight: 500;
 }
 
+.font-library-control input {
+  width: 125px;
+}
+
+.font-library-control select {
+  max-width: 155px;
+  padding-right: 24px;
+}
+
+.font-library-control input:focus-visible,
 .font-library-control select:focus-visible {
   outline: 2px solid #7771e6;
   outline-offset: 2px;
@@ -598,8 +609,9 @@ body.suite-home .app-manager.home-view .manager-hero .eyebrow { display: none; }
     width: 100%;
   }
 
+  .font-library-control input,
   .font-library-control select {
     max-width: 100%;
-    flex: 1 1 auto;
+    flex: 1 1 45%;
   }
 }
