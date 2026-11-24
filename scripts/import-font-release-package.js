@@ -247,7 +247,7 @@ function importFontReleasePackage({
   const source = verifySourcePackage(sourceRoot, minimumGoogleFamilies);
   const template = path.resolve(templateRoot);
   const templateIndex = path.join(template, 'index.cjs');
-  if (!fs.isFile?.(templateIndex) && !fs.existsSync(templateIndex)) fail('the Brightdesk package API template is missing.');
+  if (!fs.existsSync(templateIndex) || !fs.statSync(templateIndex).isFile()) fail('the Brightdesk package API template is missing.');
 
   const target = path.resolve(outputRoot);
   const staging = fs.mkdtempSync(path.join(path.dirname(target), '.brightdesk-fonts-import-'));
