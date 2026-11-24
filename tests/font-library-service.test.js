@@ -216,6 +216,77 @@ test('release preflight blocks a missing first-install font package', t => {
   assert.match(result.detail, /complete, integrity-checked Brightdesk 0.1.0 font package is required/i);
 });
 
+test('keeps previously installed families when a later font package is added', t => {
+  const first = createPackageFixture(t);
+  const second = createPackageFixture(t, { fontBytes: Buffer.from('open-sans-font') });
+  const cataloguePath = path.join(second.root, 'catalogue', 'fonts.json');
+  const catalogue = JSON.parse(fs.readFileSync(cataloguePath, 'utf8'));
+  const font = catalogue.fonts[0];
+  const oldFontPath = font.files[0].path;
+  const newFontPath = 'assets/fonts/open-sans/OpenSans-Regular.ttf';
+  const oldAsset = path.join(second.root, ...oldFontPath.split('/'));
+  const newAsset = path.join(second.root, ...newFontPath.split('/'));
+  fs.mkdirSync(path.dirname(newAsset), { recursive: true });
+  fs.renameSync(oldAsset, newAsset);
+  font.id = 'google-open-sans';
+  font.family = 'Open Sans';
+  font.version = 'google-fonts-2026-update';
+  font.files[0].path = newFontPath;
+  font.files[0].face.id = 'open-sans-regular';
+  font.files[0].sha256 = sha256(fs.readFileSync(newAsset));
+  fs.writeFileSync(cataloguePath, JSON.stringify(catalogue, null, 2) + '\n');
+
+  const detailsPath = path.join(second.root, 'catalogue', 'font-details.json');
+  const details = JSON.parse(fs.readFileSync(detailsPath, 'utf8'));
+  details.families[0].id = 'google-open-sans';
+  details.families[0].family = 'Open Sans';
+  details.families[0].files[0].path = newFontPath;
+  details.families[0].files[0].fullName = 'Open Sans Regular';
+  details.families[0].files[0].postScriptName = 'OpenSans-Regular';
+  fs.writeFileSync(detailsPath, JSON.stringify(details, null, 2) + '\n');
+  fs.writeFileSync(path.join(second.root, 'fonts.css'), '@font-face { font-family: "Open Sans"; }\n');
+
+  const packagedFiles = [];
+  const collect = directory => {
+    for (const entry of fs.readdirSync(directory, { withFileTypes: true })) {
+      const absolute = path.join(directory, entry.name);
+      if (entry.isDirectory()) collect(absolute);
+      else if (entry.name !== 'font-package.json') {
+        const relative = path.relative(second.root, absolute).split(path.sep).join('/');
+        const bytes = fs.readFileSync(absolute);
+        packagedFiles.push({ path: relative, size: bytes.length, sha256: sha256(bytes) });
+      }
+    }
+  };
+  collect(second.root);
+  packagedFiles.sort((left, right) => left.path.localeCompare(right.path, 'en'));
+  const secondManifest = JSON.parse(fs.readFileSync(path.join(second.root, 'font-package.json'), 'utf8'));
+  secondManifest.version = '0.2.0';
+  secondManifest.releaseProfile = '0.2.0';
+  secondManifest.catalogue = {
+    path: 'catalogue/fonts.json',
+    sha256: packagedFiles.find(item => item.path === 'catalogue/fonts.json').sha256,
+    familyCount: 1,
+    fontFileCount: 1
+  };
+  secondManifest.fileCount = packagedFiles.length;
+  secondManifest.totalBytes = packagedFiles.reduce((sum, item) => sum + item.size, 0);
+  secondManifest.files = packagedFiles;
+  fs.writeFileSync(path.join(second.root, 'font-package.json'), JSON.stringify(secondManifest, null, 2) + '\n');
+
+  const shared = fs.mkdtempSync(path.join(os.tmpdir(), 'brightdesk-font-store-'));
+  t.after(() => fs.rmSync(shared, { recursive: true, force: true }));
+  const service = new FontLibraryService({ bundledRoot: first.root, sharedRoot: shared });
+  service.initialize();
+  service.installPackage(second.root);
+
+  const result = service.list();
+  assert.deepEqual(result.families.map(item => item.familyName), ['Inter', 'Open Sans']);
+  assert.equal(result.packages.length, 2);
+  assert.deepEqual(result.installedPackageIds, ['google-inter', 'google-open-sans']);
+  assert.deepEqual(fs.readFileSync(path.join(shared, 'packages', '0.1.0', ...first.fontPath.split('/'))), first.fontBytes);
+});
+
 test('returns no file paths or hashes to the renderer', t => {
   const bundle = createPackageFixture(t);
   const shared = fs.mkdtempSync(path.join(os.tmpdir(), 'brightdesk-font-store-'));
