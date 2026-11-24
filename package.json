@@ -113,7 +113,8 @@
       "package.json",
       "LICENSE",
       "THIRD_PARTY_NOTICES.md",
-      "TERMS_AND_CONDITIONS.txt"
+      "TERMS_AND_CONDITIONS.txt",
+      "packages/fonts/**/*"
     ],
     "asarUnpack": [
       "native/brightdesk_engine.node"
