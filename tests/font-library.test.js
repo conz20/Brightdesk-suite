@@ -21,7 +21,7 @@ test('ships the approved Inter font as a shared offline package', () => {
   assert.equal(inter.version, '4.1');
   assert.equal(inter.license.spdxId, 'OFL-1.1');
   assert.equal(inter.license.redistributionAllowed, true);
-  assert.equal(inter.license.embeddingAllowed, true);
+  assert.equal(inter.license.applicationEmbeddingAllowed, true);
 
   for (const file of inter.files) {
     const bytes = read(path.join('packages/fonts', file.path));
