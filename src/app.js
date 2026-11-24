@@ -122,12 +122,17 @@ function renderFontLibraryControl() {
   const select = $('font-library-select');
   if (!control || !select) return;
 
+  const search = $('font-library-search');
+  const query = (search?.value || '').trim().toLocaleLowerCase('en');
   select.replaceChildren();
   const systemOption = document.createElement('option');
   systemOption.value = '';
   systemOption.textContent = 'System default';
   select.append(systemOption);
-  state.fontLibrary.families.forEach(family => {
+  const visibleFamilies = state.fontLibrary.families.filter(family =>
+    !query || family.familyName.toLocaleLowerCase('en').includes(query)
+  );
+  visibleFamilies.forEach(family => {
     const option = document.createElement('option');
     option.value = family.familyName;
     option.textContent = family.familyName;
@@ -135,7 +140,7 @@ function renderFontLibraryControl() {
   });
 
   const selected = typeof activeDoc()?.fontFamily === 'string' ? activeDoc().fontFamily : '';
-  select.value = state.fontLibrary.families.some(item => item.familyName === selected) ? selected : '';
+  select.value = visibleFamilies.some(item => item.familyName === selected) ? selected : '';
   control.hidden = state.view !== 'workspace' || !state.fontLibrary.available;
 }
 
@@ -1141,6 +1146,7 @@ $('proofing-dictionary').addEventListener('change',event=>{state.selectedDiction
 $('check-current-document').addEventListener('click',checkCurrentDocumentSpelling);
 $('back-to-apps').addEventListener('click',()=>{state.view='manager';render();});
 $('finish-app-setup').addEventListener('click',()=>{if(state.setupComplete){state.view='home';render();}else completeAppSetup();});
+$('font-library-search').addEventListener('input', renderFontLibraryControl);
 $('font-library-select').addEventListener('change', event => {
   const familyName = event.target.value;
   const installed = state.fontLibrary.families.some(item => item.familyName === familyName);
