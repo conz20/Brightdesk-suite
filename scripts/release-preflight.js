@@ -3,6 +3,7 @@
 
 const fs = require('node:fs');
 const path = require('node:path');
+const { validateFontPackage } = require('../src/font-library-service');
 
 const APPROVED_IDS = ['pages', 'sheets', 'slides', 'notes', 'database', 'forms', 'lists', 'planner', 'todo', 'loop'];
 const AVAILABLE_IDS = [...APPROVED_IDS];
@@ -18,6 +19,22 @@ function versionAtLeast(actual, required) {
     if (left < right) return false;
   }
   return true;
+}
+
+function checkFontPackage(rootDir) {
+  const packageRoot = path.join(rootDir, 'resources', 'brightdesk-fonts');
+  try {
+    const verified = validateFontPackage(packageRoot);
+    return {
+      passed: true,
+      detail: `Verified Brightdesk font package ${verified.manifest.version}: ${verified.manifest.catalogue.familyCount} families and ${verified.manifest.catalogue.fontFileCount} font files.`
+    };
+  } catch (error) {
+    return {
+      passed: false,
+      detail: 'A complete, integrity-checked Brightdesk 0.1.0 font package is required in resources/brightdesk-fonts. ' + error.message
+    };
+  }
 }
 
 function runPreflight({ rootDir, nodeVersion = process.versions.node, platform = process.platform } = {}) {
@@ -52,6 +69,8 @@ function runPreflight({ rootDir, nodeVersion = process.versions.node, platform =
   add('All ten approved apps available', JSON.stringify(availableIds) === JSON.stringify(AVAILABLE_IDS), `Available: ${availableIds.join(', ')}; ${APPROVED_IDS.filter(id => !availableIds.includes(id)).length} approved apps remain planned.`);
   add('Excluded apps absent', EXCLUDED_NAMES.every(name => !catalog.some(item => item.name.toLowerCase().includes(name.toLowerCase()))), `Excluded from the catalogue: ${EXCLUDED_NAMES.join(', ')}.`);
   add('Release metadata', Boolean(manifest.version && manifest.build?.appId && manifest.build?.productName), `Version ${manifest.version}; app ID ${manifest.build?.appId || 'missing'}.`);
+  const fontPackage = checkFontPackage(root);
+  add('Initial shared font library', fontPackage.passed, fontPackage.detail);
   const nativeIconSources = require('./prepare-platform-icons').ICON_SOURCES;
   const missingIconSources = Object.values(nativeIconSources).filter(relativePath => !fs.existsSync(path.join(root, relativePath)));
   add('Native platform icon sources', missingIconSources.length === 0, missingIconSources.length ? `Missing canonical SVG artwork: ${missingIconSources.join(', ')}.` : `Verified ${Object.keys(nativeIconSources).length} canonical SVG icon sources for automatic Windows, macOS and Linux conversion.`);
@@ -109,4 +128,4 @@ if (require.main === module) {
   }
 }
 
-module.exports = { APPROVED_IDS, AVAILABLE_IDS, runPreflight, versionAtLeast, writeReport };
+module.exports = { APPROVED_IDS, AVAILABLE_IDS, checkFontPackage, runPreflight, versionAtLeast, writeReport };
