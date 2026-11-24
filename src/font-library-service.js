@@ -73,7 +73,7 @@ function validatePackage(rootDir) {
       manifest.schemaVersion !== 1 ||
       manifest.packageId !== PACKAGE_ID ||
       !VERSION_PATTERN.test(String(manifest.version || '')) ||
-      manifest.releaseProfile !== '0.1.0' ||
+      !VERSION_PATTERN.test(String(manifest.releaseProfile || '')) ||
       manifest.integrity !== 'SHA-256' ||
       !Array.isArray(manifest.files) ||
       !Number.isSafeInteger(manifest.fileCount) ||
@@ -334,7 +334,7 @@ class FontLibraryService {
 
   list() {
     if (!this.initialized) return { available: false, packages: [], installedPackageIds: [], families: [] };
-    const families = [];
+    const familiesByName = new Map();
     const installedPackageIds = [];
     for (const verified of this.packages) {
       const detailsById = new Map(verified.details.families.map(item => [item.id, item]));
@@ -358,15 +358,33 @@ class FontLibraryService {
             ...(Array.isArray(faceDetails.scripts) ? { scripts: faceDetails.scripts } : {})
           };
         });
-        families.push({
-          familyName: font.family,
-          packageId: font.id,
-          version: font.version,
-          faces
-        });
+        const key = font.family.normalize('NFKC').trim().replace(/\\s+/g, ' ').toLocaleLowerCase('en');
+        const existing = familiesByName.get(key);
+        if (!existing) {
+          familiesByName.set(key, {
+            familyName: font.family,
+            packageId: font.id,
+            version: font.version,
+            faces
+          });
+        } else {
+          const uniqueFaces = new Map(existing.faces.map(face => [
+            JSON.stringify([face.faceName, face.postScriptName || '', face.style, face.weight, face.italic, face.oblique, face.axes]),
+            face
+          ]));
+          for (const face of faces) {
+            const signature = JSON.stringify([face.faceName, face.postScriptName || '', face.style, face.weight, face.italic, face.oblique, face.axes]);
+            if (!uniqueFaces.has(signature)) uniqueFaces.set(signature, face);
+          }
+          existing.faces = [...uniqueFaces.values()];
+          existing.packageId = font.id;
+          existing.version = font.version;
+        }
       }
     }
-    families.sort((left, right) => left.familyName.localeCompare(right.familyName, 'en', { sensitivity: 'base' }));
+    const families = [...familiesByName.values()].sort((left, right) =>
+      left.familyName.localeCompare(right.familyName, 'en', { sensitivity: 'base' })
+    );
     return {
       available: families.length > 0,
       packages: this.packages.map(item => this.packageSummary(item)),
