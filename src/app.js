@@ -38,7 +38,8 @@ const state = {
   slideTheme: 'lavender', focusMode: false, editorZoom: 100, sheetZoom: 100,
   languageCatalog: [], installedLanguagePacks: [], spellCheckerLanguages: [], usesNativeMacSpellChecker: false,
   displayLanguage: 'en-AU', proofingLanguage: 'en-AU',
-  installedDictionaries: [], dictionaryCatalogue: [], selectedDictionary: localStorage.getItem('brightdesk-selected-dictionary') || ''
+  installedDictionaries: [], dictionaryCatalogue: [], selectedDictionary: localStorage.getItem('brightdesk-selected-dictionary') || '',
+  fontLibrary: { available: false, packages: [], installedPackageIds: [], families: [] }
 };
 const editor = $('editor'), sheetWrap = $('sheet-wrap'), slideWrap = $('slide-wrap'), notesWrap = $('notes-wrap');
 const pageLayout = window.BrightdeskPageLayout;
@@ -85,6 +86,87 @@ function installedApp(id) { return state.installedApps.includes(id); }
 function appLabel(id) { return catalog.find(item => item.id === id)?.name || id; }
 function appIconPath(item) {
   return `assets/icons/${item.iconAsset}`;
+}
+
+function fontTargetForApp() {
+  const targets = {
+    pages: editor,
+    sheets: sheetWrap,
+    slides: slideWrap,
+    notes: $('notes-editor'),
+    todo: $('todo-wrap'),
+    lists: $('lists-wrap'),
+    forms: $('forms-wrap'),
+    planner: $('planner-wrap'),
+    database: $('database-wrap'),
+    loop: $('workspace-app-wrap')
+  };
+  return targets[state.app] || editor;
+}
+
+function applySelectedFont() {
+  const target = fontTargetForApp();
+  if (!target) return;
+  const requested = typeof activeDoc()?.fontFamily === 'string' ? activeDoc().fontFamily : '';
+  const family = state.fontLibrary.families.find(item => item.familyName === requested);
+  if (!family) {
+    target.style.fontFamily = '';
+    return;
+  }
+  const cssName = family.familyName.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+  target.style.fontFamily = '"' + cssName + '", sans-serif';
+}
+
+function renderFontLibraryControl() {
+  const control = $('font-library-control');
+  const select = $('font-library-select');
+  if (!control || !select) return;
+
+  select.replaceChildren();
+  const systemOption = document.createElement('option');
+  systemOption.value = '';
+  systemOption.textContent = 'System default';
+  select.append(systemOption);
+  state.fontLibrary.families.forEach(family => {
+    const option = document.createElement('option');
+    option.value = family.familyName;
+    option.textContent = family.familyName;
+    select.append(option);
+  });
+
+  const selected = typeof activeDoc()?.fontFamily === 'string' ? activeDoc().fontFamily : '';
+  select.value = state.fontLibrary.families.some(item => item.familyName === selected) ? selected : '';
+  control.hidden = state.view !== 'workspace' || !state.fontLibrary.available;
+}
+
+async function loadFontLibrary() {
+  if (typeof window.brightdesk.listFonts !== 'function') return;
+  try {
+    const catalogue = await window.brightdesk.listFonts();
+    if (!catalogue || catalogue.available !== true || !Array.isArray(catalogue.families)) return;
+    state.fontLibrary = catalogue;
+
+    if (typeof window.brightdesk.getFontStylesheetUrls === 'function') {
+      const stylesheetUrls = await window.brightdesk.getFontStylesheetUrls();
+      if (Array.isArray(stylesheetUrls)) {
+        stylesheetUrls.forEach(url => {
+          if (typeof url !== 'string' || !url.startsWith('file://')) return;
+          const exists = [...document.querySelectorAll('link[data-brightdesk-font-stylesheet]')]
+            .some(link => link.href === url);
+          if (exists) return;
+          const link = document.createElement('link');
+          link.rel = 'stylesheet';
+          link.href = url;
+          link.dataset.brightdeskFontStylesheet = 'true';
+          document.head.append(link);
+        });
+      }
+    }
+    renderFontLibraryControl();
+    applySelectedFont();
+  } catch (error) {
+    console.error('The shared Brightdesk font library could not be loaded.', error);
+  }
 }
 
 
@@ -879,6 +961,8 @@ function render() {
     else if (isWorkspace) window.BrightdeskWorkspaceUI.render();
     else if (!['pages','sheets','slides','notes'].includes(state.app)) renderGenericWorkspace();
     renderToolbar();
+    renderFontLibraryControl();
+    applySelectedFont();
     $('workspace').classList.toggle('focus-mode', state.focusMode);
   }
   syncAppNavigation();
@@ -1057,6 +1141,13 @@ $('proofing-dictionary').addEventListener('change',event=>{state.selectedDiction
 $('check-current-document').addEventListener('click',checkCurrentDocumentSpelling);
 $('back-to-apps').addEventListener('click',()=>{state.view='manager';render();});
 $('finish-app-setup').addEventListener('click',()=>{if(state.setupComplete){state.view='home';render();}else completeAppSetup();});
+$('font-library-select').addEventListener('change', event => {
+  const familyName = event.target.value;
+  const installed = state.fontLibrary.families.some(item => item.familyName === familyName);
+  activeDoc().fontFamily = installed ? familyName : '';
+  applySelectedFont();
+  persist();
+});
 $('doc-title').addEventListener('change',()=>{activeDoc().title=$('doc-title').value;persist();});
 editor.addEventListener('input',()=>{activeDoc().html=editor.innerHTML;persist();});
 $('notes-editor').addEventListener('input',()=>{activeDoc().text=$('notes-editor').value;persist();});
@@ -1084,5 +1175,6 @@ loadLocal();
   } catch (error) { console.warn('The desktop version could not be read.', error); }
   try { await refreshLanguageData(); } catch(error) { console.error('Language packs could not be loaded.',error); }
   try { await refreshDictionaries(); } catch(error) { console.error('Spelling dictionaries could not be loaded.',error); }
+  await loadFontLibrary();
   render();
 })();
