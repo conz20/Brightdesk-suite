@@ -20,6 +20,7 @@ test('loads the shared Inter font faces locally without a network dependency', (
   assert.match(css, /font-style:\s*italic/);
   assert.match(css, /url\("\.\/assets\/fonts\/inter\/Inter\[opsz,wght\]\.ttf"\)/);
   assert.match(css, /url\("\.\/assets\/fonts\/inter\/Inter-Italic\[opsz,wght\]\.ttf"\)/);
+  assert.match(css, /:root\s*\{\s*font-optical-sizing:\s*auto;/);
   assert.doesNotMatch(css, /https?:\/\//);
 });
 

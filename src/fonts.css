@@ -5,7 +5,6 @@
   font-style: normal;
   font-weight: 100 900;
   font-display: swap;
-  font-optical-sizing: auto;
 }
 @font-face {
   font-family: "Inter";
@@ -13,5 +12,7 @@
   font-style: italic;
   font-weight: 100 900;
   font-display: swap;
+}
+:root {
   font-optical-sizing: auto;
 }
