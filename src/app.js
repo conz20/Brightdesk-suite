@@ -48,10 +48,13 @@ function clone(value) { return JSON.parse(JSON.stringify(value)); }
 
 const FONT_PREFERENCE_KEY = 'brightdesk-font-family-v1';
 function availableFontFamilies() {
-  if (state.fontLibrary.available && Array.isArray(state.fontLibrary.families)) {
-    return state.fontLibrary.families.map(font => ({ family: font.familyName, id: font.packageId, styles: font.styles, scripts: font.scripts }));
-  }
-  return Array.isArray(window.brightdesk.fontCatalogue?.fonts) ? window.brightdesk.fontCatalogue.fonts : [];
+  if (!state.fontLibrary.available || !Array.isArray(state.fontLibrary.families)) return [];
+  return state.fontLibrary.families.map(font => ({
+    family: font.familyName,
+    id: font.packageId,
+    styles: font.styles,
+    scripts: font.scripts
+  }));
 }
 async function loadFontLibrary() {
   if (typeof window.brightdesk.listFonts !== 'function') return;
