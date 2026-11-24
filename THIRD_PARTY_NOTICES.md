@@ -20283,3 +20283,17 @@ WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 OTHER DEALINGS IN THE SOFTWARE.
 ```
+
+
+## Bundled font software
+
+### Inter 4.1
+
+- Family: Inter (original family name preserved)
+- Copyright: Copyright 2020 The Inter Project Authors (https://github.com/rsms/inter)
+- Licence: SIL Open Font License 1.1
+- Bundled files: normal and italic variable TrueType faces
+- Full licence text: `src/licenses/fonts/inter-OFL.txt`
+- Source catalogue and checksums: Brightdesk-Fonts repository, catalogue/fonts.json
+
+The Inter font software is distributed under the SIL Open Font License, Version 1.1. The full licence text is included in the installed application at the path above. It permits bundling and embedding subject to its conditions; Brightdesk does not sell the font software by itself.
