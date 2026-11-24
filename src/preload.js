@@ -36,6 +36,8 @@ contextBridge.exposeInMainWorld('brightdesk', {
   saveProject: (project) => ipcRenderer.invoke('project:save', project),
   loadProject: () => ipcRenderer.invoke('project:open'),
   exportPdf: (payload) => ipcRenderer.invoke('file:pdf', payload),
+  listFonts: () => ipcRenderer.invoke('fonts:list'),
+  getFontStylesheetUrls: () => ipcRenderer.invoke('fonts:stylesheet-urls'),
   checkForUpdates: () => ipcRenderer.invoke('updates:check'),
   downloadUpdate: () => ipcRenderer.invoke('updates:download'),
   installUpdate: () => ipcRenderer.invoke('updates:install'),
