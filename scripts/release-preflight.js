@@ -3,6 +3,7 @@
 
 const fs = require('node:fs');
 const path = require('node:path');
+const { validateFontPackage } = require('../src/font-library-service');
 
 const APPROVED_IDS = ['pages', 'sheets', 'slides', 'notes', 'database', 'forms', 'lists', 'planner', 'todo', 'loop'];
 const AVAILABLE_IDS = [...APPROVED_IDS];
@@ -18,6 +19,32 @@ function versionAtLeast(actual, required) {
     if (left < right) return false;
   }
   return true;
+}
+
+function checkFontPackage(packageRoot, minimumGoogleFamilies = 1900) {
+  try {
+    const verified = validateFontPackage(packageRoot);
+    const googleFamilies = verified.catalogue.fonts.filter(font =>
+      font.source?.publisher === 'Google Fonts' ||
+      /google fonts/i.test(font.source?.name || '') ||
+      /github\.com\/google\/fonts/i.test(font.source?.repository || '')
+    ).length;
+    return {
+      passed: googleFamilies >= minimumGoogleFamilies,
+      familyCount: verified.catalogue.fonts.length,
+      googleFamilyCount: googleFamilies,
+      detail: googleFamilies >= minimumGoogleFamilies
+        ? `Verified ${googleFamilies} approved Google Fonts families in the shared package.`
+        : `Only ${googleFamilies} approved Google Fonts families are bundled; at least ${minimumGoogleFamilies} are required for Brightdesk 0.1.0.`
+    };
+  } catch (error) {
+    return {
+      passed: false,
+      familyCount: 0,
+      googleFamilyCount: 0,
+      detail: 'The bundled shared font package failed integrity or licence verification: ' + error.message
+    };
+  }
 }
 
 function runPreflight({ rootDir, nodeVersion = process.versions.node, platform = process.platform } = {}) {
@@ -52,6 +79,8 @@ function runPreflight({ rootDir, nodeVersion = process.versions.node, platform =
   add('All ten approved apps available', JSON.stringify(availableIds) === JSON.stringify(AVAILABLE_IDS), `Available: ${availableIds.join(', ')}; ${APPROVED_IDS.filter(id => !availableIds.includes(id)).length} approved apps remain planned.`);
   add('Excluded apps absent', EXCLUDED_NAMES.every(name => !catalog.some(item => item.name.toLowerCase().includes(name.toLowerCase()))), `Excluded from the catalogue: ${EXCLUDED_NAMES.join(', ')}.`);
   add('Release metadata', Boolean(manifest.version && manifest.build?.appId && manifest.build?.productName), `Version ${manifest.version}; app ID ${manifest.build?.appId || 'missing'}.`);
+  const fontPackage = checkFontPackage(path.join(root, 'packages', 'fonts'), 1900);
+  add('Initial Google font collection', fontPackage.passed, fontPackage.detail);
   const nativeIconSources = require('./prepare-platform-icons').ICON_SOURCES;
   const missingIconSources = Object.values(nativeIconSources).filter(relativePath => !fs.existsSync(path.join(root, relativePath)));
   add('Native platform icon sources', missingIconSources.length === 0, missingIconSources.length ? `Missing canonical SVG artwork: ${missingIconSources.join(', ')}.` : `Verified ${Object.keys(nativeIconSources).length} canonical SVG icon sources for automatic Windows, macOS and Linux conversion.`);
@@ -109,4 +138,4 @@ if (require.main === module) {
   }
 }
 
-module.exports = { APPROVED_IDS, AVAILABLE_IDS, runPreflight, versionAtLeast, writeReport };
+module.exports = { APPROVED_IDS, AVAILABLE_IDS, checkFontPackage, runPreflight, versionAtLeast, writeReport };
