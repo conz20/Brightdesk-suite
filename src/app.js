@@ -38,7 +38,8 @@ const state = {
   slideTheme: 'lavender', focusMode: false, editorZoom: 100, sheetZoom: 100,
   languageCatalog: [], installedLanguagePacks: [], spellCheckerLanguages: [], usesNativeMacSpellChecker: false,
   displayLanguage: 'en-AU', proofingLanguage: 'en-AU',
-  installedDictionaries: [], dictionaryCatalogue: [], selectedDictionary: localStorage.getItem('brightdesk-selected-dictionary') || ''
+  installedDictionaries: [], dictionaryCatalogue: [], selectedDictionary: localStorage.getItem('brightdesk-selected-dictionary') || '',
+  fontLibrary: { available: false, packages: [], installedPackageIds: [], families: [] }
 };
 const editor = $('editor'), sheetWrap = $('sheet-wrap'), slideWrap = $('slide-wrap'), notesWrap = $('notes-wrap');
 const pageLayout = window.BrightdeskPageLayout;
@@ -47,7 +48,34 @@ function clone(value) { return JSON.parse(JSON.stringify(value)); }
 
 const FONT_PREFERENCE_KEY = 'brightdesk-font-family-v1';
 function availableFontFamilies() {
+  if (state.fontLibrary.available && Array.isArray(state.fontLibrary.families)) {
+    return state.fontLibrary.families.map(font => ({ family: font.familyName, id: font.packageId, styles: font.styles, scripts: font.scripts }));
+  }
   return Array.isArray(window.brightdesk.fontCatalogue?.fonts) ? window.brightdesk.fontCatalogue.fonts : [];
+}
+async function loadFontLibrary() {
+  if (typeof window.brightdesk.listFonts !== 'function') return;
+  try {
+    const library = await window.brightdesk.listFonts();
+    if (!library || library.available !== true || !Array.isArray(library.families)) return;
+    state.fontLibrary = library;
+    const urls = await window.brightdesk.getFontStylesheetUrls?.();
+    if (Array.isArray(urls)) {
+      for (const url of urls) {
+        if (typeof url !== 'string' || !url.startsWith('file://')) continue;
+        const exists = [...document.querySelectorAll('link[data-brightdesk-font-package]')]
+          .some(link => link.href === url);
+        if (exists) continue;
+        const link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.href = url;
+        link.dataset.brightdeskFontPackage = 'true';
+        document.head.append(link);
+      }
+    }
+  } catch (error) {
+    console.error('The shared Brightdesk font library could not be loaded.', error);
+  }
 }
 function fontStackFor(family) {
   if (family === 'system') return 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
@@ -1116,7 +1144,6 @@ $('export-button').addEventListener('click',exportCurrent);$('open-button').addE
 $('updates-button').addEventListener('click',async()=>{const msg=$('update-message');msg.hidden=false;msg.textContent=t('common.updateChecking');try{const r=await window.brightdesk.checkForUpdates();if(!r?.ok)msg.textContent=r?.message||'Update checks are not configured yet.';}catch(e){msg.textContent=`Update check failed: ${e.message}`;}});
 window.brightdesk.onUpdateState?.(handleUpdateState);
 loadLocal();
-populateFontFamilyControl();
 (async()=>{
   try {
     const version = await window.brightdesk.getVersion();
@@ -1124,5 +1151,7 @@ populateFontFamilyControl();
   } catch (error) { console.warn('The desktop version could not be read.', error); }
   try { await refreshLanguageData(); } catch(error) { console.error('Language packs could not be loaded.',error); }
   try { await refreshDictionaries(); } catch(error) { console.error('Spelling dictionaries could not be loaded.',error); }
+  await loadFontLibrary();
+  populateFontFamilyControl();
   render();
 })();
