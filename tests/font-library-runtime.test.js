@@ -138,3 +138,15 @@ test('refuses to replace the same package version with different files', t => {
 
   assert.throws(() => service.installPackage(replacement.root), /cannot be replaced/i);
 });
+
+
+test('renderer receives no raw catalogue paths, checksums or upstream source URLs', () => {
+  const preload = fs.readFileSync(path.join(__dirname, '../src/preload.js'), 'utf8');
+  const renderer = fs.readFileSync(path.join(__dirname, '../src/app.js'), 'utf8');
+
+  assert.doesNotMatch(preload, /require\(['"]\.\.\/packages\/fonts\/catalogue\.json['"]\)/);
+  assert.doesNotMatch(preload, /fontCatalogue,/);
+  assert.match(preload, /listFonts: \(\) => ipcRenderer\.invoke\('fonts:list'\)/);
+  assert.match(preload, /getFontStylesheetUrls: \(\) => ipcRenderer\.invoke\('fonts:stylesheet-urls'\)/);
+  assert.match(renderer, /state\.fontLibrary\.families/);
+});
