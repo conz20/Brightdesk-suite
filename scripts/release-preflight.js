@@ -25,6 +25,11 @@ function checkFontPackage(rootDir) {
   const packageRoot = path.join(rootDir, 'resources', 'brightdesk-fonts');
   try {
     const verified = validateFontPackage(packageRoot);
+    const appManifest = JSON.parse(fs.readFileSync(path.join(rootDir, 'package.json'), 'utf8'));
+    if (verified.manifest.version !== appManifest.version ||
+        verified.manifest.releaseProfile !== appManifest.version) {
+      throw new Error(`font package version ${verified.manifest.version} does not match Brightdesk version ${appManifest.version}.`);
+    }
     return {
       passed: true,
       detail: `Verified Brightdesk font package ${verified.manifest.version}: ${verified.manifest.catalogue.familyCount} families and ${verified.manifest.catalogue.fontFileCount} font files.`
