@@ -559,3 +559,47 @@ body.suite-home .sidebar > .nav small { display: none; }
 body.suite-home .main > footer { display: none; }
 
 body.suite-home .app-manager.home-view .manager-hero .eyebrow { display: none; }
+
+
+.font-library-control {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: #70758a;
+  font-size: 11px;
+  font-weight: 650;
+  white-space: nowrap;
+}
+
+.font-library-control select {
+  min-height: 34px;
+  max-width: 190px;
+  padding: 6px 28px 6px 9px;
+  border: 1px solid #e1e4ed;
+  border-radius: 8px;
+  background: #fff;
+  color: #30354a;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.font-library-control select:focus-visible {
+  outline: 2px solid #7771e6;
+  outline-offset: 2px;
+}
+
+.font-library-control[hidden] {
+  display: none;
+}
+
+@media (max-width: 720px) {
+  .font-library-control {
+    width: 100%;
+  }
+
+  .font-library-control select {
+    max-width: 100%;
+    flex: 1 1 auto;
+  }
+}
