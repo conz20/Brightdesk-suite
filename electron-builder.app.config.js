@@ -53,6 +53,7 @@ module.exports = {
   extraMetadata: { name: 'brightdesk-' + appId, brightdeskAppId: appId, productName: 'Brightdesk ' + appName, desktopName: `org.brightdesk.${appId}.desktop` },
   asar: true,
   files: ['src/**/*', 'native/brightdesk_engine.node', 'package.json', 'LICENSE', 'THIRD_PARTY_NOTICES.md', 'TERMS_AND_CONDITIONS.txt'],
+  extraResources: [{ from: 'resources/brightdesk-fonts', to: 'brightdesk-fonts', filter: ['**/*'] }],
   asarUnpack: ['native/brightdesk_engine.node'],
   directories: { output: path.join('release', 'apps', appId), buildResources: 'assets/platform-icons/native' },
   publish: [],
