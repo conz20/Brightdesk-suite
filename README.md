@@ -127,7 +127,7 @@ Each approved product has its own repository and product documentation:
 
 The Suite coordinates exactly ten independently maintained customer-product repositories: Pages, Sheets, Decks, Notes, Database, Forms, Lists, Planner, To Do and Workspace. Brightdesk-AI is separate private engineering tooling; it is not a customer product, is not included in customer downloads and is not required for normal product use.
 
-### Current 27-repository portfolio — 21 November 2026
+### Current 27-repository portfolio — 26 November 2026
 
 The live GitHub inventory contains **27 repositories** owned by `conz20`, all with `main` as their default branch:
 
@@ -142,19 +142,19 @@ GitHub currently reports **13 public and 14 private** repositories. The public r
 
 - **Fonts** owns font binaries, provenance and licences. Its approved font catalogue remains empty; no font is approved for bundling.
 - **Localization** owns language-resource metadata and controlled distribution. Its 92 catalogue entries and 27 candidates are metadata only; no dictionary pack is approved or downloadable.
-- **Engine** owns the shared Rust/Hunspell language engine and Node-API adapter. The implementation is on `main`, but current-main exact-head verification, cross-platform qualification and all-ten product runtime integration remain outstanding.
+- **Engine** owns the shared Rust/Hunspell language engine and Node-API adapter. Its implementation is on `main` at `9278ca9`; no current-main exact-head workflow run is available. Draft PR #8 adds case-insensitive `.aff`/`.dic` extension checks and uppercase/mixed-case regression coverage, but the predecessor workflow was cancelled and the updated head has no CI run yet. Windows/Linux qualification and all-ten product runtime integration remain outstanding.
 - **Design-System** owns shared design tokens and interface foundations; product-level visual and accessibility acceptance remains separate.
 - **Common-Libs** owns reusable shared libraries. Its draft native spelling compatibility adapter PR #5 passed 24 exact-head tests, but real native-module and product integration are not yet proven.
 - **Common-Actions** owns reusable, pinned non-AI GitHub Actions.
 - **Developer-Tools** provides owner-side diagnostics and read-only repository/PR tooling; it is not a customer runtime dependency.
 - **Extensions** currently provides declarative manifest validation only. It is not an extension runtime and does not execute extension code or enforce runtime permissions.
-- **Wiki** is a separate online customer-help resource. It is not a product, installed component, Suite dependency or product-UI entry; no approved public GitHub Pages deployment is verified.
+- **Wiki** is a separate customer-help source, not a product, installed component, Suite dependency or product-UI entry. The current repository contains Cloudflare Pages instructions, which conflict with the owner's GitHub-only publishing direction; no approved GitHub Pages workflow, account-plan entitlement or deployed public URL is verified. Keep publication blocked.
 - **Release-Tools** contains a read-only release-manifest and artifact auditor. It checks supplied evidence; it does not build, sign, publish or certify installers.
 - **Services** is experimental owner-operated infrastructure only. It is optional and must never become a customer runtime dependency.
 - **Type-Preview** is a local/offline preview foundation. It does not own font binaries and must not use hosted preview services.
 - **Assets** owns original visual-asset provenance and integrity. Its approved asset manifest remains empty until rights and SHA-256 evidence are complete.
-- **Printing** is shared local printing infrastructure. Its draft PR #2 has a macOS build and 152 passing tests; Windows, Linux and real-printer acceptance remain unverified.
-- **Voice** is separate local dictation engineering infrastructure, not customer product 11. The CPAL microphone adapter remains in draft PR #30; its current workflow is pending without executed jobs, and no real microphone-to-text capability is claimed.
+- **Printing** is shared local printing infrastructure. Draft PR #2's exact-head quality workflow passed on head `6d65982` (152 tests); Windows/Linux native helper builds and real-printer acceptance remain unverified.
+- **Voice** is separate local dictation engineering infrastructure, not customer product 11. CPAL adapter PR #30 is open/draft at `8ec7b91`; its current workflow is pending without executed jobs. No real microphone-to-text capability is claimed.
 
 Repository presence, a README, a draft PR or a passing synthetic test suite is not proof of a working product integration. Shared capabilities must be verified in the Suite and each of the ten products independently. Brightdesk-Services remains optional; no customer workflow may depend on it.
 
@@ -168,10 +168,10 @@ Install the locked dependencies and run the main checks:
 npm ci
 npm run check:node
 npm test
-
-The catalogue and shell tests also check the shared release-version source, the current Home footer wording, and the bundled original SVG icon artwork. The customer-facing package version is shown in the product footer outside Home; the Home sidebar keeps its local-first message.
 npm run build
 ```
+
+The catalogue and shell tests also check the shared release-version source, the current Home footer wording, and the bundled original SVG icon artwork. The customer-facing package version is shown in the product footer outside Home; the Home sidebar keeps its local-first message.
 
 Build and verify the Rust engine:
 
