@@ -1,5 +1,4 @@
 'use strict';
-
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs/promises');
@@ -8,25 +7,24 @@ const path = require('node:path');
 
 const { DictionaryService } = require('../src/dictionary-service');
 
-test('customer dictionary installs remain blocked until an official Brightdesk pack is released', async () => {
-  const userData = await fs.mkdtemp(path.join(os.tmpdir(), 'brightdesk-dictionary-official-only-'));
+test('catalogue entries not packaged with Brightdesk never trigger a live network request', async () => {
+  const userData = await fs.mkdtemp(path.join(os.tmpdir(), 'brightdesk-dictionary-no-network-'));
   let networkCalls = 0;
-  const service = new DictionaryService(userData, {
-    fetch: async () => {
-      networkCalls += 1;
-      throw new Error('the customer dictionary service must not call a third-party host');
-    }
-  });
-
+  const originalFetch = globalThis.fetch;
+  globalThis.fetch = async () => {
+    networkCalls += 1;
+    throw new Error('unexpected live network request');
+  };
+  const service = new DictionaryService(userData);
   try {
     await assert.rejects(
       () => service.installCatalogueEntry('en-au'),
-      /Brightdesk-hosted spelling dictionary packs are not available yet/
+      /not included in this Brightdesk build/
     );
-    assert.deepEqual(service.catalogue(), []);
     assert.equal(service.fetchUpstreamFile, undefined);
     assert.equal(networkCalls, 0);
   } finally {
+    globalThis.fetch = originalFetch;
     await fs.rm(userData, { recursive: true, force: true });
   }
 });
