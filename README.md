@@ -108,6 +108,10 @@ The Windows NSIS installer and macOS DMG/PKG present the Brightdesk Terms and Co
 
 Brightdesk is designed to keep product data on the current device. The first-use features described above do not require an account, cloud workspace or online collaboration. Some tasks such as downloads and update checks may use network access when explicitly requested.
 
+### Spelling dictionary delivery
+
+The Suite does not download spelling dictionaries directly from third-party hosts. Its 92-entry upstream reference snapshot is retained as internal source and licence research, not exposed as a customer download catalogue. Already-installed dictionaries with valid integrity records remain usable offline; unverified legacy dictionaries are not loaded or silently replaced. New downloadable dictionaries will be offered only after Brightdesk publishes and verifies packs through its own language-resource service. Until then, the built-in operating-system spell checker remains available.
+
 ## Product repositories
 
 Each approved product has its own repository and product documentation:
