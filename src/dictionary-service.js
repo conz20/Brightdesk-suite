@@ -123,6 +123,16 @@ function sha256(value) {
 }
 
 
+async function readInstalledManifest(folder, locale) {
+  const folderInfo = await fs.lstat(folder);
+  if (folderInfo.isSymbolicLink() || !folderInfo.isDirectory()) {
+    throw new Error(`Protected dictionary folder for ${locale} must be a real directory, not a symbolic link.`);
+  }
+  const bytes = await readProtectedFile(path.join(folder, 'manifest.json'), 64 * 1024, 'manifest', locale);
+  const text = new TextDecoder('utf-8', { fatal: true }).decode(bytes);
+  return validateDictionaryManifest(JSON.parse(text));
+}
+
 async function readProtectedFile(filePath, maxBytes, resourceName, locale) {
   const beforeOpen = await fs.lstat(filePath);
   if (beforeOpen.isSymbolicLink() || !beforeOpen.isFile()) {
@@ -230,6 +240,7 @@ class DictionaryService {
     }
     const decoded = decodeHunspellFiles(loaded.aff, loaded.dic);
     if (!decoded.aff.trim() || !/^\s*\d+\s*(?:\r?\n)/.test(decoded.dic)) throw new Error(`Protected Hunspell files for ${manifest.locale} are invalid.`);
+    return decoded;
   }
 
   async protectInstalledFolder(folder, manifest) {
@@ -274,13 +285,12 @@ class DictionaryService {
     }
 
     try {
-      const existingManifest = validateDictionaryManifest(JSON.parse(await fs.readFile(path.join(destination, 'manifest.json'), 'utf8')));
+      const existingManifest = await readInstalledManifest(destination, entry.locale);
       catalogueEntryForManifest(existingManifest);
       if (!existingManifest.integrity) {
         throw new Error(`This installed ${entry.locale} dictionary predates local integrity records and cannot be verified offline. Brightdesk will not download or replace it.`);
       }
       await this.verifyInstalledIntegrity(destination, existingManifest);
-      await this.protectInstalledFolder(destination, existingManifest);
       return { locale: entry.locale, name: entry.name, license: entry.license, alreadyInstalled: true, integrityVerified: true };
     } catch (error) {
       throw new Error(`The ${entry.locale} dictionary already has a protected or unrecognised installation and cannot be replaced. ${error.message}`);
@@ -385,17 +395,10 @@ class DictionaryService {
     for (const entry of entries.filter(item => item.isDirectory() && /^[a-z]{2,3}(?:-[A-Za-z0-9]{2,8})*$/.test(item.name))) {
       try {
         const folder = path.join(this.root, entry.name);
-        const manifest = validateDictionaryManifest(JSON.parse(await fs.readFile(path.join(folder, 'manifest.json'), 'utf8')));
+        const manifest = await readInstalledManifest(folder, entry.name);
         if (manifest.locale !== entry.name) continue;
         catalogueEntryForManifest(manifest);
         await this.verifyInstalledIntegrity(folder, manifest);
-        await this.protectInstalledFolder(folder, manifest);
-        const [affStat, dicStat, licenseStat] = await Promise.all([
-          fs.stat(path.join(folder, 'dictionary.aff')),
-          fs.stat(path.join(folder, 'dictionary.dic')),
-          fs.stat(path.join(folder, 'LICENSE.txt'))
-        ]);
-        if (affStat.size > MAX_AFFIX_BYTES || dicStat.size > MAX_DICTIONARY_BYTES || licenseStat.size < 40 || licenseStat.size > MAX_LICENSE_BYTES) continue;
         result.push({
           locale: manifest.locale,
           name: manifest.name,
@@ -427,16 +430,11 @@ class DictionaryService {
     if (typeof locale !== 'string' || !/^[a-z]{2,3}(?:-[A-Za-z0-9]{2,8})*$/.test(locale)) throw new Error('Choose an installed spelling dictionary first.');
     if (this.cache.has(locale)) return this.cache.get(locale);
     const folder = path.join(this.root, locale);
-    const manifest = validateDictionaryManifest(JSON.parse(await fs.readFile(path.join(folder, 'manifest.json'), 'utf8')));
+    const manifest = await readInstalledManifest(folder, locale);
     if (manifest.locale !== locale) throw new Error('Dictionary folder and manifest do not match.');
     catalogueEntryForManifest(manifest);
-    await this.verifyInstalledIntegrity(folder, manifest);
-    await this.protectInstalledFolder(folder, manifest);
-    const [aff, dic] = await Promise.all([
-      fs.readFile(path.join(folder, 'dictionary.aff'), 'utf8'),
-      fs.readFile(path.join(folder, 'dictionary.dic'), 'utf8')
-    ]);
-    const speller = this.spellFactory({ aff, dic });
+    const verifiedDictionary = await this.verifyInstalledIntegrity(folder, manifest);
+    const speller = this.spellFactory({ aff: verifiedDictionary.aff, dic: verifiedDictionary.dic });
     this.cache.set(locale, speller);
     return speller;
   }
