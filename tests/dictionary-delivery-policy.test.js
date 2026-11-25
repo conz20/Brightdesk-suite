@@ -12,13 +12,24 @@ test('third-party dictionary source metadata stays internal, not customer-downlo
   assert.deepEqual(service.catalogue(), []);
 });
 
-test('customer dictionary installation is blocked until verified Brightdesk-hosted packs exist', async () => {
+test('customer dictionary installation is blocked without making a network request', async () => {
   const service = new DictionaryService('/tmp/brightdesk-dictionary-delivery-policy');
-  await assert.rejects(
-    () => service.installCatalogueEntry('en-au'),
-    /Brightdesk-hosted spelling dictionary packs are not available yet/
-  );
-  assert.equal(service.fetchUpstreamFile, undefined);
+  const originalFetch = globalThis.fetch;
+  let networkCalls = 0;
+  globalThis.fetch = async () => {
+    networkCalls += 1;
+    throw new Error('customer dictionary code must not contact third-party hosts');
+  };
+  try {
+    await assert.rejects(
+      () => service.installCatalogueEntry('en-au'),
+      /Brightdesk-hosted spelling dictionary packs are not available yet/
+    );
+    assert.equal(service.fetchUpstreamFile, undefined);
+    assert.equal(networkCalls, 0);
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
 });
 
 test('dictionary catalogue and install IPC routes are absent from customer runtime', () => {
