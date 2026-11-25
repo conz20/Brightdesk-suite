@@ -46,7 +46,5 @@ contextBridge.exposeInMainWorld('brightdesk', {
   installLanguagePack: (code) => ipcRenderer.invoke('languages:install', code),
   setProofingLanguage: (code) => ipcRenderer.invoke('languages:set-proofing', code),
   listDictionaries: () => ipcRenderer.invoke('dictionaries:list'),
-  listDictionaryCatalogue: () => ipcRenderer.invoke('dictionaries:catalog'),
-  installCatalogueDictionary: (id) => ipcRenderer.invoke('dictionaries:install-catalog', id),
   checkSpelling: (payload) => ipcRenderer.invoke('dictionaries:check', payload)
 });
