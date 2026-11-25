@@ -12,6 +12,20 @@ const {
   dictionaryCatalogue
 } = require('../src/dictionary-service');
 
+function sourceEntry(id) {
+  const entry = dictionaryCatalogue.entries.find(item => item.id === id);
+  if (!entry) throw new Error('Missing source metadata fixture: ' + id);
+  const revision = dictionaryCatalogue.catalogueRevision;
+  return {
+    ...entry,
+    sourceUrl: `https://github.com/wooorm/dictionaries/tree/${revision}/dictionaries/${entry.sourceFolder}`,
+    licenseUrl: entry.licenseSource?.url || `https://raw.githubusercontent.com/wooorm/dictionaries/${revision}/dictionaries/${entry.sourceFolder}/license`,
+    licenseSource: entry.licenseSource || { kind: 'dictionary-package-license', repository: 'wooorm/dictionaries', revision },
+    upstream: 'wooorm/dictionaries',
+    upstreamRevision: revision
+  };
+}
+
 const manifest = {
   schemaVersion: 1,
   locale: 'en-AU',
@@ -57,7 +71,7 @@ test('offline spell check groups repeated misspellings and supplies suggestions'
       suggest: word => word.toLowerCase() === 'wrng' ? ['wrong'] : []
     })
   });
-  const catalogueEntry = service.catalogue().find(item => item.locale === 'en-AU');
+  const catalogueEntry = sourceEntry('en-AU');
   const dictionaryFolder = path.join(userData, 'dictionaries', catalogueEntry.locale);
   await fs.mkdir(dictionaryFolder, { recursive: true });
   const affText = 'SET UTF-8\n';
@@ -102,7 +116,7 @@ test('offline spell check groups repeated misspellings and supplies suggestions'
 });
 
 
-test('the built-in worldwide catalogue contains 92 unique source entries with allowed licence expressions', () => {
+test('the 92-entry source snapshot remains internal and is not exposed as downloadable packs', () => {
   assert.equal(dictionaryCatalogue.entries.length, 92);
   assert.equal(new Set(dictionaryCatalogue.entries.map(entry => entry.id)).size, 92);
   assert.equal(new Set(dictionaryCatalogue.entries.map(entry => entry.locale)).size, 92);
@@ -115,6 +129,8 @@ test('the built-in worldwide catalogue contains 92 unique source entries with al
   assert.equal(dictionaryCatalogue.entries.find(entry => entry.id === 'et').licenseSource.identifier, 'LGPL-2.1');
   assert.equal(dictionaryCatalogue.entries.find(entry => entry.id === 'eu').licenseSource.identifier, 'GPL-2.0');
   for (const entry of dictionaryCatalogue.entries) assert.ok(entry.nativeName && entry.nativeName.trim());
+  const service = new DictionaryService('/tmp/brightdesk-dictionary-internal-catalogue');
+  assert.deepEqual(service.catalogue(), []);
 });
 
 
@@ -127,8 +143,8 @@ test('users cannot import or remove dictionary files outside the protected catal
 test('reinstalling a matching catalogue dictionary never replaces its original files', async () => {
   const userData = await fs.mkdtemp(path.join(os.tmpdir(), 'brightdesk-dictionary-no-overwrite-'));
   let networkCalls = 0;
-  const service = new DictionaryService(userData, { fetch: async () => { networkCalls += 1; throw new Error('network should not be used'); } });
-  const catalogueEntry = service.catalogue().find(item => item.id === 'bg');
+  const service = new DictionaryService(userData, { fetch: async () => { networkCalls += 1; throw new Error('network should not be used'); }, spellFactory: () => ({ correct: word => word === 'word', suggest: () => [] }) });
+  const catalogueEntry = sourceEntry('bg');
   const folder = path.join(userData, 'dictionaries', 'bg');
   await fs.mkdir(folder, { recursive: true });
   const legacyAff = 'SET UTF-8\n';
@@ -150,9 +166,10 @@ test('reinstalling a matching catalogue dictionary never replaces its original f
   await fs.writeFile(path.join(folder, 'LICENSE.txt'), legacyLicense);
   await fs.writeFile(path.join(folder, 'UPSTREAM_README.md'), legacyReadme);
   try {
-    const result = await service.installCatalogueEntry('bg');
-    assert.equal(result.alreadyInstalled, true);
+    const result = await service.checkText('bg', 'word');
+    assert.equal(result.misspellingCount, 0);
     assert.equal(networkCalls, 0);
+    assert.equal(await fs.readFile(path.join(folder, 'dictionary.dic'), 'utf8'), legacyDic);
     await assert.rejects(() => service.remove('bg'), /Dictionary removal is disabled/);
   } finally {
     await fs.chmod(folder, 0o700).catch(() => {});
@@ -160,34 +177,14 @@ test('reinstalling a matching catalogue dictionary never replaces its original f
   }
 });
 
-test('catalogue installation rejects unknown IDs before making a network request', async () => {
+test('all customer catalogue installs are blocked until Brightdesk-hosted packs are released', async () => {
   let networkCalls = 0;
   const service = new DictionaryService('/tmp/brightdesk-dictionary-catalog-test', {
     fetch: async () => { networkCalls += 1; throw new Error('network should not be used'); }
   });
-  await assert.rejects(() => service.installCatalogueEntry('../outside'), /valid dictionary/);
-  await assert.rejects(() => service.installCatalogueEntry('not-in-catalogue'), /not in the built-in catalogue/);
+  await assert.rejects(() => service.installCatalogueEntry('bg'), /Brightdesk-hosted spelling dictionary packs are not available yet/);
+  assert.deepEqual(service.catalogue(), []);
   assert.equal(networkCalls, 0);
-});
-
-
-test('pinned catalogue downloader rejects URLs outside its fixed upstream repository', async () => {
-  let networkCalls = 0;
-  const service = new DictionaryService('/tmp/brightdesk-dictionary-url-test', {
-    fetch: async () => { networkCalls += 1; return new Response('ok'); }
-  });
-  await assert.rejects(() => service.fetchUpstreamFile('https://example.com/dictionaries/bg/index.aff', 100), /pinned, approved upstream sources/);
-  await assert.rejects(() => service.fetchUpstreamFile('https://raw.githubusercontent.com/wooorm/dictionaries/main/dictionaries/bg/index.aff', 100), /pinned, approved upstream sources/);
-  await assert.rejects(() => service.fetchUpstreamFile('https://raw.githubusercontent.com/spdx/license-list-data/main/text/GPL-2.0-only.txt', 100), /pinned, approved upstream sources/);
-  assert.equal(networkCalls, 0);
-});
-
-test('pinned catalogue downloader accepts a bounded file from an approved source', async () => {
-  const service = new DictionaryService('/tmp/brightdesk-dictionary-download-test', {
-    fetch: async () => new Response('SET UTF-8\n')
-  });
-  const bytes = await service.fetchUpstreamFile('https://raw.githubusercontent.com/wooorm/dictionaries/8cfea406b505e4d7df52d5a19bce525df98c54ab/dictionaries/bg/index.aff', 100);
-  assert.equal(bytes.toString('utf8'), 'SET UTF-8\n');
 });
 
 
@@ -198,8 +195,6 @@ test('the two licence-file exceptions use bundled canonical GNU texts', async ()
   assert.match(gpl, /Version 2, June 1991/);
   assert.match(lgpl, /GNU LESSER GENERAL PUBLIC LICENSE/);
   assert.match(lgpl, /Version 2\.1, February 1999/);
-  const service = new DictionaryService('/tmp/brightdesk-dictionary-source-test');
-  const catalogue = service.catalogue();
-  assert.equal(catalogue.find(item => item.id === 'et').licenseUrl, 'https://www.gnu.org/licenses/old-licenses/lgpl-2.1.txt');
-  assert.equal(catalogue.find(item => item.id === 'eu').licenseUrl, 'https://www.gnu.org/licenses/old-licenses/gpl-2.0.txt');
+  assert.equal(sourceEntry('et').licenseUrl, 'https://www.gnu.org/licenses/old-licenses/lgpl-2.1.txt');
+  assert.equal(sourceEntry('eu').licenseUrl, 'https://www.gnu.org/licenses/old-licenses/gpl-2.0.txt');
 });
