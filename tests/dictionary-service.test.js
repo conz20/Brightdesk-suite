@@ -307,3 +307,76 @@ test('Hunspell text decoding rejects malformed bytes instead of replacing them',
     /invalid byte sequence/
   );
 });
+
+
+test('loadSpeller uses the verified dictionary bytes without reopening replaced paths', async (t) => {
+  if (process.platform === 'win32') {
+    t.skip('Creating symbolic links may require elevated Windows permissions.');
+    return;
+  }
+
+  const userData = await fs.mkdtemp(path.join(os.tmpdir(), 'brightdesk-dictionary-toctou-'));
+  const folder = path.join(userData, 'dictionaries', 'en-AU');
+  const externalDictionary = path.join(userData, 'outside-dictionary.dic');
+  await fs.mkdir(folder, { recursive: true });
+
+  const affText = 'SET UTF-8\n';
+  const dicText = '1\nverifiedword\n';
+  const externalText = '1\nexternalword\n';
+  const licenseText = 'A test licence document that is long enough to meet the minimum validation length.';
+  const readmeText = 'A test attribution document that is long enough to meet the minimum validation length.';
+  const hash = value => crypto.createHash('sha256').update(value).digest('hex');
+  const entry = dictionaryCatalogue.entries.find(item => item.locale === 'en-AU');
+  const trustedManifest = {
+    schemaVersion: 1,
+    catalogueId: entry.id,
+    locale: entry.locale,
+    name: entry.name,
+    nativeName: entry.nativeName,
+    authors: 'See UPSTREAM_README.md for original authors and contributors.',
+    affFile: 'index.aff',
+    dicFile: 'index.dic',
+    licenseFile: 'LICENSE.txt',
+    readmeFile: 'UPSTREAM_README.md',
+    license: entry.license,
+    licenseUrl: entry.licenseSource?.url || `https://raw.githubusercontent.com/wooorm/dictionaries/${dictionaryCatalogue.catalogueRevision}/dictionaries/${entry.sourceFolder}/license`,
+    licenseSource: entry.licenseSource || { kind: 'dictionary-package-license', repository: 'wooorm/dictionaries', revision: dictionaryCatalogue.catalogueRevision },
+    sourceUrl: `https://github.com/wooorm/dictionaries/tree/${dictionaryCatalogue.catalogueRevision}/dictionaries/${entry.sourceFolder}`,
+    upstream: 'wooorm/dictionaries',
+    upstreamRevision: dictionaryCatalogue.catalogueRevision,
+    integrity: { aff: hash(affText), dic: hash(dicText), license: hash(licenseText), readme: hash(readmeText) }
+  };
+
+  await fs.writeFile(path.join(folder, 'manifest.json'), JSON.stringify(trustedManifest));
+  await fs.writeFile(path.join(folder, 'dictionary.aff'), affText);
+  await fs.writeFile(path.join(folder, 'dictionary.dic'), dicText);
+  await fs.writeFile(path.join(folder, 'LICENSE.txt'), licenseText);
+  await fs.writeFile(path.join(folder, 'UPSTREAM_README.md'), readmeText);
+  await fs.writeFile(externalDictionary, externalText);
+
+  const loaded = [];
+  const service = new DictionaryService(userData, {
+    spellFactory: dictionary => {
+      loaded.push(dictionary);
+      return { correct: () => true, suggest: () => [] };
+    }
+  });
+  const verify = service.verifyInstalledIntegrity.bind(service);
+  service.verifyInstalledIntegrity = async (dictionaryFolder, manifest) => {
+    const verified = await verify(dictionaryFolder, manifest);
+    await fs.unlink(path.join(folder, 'dictionary.dic'));
+    await fs.symlink(externalDictionary, path.join(folder, 'dictionary.dic'));
+    return verified;
+  };
+
+  try {
+    await service.loadSpeller('en-AU');
+    assert.equal(loaded.length, 1);
+    assert.equal(loaded[0].aff, affText);
+    assert.equal(loaded[0].dic, dicText);
+    assert.notEqual(loaded[0].dic, externalText);
+  } finally {
+    await fs.chmod(folder, 0o700).catch(() => {});
+    await fs.rm(userData, { recursive: true, force: true });
+  }
+});
