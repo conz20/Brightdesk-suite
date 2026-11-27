@@ -118,3 +118,14 @@ test('Home controls retain visible keyboard focus, reduced motion and accessible
   assert.match(html, /aria-label="Open Brightdesk settings"/);
   assert.match(app, /More options for/);
 });
+
+
+test('Home sidebar uses compact 20px navigation icons and text-only labels', () => {
+  const styles = read('src/styles.css');
+  const html = read('src/index.html');
+  assert.match(styles, /\.sidebar > \.nav \.app-icon-image\s*\{[^}]*width:\s*20px;[^}]*height:\s*20px;/);
+  assert.match(styles, /\.sidebar > \.nav small\s*\{\s*display:\s*none;\s*\}/);
+  assert.match(html, /src="assets\/icons\/home\.svg"/);
+  assert.match(html, /src="assets\/icons\/apps\.svg"/);
+  assert.match(html, /src="assets\/icons\/files\.svg"/);
+});
