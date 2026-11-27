@@ -208,10 +208,10 @@ test('Suite Home, Apps and Files share clean navigation and truthful product act
   assert.match(app, /\$\('sidebar-section-label'\)\.hidden = Boolean\(launchAppId\) \|\| suitePage;/);
   assert.ok(styles.includes('.sidebar > .nav small { display: none; }'));
 
-  assert.equal((home.match(/>IN YOUR SUITE<\/text>/g) || []).length, 6);
-  assert.equal((home.match(/>Remove from Suite<\/text>/g) || []).length, 6);
-  assert.equal((home.match(/>AVAILABLE TO ADD<\/text>/g) || []).length, 4);
-  assert.equal((home.match(/>Add to Suite<\/text>/g) || []).length, 4);
+  assert.equal((home.match(/>IN YOUR SUITE<\/text>/g) || []).length, 10);
+  assert.equal((home.match(/>Remove from Suite<\/text>/g) || []).length, 10);
+  assert.equal((home.match(/>AVAILABLE TO ADD<\/text>/g) || []).length, 0);
+  assert.equal((home.match(/>Add to Suite<\/text>/g) || []).length, 0);
   assert.doesNotMatch(home, /INSTALLED|Uninstall|AVAILABLE TO INSTALL/);
 });
 
@@ -261,4 +261,32 @@ test('English fallback Suite labels match the packaged Australian English langua
     assert.equal(en[key], value, `${key} should match the approved Suite wording`);
     assert.ok(fallback.includes(`'${key}':'${value}'`), `${key} fallback should match the packaged language pack`);
   }
+});
+
+
+test('Settings cogwheel opens a dedicated Settings screen, not the Apps manager', () => {
+  const html = read('src/index.html');
+  const app = read('src/app.js');
+  assert.match(html, /id="settings-manager"/);
+  assert.match(html, /id="open-settings"[^>]*aria-label="Open Brightdesk settings"/);
+  assert.match(html, /id="manage-languages"/);
+  assert.match(html, /id="updates-button"/);
+  assert.match(html, /id="update-settings-button"/);
+  assert.match(app, /const settings = state\.view === 'settings';/);
+  assert.match(app, /const suitePage = home \|\| manager \|\| files \|\| settings \|\| languages;/);
+  assert.match(app, /\$\('settings-manager'\)\.hidden = !settings;/);
+  assert.match(app, /\$\('open-settings'\)\.addEventListener\('click',[\s\S]*?state\.view='settings'/);
+  assert.doesNotMatch(app, /\$\('open-settings'\)\.addEventListener\('click',[^\n]*state\.view='manager'/);
+});
+
+test('Settings screen keeps suite navigation available and language settings return to Settings', () => {
+  const html = read('src/index.html');
+  const app = read('src/app.js');
+  assert.match(html, /id="settings-manager"/);
+  assert.match(app, /previousView: 'settings'/);
+  assert.match(app, /state\.previousView = state\.view;/);
+  assert.match(app, /\$\('back-to-apps'\)\.addEventListener\('click',[\s\S]*?state\.view=state\.previousView/);
+  assert.match(app, /\$\('home-nav'\)\.addEventListener/);
+  assert.match(app, /\$\('app-centre-nav'\)\.addEventListener/);
+  assert.match(app, /\$\('files-nav'\)\.addEventListener/);
 });
