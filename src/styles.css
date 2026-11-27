@@ -633,3 +633,25 @@ body.suite-home .app-manager.home-view .manager-hero .eyebrow { display: none; }
     padding: 16px;
   }
 }
+
+
+/* Home navigation: compact original line icons beside labels, with no helper captions. */
+.sidebar > .nav {
+  min-height: 48px;
+  gap: 12px;
+}
+.sidebar > .nav .app-icon-image {
+  width: 20px;
+  height: 20px;
+  flex: 0 0 20px;
+  border-radius: 0;
+  filter: none;
+  object-fit: contain;
+}
+.sidebar > .nav b {
+  font-size: 14px;
+  line-height: 1.25;
+}
+.sidebar > .nav small {
+  display: none;
+}
