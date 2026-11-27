@@ -63,8 +63,11 @@ test('Home status labels and card copy meet WCAG AA contrast and match live UI t
   assert.ok(styles.includes('.app-card-heading small { display: block; margin-top: 3px; color: #64728A;'));
   assert.ok(styles.includes('background: #eff8f2; color: #28764b;'));
   assert.ok(styles.includes('background: #f0f5fc; color: #47618b;'));
-  assert.equal((home.match(/fill="#28764B">IN YOUR SUITE<\/text>/g) || []).length, 6);
-  assert.equal((home.match(/fill="#47618B">AVAILABLE TO ADD<\/text>/g) || []).length, 4);
+  assert.equal((home.match(/fill="#28764B">IN YOUR SUITE<\/text>/g) || []).length, 10);
+  assert.equal((home.match(/fill="#47618B">AVAILABLE TO ADD<\/text>/g) || []).length, 0);
+  assert.equal((home.match(/>Open<\/text>/g) || []).length, 10);
+  assert.equal((home.match(/>Remove from Suite<\/text>/g) || []).length, 10);
+  assert.equal((home.match(/>Add to Suite<\/text>/g) || []).length, 0);
   assert.ok(!home.includes('fill="#B66A20">AVAILABLE TO ADD</text>'));
   assert.ok(home.includes('fill="#5F6F88">YOUR WORKSPACE</text>'));
   assert.ok(home.includes('fill="#5F7088">Ten focused tools, connected by one Brightdesk experience.</text>'));
@@ -128,4 +131,20 @@ test('Home sidebar uses compact 20px navigation icons and text-only labels', () 
   assert.match(html, /src="assets\/icons\/home\.svg"/);
   assert.match(html, /src="assets\/icons\/apps\.svg"/);
   assert.match(html, /src="assets\/icons\/files\.svg"/);
+});
+
+
+test('README displays the current Home reference and documents the exact compact sidebar', () => {
+  const readme = read('README.md');
+  const home = read('assets/product-experience/brightdesk-home.svg');
+  assert.match(readme, /src="assets\/product-experience\/brightdesk-home\.svg"/);
+  assert.match(readme, /20 px SVG icon beside its label/);
+  assert.match(readme, /no descriptive captions appear beneath the labels/);
+  assert.match(readme, /all ten products marked \*\*In your Suite\*\*/);
+  assert.match(readme, /not a screenshot captured from a running build/);
+  assert.doesNotMatch(readme, /46 px Suite mark|25 px wordmark/);
+  assert.equal((home.match(/>Home<\/text>/g) || []).length, 1);
+  assert.equal((home.match(/>Apps<\/text>/g) || []).length, 1);
+  assert.equal((home.match(/>Files<\/text>/g) || []).length, 1);
+  assert.doesNotMatch(home, /Your work in one place|All your desktop applications|Open and save files on this device/);
 });
