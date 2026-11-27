@@ -74,7 +74,7 @@
 <circle cx="736" cy="322" r="16" fill="#F4F6FA"/><circle cx="728" cy="322" r="2.1" fill="#707D92"/><circle cx="736" cy="322" r="2.1" fill="#707D92"/><circle cx="744" cy="322" r="2.1" fill="#707D92"/>
 <g id="product-settings-menu-sheets" fill="#53627B"><circle cx="731" cy="322" r="1.5"/><circle cx="737" cy="322" r="1.5"/><circle cx="743" cy="322" r="1.5"/></g>
 <text x="544" y="404" font-family="Arial, sans-serif" font-size="19" font-weight="700" fill="#1B2941">Sheets</text><text x="544" y="431" font-family="Arial, sans-serif" font-size="13.5" fill="#64728A">Spreadsheets &amp; formulas</text>
-<rect x="543" y="446" width="156" height="22" rx="11" fill="#EFF8F2"/><circle cx="555" cy="457" r="3.4" fill="#28764B"/><text x="565" y="419" font-family="Arial, sans-serif" font-size="10.5" font-weight="700" fill="#28764B">IN YOUR SUITE</text>
+<rect x="543" y="446" width="156" height="22" rx="11" fill="#EFF8F2"/><circle cx="555" cy="457" r="3.4" fill="#28764B"/><text x="565" y="461.5" font-family="Arial, sans-serif" font-size="10.5" font-weight="700" fill="#28764B">IN YOUR SUITE</text>
 <rect x="543" y="482" width="92" height="34" rx="9" fill="#233B67"/><text x="589" y="504" text-anchor="middle" font-family="Arial, sans-serif" font-size="12.5" font-weight="700" fill="#FFFFFF">Open</text>
 <rect x="643" y="482" width="106" height="34" rx="9" fill="#FFFFFF" stroke="#DCE3ED"/><text x="696" y="504" text-anchor="middle" font-family="Arial, sans-serif" font-size="10.5" font-weight="700" fill="#52627A">Remove from Suite</text>
 </g>
@@ -135,7 +135,7 @@
 <circle cx="1504" cy="322" r="16" fill="#F4F6FA"/><circle cx="1496" cy="322" r="2.1" fill="#707D92"/><circle cx="1504" cy="322" r="2.1" fill="#707D92"/><circle cx="1512" cy="322" r="2.1" fill="#707D92"/>
 <g id="product-settings-menu-database" fill="#53627B"><circle cx="1499" cy="322" r="1.5"/><circle cx="1505" cy="322" r="1.5"/><circle cx="1511" cy="322" r="1.5"/></g>
 <text x="1312" y="404" font-family="Arial, sans-serif" font-size="19" font-weight="700" fill="#1B2941">Database</text><text x="1312" y="431" font-family="Arial, sans-serif" font-size="13.5" fill="#64728A">Tables &amp; structured records</text>
-<rect x="1311" y="446" width="156" height="22" rx="11" fill="#EFF8F2"/><circle cx="1323" cy="457" r="3.4" fill="#28764B"/><text x="1333" y="419" font-family="Arial, sans-serif" font-size="10.5" font-weight="700" fill="#28764B">IN YOUR SUITE</text>
+<rect x="1311" y="446" width="156" height="22" rx="11" fill="#EFF8F2"/><circle cx="1323" cy="457" r="3.4" fill="#28764B"/><text x="1333" y="461.5" font-family="Arial, sans-serif" font-size="10.5" font-weight="700" fill="#28764B">IN YOUR SUITE</text>
 <rect x="1311" y="482" width="92" height="34" rx="9" fill="#233B67"/><text x="1357" y="504" text-anchor="middle" font-family="Arial, sans-serif" font-size="12.5" font-weight="700" fill="#FFFFFF">Open</text>
 <rect x="1411" y="482" width="106" height="34" rx="9" fill="#FFFFFF" stroke="#DCE3ED"/><text x="1464" y="504" text-anchor="middle" font-family="Arial, sans-serif" font-size="10.5" font-weight="700" fill="#52627A">Remove from Suite</text>
 </g>
@@ -176,7 +176,7 @@
 <circle cx="736" cy="580" r="16" fill="#F4F6FA"/><circle cx="728" cy="580" r="2.1" fill="#707D92"/><circle cx="736" cy="580" r="2.1" fill="#707D92"/><circle cx="744" cy="580" r="2.1" fill="#707D92"/>
 <g id="product-settings-menu-lists" fill="#53627B"><circle cx="731" cy="580" r="1.5"/><circle cx="737" cy="580" r="1.5"/><circle cx="743" cy="580" r="1.5"/></g>
 <text x="544" y="662" font-family="Arial, sans-serif" font-size="19" font-weight="700" fill="#1B2941">Lists</text><text x="544" y="689" font-family="Arial, sans-serif" font-size="13.5" fill="#64728A">Lists &amp; tracking</text>
-<rect x="543" y="704" width="156" height="22" rx="11" fill="#EFF8F2"/><circle cx="555" cy="715" r="3.4" fill="#28764B"/><text x="565" y="677" font-family="Arial, sans-serif" font-size="10.5" font-weight="700" fill="#28764B">IN YOUR SUITE</text>
+<rect x="543" y="704" width="156" height="22" rx="11" fill="#EFF8F2"/><circle cx="555" cy="715" r="3.4" fill="#28764B"/><text x="565" y="719.5" font-family="Arial, sans-serif" font-size="10.5" font-weight="700" fill="#28764B">IN YOUR SUITE</text>
 <rect x="543" y="740" width="92" height="34" rx="9" fill="#233B67"/><text x="589" y="762" text-anchor="middle" font-family="Arial, sans-serif" font-size="12.5" font-weight="700" fill="#FFFFFF">Open</text>
 <rect x="643" y="740" width="106" height="34" rx="9" fill="#FFFFFF" stroke="#DCE3ED"/><text x="696" y="762" text-anchor="middle" font-family="Arial, sans-serif" font-size="10.5" font-weight="700" fill="#52627A">Remove from Suite</text>
 </g>
@@ -197,7 +197,7 @@
 <circle cx="992" cy="580" r="16" fill="#F4F6FA"/><circle cx="984" cy="580" r="2.1" fill="#707D92"/><circle cx="992" cy="580" r="2.1" fill="#707D92"/><circle cx="1000" cy="580" r="2.1" fill="#707D92"/>
 <g id="product-settings-menu-planner" fill="#53627B"><circle cx="987" cy="580" r="1.5"/><circle cx="993" cy="580" r="1.5"/><circle cx="999" cy="580" r="1.5"/></g>
 <text x="800" y="662" font-family="Arial, sans-serif" font-size="19" font-weight="700" fill="#1B2941">Planner</text><text x="800" y="689" font-family="Arial, sans-serif" font-size="13.5" fill="#64728A">Projects &amp; planning</text>
-<rect x="799" y="704" width="156" height="22" rx="11" fill="#EFF8F2"/><circle cx="811" cy="715" r="3.4" fill="#28764B"/><text x="821" y="677" font-family="Arial, sans-serif" font-size="10.5" font-weight="700" fill="#28764B">IN YOUR SUITE</text>
+<rect x="799" y="704" width="156" height="22" rx="11" fill="#EFF8F2"/><circle cx="811" cy="715" r="3.4" fill="#28764B"/><text x="821" y="719.5" font-family="Arial, sans-serif" font-size="10.5" font-weight="700" fill="#28764B">IN YOUR SUITE</text>
 <rect x="799" y="740" width="92" height="34" rx="9" fill="#233B67"/><text x="845" y="762" text-anchor="middle" font-family="Arial, sans-serif" font-size="12.5" font-weight="700" fill="#FFFFFF">Open</text>
 <rect x="899" y="740" width="106" height="34" rx="9" fill="#FFFFFF" stroke="#DCE3ED"/><text x="952" y="762" text-anchor="middle" font-family="Arial, sans-serif" font-size="10.5" font-weight="700" fill="#52627A">Remove from Suite</text>
 </g>
