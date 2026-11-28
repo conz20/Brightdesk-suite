@@ -75,6 +75,9 @@ async function bootSuite(t, { launchAppId = null, suiteLaunchedProduct = false }
     'src/app.js'
   ]) window.eval(read(file));
 
+  assert.ok(window.BrightdeskAppSetupPolicy, 'Suite setup policy must be exposed to the renderer');
+  assert.ok(window.BrightdeskTodoService, 'To Do task service must be exposed to the renderer');
+
   await new Promise(resolve => setImmediate(resolve));
   await new Promise(resolve => setImmediate(resolve));
   if (!launchAppId) assert.equal(window.document.querySelectorAll('#app-manager-grid .app-card').length, 10, 'Suite Home should render all ten approved products');
