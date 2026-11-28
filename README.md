@@ -68,7 +68,7 @@ All ten approved product areas are integrated into the main suite source and hav
 | **Notes** | Write and edit quick notes with on-device saving and text/Markdown export. |
 | **Database** | Create tables and typed fields; add, edit, search, sort and export records as CSV. |
 | **Forms** | Create forms and supported question types; preview, validate, collect and review local responses. |
-| **Lists** | Create lists, custom columns and records; search, filter and sort data. |
+| **Lists** | Create lists, custom columns and records; search, filter and sort data. The status filter maps **Active** to Not started/In progress and **Done** to Done. |
 | **Planner** | Create plans, buckets and tasks; track priority, progress and due dates; filter tasks. |
 | **To Do** | Create and update tasks; use My Day, Important, Planned, Tasks and Completed views; search tasks. |
 | **Workspace** | Create workspaces and pages; add and organise text, heading, bullet, callout, divider and checklist blocks. |

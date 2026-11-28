@@ -129,9 +129,12 @@
   }
   function filterItems(list, options = {}) {
     const query = String(options.query || '').trim().toLocaleLowerCase();
-    const status = options.status || '';
+    const status = String(options.status || '').trim().toLocaleLowerCase();
     return list.items.filter(item => {
-      if (status && item.values.status !== status) return false;
+      const itemStatus = String(item.values.status ?? '').trim().toLocaleLowerCase();
+      if (status === 'active' && itemStatus === 'done') return false;
+      if (status === 'done' && itemStatus !== 'done') return false;
+      if (status && status !== 'active' && status !== 'done' && itemStatus !== status) return false;
       if (!query) return true;
       return list.columns.some(column => String(item.values[column.id] ?? '').toLocaleLowerCase().includes(query));
     });
