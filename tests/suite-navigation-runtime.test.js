@@ -37,6 +37,7 @@ async function bootSuite(t, { launchAppId = null, suiteLaunchedProduct = false }
   window.brightdesk = {
     launchAppId,
     suiteLaunchedProduct,
+    version: '0.1.0',
     platform: 'darwin',
     getVersion: async () => '0.1.0',
     openApplication: async id => { calls.openedProducts.push(id); return { ok: true }; },
