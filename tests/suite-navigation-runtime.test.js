@@ -282,3 +282,25 @@ test('product settings can hide Switch product navigation without removing local
   assert.equal(docs.pages.title, 'Protected project');
   assert.equal(docs.pages.html, '<p>Keep this document.</p>');
 });
+
+
+test('Notifications closes cleanly when navigating to another Suite screen', async t => {
+  const { window } = await bootSuite(t);
+  const panel = byId(window, 'notification-panel');
+  const trigger = byId(window, 'open-notifications');
+
+  trigger.click();
+  assert.equal(panel.hidden, false);
+  assert.equal(trigger.getAttribute('aria-expanded'), 'true');
+
+  byId(window, 'app-centre-nav').click();
+  assert.equal(panel.hidden, true);
+  assert.equal(trigger.getAttribute('aria-expanded'), 'false');
+
+  trigger.click();
+  assert.equal(panel.hidden, false);
+  byId(window, 'open-settings').click();
+  assert.equal(panel.hidden, true);
+  assert.equal(trigger.getAttribute('aria-expanded'), 'false');
+  assert.equal(byId(window, 'settings-manager').hidden, false);
+});
