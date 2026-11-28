@@ -2,6 +2,22 @@
   const defaults = { autoCheck: true, autoDownload: false, autoInstall: false };
   const byId = (id) => document.getElementById(id);
   const message = () => byId('update-message');
+  let latestUpdateState = null;
+
+  function syncUpdateActions(state = latestUpdateState) {
+    const canDownload = state?.status === 'available';
+    const canInstall = state?.status === 'downloaded';
+    const download = byId('update-manual-download');
+    const install = byId('update-manual-install');
+    if (download) {
+      download.disabled = !canDownload;
+      download.title = canDownload ? 'Download the available Brightdesk update.' : 'Available after a Brightdesk update is found.';
+    }
+    if (install) {
+      install.disabled = !canInstall;
+      install.title = canInstall ? 'Install the downloaded Brightdesk update.' : 'Available after an update has downloaded.';
+    }
+  }
 
   function renderSections() {
     const panel = byId('update-settings-panel');
@@ -27,6 +43,7 @@
         <h3 id="included-apps-update-heading">Applications included in the suite</h3>
         <p>Pages, Sheets, Decks, Notes, Database, Forms, Lists, Planner, To Do and Workspace are included in the Brightdesk Office Suite release. Updates are delivered through the Suite release rather than separate product downloads.</p>
       </section>`;
+    syncUpdateActions();
     byId('close-update-settings').addEventListener('click', () => {
       panel.hidden = true;
       byId('update-settings-button')?.setAttribute('aria-expanded', 'false');
@@ -72,12 +89,18 @@
   function registerManualAction(id, action) {
     byId(id)?.addEventListener('click', async () => {
       const status = message();
+      const button = byId(id);
+      button.disabled = true;
       try {
         if (status) { status.hidden = false; status.textContent = 'Working…'; }
         const result = await action();
         if (status) status.textContent = result?.message || (result?.ok ? 'The update action was accepted.' : 'This update action is not available for this build yet.');
+        if (result?.ok && id === 'update-manual-download') latestUpdateState = { ...latestUpdateState, status: 'downloading' };
+        if (result?.ok && id === 'update-manual-install') latestUpdateState = { ...latestUpdateState, status: 'installing' };
       } catch (error) {
         if (status) { status.hidden = false; status.textContent = error.message || 'That update action could not be completed.'; }
+      } finally {
+        syncUpdateActions();
       }
     });
   }
@@ -91,6 +114,8 @@
   });
 
   window.brightdesk.onUpdateState?.((state) => {
+    latestUpdateState = state;
+    syncUpdateActions(state);
     const status = message();
     if (!status || !state) return;
     status.hidden = false;
