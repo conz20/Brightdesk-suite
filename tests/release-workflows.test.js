@@ -152,6 +152,19 @@ test('dependency-maintenance workflows use GitHub-hosted Linux', () => {
   }
 });
 
+test('dependency-maintenance workflows propose changes through owner-review pull requests', () => {
+  for (const file of ['.github/workflows/generate-lockfile.yml', '.github/workflows/generate-third-party-notices.yml']) {
+    const workflow = read(file);
+    assert.match(workflow, /if: github\.ref == 'refs\/heads\/main'/, file);
+    assert.match(workflow, /contents: write/, file);
+    assert.match(workflow, /pull-requests: write/, file);
+    assert.match(workflow, /GH_TOKEN: \\$\{\\{ github\.token \\}\\}/, file);
+    assert.match(workflow, /gh pr create/, file);
+    assert.match(workflow, /git push --set-upstream origin "\$BRANCH"/, file);
+    assert.doesNotMatch(workflow, /git push\\s*$/m, file);
+  }
+});
+
 
 test('installer pipeline uses GitHub-hosted runners for all three operating systems', () => {
   const workflow = read('.github/workflows/build-release.yml');
