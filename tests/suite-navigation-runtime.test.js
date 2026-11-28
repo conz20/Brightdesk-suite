@@ -136,6 +136,7 @@ test('Settings actions open language preferences, return to Settings and save up
   byId(window, 'manage-languages').click();
   await tick();
   assert.equal(byId(window, 'language-manager').hidden, false);
+  assert.ok(byId(window, 'proofing-status').textContent.length > 0);
   assert.equal(byId(window, 'settings-manager').hidden, true);
   assert.equal(byId(window, 'home-nav').hidden, false);
 
@@ -319,4 +320,11 @@ test('Switch product side navigation opens the selected installed product', asyn
   sheets.click();
   await tick();
   assert.deepEqual(calls.openedProducts, ['sheets']);
+});
+
+
+test('To Do workspace displays its task count when opened from the product switcher', async t => {
+  const { window } = await bootSuite(t, { launchAppId: 'todo', suiteLaunchedProduct: true });
+  assert.equal(byId(window, 'todo-wrap').hidden, false);
+  assert.match(byId(window, 'todo-task-count').textContent, /^\d+ tasks?$/);
 });
