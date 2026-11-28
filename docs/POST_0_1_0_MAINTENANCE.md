@@ -97,3 +97,16 @@ The 27-repository count is authoritative. Reconcile this list against GitHub on 
 27. Brightdesk-Engine
 
 **Release boundary:** this backlog is for work after 0.1.0. A candidate discovered here must not be slipped into 0.1.0 without a separate scope, risk and verification decision.
+
+## Stable runtime updates queued for the first post-0.1.0 maintenance cycle
+
+Checked against official release sources on 2026-11-28. Keep the 0.1.0 pins unchanged; these are confirmed stable follow-ups, not prereleases.
+
+| Component | 0.1.0 pin | New stable release | Priority / reason | Source |
+|---|---:|---:|---|---|
+| Node.js 24 LTS | 24.22.2 | **24.22.3** (2026-11-11) | **Highest priority:** security release with multiple high-severity HTTP/2 and TLS fixes. Review and adopt first after 0.1.0, subject to full cross-platform tests. | https://github.com/nodejs/node/releases |
+| Rust | 1.99.1 | **1.100.0** (2026-11-12) | Latest stable Rust line. Review toolchain, native addon, all product crates and platform builds; the 1.99 line is superseded. | https://blog.rust-lang.org/releases/ |
+| Electron 45 | 45.2.1 | **45.5.0** (2026-11-24) | Stable patch update on the pinned major. Review Chromium/Node changes, native module compatibility, window behavior, security fixes and installers. Do not jump to Electron 46 alpha/beta. | https://releases.electronjs.org/ |
+| electron-builder 26 | 26.18.0 | **26.18.1** | Stable v26 release tag is available; npm's `latest` tag still points to 26.18.0 while `v26` points to 26.18.1. Verify release metadata, signatures/checksums and all 66 artifact targets before adopting. | https://www.npmjs.com/package/electron-builder?activeTab=versions |
+
+These four versions must remain visible on the maintenance list until each is either adopted in a later stable Brightdesk release or explicitly deferred with a documented compatibility/security reason. Recheck the upstream stable version before implementation because newer stable patches may have appeared by then. Do not adopt Electron 46 prereleases or Node.js 27 alpha/nightly builds.
