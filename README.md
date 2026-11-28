@@ -1,3 +1,5 @@
+<p align="center"><img src="assets/brand/brightdesk-logo.svg" alt="Brightdesk Office Suite" width="440"></p>
+
 # Ten focused desktop products
 
 Ten focused desktop products. One consistent Brightdesk experience.
@@ -116,7 +118,11 @@ Brightdesk is designed to keep product data on the current device. The first-use
 
 ## Licensing
 
-The Brightdesk Suite source code is licensed under the MIT License; see [LICENSE](LICENSE). The MIT License permits use, copying, modification and redistribution of the covered software when its required copyright and permission notice is retained. Keep the complete root `LICENSE` notice with copies or substantial portions of the covered software; it contains the copyright attribution, permission terms and warranty/liability disclaimer. Official Brightdesk downloads remain free of charge and do not require a subscription, trial, customer account, activation code or licence server. Third-party dependencies, fonts, dictionaries and other bundled resources remain subject to their own licences; see [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md). The MIT License does not itself grant rights to Brightdesk trademarks or make a modified or third-party build an official Brightdesk release.
+<p align="center"><img src="assets/brand/brightdesk-copyright-mark.svg" alt="Brightdesk copyright mark" width="64" height="64"></p>
+
+<p align="center"><strong>© 2026 Brightdesk</strong></p>
+
+The Brightdesk Suite source code is licensed under the MIT License; see [LICENSE](LICENSE). The copyright notice identifies the Brightdesk project attribution; it does not claim a separate incorporated legal entity. The MIT License permits use, copying, modification and redistribution of the covered software when its complete copyright and permission notice is retained. Keep the full root `LICENSE` notice with copies or substantial portions of the covered software. Official Brightdesk downloads remain free of charge and do not require a subscription, trial, customer account, activation code or licence server. Third-party dependencies, fonts, dictionaries and other bundled resources remain subject to their own licences; see [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md). The MIT License does not itself grant rights to Brightdesk names, logos, product icons or other brand identifiers, or make a modified or third-party build an official Brightdesk release. See the [Brightdesk brand and copyright standard](docs/BRAND_AND_COPYRIGHT.md).
 
 ## Product repositories
 
