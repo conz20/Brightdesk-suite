@@ -721,3 +721,14 @@ body.suite-home .app-manager.home-view .manager-hero .eyebrow { display: none; }
   .settings-card-actions { display: grid; grid-template-columns: 1fr; }
   .settings-card-actions button { width: 100%; }
 }
+
+.files-message {
+  margin: 16px 2px 0;
+  padding: 11px 14px;
+  border: 1px solid #dce9e1;
+  border-radius: 9px;
+  background: #f3faf5;
+  color: #286747;
+  font-size: 12px;
+  line-height: 1.5;
+}
