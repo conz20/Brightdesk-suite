@@ -8,6 +8,10 @@ Brightdesk is an independent, local-first desktop productivity suite. It uses or
 
 Brightdesk has its own original visual identity: a geometric four-panel mark, a distinctive wordmark, a deep-navy foundation and a cyan-to-violet accent gradient. The identity is recognisable across the Suite and all ten products.
 
+<p align="center"><img src="assets/brand/brightdesk-logo.svg" alt="Brightdesk Office Suite logo: the original four-panel mark and Brightdesk wordmark" width="420"></p>
+
+The full logo combines the four-panel symbol with the **brightdesk** wordmark and **OFFICE SUITE** lettering. The standalone application mark is the four-panel symbol without the wordmark. View the [full Brightdesk logo SVG](assets/brand/brightdesk-logo.svg) or the [standalone Suite mark SVG](src/assets/brand/brightdesk-suite-mark.svg).
+
 The Suite's identity belongs in the installed application identity and native application window, not repeated inside the Home artwork. The Home design stays focused on the customer's products and work.
 
 ## The Brightdesk Suite experience
