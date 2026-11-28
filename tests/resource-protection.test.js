@@ -6,7 +6,7 @@ const path = require('node:path');
 const root = path.join(__dirname, '..');
 const read = file => fs.readFileSync(path.join(root, file), 'utf8');
 
-test('renderer exposes language selection and catalogue installation only', () => {
+test('renderer exposes language selection and proofing only until official packs are released', () => {
   const html = read('src/index.html');
   const app = read('src/app.js');
   const preload = read('src/preload.js');
@@ -14,7 +14,9 @@ test('renderer exposes language selection and catalogue installation only', () =
   assert.match(html, /id="display-language"/);
   assert.match(html, /id="proofing-language"/);
   assert.match(html, /id="proofing-dictionary"/);
-  assert.match(app, /installCatalogueDictionary\(item\.id\)/);
+  assert.doesNotMatch(app, /installCatalogueDictionary|installCatalogueEntry/);
+  assert.match(html, /No verified Brightdesk-hosted dictionary packs/);
+  assert.match(html, /Third-party dictionary downloads are disabled/);
   for (const forbidden of ['import-language-pack', 'import-spelling-dictionary']) assert.doesNotMatch(html, new RegExp(forbidden));
   for (const forbidden of ['importLanguagePack', 'removeLanguagePack', 'importDictionary', 'removeDictionary']) assert.doesNotMatch(preload, new RegExp(forbidden));
   for (const forbidden of ["ipcMain.handle('languages:import'", "ipcMain.handle('languages:remove'", "ipcMain.handle('dictionaries:import'", "ipcMain.handle('dictionaries:remove'"]) assert.doesNotMatch(main, new RegExp(forbidden.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
