@@ -74,7 +74,7 @@ test('product capture rejects a different product window even when its workspace
   }
 });
 
-test('screenshot targets match the Suite and exactly ten approved products', () => {
+test('screenshot targets cover five Suite screens and exactly ten approved products', () => {
   assert.equal(SCREENSHOT_TARGETS.length, 15);
   assert.deepEqual(SCREENSHOT_TARGETS.map(item => item.id), ['suite','suite-apps','suite-files','suite-settings','suite-notifications','pages','sheets','decks','notes','database','forms','lists','planner','todo','workspace']);
   assert.equal(SCREENSHOT_TARGETS.find(item => item.id === 'decks').appId, 'slides');
