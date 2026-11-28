@@ -45,7 +45,14 @@ const pageLayout = window.BrightdeskPageLayout;
 
 function clone(value) { return JSON.parse(JSON.stringify(value)); }
 function activeDoc() { return state.docs[state.app]; }
-function setStatus(message) { $('save-status').textContent = message; }
+function setStatus(message) {
+  $('save-status').textContent = message;
+  if (state.view === 'files') {
+    const filesMessage = $('files-message');
+    filesMessage.textContent = message;
+    filesMessage.hidden = false;
+  }
+}
 function persist() {
   try {
     if (launchAppId) localStorage.setItem(`brightdesk-doc-${launchAppId}-v1`, JSON.stringify(state.docs[launchAppId]));
@@ -783,6 +790,7 @@ function render() {
   $('settings-manager').hidden = !settings;
   $('app-manager').querySelector('.manager-bottom').hidden = home;
   $('files-manager').hidden = !files;
+  if (!files) $('files-message').hidden = true;
   $('language-manager').hidden = !languages;
   $('workspace').hidden = suitePage;
   $('welcome').hidden = suitePage || files || languages || ['todo','lists','forms','planner','database','loop'].includes(state.app);
