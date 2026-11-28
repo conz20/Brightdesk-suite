@@ -34,6 +34,8 @@ test('all product data services load together in the real renderer script order'
       assert.doesNotThrow(() => dom.window.eval(read(path.join('src', file))), file + ' must load without a global declaration collision');
     }
 
+    assert.ok(dom.window.BrightdeskPageLayout, 'shared page layout API must be exposed before product services load');
+
     for (const serviceName of [
       'BrightdeskTodoService',
       'BrightdeskListsService',
