@@ -34,7 +34,8 @@ test('top-right controls clearly identify notifications, saving and Settings', (
   assert.match(app, /\$\('open-notifications'\)\.addEventListener\('click'/);
   assert.match(app, /panel\.hidden\s*=\s*!panel\.hidden/);
   assert.match(app, /\$\('open-notifications'\)\.hidden\s*=\s*Boolean\(launchAppId\)/);
-  assert.match(app, /\$\('open-settings'\)\.addEventListener\('click',[\s\S]*?state\.view='manager';render\(\)/);
+  assert.match(html, /id="settings-manager"/);
+  assert.match(app, /\$\('open-settings'\)\.addEventListener\('click',[\s\S]*?state\.view='settings';render\(\)/);
   assert.doesNotMatch(app, /manage-apps/, 'Settings must open directly from the top-right control');
   assert.match(app, /\$\('open-settings'\)\.hidden\s*=\s*Boolean\(launchAppId\)/);
   assert.match(styles, /\.top-notifications-button/);
