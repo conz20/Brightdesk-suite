@@ -201,3 +201,7 @@ The helper covers Brightdesk Suite, Common Actions, Developer Tools, Extensions,
 ## Repository hygiene
 
 Generated build output and Cargo `target` directories are excluded from the tracked source tree. Build products are recreated by the local build and CI workflows; they are not committed as product source.
+
+## Ongoing maintenance after 0.1.0
+
+The permanent [post-0.1.0 maintenance backlog](docs/POST_0_1_0_MAINTENANCE.md) tracks stable-version reviews, dependency and security updates, and capability improvements across all 27 Brightdesk repositories. New upstream versions are reviewed for stability, licence, compatibility and tests before adoption; prereleases and nightlies are not adopted. This register is a post-0.1.0 follow-up and does not expand the ten-product release scope.
