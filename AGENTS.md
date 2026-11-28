@@ -49,3 +49,7 @@ Add or update tests for behavioral changes. Run the repository's focused tests a
 ## Release safety and cost
 
 Do not claim an installer is ready until its platform build, legal files, checksum verification and release tests have passed. Do not publish a GitHub Release unless the project owner explicitly selects the publish option. Keep development and CI workflows within free/no-cost limits; never request payment details or enable paid services.
+
+
+## Version update policy
+Before dependency/toolchain updates, check the upstream official source for the newest stable release. Prefer the newest compatible stable version, then run the relevant tests/builds. If a candidate breaks compatibility, roll back only that component, document the evidence and continue unrelated updates. Never globally downgrade or stop the whole task because one component is incompatible. Keep archived versions only as history or explicit compatibility exceptions. Follow docs/VERSION_COMPATIBILITY.md.
