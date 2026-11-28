@@ -30,6 +30,7 @@ test('Suite Home capture requires ten visible cards in the approved five-column 
     const { window } = dom;
     Object.defineProperty(window, 'innerWidth', { value: 1600 });
     Object.defineProperty(window, 'innerHeight', { value: 900 });
+    window.document.title = 'Brightdesk Office Suite';
     const grid = window.document.querySelector('#app-manager-grid');
     for (let index = 0; index < 10; index += 1) {
       const card = window.document.createElement('article');
@@ -47,6 +48,7 @@ test('Suite Home capture requires ten visible cards in the approved five-column 
     }
     window.getComputedStyle = () => ({ gridTemplateColumns: '240px 240px 240px 240px 240px' });
     const result = await window.eval('(' + waitForSuiteHome.toString() + ')()');
+    assert.equal(result.title, 'Brightdesk Office Suite');
     assert.equal(result.productCards, 10);
     assert.equal(result.columns, 5);
     assert.equal(result.allCardsVisible, true);
