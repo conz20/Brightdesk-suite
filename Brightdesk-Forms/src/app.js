@@ -645,7 +645,7 @@ function renderDictionaryManager() {
     const subtitle = document.createElement('small'); subtitle.textContent = `${item.nativeName} · ${item.locale}`;
     heading.append(name, subtitle); header.append(mark, heading);
     const description = document.createElement('p'); description.textContent = `Licence: ${item.license} · Engine: ${item.engine}`;
-    const source = document.createElement('small'); source.className = 'dictionary-source'; source.textContent = `Source: ${item.sourceUrl}`;
+    const source = document.createElement('small'); source.className = 'dictionary-source'; source.textContent = `Verified local pack · provenance revision ${item.upstreamRevision || 'recorded'}`;
     const footer = document.createElement('div'); footer.className = 'app-card-footer';
     const status = document.createElement('span'); status.className = 'app-state installed'; status.textContent = 'Installed · protected'; footer.append(status);
     card.append(header, description, source, footer); grid.append(card);
@@ -653,7 +653,7 @@ function renderDictionaryManager() {
   select.value = state.selectedDictionary;
   $('dictionary-status').textContent = state.installedDictionaries.length
     ? `${state.installedDictionaries.length} spelling dictionary/dictionaries installed. The built-in OS spell checker remains available too.`
-    : 'No separate dictionaries installed yet. Install one from the catalogue or import a compatible .bddict bundle.';
+    : 'No separate dictionaries installed yet. Approved packs will appear here after Brightdesk publishes and verifies them. The built-in operating-system spell checker remains available.';
   renderAvailableDictionaryCatalogue();
   renderToolbar();
 }
@@ -681,14 +681,28 @@ function renderAvailableDictionaryCatalogue() {
     const name = document.createElement('b'); name.textContent = item.name;
     const subtitle = document.createElement('small'); subtitle.textContent = `${item.nativeName} · ${item.locale}`;
     heading.append(name, subtitle); header.append(mark, heading);
-    const description = document.createElement('p'); description.textContent = `Licence: ${item.license} · Compatibility: Hunspell subset; advanced rules may need review`;
-    const source = document.createElement('small'); source.className = 'dictionary-source'; source.textContent = `Source: ${item.upstream} · revision ${item.upstreamRevision.slice(0, 8)}`;
+    const available = item.downloadAvailable === true;
+    const description = document.createElement('p');
+    description.textContent = item.installed
+      ? `Licence: ${item.license} · Verified installed pack`
+      : available
+        ? `Licence: ${item.license} · Official Brightdesk pack verified`
+        : `Licence: ${item.license} · Compatibility and redistribution review pending`;
+    const source = document.createElement('small'); source.className = 'dictionary-source';
+    source.textContent = item.installed
+      ? `Verified local pack · provenance revision ${item.upstreamRevision.slice(0, 8)}`
+      : available
+        ? 'Official Brightdesk resource pack'
+        : `Brightdesk official pack: not yet published · provenance record ${item.upstream}@${item.upstreamRevision.slice(0, 8)}`;
     const footer = document.createElement('div'); footer.className = 'app-card-footer';
     const status = document.createElement('span'); status.className = item.installed ? 'app-state installed' : 'app-state';
-    status.textContent = item.installed ? 'Installed' : 'Available'; footer.append(status);
-    const install = document.createElement('button'); install.className = item.installed ? 'secondary small-action' : 'primary small-action';
-    install.textContent = item.installed ? 'Installed' : 'Install'; install.disabled = item.installed; install.dataset.dictionaryId = item.id;
-    install.addEventListener('click', () => installCatalogueDictionary(item.id)); footer.append(install);
+    status.textContent = item.installed ? 'Installed' : available ? 'Available' : 'Not yet available'; footer.append(status);
+    const install = document.createElement('button');
+    install.className = item.installed || !available ? 'secondary small-action' : 'primary small-action';
+    install.textContent = item.installed ? 'Installed' : available ? 'Install' : 'Coming later';
+    install.disabled = item.installed || !available; install.dataset.dictionaryId = item.id;
+    if (available && !item.installed) install.addEventListener('click', () => installCatalogueDictionary(item.id));
+    footer.append(install);
     card.append(header, description, source, footer); grid.append(card);
   }
   if (!visible.length) {
@@ -699,9 +713,10 @@ function renderAvailableDictionaryCatalogue() {
 async function installCatalogueDictionary(id) {
   const item = state.dictionaryCatalogue.find(entry => entry.id === id);
   if (!item) { $('dictionary-status').textContent = 'That dictionary is not available in the catalogue.'; return; }
+  if (!item.downloadAvailable) { $('dictionary-status').textContent = 'This pack is not built, licence-cleared and published by Brightdesk yet. Direct third-party downloads are disabled.'; return; }
   const button = [...document.querySelectorAll('#available-dictionary-grid button')].find(element => element.dataset.dictionaryId === id);
   if (button) { button.disabled = true; button.textContent = 'Installing…'; }
-  $('dictionary-status').textContent = `Downloading ${item.name} (${item.locale}) from its pinned open-source source…`;
+  $('dictionary-status').textContent = `Downloading ${item.name} (${item.locale}) from official Brightdesk resources…`;
   try {
     const result = await window.brightdesk.installCatalogueDictionary(id);
     await refreshDictionaries(); render();
