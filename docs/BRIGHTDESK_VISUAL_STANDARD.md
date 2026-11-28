@@ -168,6 +168,8 @@ The **Apps** sidebar entry uses the original four-tile launcher icon from `asset
 
 
 ## Suite navigation and product-window integrity
+In the Suite's own workspace context, the sidebar presents the other included products in the **Switch product** group.
+
 
 The approved Suite sidebar uses **Home**, **Apps** and **Files**. No descriptive captions appear beneath those labels. The **Switch product** list appears only inside an active product workspace; it never replaces Suite navigation or appears as an online-service destination.
 
