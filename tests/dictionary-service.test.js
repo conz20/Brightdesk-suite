@@ -71,7 +71,7 @@ test('offline spell check groups repeated misspellings and supplies suggestions'
       suggest: word => word.toLowerCase() === 'wrng' ? ['wrong'] : []
     })
   });
-  const catalogueEntry = sourceEntry('en-AU');
+  const catalogueEntry = sourceEntry('en-au');
   const dictionaryFolder = path.join(userData, 'dictionaries', catalogueEntry.locale);
   await fs.mkdir(dictionaryFolder, { recursive: true });
   const affText = 'SET UTF-8\n';
