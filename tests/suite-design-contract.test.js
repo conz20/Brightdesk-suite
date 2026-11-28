@@ -129,7 +129,9 @@ test('Home sidebar uses compact 20px navigation icons and text-only labels', () 
   const styles = read('src/styles.css');
   const html = read('src/index.html');
   assert.match(styles, /\.sidebar > \.nav \.app-icon-image\s*\{[^}]*width:\s*20px;[^}]*height:\s*20px;/);
-  assert.match(styles, /\.sidebar > \.nav small\s*\{\s*display:\s*none;\s*\}/);\n  assert.match(styles, /\.sidebar #dynamic-app-nav \.nav \.app-icon-image\s*\{[^}]*width:\s*26px;[^}]*height:\s*26px;/);\n  assert.match(styles, /\.sidebar #dynamic-app-nav \.nav small\s*\{\s*display:\s*none;\s*\}/);
+  assert.match(styles, /\.sidebar > \.nav small\s*\{\s*display:\s*none;\s*\}/);
+  assert.match(styles, /\.sidebar #dynamic-app-nav \.nav \.app-icon-image\s*\{[^}]*width:\s*26px;[^}]*height:\s*26px;/);
+  assert.match(styles, /\.sidebar #dynamic-app-nav \.nav small\s*\{\s*display:\s*none;\s*\}/);
   assert.match(html, /src="assets\/icons\/home\.svg"/);
   assert.match(html, /src="assets\/icons\/apps\.svg"/);
   assert.match(html, /src="assets\/icons\/files\.svg"/);
