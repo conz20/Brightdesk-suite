@@ -136,6 +136,7 @@ test('Settings actions open language preferences, return to Settings and save up
   await tick();
   assert.equal(byId(window, 'update-settings-panel').hidden, false);
   assert.equal(byId(window, 'update-settings-button').getAttribute('aria-expanded'), 'true');
+  assert.match(byId(window, 'update-settings-panel').textContent, /Pages, Sheets, Decks, Notes, Database, Forms, Lists, Planner, To Do and Workspace/);
   const autoCheck = byId(window, 'update-auto-check');
   assert.equal(autoCheck.checked, true);
   autoCheck.checked = false;
