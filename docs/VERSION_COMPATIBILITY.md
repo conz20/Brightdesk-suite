@@ -78,8 +78,8 @@ This is an upstream-version snapshot, not an approval to promote any candidate b
 
 | Component | Current Suite pin / lock | Newest stable candidate checked | Next action |
 |---|---:|---:|---|
-| Node.js 24 line | 24.22.2 | 24.22.3 | Patch-update candidate; test exact runtime, npm lock, builds and native modules. Node.js 26.13.1 is the newer Active LTS line and must be evaluated as a separate major-runtime compatibility trial, not silently substituted. |
-| Electron | 45.2.1 | 45.5.0 | Test the newest stable patch on the current Electron 45 line; Electron 46 is prerelease at this snapshot. |
+| Node.js 24 line | 24.22.2 | 24.22.3 | Patch-update candidate and high priority: Node.js 24.22.3 is a security release with multiple high-severity fixes. Test the exact runtime, npm lock, builds and native modules. Node.js 26.13.1 is the newer Active LTS line and must be evaluated as a separate major-runtime compatibility trial, not silently substituted. |
+| Electron | 45.2.1 | 45.5.0 | Test the newest stable patch on the current Electron 45 line. Electron 45.5.0 embeds Node.js 24.22.3 and includes renderer fixes; Electron 46 is prerelease at this snapshot. |
 | electron-builder | 26.18.0 | 26.18.1 | Test the newest stable 26.x patch; 27.x is prerelease and is not a production default. |
 | Rust | 1.99.1 | 1.100.1 | Suite PR #126 is the active candidate. Its quality, Suite CI, Rust Node-API and README checks passed; macOS installer verification was still running at the latest check. Keep draft until that completes. |
 | Vite | 6.4.5 | 8.4.0 | Suite PR #100 proposes 8.3.6 and is stale. Its exact-head quality and Suite CI fail because tests/dependency-security.test.js still expects 6.4.5; README freshness also fails because package files changed without a README update. These are test/documentation failures, not proof that Vite 8 is incompatible. Recreate the update against current main using 8.4.0 and regenerate the lockfile. |
@@ -87,3 +87,7 @@ This is an upstream-version snapshot, not an approval to promote any candidate b
 | TypeScript | 5.9.3 (locked) | 7.0.2 | Treat as a separate major upgrade; run the full typecheck and product builds before promotion. |
 
 Official version sources checked: [Node.js downloads](https://nodejs.org/en/download/), [Electron stable releases](https://releases.electronjs.org/?channel=stable), [electron-builder changelog](https://www.electron.build/changelog/), [Rust release notes](https://dev.rust-lang.org/releases.html), [Vite npm releases](https://www.npmjs.com/package/vite), [Vitest npm releases](https://www.npmjs.com/package/vitest) and [TypeScript npm releases](https://www.npmjs.com/package/typescript).
+
+
+### Security priority
+Node.js 24.22.3 is not merely a routine patch: the official 11 November 2026 release is a security release with multiple high-severity fixes. Electron 45.5.0 also embeds Node.js 24.22.3. Prioritise these compatible patch-line updates in the Suite, then replicate them across all ten product repositories after exact-head checks pass. Do not switch the whole portfolio to Node.js 26 until its compatibility is tested separately.
