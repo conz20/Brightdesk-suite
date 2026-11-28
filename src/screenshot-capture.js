@@ -161,7 +161,8 @@ function waitForSuiteScreen(view, screenSelector, timeoutMs = 10000) {
       const correctAppManagerMode = view === 'home'
         ? screen?.classList.contains('home-view')
         : (view === 'apps' ? !screen?.classList.contains('home-view') : true);
-      if (screen && !screen.hidden && correctAppManagerMode) {
+      const settingsLoaded = view !== 'update-settings' || screen?.dataset.settingsLoaded === 'true';
+      if (screen && !screen.hidden && correctAppManagerMode && settingsLoaded) {
         resolve({ view, active: true, screenVisible: true });
         return;
       }
