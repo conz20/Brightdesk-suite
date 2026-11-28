@@ -16,9 +16,6 @@ jobs:
     # GitHub-hosted macOS provides the required native build environment without a local runner.
     runs-on: macos-latest
     steps:
-      - name: Register post-job workspace cleanup
-        uses: conz20/Brightdesk-suite/.github/actions/runner-workspace-cleanup@7727da85c4e6e660f3376b5b330d78b6782c1976
-
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
           persist-credentials: false
