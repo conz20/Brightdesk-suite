@@ -29,9 +29,9 @@ Outlook, OneDrive and Teams are not part of Brightdesk and must not be added.
 
 ## Pricing, accounts and privacy lock
 
-- Brightdesk is free forever: no subscriptions, trials, paid tiers or billing.
+- **Free forever:** no subscriptions, trials, paid tiers or billing.
 - No customer accounts, sign-in, passwords, profiles, activation codes, serial numbers or licence servers.
-- No telemetry, analytics, advertising, crash reporting, cloud sync, online collaboration, remote AI service or customer text/document uploads.
+- No telemetry, analytics, advertising, crash reporting, cloud sync, collaboration or customer text uploads. No remote AI service or customer document uploads.
 - Product data, document processing and spelling checks stay on the device.
 - Network access is limited to Brightdesk-controlled product-update and language-resource services. Third-party dictionary downloads are not permitted. Dictionary downloads remain disabled until approved, signed Brightdesk-hosted packs are released.
 
