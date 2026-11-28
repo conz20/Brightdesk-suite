@@ -280,7 +280,9 @@ test('the Suite Home artwork and README no longer repeat Suite logo or wordmark 
   const root = path.join(__dirname, '..');
   const readme = fs.readFileSync(path.join(root, 'README.md'), 'utf8');
   const artwork = fs.readFileSync(path.join(root, 'assets', 'product-experience', 'brightdesk-home.svg'), 'utf8');
-  assert.equal(readme.includes('assets/brand/brightdesk-logo.svg'), false);
+  assert.equal((readme.match(/<img src="assets\/brand\/brightdesk-logo\.svg"/g) || []).length, 1);
+  assert.match(readme, /## Brightdesk identity[\s\S]*?<img src="assets\/brand\/brightdesk-logo\.svg"/);
+  assert.ok(readme.includes('[full Brightdesk logo SVG](assets/brand/brightdesk-logo.svg)'));
   assert.equal(artwork.includes('Brightdesk Office Suite'), false);
   assert.equal(artwork.includes('brightdesk</text>'), false);
   assert.equal(artwork.includes('BRIGHTDESK OFFICE SUITE'), false);

@@ -2,7 +2,7 @@ name: Generate dependency lockfile
 
 on:
   push:
-    branches: [main, security/vitest-5-vite-6-upgrade-2026-11-05]
+    branches: [main]
     paths:
       - 'package.json'
       - '.github/workflows/generate-lockfile.yml'
@@ -13,17 +13,26 @@ permissions:
 
 jobs:
   generate-lockfile:
+    if: github.ref == 'refs/heads/main'
     permissions:
       contents: write
+      pull-requests: write
+      actions: write
     runs-on: ubuntu-latest
+    timeout-minutes: 45
     steps:
-      - name: Check out repository
-        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Check out Brightdesk Suite
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: main
+          fetch-depth: 0
+          persist-credentials: false
 
       - name: Set up required Node.js version
         uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
-          node-version: '24.22.2'
+          node-version-file: .node-version
+          cache: npm
 
       - name: Verify the required Node.js runtime
         run: npm run check:node
@@ -31,23 +40,65 @@ jobs:
       - name: Generate package-lock.json
         run: npm install --package-lock-only --ignore-scripts --no-audit --no-fund
 
-      - name: Verify lockfile
-        run: npm ls --package-lock-only --depth=0
-
-      - name: Commit lockfile
+      - name: Verify the generated lockfile
         run: |
-          if [ -f package-lock.json ]; then
-            git config user.name "github-actions[bot]"
-            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            git add package-lock.json
-            if ! git diff --cached --quiet; then
-              VERSION="$(node -p "require('./package.json').version")"
-              git commit -m "Generate package-lock.json for Brightdesk v${VERSION}"
-              git push
-            else
-              echo "package-lock.json is already up to date."
-            fi
-          else
-            echo "package-lock.json was not generated." >&2
-            exit 1
+          npm ls --package-lock-only --depth=0
+          npm run lock:verify
+
+      - name: Install exact locked dependencies
+        run: npm ci --no-audit --no-fund
+
+      - name: Build and type-check the Suite
+        run: |
+          npm run build
+          npm run typecheck
+
+      - name: Open an owner-reviewed dependency lockfile pull request
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -Eeuo pipefail
+
+          title="chore: refresh dependency lockfile"
+          existing="$(gh pr list --repo "$GITHUB_REPOSITORY" --base main --state open --json number,title --jq '.[] | select(.title == "chore: refresh dependency lockfile") | .number' | head -n 1)"
+          if [[ -n "$existing" ]]; then
+            echo "::notice::Dependency lockfile PR #${existing} is already open. No duplicate PR was created."
+            exit 0
           fi
+
+          git add package-lock.json
+          if git diff --cached --quiet; then
+            echo "package-lock.json is already current; no pull request is needed."
+            exit 0
+          fi
+
+          branch="automation/dependency-lockfile-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git switch -c "$branch"
+          git commit -m "$title"
+          gh auth setup-git
+          git push --set-upstream origin "$branch"
+
+          gh pr create \
+            --repo "$GITHUB_REPOSITORY" \
+            --base main \
+            --head "$branch" \
+            --title "$title" \
+            --body "## Summary
+          - Regenerate package-lock.json from the current main package manifest using the pinned Node.js runtime.
+          - Verify the lockfile and run the Suite build and type check.
+          - Keep the generated change in an owner-reviewed pull request; this workflow never pushes generated files to main.
+
+          ## Verification
+          The Brightdesk quality gate is explicitly dispatched against this PR branch after creation. This is necessary because GitHub does not start pull_request workflows for PRs created with GITHUB_TOKEN.
+
+          ## Safety
+          No automatic merge or release publication is performed. Review the lockfile diff and the exact-head quality-gate result before merging."
+
+          # GITHUB_TOKEN-created PRs do not start pull_request workflows.
+          # Dispatch both standard validation workflows against the PR branch.
+          gh workflow run ci.yml --repo "$GITHUB_REPOSITORY" --ref "$branch"
+          gh workflow run quality.yml --repo "$GITHUB_REPOSITORY" --ref "$branch"
+          echo "Created $title on $branch and dispatched Suite CI and the quality gate."
