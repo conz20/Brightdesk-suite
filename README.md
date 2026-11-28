@@ -30,7 +30,7 @@ When a product workspace is active in the Suite, the Home/Apps/Files navigation 
 
 The top bar reads **Your apps**. The product grid is headed **Your products** with the line **Ten focused tools, connected by one Brightdesk experience.** The redundant **MY APPS** label is hidden on Home so the section has one clear heading.
 
-The currently implemented desktop interface uses a 238 px deep-navy sidebar. In the 1600 × 900 artwork, the main area retains a 34 px Home heading, 38 px circular Notifications and Settings controls, and 240 px product cards with 16 px column and 18 px row gaps. The grid presents five cards per row at this size and adapts to fewer columns on narrower screens.
+The live desktop interface still has its existing 238 px sidebar; the **76 px rail is the target shown in this design artwork**, not yet a change to the running app. The artwork’s main area retains a 34 px Home heading, 38 px circular Notifications and Settings controls, and 240 px product cards with 16 px column and 18 px row gaps. The grid presents five cards per row at this size and adapts to fewer columns on narrower screens.
 
 Home opens to the ten-product grid. Apps opens product management. Files provides local Open file and Save project actions. Product settings let users hide or restore an enabled product in the Suite's **Switch product** list; hiding a product changes navigation visibility only.
 
