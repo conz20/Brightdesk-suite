@@ -1,3 +1,4 @@
+(function attachBrightdeskWorkspaceService(root) {
 'use strict';
 const BLOCK_TYPES=new Set(['paragraph','heading','bullet','callout','divider','checklist']);
 const makeId=p=>globalThis.crypto?.randomUUID?.()||`${p}-${Date.now()}-${Math.random().toString(16).slice(2)}`;
@@ -23,3 +24,5 @@ function deleteChecklistItem(w,pageId,blockId,itemId,opts={}){const n=clone(w),p
 function deleteWorkspace(workspaces,id){if(!Array.isArray(workspaces)||workspaces.length<=1)throw new Error('Keep at least one workspace.');if(!workspaces.some(w=>w.id===id))throw new Error('Workspace not found.');return workspaces.filter(w=>w.id!==id);}
 function searchPages(w,query){const q=String(query||'').trim().toLowerCase();return w.pages.filter(p=>!q||p.title.toLowerCase().includes(q)||p.blocks.some(b=>b.content.toLowerCase().includes(q)||b.items.some(i=>i.text.toLowerCase().includes(q)))).map(p=>({...p,blocks:p.blocks.map(b=>({...b,items:b.items.map(i=>({...i}))}))}));}
 const api={createWorkspace,renameWorkspace,addPage,renamePage,deletePage,addBlock,updateBlock,deleteBlock,moveBlock,addChecklistItem,updateChecklistItem,toggleChecklistItem,deleteChecklistItem,deleteWorkspace,searchPages};if(typeof window!=='undefined')window.BrightdeskWorkspaceService=api;if(typeof module!=='undefined'&&module.exports)module.exports=api;
+
+})(typeof window !== 'undefined' ? window : globalThis);

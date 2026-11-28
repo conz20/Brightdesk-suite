@@ -1,3 +1,4 @@
+(function attachBrightdeskDatabaseService(root) {
 'use strict';
 const TYPES=new Set(['text','number','date','email','url','checkbox','select']);
 const makeId=prefix=>globalThis.crypto?.randomUUID?.()||`${prefix}-${Date.now()}-${Math.random().toString(16).slice(2)}`;
@@ -23,3 +24,5 @@ function queryRecords(database,tableId,options={}){const table=findTable(databas
 function csvEscape(value){const raw=value===null||value===undefined?'':String(value);const s=typeof value==='string'&&/^[\u0000-\u0020]*[=+\-@]/.test(value)?`'${raw}`:raw;return /[",\r\n\t]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s;}
 function toCSV(database,tableId){const table=findTable(database,tableId),fields=table.fields;return[fields.map(f=>csvEscape(f.name)).join(','),...table.rows.map(row=>fields.map(f=>csvEscape(row.values[f.id])).join(','))].join('\n');}
 const api={createDatabase,addTable,renameTable,deleteTable,addField,updateField,deleteField,addRecord,updateRecord,deleteRecord,queryRecords,toCSV};if(typeof window!=='undefined')window.BrightdeskDatabaseService=api;if(typeof module!=='undefined'&&module.exports)module.exports=api;
+
+})(typeof window !== 'undefined' ? window : globalThis);

@@ -1,3 +1,4 @@
+(function attachBrightdeskPlannerService(root) {
 'use strict';
 const PRIORITIES=new Set(['low','normal','high']);
 const PROGRESS=new Set(['not-started','in-progress','completed']);
@@ -17,3 +18,5 @@ function updateTask(plan,id,patch={},opts={}){const n=clone(plan),i=n.tasks.find
 function deleteTask(plan,id,opts={}){const n=clone(plan);n.tasks=n.tasks.filter(t=>t.id!==id);n.updatedAt=stamp(opts.now);return n;}
 function filterTasks(plan,options={}){const q=String(options.query||'').toLowerCase().trim();return plan.tasks.filter(t=>(!options.bucketId||t.bucketId===options.bucketId)&&(!options.progress||t.progress===options.progress)&&(!options.priority||t.priority===options.priority)&&(!q||[t.title,t.description,t.assignedTo,...t.labels].join(' ').toLowerCase().includes(q)));}
 const api={createPlan,updatePlan,addBucket,renameBucket,deleteBucket,addTask,updateTask,deleteTask,filterTasks};if(typeof window!=='undefined')window.BrightdeskPlannerService=api;if(typeof module!=='undefined'&&module.exports)module.exports=api;
+
+})(typeof window !== 'undefined' ? window : globalThis);
