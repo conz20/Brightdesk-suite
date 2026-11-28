@@ -126,7 +126,22 @@ function waitForSuiteHome() {
         return;
       }
       if (Date.now() >= deadline) {
-        reject(new Error('Suite Home did not load ten product cards in the screenshot test.'));
+        const rectSummary = element => {
+          if (!element) return null;
+          const rect = element.getBoundingClientRect();
+          return { left: rect.left, top: rect.top, width: rect.width, height: rect.height, right: rect.right, bottom: rect.bottom };
+        };
+        const diagnostics = {
+          viewport: { width: window.innerWidth, height: window.innerHeight },
+          main: rectSummary(document.querySelector('.main')),
+          manager: rectSummary(manager),
+          managerParent: rectSummary(manager?.parentElement),
+          grid: rectSummary(grid),
+          gridTemplateColumns: grid ? window.getComputedStyle(grid).gridTemplateColumns : null,
+          productCards: grid?.children.length || 0,
+          cards: cardRects.map(rect => ({ left: rect.left, top: rect.top, width: rect.width, height: rect.height, right: rect.right, bottom: rect.bottom }))
+        };
+        reject(new Error('Suite Home did not load ten product cards in the approved five-column layout: ' + JSON.stringify(diagnostics)));
         return;
       }
       window.setTimeout(check, 50);
