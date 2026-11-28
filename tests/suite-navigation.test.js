@@ -187,10 +187,10 @@ test('Suite navigation rail hides sidebar extras and keeps the compact icon labe
   assert.ok(preload.includes('platform: process.platform,'));
   assert.ok(!app.includes("$('version-label').textContent ="));
   assert.ok(app.includes("document.body.classList.toggle('suite-navigation', suitePage && !launchAppId)"));
-  assert.ok(styles.includes('body.suite-navigation .section-label'));
-  assert.ok(styles.includes('body.suite-navigation .sidebar-divider'));
-  assert.ok(styles.includes('body.suite-navigation .sidebar-bottom'));
-  assert.ok(styles.includes('body.suite-navigation .nav > span'));
+  assert.ok(styles.includes('body.suite-navigation .sidebar .section-label'));
+  assert.ok(styles.includes('body.suite-navigation .sidebar .sidebar-divider'));
+  assert.ok(styles.includes('body.suite-navigation .sidebar .sidebar-bottom'));
+  assert.ok(styles.includes('body.suite-navigation .sidebar > .nav > span'));
   assert.ok(styles.includes('body.suite-navigation .nav {'));
   assert.ok(readme.includes('76 px wide'));
   assert.ok(readme.includes('icon above its name'));
