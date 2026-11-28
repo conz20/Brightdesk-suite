@@ -31,7 +31,7 @@ const catalog = fullCatalog;
 const { resolveAppSetup, removeAppSelection, setProductVisibility, getNavigationProducts } = window.BrightdeskAppSetupPolicy;
 const installableCatalog = catalog.filter(item => item.availability === 'available');
 const state = {
-  app: launchAppId || 'pages', view: 'workspace', docs: structuredClone(defaults),
+  app: launchAppId || 'pages', view: 'workspace', previousView: 'settings', docs: structuredClone(defaults),
   todoView: 'my-day', todoQuery: '',
   selectedCell: { row: 0, col: 0 }, update: null, notifications: [], ribbonTab: 'home',
   installedApps: [], hiddenProducts: [], setupComplete: false, firstRunSelection: new Set(installableCatalog.map(item => item.id)),
@@ -720,6 +720,7 @@ async function checkCurrentDocumentSpelling() {
   } catch (error) { $('dictionary-status').textContent = `Spell check failed: ${error.message}`; }
 }
 async function openLanguageManager() {
+  state.previousView = state.view;
   state.view = 'languages';
   try { await refreshLanguageData(); await refreshDictionaries(); } catch (error) { console.error(error); $('language-status').textContent = error.message; }
   render();
@@ -762,9 +763,10 @@ function render() {
   document.body.classList.toggle('suite-home', home);
   const manager = state.view === 'manager';
   const files = state.view === 'files';
+  const settings = state.view === 'settings';
   const languages = state.view === 'languages';
-  const suitePage = home || manager || files;
-  $('sidebar-section-label').textContent = languages ? t('sidebar.settings') : (suitePage ? t('sidebar.workspace') : t('sidebar.yourApps'));
+  const suitePage = home || manager || files || settings || languages;
+  $('sidebar-section-label').textContent = (languages || settings) ? t('sidebar.settings') : (suitePage ? t('sidebar.workspace') : t('sidebar.yourApps'));
   $('sidebar-section-label').hidden = Boolean(launchAppId) || suitePage;
   $('home-nav').hidden = !suitePage || Boolean(launchAppId);
   $('app-centre-nav').hidden = !suitePage || Boolean(launchAppId);
@@ -778,14 +780,15 @@ function render() {
   $('dynamic-app-nav').hidden = suitePage || languages;
   $('app-manager').hidden = !(home || manager);
   $('app-manager').classList.toggle('home-view', home);
-  $('app-manager').querySelector('.settings-toolbar').hidden = home;
+  $('settings-manager').hidden = !settings;
   $('app-manager').querySelector('.manager-bottom').hidden = home;
   $('files-manager').hidden = !files;
   $('language-manager').hidden = !languages;
-  $('workspace').hidden = suitePage || files || languages;
+  $('workspace').hidden = suitePage;
   $('welcome').hidden = suitePage || files || languages || ['todo','lists','forms','planner','database','loop'].includes(state.app);
-  $('app-title').textContent = home ? t('home.title') : (manager ? t('sidebar.applications') : (files ? 'Files' : (languages ? t('language.title') : (catalog.find(item => item.id === state.app)?.name || state.app))));
-  $('top-actions').hidden = languages;
+  $('app-title').textContent = home ? t('home.title') : (manager ? t('sidebar.applications') : (files ? 'Files' : (settings ? 'Settings' : (languages ? t('language.title') : (catalog.find(item => item.id === state.app)?.name || state.app)))));
+  $('top-actions').hidden = false;
+  if (!settings) $('update-settings-panel').hidden = true;
   $('save-status').hidden = suitePage || files || languages;
   $('open-button').hidden = suitePage || files || languages;
   $('save-project').hidden = suitePage || files || languages;
@@ -796,6 +799,8 @@ function render() {
     $('save-status').textContent = t('files.title');
   } else if (languages) {
     $('save-status').textContent = t('language.title'); renderLanguageManager();
+  } else if (settings) {
+    $('save-status').textContent = 'Settings';
   } else {
     const configKey = state.app;
     const coreWelcome = ['pages','sheets','slides','notes'].includes(configKey); $('welcome-title').textContent = coreWelcome ? t(`welcome.${configKey}Heading`) : (genericConfigs[configKey]?.heading || configKey); $('welcome-desc').textContent = coreWelcome ? t(`welcome.${configKey}Desc`) : (genericConfigs[configKey]?.desc || '');
@@ -991,7 +996,7 @@ $('app-centre-nav').addEventListener('click',()=>{if(launchAppId)return;state.vi
 $('files-nav').addEventListener('click',()=>{if(launchAppId)return;state.view = 'files';render();});
 $('files-open-button').addEventListener('click', openFile);
 $('files-save-button').addEventListener('click', saveProject);
-$('open-settings').addEventListener('click',()=>{if (launchAppId) return; state.view='manager';render();});
+$('open-settings').addEventListener('click',()=>{if (launchAppId) return; state.view='settings';render();});
 $('open-notifications').addEventListener('click',()=>{const panel=$('notification-panel');panel.hidden=!panel.hidden;$('open-notifications').setAttribute('aria-expanded',String(!panel.hidden));if(!panel.hidden)markNotificationsRead();});
 $('clear-notifications').addEventListener('click',clearNotifications);
 document.addEventListener('keydown',event=>{if(event.key==='Escape'&&!$('notification-panel').hidden){$('notification-panel').hidden=true;$('open-notifications').setAttribute('aria-expanded','false');}});
@@ -1000,7 +1005,7 @@ $('display-language').addEventListener('change',event=>changeDisplayLanguage(eve
 $('proofing-language').addEventListener('change',event=>changeProofingLanguage(event.target.value));
 $('proofing-dictionary').addEventListener('change',event=>{state.selectedDictionary=event.target.value;localStorage.setItem('brightdesk-selected-dictionary',state.selectedDictionary);renderToolbar();});
 $('check-current-document').addEventListener('click',checkCurrentDocumentSpelling);
-$('back-to-apps').addEventListener('click',()=>{state.view='manager';render();});
+$('back-to-apps').addEventListener('click',()=>{state.view=['settings','manager'].includes(state.previousView) ? state.previousView : 'settings';render();});
 $('finish-app-setup').addEventListener('click',()=>{if(state.setupComplete){state.view='home';render();}else completeAppSetup();});
 $('doc-title').addEventListener('change',()=>{activeDoc().title=$('doc-title').value;persist();});
 editor.addEventListener('input',()=>{activeDoc().html=editor.innerHTML;persist();});
