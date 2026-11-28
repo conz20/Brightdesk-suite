@@ -26,7 +26,7 @@ The Home sidebar deliberately does not repeat the Brightdesk logo or wordmark. T
 
 The no-caption treatment applies specifically to Home. The same **Home**, **Apps** and **Files** destinations remain available when moving around the Suite; **Apps** becomes selected on product management and **Files** becomes selected on the local file-access page. Those non-Home views can show short explanatory captions beneath the navigation labels.
 
-When a product workspace is active in the Suite, the Home/Apps/Files navigation is replaced by a contextual **SWITCH PRODUCT** list. It shows other installed products that are enabled for navigation, excluding the active product and products the user has hidden. That product-switching sidebar is contextual and is not part of the Home screen artwork.
+When a product workspace is active in the Suite, the Home/Apps/Files navigation is replaced by a contextual **Switch product** list. It shows other installed products that are enabled for navigation, excluding the active product and products the user has hidden. The other enabled products appear in the **Switch product** list, excluding the active product and products the user has hidden. That product-switching sidebar is contextual and is not part of the Home screen artwork.
 
 The top bar reads **Your apps**. The product grid is headed **Your products** with the line **Ten focused tools, connected by one Brightdesk experience.** The redundant **MY APPS** label is hidden on Home so the section has one clear heading.
 
