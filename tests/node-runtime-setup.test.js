@@ -21,8 +21,8 @@ test('Node.js 24.22.2 remains the single exact Brightdesk runtime', () => {
   const nodeWorkflows = workflowFiles.map(file => ({ file, source: fs.readFileSync(path.join(workflowDir, file), 'utf8') })).filter(item => /uses:\s*actions\/setup-node/.test(item.source));
   assert.ok(nodeWorkflows.length > 0, 'at least one workflow must configure Node.js');
   for (const workflow of nodeWorkflows) {
-    const usesExactVersion = /node-version:\\s*['"]?24\\.22\\.2/.test(workflow.source);
-    const readsCanonicalVersion = /node-version-file:\\s*\\.node-version/.test(workflow.source);
+    const usesExactVersion = /node-version:\s*['"]?24\.22\.2/.test(workflow.source);
+    const readsCanonicalVersion = /node-version-file:\s*\.node-version/.test(workflow.source);
     assert.ok(usesExactVersion || readsCanonicalVersion, workflow.file + ' must use the exact repository-pinned Node.js 24 runtime');
   }
   for (const file of ['generate-lockfile.yml', 'generate-third-party-notices.yml']) {
