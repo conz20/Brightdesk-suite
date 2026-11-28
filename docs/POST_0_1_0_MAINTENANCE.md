@@ -2,11 +2,11 @@
 
 **Status:** permanent follow-up register; do not treat these items as approved for the 0.1.0 release.
 **Created:** 2026-11-28
-**Scope:** all 27 `conz20` repositories, the Brightdesk Suite, and the ten approved customer products.
+**Scope:** all 28 `conz20` repositories, the Brightdesk Suite, and the ten approved customer products.
 
 ## Operating rule — every update cycle, permanently
 
-1. Keep a version and dependency inventory for all 27 repositories. Record current pin, latest stable upstream version, support status, licence, security advisories, compatibility, and whether an update is approved.
+1. Keep a version and dependency inventory for all 28 repositories. Record current pin, latest stable upstream version, support status, licence, security advisories, compatibility, and whether an update is approved.
 2. Check upstream projects and dependencies on every planned Brightdesk maintenance cycle and before each subsequent release.
 3. Adopt only stable, non-prerelease versions. Do not move to a newer major/minor/patch prerelease, nightly, release candidate, beta, or untagged development commit. Wait until the stable release is published.
 4. Do not blindly upgrade. Check changelogs, source diffs, licences, platform support, transitive dependencies, security impact, API compatibility, lockfiles, and migration notes. Test the update against Brightdesk before approval.
@@ -51,6 +51,7 @@ Reviewed public repositories and release/commit history on 2026-11-28. These are
 - **Engine / Common-Libs / Common-Actions:** review bounded parsing, input-size and resource-amplification protections, undo memory budgets, deterministic serialization, shared format primitives, and property/fuzz tests.
 - **Fonts / Localization:** test font discovery and fallback for Latin, Arabic, CJK and complex scripts; ensure language resources are licensed, checksummed, signed and usable offline after installation. Keep dictionaries offline-first and Brightdesk-hosted only.
 - **Design-System / Assets:** verify original icons, contrast, focus, scaling, reduced motion, keyboard access and visual consistency at reference and narrow desktop sizes.
+- **Archives:** establish repository-scoped mirroring, immutable recovery points, integrity checks, restore drills, off-platform redundancy and failure alerts. Do not treat the private archive repository as an active backup system until those workflows and restores have passed.
 - **Release-Tools / Developer-Tools / Services:** review reproducible builds, action/dependency pinning, release manifests, checksum/signature verification, artifact retention, rollback and release-state reporting. Services remains optional owner-operated infrastructure, never a customer runtime dependency.
 - **Wiki:** keep everyday help and deep technical docs accurate against actual shipped behavior; never document a planned feature as available.
 - **Printing / Voice / Type-Preview / Extensions:** check supported platform integration, offline behavior, accessibility, data boundaries and dependency freshness; retain Type-Preview as local/offline with no hosted preview service.
@@ -66,7 +67,7 @@ Reviewed public repositories and release/commit history on 2026-11-28. These are
 
 ## Repository inventory to maintain
 
-The 27-repository count is authoritative. Reconcile this list against GitHub on each maintenance cycle; do not add customer products to reach the count.
+The 28-repository count is authoritative. Reconcile this list against GitHub on each maintenance cycle; do not add customer products to reach the count.
 
 1. Brightdesk-suite
 2. Brightdesk-Pages
@@ -80,27 +81,28 @@ The 27-repository count is authoritative. Reconcile this list against GitHub on 
 10. Brightdesk-To-Do
 11. Brightdesk-Workspace
 12. Brightdesk-AI (internal only)
-13. Brightdesk-Assets
-14. Brightdesk-Common-Actions
-15. Brightdesk-Common-Libs
-16. Brightdesk-Design-System
-17. Brightdesk-Developer-Tools
-18. Brightdesk-Extensions
-19. Brightdesk-Fonts
-20. Brightdesk-Localization
-21. Brightdesk-Printing
-22. Brightdesk-Release-Tools
-23. Brightdesk-Services (optional owner-operated infrastructure only)
-24. Brightdesk-Type-Preview (local/offline only)
-25. Brightdesk-Voice
-26. Brightdesk-Wiki (separate online help)
-27. Brightdesk-Engine
+13. Brightdesk-Archives (private recovery archive only; automated mirroring and restore tests are not yet verified)
+14. Brightdesk-Assets
+15. Brightdesk-Common-Actions
+16. Brightdesk-Common-Libs
+17. Brightdesk-Design-System
+18. Brightdesk-Developer-Tools
+19. Brightdesk-Extensions
+20. Brightdesk-Fonts
+21. Brightdesk-Localization
+22. Brightdesk-Printing
+23. Brightdesk-Release-Tools
+24. Brightdesk-Services (optional owner-operated infrastructure only)
+25. Brightdesk-Type-Preview (local/offline only)
+26. Brightdesk-Voice
+27. Brightdesk-Wiki (separate online help)
+28. Brightdesk-Engine
 
 **Release boundary:** this backlog is for work after 0.1.0. A candidate discovered here must not be slipped into 0.1.0 without a separate scope, risk and verification decision.
 
 ## Portfolio manifest audit — 2026-11-28
 
-The 27-repository manifest review found 26 Node.js package manifests and one Rust-only repository (Brightdesk-Engine). Twenty-five Node.js manifests pin Node 24.22.2; Brightdesk-Design-System already declares Node 24.22.3. Do not downgrade that repository. Keep the approved 0.1.0 pins unchanged and make the first post-release Node maintenance action a reviewed alignment to stable Node 24.22.3 across the Node repositories, subject to native-module compatibility, all-platform builds, product tests and lockfile verification.
+The 28-repository manifest review found 26 Node.js package manifests, one Rust-only repository (Brightdesk-Engine), and one archive-only repository (Brightdesk-Archives) with no customer runtime package. Twenty-five Node.js manifests pin Node 24.22.2; Brightdesk-Design-System already declares Node 24.22.3. Do not downgrade that repository. Keep the approved 0.1.0 pins unchanged and make the first post-release Node maintenance action a reviewed alignment to stable Node 24.22.3 across the Node repositories, subject to native-module compatibility, all-platform builds, product tests and lockfile verification.
 
 The Suite and all ten standalone product manifests currently share these direct dependency pins: `docx@9.15.1`, `electron-updater@6.8.11`, `exceljs@4.4.0`, `fast-xml-parser@5.11.2`, `jszip@3.10.2`, `mammoth@1.12.2`, `nspell@2.1.5` and `pptxgenjs@4.0.1`; their development pins are `electron@45.2.1` and `electron-builder@26.18.0`.
 

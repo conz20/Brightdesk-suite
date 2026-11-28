@@ -54,3 +54,15 @@ test('Brightdesk stays local-first without telemetry, ads, cloud sync or custome
   assert.match(readme, /No telemetry, analytics, advertising, crash reporting, cloud sync or collaboration/);
   assert.match(scope, /No telemetry, analytics, advertising, crash reporting, cloud sync, collaboration or customer text uploads/);
 });
+
+
+test('the permanent repository register contains all 28 repositories including private Archives', () => {
+  const maintenance = fs.readFileSync(path.join(root, 'docs', 'POST_0_1_0_MAINTENANCE.md'), 'utf8');
+  const readme = fs.readFileSync(path.join(root, 'README.md'), 'utf8');
+  const entries = maintenance.match(/^\d+\. Brightdesk-/gm) || [];
+  assert.equal(entries.length, 28);
+  assert.match(maintenance, /Brightdesk-Archives \(private recovery archive only/);
+  assert.match(readme, /GitHub portfolio contains 28 repositories/);
+  assert.match(readme, /Brightdesk-Archives/);
+  assert.equal(catalogue.length, 10, 'the 28-repository engineering portfolio must not expand the ten customer products');
+});
