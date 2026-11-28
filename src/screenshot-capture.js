@@ -263,7 +263,7 @@ async function runScreenshotCaptureTest({ app, packageVersion, readTerms, readBu
   try {
     if (typeof openProductWindow !== 'function') throw new Error('Screenshot capture requires the Suite product-window manager.');
     const outputDir = process.env.BRIGHTDESK_SCREENSHOT_OUTPUT_DIR;
-    const sourceCommit = process.env.GITHUB_SHA;
+    const sourceCommit = process.env.BRIGHTDESK_SOURCE_COMMIT;
     if (!outputDir || !require('node:path').isAbsolute(outputDir)) throw new Error('Screenshot capture requires an absolute output directory.');
     if (!sourceCommit || !/^[a-f0-9]{40}$/i.test(sourceCommit)) throw new Error('Screenshot capture requires the exact GitHub source commit.');
     captureStage = 'checking the packaged application version';
