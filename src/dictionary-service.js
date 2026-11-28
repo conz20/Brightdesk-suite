@@ -1,13 +1,14 @@
 'use strict';
 
 const fs = require('node:fs/promises');
+const fsConstants = require('node:fs').constants;
 const path = require('node:path');
 const crypto = require('node:crypto');
 const dictionaryCatalogue = require('./dictionary-catalog.json');
 
 const CATALOGUE_REVISION = dictionaryCatalogue.catalogueRevision;
-const CATALOGUE_RAW_ROOT = `https://raw.githubusercontent.com/wooorm/dictionaries/${CATALOGUE_REVISION}/dictionaries`;
 const CATALOGUE_WEB_ROOT = `https://github.com/wooorm/dictionaries/tree/${CATALOGUE_REVISION}/dictionaries`;
+const CATALOGUE_RAW_ROOT = `https://raw.githubusercontent.com/wooorm/dictionaries/${CATALOGUE_REVISION}/dictionaries`;
 
 const OPEN_SOURCE_LICENSES = new Set([
   'MIT', 'ISC', 'BSD', 'BSD-2-Clause', 'BSD-3-Clause', 'Apache-2.0',
@@ -26,7 +27,6 @@ const MAX_LICENSE_BYTES = 2 * 1024 * 1024;
 const MAX_README_BYTES = 1024 * 1024;
 const MAX_TEXT_LENGTH = 200_000;
 const MAX_UNIQUE_MISSPELLINGS = 200;
-const UPSTREAM_FETCH_TIMEOUT_MS = 30_000;
 const CATALOGUE_IMPORT_TOKEN = Symbol('protected-catalogue-install');
 const PROTECTED_FILE_MODE = 0o444;
 const PROTECTED_DIRECTORY_MODE = 0o555;
@@ -72,13 +72,17 @@ function decodeHunspellFiles(affBytes, dicBytes) {
   };
   const label = encodingAliases[declared] || declared.toLowerCase();
   let decoder;
-  try { decoder = new TextDecoder(label); }
+  try { decoder = new TextDecoder(label, { fatal: true }); }
   catch { throw new Error(`The Hunspell dictionary declares an unsupported character encoding: ${declared}.`); }
-  return {
-    aff: decoder.decode(affBytes).replace(/^\uFEFF/, ''),
-    dic: decoder.decode(dicBytes).replace(/^\uFEFF/, ''),
-    encoding: label
-  };
+  try {
+    return {
+      aff: decoder.decode(affBytes).replace(/^\\uFEFF/, ''),
+      dic: decoder.decode(dicBytes).replace(/^\\uFEFF/, ''),
+      encoding: label
+    };
+  } catch {
+    throw new Error(`The Hunspell dictionary contains an invalid byte sequence for its declared encoding: ${declared}.`);
+  }
 }
 
 function validateDictionaryManifest(manifest) {
@@ -118,6 +122,67 @@ function sha256(value) {
   return crypto.createHash('sha256').update(value).digest('hex');
 }
 
+
+async function readInstalledManifest(folder, locale) {
+  const folderInfo = await fs.lstat(folder);
+  if (folderInfo.isSymbolicLink() || !folderInfo.isDirectory()) {
+    throw new Error(`Protected dictionary folder for ${locale} must be a real directory, not a symbolic link.`);
+  }
+  const bytes = await readProtectedFile(path.join(folder, 'manifest.json'), 64 * 1024, 'manifest', locale);
+  const text = new TextDecoder('utf-8', { fatal: true }).decode(bytes);
+  return validateDictionaryManifest(JSON.parse(text));
+}
+
+async function readProtectedFile(filePath, maxBytes, resourceName, locale) {
+  const beforeOpen = await fs.lstat(filePath);
+  if (beforeOpen.isSymbolicLink() || !beforeOpen.isFile()) {
+    throw new Error(`Protected ${resourceName} resource for ${locale} must be a regular file, not a symbolic link.`);
+  }
+  if (beforeOpen.size <= 0 || beforeOpen.size > maxBytes) {
+    throw new Error(`Protected ${resourceName} resource for ${locale} is missing or exceeds its size limit.`);
+  }
+
+  let handle;
+  try {
+    const flags = fsConstants.O_RDONLY | (fsConstants.O_NOFOLLOW || 0);
+    try {
+      handle = await fs.open(filePath, flags);
+    } catch (error) {
+      if (error.code === 'ELOOP') {
+        throw new Error(`Protected ${resourceName} resource for ${locale} must not be a symbolic link.`);
+      }
+      throw error;
+    }
+
+    const opened = await handle.stat();
+    if (!opened.isFile() || opened.dev !== beforeOpen.dev || opened.ino !== beforeOpen.ino) {
+      throw new Error(`Protected ${resourceName} resource for ${locale} changed while it was being opened.`);
+    }
+
+    const chunks = [];
+    const buffer = Buffer.allocUnsafe(64 * 1024);
+    let totalBytes = 0;
+    while (true) {
+      const remaining = maxBytes - totalBytes;
+      const readLength = Math.min(buffer.length, remaining + 1);
+      const { bytesRead } = await handle.read(buffer, 0, readLength, null);
+      if (bytesRead === 0) break;
+      totalBytes += bytesRead;
+      if (totalBytes > maxBytes) {
+        throw new Error(`Protected ${resourceName} resource for ${locale} is missing or exceeds its size limit.`);
+      }
+      chunks.push(Buffer.from(buffer.subarray(0, bytesRead)));
+    }
+
+    if (totalBytes === 0) {
+      throw new Error(`Protected ${resourceName} resource for ${locale} is missing or exceeds its size limit.`);
+    }
+    return Buffer.concat(chunks, totalBytes);
+  } finally {
+    if (handle) await handle.close();
+  }
+}
+
 function catalogueEntryForManifest(manifest) {
   const entry = dictionaryCatalogue.entries.find(item => item.id === manifest.catalogueId || item.locale.toLowerCase() === manifest.locale.toLowerCase());
   if (!entry) throw new Error('Only dictionaries from the protected Brightdesk catalogue can be installed or used.');
@@ -139,7 +204,6 @@ class DictionaryService {
     if (typeof userDataPath !== 'string' || !userDataPath.trim()) throw new TypeError('A user data folder is required.');
     this.root = path.join(userDataPath, 'dictionaries');
     this.spellFactory = options.spellFactory || (dictionary => require('nspell')(dictionary));
-    this.fetch = options.fetch || globalThis.fetch;
     this.cache = new Map();
   }
 
@@ -149,7 +213,7 @@ class DictionaryService {
   }
 
   async verifyInstalledIntegrity(folder, manifest) {
-    if (!manifest.integrity) throw new Error(`The ${manifest.locale} dictionary is a legacy installation without an integrity record. Select Install in the protected catalogue to verify it against its original source before use.`);
+    if (!manifest.integrity) throw new Error(`The ${manifest.locale} dictionary is a legacy installation without an integrity record. Brightdesk cannot authenticate it from an approved Brightdesk-hosted pack, so it will not be loaded or replaced. Third-party hosts are never contacted.`);
     const files = {
       aff: 'dictionary.aff',
       dic: 'dictionary.dic',
@@ -157,10 +221,13 @@ class DictionaryService {
       readme: manifest.readmeFile || 'UPSTREAM_README.md'
     };
     const limits = { aff: MAX_AFFIX_BYTES, dic: MAX_DICTIONARY_BYTES, license: MAX_LICENSE_BYTES, readme: MAX_README_BYTES };
+    const folderInfo = await fs.lstat(folder);
+    if (folderInfo.isSymbolicLink() || !folderInfo.isDirectory()) {
+      throw new Error(`Protected dictionary folder for ${manifest.locale} must be a real directory, not a symbolic link.`);
+    }
     const loaded = {};
     for (const [key, filename] of Object.entries(files)) {
-      const bytes = await fs.readFile(path.join(folder, filename));
-      if (!bytes.length || bytes.byteLength > limits[key]) throw new Error(`Protected ${key} resource for ${manifest.locale} is missing or exceeds its size limit.`);
+      const bytes = await readProtectedFile(path.join(folder, filename), limits[key], key, manifest.locale);
       loaded[key] = bytes;
       if (manifest.integrity && sha256(bytes) !== manifest.integrity[key]) {
         throw new Error(`Protected ${key} resource for ${manifest.locale} has changed. Brightdesk refused to load it.`);
@@ -173,6 +240,7 @@ class DictionaryService {
     }
     const decoded = decodeHunspellFiles(loaded.aff, loaded.dic);
     if (!decoded.aff.trim() || !/^\s*\d+\s*(?:\r?\n)/.test(decoded.dic)) throw new Error(`Protected Hunspell files for ${manifest.locale} are invalid.`);
+    return decoded;
   }
 
   async protectInstalledFolder(folder, manifest) {
@@ -200,169 +268,35 @@ class DictionaryService {
     }));
   }
 
-  async fetchUpstreamFile(url, maxBytes) {
-    const parsed = new URL(url);
-    const allowedPathPrefixes = [
-      `/wooorm/dictionaries/${CATALOGUE_REVISION}/dictionaries/`
-    ];
-    if (parsed.protocol !== 'https:' || parsed.hostname !== 'raw.githubusercontent.com' || parsed.search || parsed.hash ||
-        parsed.pathname.includes('..') || !allowedPathPrefixes.some(prefix => parsed.pathname.startsWith(prefix))) {
-      throw new Error('Dictionary download URL is outside the pinned, approved upstream sources.');
-    }
-    if (typeof this.fetch !== 'function') throw new Error('This runtime does not provide a secure HTTPS fetch implementation.');
-    const response = await this.fetch(parsed.toString(), {
-      method: 'GET',
-      redirect: 'error',
-      signal: AbortSignal.timeout(UPSTREAM_FETCH_TIMEOUT_MS),
-      headers: { 'Accept': 'application/octet-stream' }
-    });
-    if (!response.ok || !response.body) throw new Error(`The upstream dictionary file could not be downloaded (HTTP ${response.status}).`);
-    const declaredLength = Number(response.headers.get('content-length'));
-    if (Number.isFinite(declaredLength) && declaredLength > maxBytes) throw new Error('The upstream dictionary file exceeds Brightdesk’s download size limit.');
-
-    const reader = response.body.getReader();
-    const chunks = [];
-    let total = 0;
-    try {
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        total += value.byteLength;
-        if (total > maxBytes) {
-          await reader.cancel();
-          throw new Error('The upstream dictionary file exceeds Brightdesk’s download size limit.');
-        }
-        chunks.push(Buffer.from(value));
-      }
-    } finally {
-      reader.releaseLock();
-    }
-    if (total === 0) throw new Error('The upstream dictionary file was empty.');
-    return Buffer.concat(chunks, total);
-  }
-
   async installCatalogueEntry(id) {
     if (typeof id !== 'string' || !/^[a-z0-9-]{2,32}$/.test(id)) throw new Error('Choose a valid dictionary from the Brightdesk catalogue.');
     const entry = dictionaryCatalogue.entries.find(item => item.id === id);
     if (!entry) throw new Error('That dictionary is not in the built-in catalogue.');
     validateLicenseExpression(entry.license);
+
     await this.ensureRoot();
     const destination = path.join(this.root, entry.locale);
     let destinationExists = true;
     try { await fs.access(destination); }
     catch (error) { if (error.code === 'ENOENT') destinationExists = false; else throw error; }
-    if (destinationExists) {
-      try {
-        const existingManifest = validateDictionaryManifest(JSON.parse(await fs.readFile(path.join(destination, 'manifest.json'), 'utf8')));
-        catalogueEntryForManifest(existingManifest);
-        if (!existingManifest.integrity) {
-          // 0.3.6 dictionaries predate integrity hashes. Verify their bytes against the exact pinned upstream files before trusting them.
-          const sourceRoot = `${CATALOGUE_RAW_ROOT}/${entry.sourceFolder}`;
-          const [sourceAff, sourceDic, sourceReadme] = await Promise.all([
-            this.fetchUpstreamFile(`${sourceRoot}/index.aff`, MAX_AFFIX_BYTES),
-            this.fetchUpstreamFile(`${sourceRoot}/index.dic`, MAX_DICTIONARY_BYTES),
-            this.fetchUpstreamFile(`${sourceRoot}/readme.md`, MAX_README_BYTES)
-          ]);
-          const sourceLicense = entry.licenseSource?.kind === 'bundled-standard-license'
-            ? await fs.readFile(path.join(__dirname, 'licenses', safeFileName(entry.licenseSource.file, 'licence source file')))
-            : await this.fetchUpstreamFile(`${sourceRoot}/license`, MAX_LICENSE_BYTES);
-          const decodedSource = decodeHunspellFiles(sourceAff, sourceDic);
-          const [installedAff, installedDic, installedLicense, installedReadme] = await Promise.all([
-            fs.readFile(path.join(destination, 'dictionary.aff'), 'utf8'),
-            fs.readFile(path.join(destination, 'dictionary.dic'), 'utf8'),
-            fs.readFile(path.join(destination, 'LICENSE.txt'), 'utf8'),
-            fs.readFile(path.join(destination, existingManifest.readmeFile || 'UPSTREAM_README.md'), 'utf8')
-          ]);
-          if (installedAff !== decodedSource.aff || installedDic !== decodedSource.dic ||
-              installedLicense !== sourceLicense.toString('utf8').replace(/^\uFEFF/, '') ||
-              installedReadme !== sourceReadme.toString('utf8').replace(/^\uFEFF/, '')) {
-            throw new Error('The legacy dictionary files do not match the original pinned dictionary, licence and attribution. Brightdesk refused to trust or replace them.');
-          }
-          const integrity = {
-            aff: sha256(Buffer.from(installedAff, 'utf8')),
-            dic: sha256(Buffer.from(installedDic, 'utf8')),
-            license: sha256(Buffer.from(installedLicense, 'utf8')),
-            readme: sha256(Buffer.from(installedReadme, 'utf8'))
-          };
-          const upgradedManifest = { ...existingManifest, catalogueId: entry.id, integrity };
-          await fs.chmod(destination, 0o755).catch(() => {});
-          await fs.chmod(path.join(destination, 'manifest.json'), 0o644).catch(() => {});
-          const temporaryManifest = path.join(destination, `.manifest-${crypto.randomUUID()}.tmp`);
-          await fs.writeFile(temporaryManifest, JSON.stringify(upgradedManifest, null, 2), { flag: 'wx', mode: 0o644 });
-          await fs.rename(temporaryManifest, path.join(destination, 'manifest.json'));
-          existingManifest.catalogueId = upgradedManifest.catalogueId;
-          existingManifest.integrity = upgradedManifest.integrity;
-        }
-        await this.verifyInstalledIntegrity(destination, existingManifest);
-        await this.protectInstalledFolder(destination, existingManifest);
-        return { locale: entry.locale, name: entry.name, license: entry.license, alreadyInstalled: true, integrityVerified: true };
-      } catch (error) {
-        throw new Error(`The ${entry.locale} dictionary already has a protected or unrecognised installation and cannot be replaced. ${error.message}`);
-      }
+
+    if (!destinationExists) {
+      throw new Error(`The ${entry.locale} dictionary is not included in this Brightdesk build. Dictionary resources are delivered only through official Brightdesk updates; no third-party download is performed.`);
     }
 
-    const sourceRoot = `${CATALOGUE_RAW_ROOT}/${entry.sourceFolder}`;
-    const licenseUrl = entry.licenseSource?.url || `${sourceRoot}/license`;
-    const [affBytes, dicBytes, readmeBytes] = await Promise.all([
-      this.fetchUpstreamFile(`${sourceRoot}/index.aff`, MAX_AFFIX_BYTES),
-      this.fetchUpstreamFile(`${sourceRoot}/index.dic`, MAX_DICTIONARY_BYTES),
-      this.fetchUpstreamFile(`${sourceRoot}/readme.md`, MAX_README_BYTES)
-    ]);
-    const licenseBytes = entry.licenseSource?.kind === 'bundled-standard-license'
-      ? await fs.readFile(path.join(__dirname, 'licenses', safeFileName(entry.licenseSource.file, 'licence source file')))
-      : await this.fetchUpstreamFile(`${sourceRoot}/license`, MAX_LICENSE_BYTES);
-    const normalizedSource = decodeHunspellFiles(affBytes, dicBytes);
-    const licenseText = licenseBytes.toString('utf8').replace(/^\uFEFF/, '');
-    const readmeText = readmeBytes.toString('utf8').replace(/^\uFEFF/, '');
-    if (licenseText.trim().length < 40 || licenseText.includes('\0')) throw new Error('The upstream licence text is missing or unreadable.');
-    if (readmeText.trim().length < 40 || readmeText.includes('\0')) throw new Error('The upstream dictionary attribution README is missing or unreadable.');
-
-    const manifest = {
-      schemaVersion: 1,
-      catalogueId: entry.id,
-      locale: entry.locale,
-      name: entry.name,
-      nativeName: entry.nativeName,
-      authors: 'See UPSTREAM_README.md for the normalized package authors, original dictionary source, and contributor references.',
-      affFile: 'index.aff',
-      dicFile: 'index.dic',
-      licenseFile: 'LICENSE.txt',
-      readmeFile: 'UPSTREAM_README.md',
-      license: entry.license,
-      licenseUrl,
-      licenseSource: entry.licenseSource || { kind: 'dictionary-package-license', repository: 'wooorm/dictionaries', revision: CATALOGUE_REVISION },
-      sourceUrl: `${CATALOGUE_WEB_ROOT}/${entry.sourceFolder}`,
-      upstream: 'wooorm/dictionaries',
-      upstreamRevision: CATALOGUE_REVISION,
-      upstreamLicenseRevision: entry.licenseSource?.revision || null,
-      integrity: {
-        aff: sha256(Buffer.from(normalizedSource.aff, 'utf8')),
-        dic: sha256(Buffer.from(normalizedSource.dic, 'utf8')),
-        license: sha256(Buffer.from(licenseText, 'utf8')),
-        readme: sha256(Buffer.from(readmeText, 'utf8'))
-      }
-    };
-    validateDictionaryManifest(manifest);
-
-    const JSZip = require('jszip');
-    const zip = new JSZip();
-    zip.file('manifest.json', JSON.stringify(manifest, null, 2));
-    zip.file('index.aff', affBytes);
-    zip.file('index.dic', dicBytes);
-    zip.file('LICENSE.txt', licenseBytes);
-    zip.file('UPSTREAM_README.md', readmeBytes);
-    const bundleBytes = await zip.generateAsync({ type: 'nodebuffer', compression: 'DEFLATE', compressionOptions: { level: 6 } });
-    if (bundleBytes.byteLength > MAX_BUNDLE_BYTES) throw new Error('The prepared dictionary bundle exceeds Brightdesk’s size limit.');
-
-    await this.ensureRoot();
-    const temporaryBundle = path.join(this.root, `.catalog-${crypto.randomUUID()}.bddict`);
-    await fs.writeFile(temporaryBundle, bundleBytes, { flag: 'wx' });
     try {
-      return await this.importBundle(temporaryBundle, CATALOGUE_IMPORT_TOKEN);
-    } finally {
-      await fs.rm(temporaryBundle, { force: true }).catch(() => {});
+      const existingManifest = await readInstalledManifest(destination, entry.locale);
+      catalogueEntryForManifest(existingManifest);
+      if (!existingManifest.integrity) {
+        throw new Error(`This installed ${entry.locale} dictionary predates local integrity records and cannot be verified offline. Brightdesk will not download or replace it.`);
+      }
+      await this.verifyInstalledIntegrity(destination, existingManifest);
+      return { locale: entry.locale, name: entry.name, license: entry.license, alreadyInstalled: true, integrityVerified: true };
+    } catch (error) {
+      throw new Error(`The ${entry.locale} dictionary already has a protected or unrecognised installation and cannot be replaced. ${error.message}`);
     }
   }
+
 
   async readBundle(bundlePath) {
     const stat = await fs.stat(bundlePath);
@@ -461,17 +395,10 @@ class DictionaryService {
     for (const entry of entries.filter(item => item.isDirectory() && /^[a-z]{2,3}(?:-[A-Za-z0-9]{2,8})*$/.test(item.name))) {
       try {
         const folder = path.join(this.root, entry.name);
-        const manifest = validateDictionaryManifest(JSON.parse(await fs.readFile(path.join(folder, 'manifest.json'), 'utf8')));
+        const manifest = await readInstalledManifest(folder, entry.name);
         if (manifest.locale !== entry.name) continue;
         catalogueEntryForManifest(manifest);
         await this.verifyInstalledIntegrity(folder, manifest);
-        await this.protectInstalledFolder(folder, manifest);
-        const [affStat, dicStat, licenseStat] = await Promise.all([
-          fs.stat(path.join(folder, 'dictionary.aff')),
-          fs.stat(path.join(folder, 'dictionary.dic')),
-          fs.stat(path.join(folder, 'LICENSE.txt'))
-        ]);
-        if (affStat.size > MAX_AFFIX_BYTES || dicStat.size > MAX_DICTIONARY_BYTES || licenseStat.size < 40 || licenseStat.size > MAX_LICENSE_BYTES) continue;
         result.push({
           locale: manifest.locale,
           name: manifest.name,
@@ -503,16 +430,11 @@ class DictionaryService {
     if (typeof locale !== 'string' || !/^[a-z]{2,3}(?:-[A-Za-z0-9]{2,8})*$/.test(locale)) throw new Error('Choose an installed spelling dictionary first.');
     if (this.cache.has(locale)) return this.cache.get(locale);
     const folder = path.join(this.root, locale);
-    const manifest = validateDictionaryManifest(JSON.parse(await fs.readFile(path.join(folder, 'manifest.json'), 'utf8')));
+    const manifest = await readInstalledManifest(folder, locale);
     if (manifest.locale !== locale) throw new Error('Dictionary folder and manifest do not match.');
     catalogueEntryForManifest(manifest);
-    await this.verifyInstalledIntegrity(folder, manifest);
-    await this.protectInstalledFolder(folder, manifest);
-    const [aff, dic] = await Promise.all([
-      fs.readFile(path.join(folder, 'dictionary.aff'), 'utf8'),
-      fs.readFile(path.join(folder, 'dictionary.dic'), 'utf8')
-    ]);
-    const speller = this.spellFactory({ aff, dic });
+    const verifiedDictionary = await this.verifyInstalledIntegrity(folder, manifest);
+    const speller = this.spellFactory({ aff: verifiedDictionary.aff, dic: verifiedDictionary.dic });
     this.cache.set(locale, speller);
     return speller;
   }

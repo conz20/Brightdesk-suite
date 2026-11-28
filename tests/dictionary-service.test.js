@@ -171,25 +171,67 @@ test('catalogue installation rejects unknown IDs before making a network request
 });
 
 
-test('pinned catalogue downloader rejects URLs outside its fixed upstream repository', async () => {
+test('catalogue dictionaries not included in this build cannot trigger runtime network downloads', async () => {
+  const userData = await fs.mkdtemp(path.join(os.tmpdir(), 'brightdesk-dictionary-offline-catalogue-'));
   let networkCalls = 0;
-  const service = new DictionaryService('/tmp/brightdesk-dictionary-url-test', {
-    fetch: async () => { networkCalls += 1; return new Response('ok'); }
+  const service = new DictionaryService(userData, {
+    fetch: async () => { networkCalls += 1; throw new Error('unexpected network request'); }
   });
-  await assert.rejects(() => service.fetchUpstreamFile('https://example.com/dictionaries/bg/index.aff', 100), /pinned, approved upstream sources/);
-  await assert.rejects(() => service.fetchUpstreamFile('https://raw.githubusercontent.com/wooorm/dictionaries/main/dictionaries/bg/index.aff', 100), /pinned, approved upstream sources/);
-  await assert.rejects(() => service.fetchUpstreamFile('https://raw.githubusercontent.com/spdx/license-list-data/main/text/GPL-2.0-only.txt', 100), /pinned, approved upstream sources/);
-  assert.equal(networkCalls, 0);
+  try {
+    await assert.rejects(
+      () => service.installCatalogueEntry('bg'),
+      /not included in this Brightdesk build/
+    );
+    assert.equal(networkCalls, 0);
+    assert.equal(typeof service.fetchUpstreamFile, 'undefined');
+  } finally {
+    await fs.rm(userData, { recursive: true, force: true });
+  }
 });
 
-test('pinned catalogue downloader accepts a bounded file from an approved source', async () => {
-  const service = new DictionaryService('/tmp/brightdesk-dictionary-download-test', {
-    fetch: async () => new Response('SET UTF-8\n')
+test('legacy dictionaries without integrity metadata are rejected offline without changing files', async () => {
+  const userData = await fs.mkdtemp(path.join(os.tmpdir(), 'brightdesk-dictionary-legacy-offline-'));
+  let networkCalls = 0;
+  const service = new DictionaryService(userData, {
+    fetch: async () => { networkCalls += 1; throw new Error('unexpected network request'); }
   });
-  const bytes = await service.fetchUpstreamFile('https://raw.githubusercontent.com/wooorm/dictionaries/8cfea406b505e4d7df52d5a19bce525df98c54ab/dictionaries/bg/index.aff', 100);
-  assert.equal(bytes.toString('utf8'), 'SET UTF-8\n');
+  const entry = service.catalogue().find(item => item.id === 'bg');
+  const folder = path.join(userData, 'dictionaries', entry.locale);
+  const manifest = {
+    schemaVersion: 1,
+    catalogueId: entry.id,
+    locale: entry.locale,
+    name: entry.name,
+    nativeName: entry.nativeName,
+    authors: 'Original authors are listed in the bundled attribution file.',
+    affFile: 'index.aff',
+    dicFile: 'index.dic',
+    licenseFile: 'LICENSE.txt',
+    readmeFile: 'UPSTREAM_README.md',
+    license: entry.license,
+    licenseUrl: entry.licenseUrl,
+    licenseSource: entry.licenseSource,
+    sourceUrl: entry.sourceUrl,
+    upstream: entry.upstream,
+    upstreamRevision: entry.upstreamRevision
+  };
+  const originalManifest = JSON.stringify(manifest, null, 2);
+  const originalAff = 'legacy dictionary file';
+  try {
+    await fs.mkdir(folder, { recursive: true });
+    await fs.writeFile(path.join(folder, 'manifest.json'), originalManifest);
+    await fs.writeFile(path.join(folder, 'dictionary.aff'), originalAff);
+    await assert.rejects(
+      () => service.installCatalogueEntry('bg'),
+      /cannot be verified offline/
+    );
+    assert.equal(networkCalls, 0);
+    assert.equal(await fs.readFile(path.join(folder, 'manifest.json'), 'utf8'), originalManifest);
+    assert.equal(await fs.readFile(path.join(folder, 'dictionary.aff'), 'utf8'), originalAff);
+  } finally {
+    await fs.rm(userData, { recursive: true, force: true });
+  }
 });
-
 
 test('the two licence-file exceptions use bundled canonical GNU texts', async () => {
   const gpl = await fs.readFile(path.join(__dirname, '..', 'src', 'licenses', 'GPL-2.0.txt'), 'utf8');
@@ -202,4 +244,139 @@ test('the two licence-file exceptions use bundled canonical GNU texts', async ()
   const catalogue = service.catalogue();
   assert.equal(catalogue.find(item => item.id === 'et').licenseUrl, 'https://www.gnu.org/licenses/old-licenses/lgpl-2.1.txt');
   assert.equal(catalogue.find(item => item.id === 'eu').licenseUrl, 'https://www.gnu.org/licenses/old-licenses/gpl-2.0.txt');
+});
+
+
+test('installed dictionary integrity rejects symbolic links outside the protected folder', async (t) => {
+  if (process.platform === 'win32') {
+    t.skip('Creating symbolic links may require elevated Windows permissions.');
+    return;
+  }
+
+  const userData = await fs.mkdtemp(path.join(os.tmpdir(), 'brightdesk-dictionary-symlink-'));
+  const folder = path.join(userData, 'dictionaries', 'en-AU');
+  await fs.mkdir(folder, { recursive: true });
+
+  const affText = 'SET UTF-8\\n';
+  const dicText = '1\\nword\\n';
+  const licenseText = 'A test licence document that is long enough to meet the minimum validation length.';
+  const readmeText = 'A test attribution document that is long enough to meet the minimum validation length.';
+  const externalDictionary = path.join(userData, 'outside-dictionary.dic');
+  await fs.writeFile(path.join(folder, 'dictionary.aff'), affText);
+  await fs.writeFile(externalDictionary, dicText);
+  await fs.writeFile(path.join(folder, 'LICENSE.txt'), licenseText);
+  await fs.writeFile(path.join(folder, 'UPSTREAM_README.md'), readmeText);
+  await fs.symlink(externalDictionary, path.join(folder, 'dictionary.dic'));
+
+  const hash = value => crypto.createHash('sha256').update(value).digest('hex');
+  const integrityManifest = {
+    locale: 'en-AU',
+    readmeFile: 'UPSTREAM_README.md',
+    integrity: {
+      aff: hash(affText),
+      dic: hash(dicText),
+      license: hash(licenseText),
+      readme: hash(readmeText)
+    }
+  };
+  const service = new DictionaryService(userData);
+
+  try {
+    await assert.rejects(
+      () => service.verifyInstalledIntegrity(folder, integrityManifest),
+      /symbolic link/
+    );
+  } finally {
+    await fs.rm(userData, { recursive: true, force: true });
+  }
+});
+
+
+test('Hunspell text decoding rejects malformed bytes instead of replacing them', () => {
+  const validAff = Buffer.from('SET UTF-8\n', 'utf8');
+  const validDic = Buffer.from('1\nword\n', 'utf8');
+  const malformedAff = Buffer.concat([validAff, Buffer.from([0xff])]);
+  const malformedDic = Buffer.concat([validDic, Buffer.from([0xff])]);
+
+  assert.throws(
+    () => decodeHunspellFiles(validAff, malformedDic),
+    /invalid byte sequence/
+  );
+  assert.throws(
+    () => decodeHunspellFiles(malformedAff, validDic),
+    /invalid byte sequence/
+  );
+});
+
+
+test('loadSpeller uses the verified dictionary bytes without reopening replaced paths', async (t) => {
+  if (process.platform === 'win32') {
+    t.skip('Creating symbolic links may require elevated Windows permissions.');
+    return;
+  }
+
+  const userData = await fs.mkdtemp(path.join(os.tmpdir(), 'brightdesk-dictionary-toctou-'));
+  const folder = path.join(userData, 'dictionaries', 'en-AU');
+  const externalDictionary = path.join(userData, 'outside-dictionary.dic');
+  await fs.mkdir(folder, { recursive: true });
+
+  const affText = 'SET UTF-8\n';
+  const dicText = '1\nverifiedword\n';
+  const externalText = '1\nexternalword\n';
+  const licenseText = 'A test licence document that is long enough to meet the minimum validation length.';
+  const readmeText = 'A test attribution document that is long enough to meet the minimum validation length.';
+  const hash = value => crypto.createHash('sha256').update(value).digest('hex');
+  const entry = dictionaryCatalogue.entries.find(item => item.locale === 'en-AU');
+  const trustedManifest = {
+    schemaVersion: 1,
+    catalogueId: entry.id,
+    locale: entry.locale,
+    name: entry.name,
+    nativeName: entry.nativeName,
+    authors: 'See UPSTREAM_README.md for original authors and contributors.',
+    affFile: 'index.aff',
+    dicFile: 'index.dic',
+    licenseFile: 'LICENSE.txt',
+    readmeFile: 'UPSTREAM_README.md',
+    license: entry.license,
+    licenseUrl: entry.licenseSource?.url || `https://raw.githubusercontent.com/wooorm/dictionaries/${dictionaryCatalogue.catalogueRevision}/dictionaries/${entry.sourceFolder}/license`,
+    licenseSource: entry.licenseSource || { kind: 'dictionary-package-license', repository: 'wooorm/dictionaries', revision: dictionaryCatalogue.catalogueRevision },
+    sourceUrl: `https://github.com/wooorm/dictionaries/tree/${dictionaryCatalogue.catalogueRevision}/dictionaries/${entry.sourceFolder}`,
+    upstream: 'wooorm/dictionaries',
+    upstreamRevision: dictionaryCatalogue.catalogueRevision,
+    integrity: { aff: hash(affText), dic: hash(dicText), license: hash(licenseText), readme: hash(readmeText) }
+  };
+
+  await fs.writeFile(path.join(folder, 'manifest.json'), JSON.stringify(trustedManifest));
+  await fs.writeFile(path.join(folder, 'dictionary.aff'), affText);
+  await fs.writeFile(path.join(folder, 'dictionary.dic'), dicText);
+  await fs.writeFile(path.join(folder, 'LICENSE.txt'), licenseText);
+  await fs.writeFile(path.join(folder, 'UPSTREAM_README.md'), readmeText);
+  await fs.writeFile(externalDictionary, externalText);
+
+  const loaded = [];
+  const service = new DictionaryService(userData, {
+    spellFactory: dictionary => {
+      loaded.push(dictionary);
+      return { correct: () => true, suggest: () => [] };
+    }
+  });
+  const verify = service.verifyInstalledIntegrity.bind(service);
+  service.verifyInstalledIntegrity = async (dictionaryFolder, manifest) => {
+    const verified = await verify(dictionaryFolder, manifest);
+    await fs.unlink(path.join(folder, 'dictionary.dic'));
+    await fs.symlink(externalDictionary, path.join(folder, 'dictionary.dic'));
+    return verified;
+  };
+
+  try {
+    await service.loadSpeller('en-AU');
+    assert.equal(loaded.length, 1);
+    assert.equal(loaded[0].aff, affText);
+    assert.equal(loaded[0].dic, dicText);
+    assert.notEqual(loaded[0].dic, externalText);
+  } finally {
+    await fs.chmod(folder, 0o700).catch(() => {});
+    await fs.rm(userData, { recursive: true, force: true });
+  }
 });
