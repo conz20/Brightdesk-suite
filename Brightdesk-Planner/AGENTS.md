@@ -1,7 +1,7 @@
 # Brightdesk contributor instructions
 
 ## Runtime
-Use exactly Node.js **24.22.2 LTS**. Do not change the pinned runtime in package.json, .nvmrc, .node-version, .npmrc, the dev container or GitHub Actions without explicit project-owner approval.
+Use exactly Node.js **24.22.3 LTS**. Do not change the pinned runtime in package.json, .nvmrc, .node-version, .npmrc, the dev container or GitHub Actions without explicit project-owner approval.
 
 ## Product scope
 Keep the approved catalogue exactly ten Brightdesk products: Pages, Sheets, Decks, Notes, Database, Forms, Lists, Planner, To Do and Workspace. All ten are integrated into the Brightdesk suite and have desktop installer build targets.

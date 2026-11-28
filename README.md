@@ -90,7 +90,7 @@ The engine provides bounded source chunking and analysis, embedding-vector norma
 - Ordinary development can use a bounded JavaScript fallback when the native module is unavailable. The Rust verification job and the release matrix require the native module to load successfully on their respective runners; Windows, macOS and Linux results remain pending until each matching self-hosted runner completes its checks.
 - Native calls are made through the trusted Electron main-process/preload boundary; renderer code does not receive direct Node.js or native-module access.
 
-The Rust toolchain is pinned to **1.99.1**. macOS native builds produce both Apple Silicon and Intel libraries and combine them for the universal desktop package. The integrated Suite and its ten product installers package the shared `brightdesk_engine.node` binary. The independently maintained product repositories are at different rollout stages: four have the six-operation Rust integration on `main`, while six have equivalent implementation in open draft PRs awaiting merge and native CI execution. Each product repository builds its own binary from the common engine contract; this does not mean one physical binary is shared across separate installations. See [Rust engine integration](docs/RUST_ENGINE_INTEGRATION.md) for the API, safety limits, provider boundary and rollout status.
+The Rust toolchain is pinned to **1.100.1**. macOS native builds produce both Apple Silicon and Intel libraries and combine them for the universal desktop package. The integrated Suite and its ten product installers package the shared `brightdesk_engine.node` binary. The independently maintained product repositories are at different rollout stages: four have the six-operation Rust integration on `main`, while six have equivalent implementation in open draft PRs awaiting merge and native CI execution. Each product repository builds its own binary from the common engine contract; this does not mean one physical binary is shared across separate installations. See [Rust engine integration](docs/RUST_ENGINE_INTEGRATION.md) for the API, safety limits, provider boundary and rollout status.
 
 ## Product screenshots and verification
 
@@ -141,7 +141,7 @@ Repository presence is not the same as completed integration. Shared packages an
 
 ## Development
 
-Use Node.js **24.22.2** for development, tests and release builds. Customers do not need to install Node.js; the desktop package includes its Electron runtime.
+Use Node.js **24.22.3** for development, tests and release builds. Customers do not need to install Node.js; the desktop package includes its Electron runtime.
 
 Install the locked dependencies and run the main checks:
 

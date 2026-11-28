@@ -8,7 +8,7 @@ function verifyLockfile(rootDir = path.resolve(__dirname, '..')) {
   const packagePath = path.join(rootDir, 'package.json');
   const lockPath = path.join(rootDir, 'package-lock.json');
   if (!fs.existsSync(packagePath)) throw new Error(`package.json not found: ${packagePath}`);
-  if (!fs.existsSync(lockPath)) throw new Error('package-lock.json is missing. Run npm run lock:prepare on a network-connected Node.js 24.22.2 environment.');
+  if (!fs.existsSync(lockPath)) throw new Error('package-lock.json is missing. Run npm run lock:prepare on a network-connected Node.js 24.22.3 environment.');
 
   const manifest = JSON.parse(fs.readFileSync(packagePath, 'utf8'));
   const lock = JSON.parse(fs.readFileSync(lockPath, 'utf8'));

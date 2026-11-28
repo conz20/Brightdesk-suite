@@ -108,7 +108,7 @@ test('product repository generation creates ten locked product folders with orig
       assert.ok(fs.statSync(path.join(destination, 'assets', 'brightdesk-product.svg')).size > 0);
       assert.ok(fs.statSync(path.join(destination, 'assets', 'social-preview.svg')).size > 0);
       assert.ok(readme.includes('assets/social-preview.svg'));
-      assert.match(workflow, /node-version: 24\.22\.2/);
+      assert.match(workflow, /node-version: 24\.22\.3/);
       assert.match(workflow, /name: Build Brightdesk .* desktop installers/);
       assert.match(dependabot, /package-ecosystem: npm/);
       assert.match(dependabot, /package-ecosystem: github-actions/);

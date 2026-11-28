@@ -41,7 +41,7 @@ jobs:
           components: clippy, rustfmt
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7
         with:
-          node-version: 24.22.2
+          node-version: 24.22.3
           cache: npm
       - run: npm run lock:verify
       - run: npm ci --no-audit --no-fund
@@ -79,7 +79,7 @@ jobs:
           components: clippy, rustfmt
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7
         with:
-          node-version: 24.22.2
+          node-version: 24.22.3
           cache: npm
       - run: npm ci --no-audit --no-fund
       - run: npm run dist:product:${{ matrix.platform }}

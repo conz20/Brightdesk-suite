@@ -1,6 +1,6 @@
 # Brightdesk project memory
 
-The standing project requirement is to use exactly Node.js 24.22.2 LTS for development, testing and release builds.
+The standing project requirement is to use exactly Node.js 24.22.3 LTS for development, testing and release builds.
 
 The approved product scope is fixed at ten apps:
 - Pages

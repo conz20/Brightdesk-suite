@@ -32,7 +32,7 @@ Installer builds are started manually. Publishing a GitHub Release is a separate
 
 ## Run from source
 
-Use Node.js **24.22.2**.
+Use Node.js **24.22.3**.
 
     npm ci
     npm start

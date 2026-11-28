@@ -26,7 +26,7 @@ test('release preflight blocks an old runtime before validating the dependency l
 
 test('release preflight treats all ten approved apps as release-ready implementations', () => {
   const root = path.resolve(__dirname, '..');
-  const result = runPreflight({ rootDir: root, nodeVersion: '24.22.2', platform: 'linux' });
+  const result = runPreflight({ rootDir: root, nodeVersion: '24.22.3', platform: 'linux' });
   const check = result.checks.find(item => item.name === 'All ten approved apps available');
   assert.ok(check, 'preflight must include the integrated ten-app availability check');
   assert.equal(check.passed, true);
@@ -67,11 +67,11 @@ test('release terms are wired into native installers and the first-launch agreem
   assert.match(main, /createAgreementWindow/);
 });
 
-test('exact Node.js 24.22.2 runtime is required for release preflight', () => {
+test('exact Node.js 24.22.3 runtime is required for release preflight', () => {
   const root = path.resolve(__dirname, '..');
   const result = runPreflight({ rootDir: root, nodeVersion: '24.22.1', platform: 'linux' });
   assert.equal(result.ready, false);
-  assert.ok(result.blockers.some(item => item.name === 'Node.js version' && /24\.22\.2/.test(item.detail)));
+  assert.ok(result.blockers.some(item => item.name === 'Node.js version' && /24\.22\.3/.test(item.detail)));
 });
 
 test('lockfile verifier rejects a missing or mismatched lockfile', () => {
