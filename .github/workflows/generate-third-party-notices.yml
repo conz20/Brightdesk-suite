@@ -16,8 +16,10 @@ permissions:
 
 jobs:
   notices:
+    if: github.ref == 'refs/heads/main'
     permissions:
       contents: write
+      pull-requests: write
     runs-on: ubuntu-latest
     steps:
       - name: Check out Brightdesk
@@ -34,14 +36,21 @@ jobs:
         run: npm ci --ignore-scripts --no-audit --no-fund
       - name: Generate and verify third-party notices
         run: npm run verify:licenses
-      - name: Commit generated notices
+      - name: Create third-party notice update pull request
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           git add THIRD_PARTY_NOTICES.md
           if git diff --cached --quiet; then
             echo "Third-party notices are already up to date."
             exit 0
           fi
+          BRANCH="automation/third-party-notices-${GITHUB_RUN_ID}"
+          git switch -c "$BRANCH"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git commit -m "Generate third-party dependency notices"
-          git push
+          git push --set-upstream origin "$BRANCH"
+          gh pr create --repo "$GITHUB_REPOSITORY" --base main --head "$BRANCH" \
+            --title "Update Brightdesk third-party notices" \
+            --body "Automated third-party notice update. Please review the generated notice diff and CI results before merging."
