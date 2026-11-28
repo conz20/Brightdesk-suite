@@ -460,7 +460,7 @@ input:disabled, select:disabled, textarea:disabled, button:disabled { cursor: no
 
 /* Production shell proportions from the approved 1600 × 900 Home artwork. */
 .sidebar {
-  width: 238px;
+  width: 190px;
   padding: 27px 15px;
 }
 .brand {

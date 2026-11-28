@@ -166,7 +166,7 @@ test('production Home activates its dedicated shell layout and circular utility 
   assert.equal(html.includes('brand-mark-image'), false);
   assert.ok(!html.includes('<small data-i18n="sidebar.workspace">YOUR WORKSPACE</small>'));
   assert.ok(app.includes("document.body.classList.toggle('suite-home', home)"));
-  assert.ok(styles.includes('width: 238px;'));
+  assert.ok(styles.includes('width: 190px;'));
   assert.ok(styles.includes('width: 38px;'));
   assert.ok(styles.includes('body.suite-home .main'));
   assert.ok(styles.includes('font-size: 34px;'));
