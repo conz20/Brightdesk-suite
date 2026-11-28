@@ -16,17 +16,23 @@ The Suite's identity belongs in the installed application identity and native ap
 
 ## The Brightdesk Suite experience
 
-<p align="center"><img src="assets/product-experience/brightdesk-home.svg" alt="Brightdesk Suite Home design showing Home, Apps and Files navigation and all ten original product cards" width="100%"></p>
+<p align="center"><img src="assets/product-experience/brightdesk-home.svg" alt="Brightdesk Suite Home design showing the current 238-pixel Home, Apps and Files sidebar and all ten original product cards" width="100%"></p>
 
 The artwork above is the approved production Home screen design and the single visual source of truth for the desktop interface. It shows the intended Brightdesk Suite appearance: the Home, Apps and Files navigation, ten original product cards, and Notifications and Settings controls.
 
-The approved sidebar uses **Home**, **Apps** and **Files**, with no secondary captions. The sidebar has a deep-navy background and a simple icon-and-label treatment. The Files icon is an open folder with a visible document stack. The footer reinforces that files stay on this device without repeating the Suite name or logo.
+The approved sidebar uses **Home**, **Apps** and **Files**, with no secondary captions in the Home view. At the 1600 × 900 reference size, it is 238 px wide and uses a deep-navy vertical gradient. Its small uppercase heading is **YOUR WORKSPACE**. The three destinations appear in this order: **Home**, **Apps** and **Files**, each with its own original line icon. **Home** is selected in the Home view shown here. The Files icon is an open folder with a visible document stack.
+
+The Home sidebar deliberately does not repeat the Brightdesk logo or wordmark. The Suite identity remains in the installed application identity and native application window. A divider separates the navigation from the footer, which shows the **Desktop** platform label and **Local-first · Your files stay here**.
+
+The no-caption treatment applies specifically to Home. The same **Home**, **Apps** and **Files** destinations remain available when moving around the Suite; **Apps** becomes selected on product management and **Files** becomes selected on the local file-access page. Those non-Home views can show short explanatory captions beneath the navigation labels.
+
+When a product workspace is active in the Suite, the Home/Apps/Files navigation is replaced by a contextual **SWITCH PRODUCT** list. It shows other installed products that are enabled for navigation, excluding the active product and products the user has hidden. That product-switching sidebar is contextual and is not part of the Home screen artwork.
 
 The top bar reads **Your apps**. The product grid is headed **Your products** with the line **Ten focused tools, connected by one Brightdesk experience.** The redundant **MY APPS** label is hidden on Home so the section has one clear heading.
 
 At the 1600 × 900 reference size, the design uses a 238 px deep-navy sidebar, a 34 px Home heading, 38 px circular Notifications and Settings controls, and 240 px product cards with 16 px column and 18 px row gaps. The grid presents five cards per row at this size and adapts to fewer columns on narrower screens.
 
-Home opens to the ten-product grid. Apps opens product management. Files provides local Open file and Save project actions. Installed products appear in the **Switch product** group only while a product workspace is open. The contextual **Switch product** list shows the other workspaces enabled in the Suite. Product settings let users hide or restore an enabled product in the Suite's **Switch product** list; hiding a product changes navigation visibility only.
+Home opens to the ten-product grid. Apps opens product management. Files provides local Open file and Save project actions. Product settings let users hide or restore an enabled product in the Suite's **Switch product** list; hiding a product changes navigation visibility only.
 
 The Home artwork is a design reference, not a screenshot of a running release. The live desktop interface should follow this visual direction and remain aligned with the approved artwork.
 
