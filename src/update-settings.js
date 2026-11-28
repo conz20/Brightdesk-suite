@@ -25,7 +25,7 @@
       </section>
       <section class="update-settings-section" aria-labelledby="included-apps-update-heading">
         <h3 id="included-apps-update-heading">Applications included in the suite</h3>
-        <p>Pages, Sheets, Decks and Notes are updated with the Brightdesk Office Suite release. They do not have separate update downloads or settings in the suite, so an application update will not be applied independently.</p>
+        <p>Pages, Sheets, Decks, Notes, Database, Forms, Lists, Planner, To Do and Workspace are included in the Brightdesk Office Suite release. Updates are delivered through the Suite release rather than separate product downloads.</p>
       </section>`;
     byId('close-update-settings').addEventListener('click', () => {
       panel.hidden = true;
