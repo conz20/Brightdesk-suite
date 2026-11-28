@@ -53,3 +53,20 @@ node /path/to/Brightdesk-Developer-Tools/bin/brightdesk-dev.mjs doctor --root /p
 ```
 
 The doctor is read-only. It verifies relevant exact pins and reports mismatches; it does not install, upgrade or rewrite project files. A passing doctor report does not replace the repository's tests, native build, installer verification or real application checks.
+
+
+## Rolling latest-stable update policy — owner-approved 28 November 2026
+
+The exact pins above describe the currently recorded baseline; they are not a permanent ceiling and must not be treated as proof that a version is still current. Before every planned update, check the upstream project's official release source for the newest stable release and compare it with the version actually installed in the manifest, lockfile, runtime selector, CI and build environment.
+
+- Prefer the newest **stable** version that is compatible with Brightdesk's supported operating systems, Electron runtime, native modules, APIs and release targets. Do not adopt alpha, beta, nightly or release-candidate builds as production defaults.
+- Check current security advisories and upstream support status as part of the version review. A package being present in a lockfile does not mean it is current or supported.
+- Upgrade in small, attributable groups. Keep manifests, lockfiles, runtime selectors, CI, build scripts, installer configuration and version-sensitive documentation consistent.
+- Prove compatibility with the repository's focused tests, full tests, type checks, builds, native-addon checks and relevant platform installer/smoke tests. Record the exact candidate version and exact tested commit.
+- If a candidate is incompatible or causes a regression, revert **only the affected component** to its previous stable compatible version. Keep unrelated successful upgrades and continue the rest of the maintenance work; do not roll back the whole toolchain or freeze the portfolio because one component failed.
+- Record each exception: candidate version, previous stable version retained, reproducible failure/evidence, affected repositories/platforms and the condition for trying again. Recheck the candidate on later maintenance cycles.
+- Once a candidate passes in the Suite, roll the same approved version through every applicable product and supporting repository, with repository-specific tests. Do not assume one repository's pass proves every other repository is compatible.
+- Keep older versions in archive history and explicit compatibility exceptions when required. Do not silently make an old version the new standard just because it is familiar.
+- Continue maintenance after 0.1.0. Post-release defects are expected to be corrected in subsequent stable updates; release does not end development.
+
+This rolling policy supersedes the earlier instruction that the listed exact pins could change only after a separate approval. The owner has explicitly authorised this latest-stable-first maintenance approach. The current exact pins remain in force until their replacements have passed the required checks; candidate availability alone does not promote a version.
