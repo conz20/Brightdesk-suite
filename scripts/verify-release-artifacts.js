@@ -13,10 +13,9 @@ const EXPECTED = {
 
 function collectFiles(directory) {
   if (!fs.existsSync(directory)) return [];
-  return fs.readdirSync(directory, { withFileTypes: true }).flatMap(entry => {
-    const full = path.join(directory, entry.name);
-    return entry.isDirectory() ? collectFiles(full) : [full];
-  });
+  return fs.readdirSync(directory, { withFileTypes: true })
+    .filter(entry => entry.isFile())
+    .map(entry => path.join(directory, entry.name));
 }
 
 function sha256File(file) {

@@ -151,19 +151,14 @@ jobs:
           npm run release:verify:mac
           npm run release:verify:products:mac
 
-      - name: Place verified files in platform folder
-        shell: bash
-        env:
-          BRIGHTDESK_PLATFORM: ${{ matrix.platform }}
-        run: |
-          mkdir -p "release/$BRIGHTDESK_PLATFORM"
-          node -e "const fs=require('node:fs');const p=require('node:path');const root='release';const dest=p.join(root,process.env.BRIGHTDESK_PLATFORM);for(const name of fs.readdirSync(root)){if(name===process.env.BRIGHTDESK_PLATFORM)continue;const source=p.join(root,name);if(fs.statSync(source).isFile())fs.renameSync(source,p.join(dest,name));}"
+      - name: Collect only checksum-verified product installers into the platform bundle
+        run: node scripts/collect-platform-release-files.js ${{ matrix.script }} release
 
       - name: Upload verified platform build
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: brightdesk-${{ matrix.platform }}
-          path: release/${{ matrix.platform }}/**
+          path: release/${{ matrix.platform }}/
           if-no-files-found: error
           retention-days: 14
 
