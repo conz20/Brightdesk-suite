@@ -13,8 +13,8 @@ concurrency:
   cancel-in-progress: true
 jobs:
   native:
-    # This repository's free self-hosted Mac runner replaces paid hosted runners.
-    runs-on: self-hosted
+    # GitHub-hosted macOS provides the required native build environment without a local runner.
+    runs-on: macos-latest
     steps:
       - name: Register post-job workspace cleanup
         uses: conz20/Brightdesk-suite/.github/actions/runner-workspace-cleanup@7727da85c4e6e660f3376b5b330d78b6782c1976
