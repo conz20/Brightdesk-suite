@@ -113,7 +113,7 @@ function validatePackage(record, index) {
       || parsedRunUrl.password
       || parsedRunUrl.search
       || parsedRunUrl.hash
-      || !/^[1-9]\\d*$/.test(runId)
+      || !/^[1-9]\d*$/.test(runId)
       || parsedRunUrl.href !== runPrefix + runId) {
       invalid('packages[' + index + '] build workflow URL does not match its source repository.');
     }
