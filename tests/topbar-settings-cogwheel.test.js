@@ -60,7 +60,8 @@ test('top-right controls clearly identify notifications, saving and Settings', (
   assert.match(main, /Notification\.isSupported\(\)/);
   assert.doesNotMatch(homeArtwork, /Install a product|Update Brightdesk/);
   assert.match(homeArtwork, /id="settings-cogwheel"/);
-  assert.match(homeArtwork, /Desktop productivity Home experience/i);
+  assert.match(homeArtwork, /<title id="title">Brightdesk Suite Home with a narrow vertical icon-and-label navigation rail<\/title>/);
+  assert.match(homeArtwork, /<desc id="desc">Brightdesk Suite Home at 1600 by 900/);
   assert.match(homeArtwork, /Home, Apps and Files/i);
   assert.match(homeArtwork, /id="sidebar-applications"/);
   assert.doesNotMatch(homeArtwork, /id="sidebar-(?:pages|sheets|decks|notes|database|forms|lists|planner|todo|workspace)-/);

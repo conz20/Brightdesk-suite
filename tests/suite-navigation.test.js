@@ -109,7 +109,7 @@ test('README and visual standard explain the contextual product-switching rule',
   const home = read('assets/product-experience/brightdesk-home.svg');
   assert.match(readme, /76 px rail/);
   assert.match(readme, /in the \*\*Switch product\*\*/);
-  assert.ok(readme.includes("hide or restore an enabled product in the Suite's **Switch product** list"));
+  assert.ok(readme.includes('Hiding a product removes it from the contextual navigation shown in the **Switch product** sidebar'));
   assert.equal((readme.match(/assets\/product-experience\/brightdesk-home\.svg/g) || []).length, 1);
   assert.doesNotMatch(readme, /brightdesk-app-centre\.svg/);
   assert.doesNotMatch(home, /Install a product|Update Brightdesk/);

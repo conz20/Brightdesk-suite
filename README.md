@@ -30,7 +30,7 @@ The top bar reads **Your apps**. The product grid is headed **Your products** wi
 
 The live Home, Apps and Files screens now use the same **76 px solid-navy rail** shown in the artwork. Product workspaces retain the wider contextual Switch product sidebar. The artwork’s main area retains a 34 px Home heading, 38 px circular Notifications and Settings controls, and 240 px product cards with 16 px column and 18 px row gaps. The grid presents five cards per row at this size and adapts to fewer columns on narrower screens.
 
-Home opens to the ten-product grid. Apps opens product management. Files provides local Open file and Save project actions. Product settings let users hide or restore an enabled product in the Suite's **Switch product** list; hiding a product changes navigation visibility only.
+Home opens to the ten-product grid. Apps opens product management. Files provides local Open file and Save project actions. Product settings let users hide or restore an enabled product. Hiding a product removes it from the contextual navigation shown in the **Switch product** sidebar, but does not uninstall the product, remove local files or remove it from the Suite.
 
 The Home artwork is the approved visual reference for the running Suite Home experience. Keep the live Home, Apps and Files rail aligned with this design.
 
