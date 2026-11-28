@@ -104,6 +104,29 @@ Keep product management within the existing Suite navigation. Share the trusted 
 
 Do not introduce paid services, paid runners, telemetry, advertising, analytics, crash reporting, customer accounts, cloud sync, collaboration services, remote AI or customer document/text uploads.
 
+## Product-repository release prerequisite
+
+The ten standalone products have separate source repositories. The launcher must use those repositories as the source of truth; it must not silently treat copies inside Brightdesk Suite as the authoritative product source.
+
+The repository audit found:
+
+- All ten product repositories exist and use `main` as their default branch.
+- Brightdesk Notes and Brightdesk Lists are private; the other eight product repositories are public.
+- None of the ten product repositories currently has a published GitHub Release containing installable product packages.
+- Brightdesk Pages already has a GitHub-hosted controller that checks out the product repositories and builds/verifies Windows, macOS and Linux packages. It does not publish those packages.
+- Brightdesk Suite's current release workflow still builds the standalone product variants from the Suite checkout. It does not yet build each product from a pinned commit of its own repository.
+- Several product-repository workflows still contain self-hosted runner references. Those paths must not be used for production builds, release publishing or updates.
+
+Required release path before enabling customer Install or Update actions:
+
+1. Check out the exact approved commit from each product repository using a short-lived, read-only GitHub App token. Record the repository and commit SHA used for each product build.
+2. Build each standalone product on GitHub-hosted Windows, macOS and Linux runners. No self-hosted runner or personal MacBook may be required.
+3. Verify all ten products' six package formats, plus the six Suite packages, before release publication.
+4. Publish the verified packages and the signed-off manifest to the public Brightdesk Suite release location. This allows Notes and Lists to remain private source repositories while their approved customer installers are publicly downloadable.
+5. Keep release publication behind the existing explicit owner approval gate. Building and verifying packages must never publish them automatically.
+
+Until this path produces a complete, verified release manifest, the Suite must show that standalone installation is unavailable rather than inventing an installed state or offering a broken download.
+
 ## Implementation sequence and gates
 
 1. **Audit current main:** trace the existing catalogue, Suite selection, product launch routing, product windows, update policy, release packaging and all consumers before changing behaviour.
