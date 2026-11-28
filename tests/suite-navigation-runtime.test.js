@@ -169,6 +169,7 @@ test('Settings actions open language preferences, return to Settings and save up
   byId(window, 'update-manual-check').click();
   await tick();
   assert.equal(calls.updateChecks, 2);
+  assert.equal(byId(window, 'update-manual-check').disabled, false);
   byId(window, 'update-manual-download').click();
   await tick();
   assert.equal(calls.downloadRequests, 1);
