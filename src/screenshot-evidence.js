@@ -5,7 +5,11 @@ const fs = require('node:fs');
 const path = require('node:path');
 
 const SCREENSHOT_TARGETS = Object.freeze([
-  { id: 'suite', productId: 'suite', productName: 'Brightdesk Suite', appId: null, workspaceSelector: '#app-manager', filename: 'suite-home.png', workflow: 'Suite Home showing all ten approved products.' },
+  { id: 'suite', productId: 'suite', productName: 'Brightdesk Suite', appId: null, view: 'home', workspaceSelector: '#app-manager', filename: 'suite-home.png', workflow: 'Suite Home showing all ten approved products.' },
+  { id: 'suite-apps', productId: 'suite', productName: 'Brightdesk Apps', appId: null, view: 'apps', workspaceSelector: '#app-manager', filename: 'suite-apps.png', workflow: 'Apps management showing all ten product cards and their available actions.' },
+  { id: 'suite-files', productId: 'suite', productName: 'Brightdesk Files', appId: null, view: 'files', workspaceSelector: '#files-manager', filename: 'suite-files.png', workflow: 'Files showing the local Open file and Save project actions.' },
+  { id: 'suite-settings', productId: 'suite', productName: 'Brightdesk Settings', appId: null, view: 'settings', workspaceSelector: '#settings-manager', filename: 'suite-settings.png', workflow: 'Settings showing language, dictionaries and update controls.' },
+  { id: 'suite-notifications', productId: 'suite', productName: 'Brightdesk Notifications', appId: null, view: 'notifications', workspaceSelector: '#notification-panel', filename: 'suite-notifications.png', workflow: 'Notifications panel showing its empty or current notification state.' },
   { id: 'pages', productId: 'pages', productName: 'Brightdesk Pages', appId: 'pages', workspaceSelector: '#editor', filename: 'pages-workspace.png', workflow: 'The integrated Suite Pages workspace showing a fictional project brief.' },
   { id: 'sheets', productId: 'sheets', productName: 'Brightdesk Sheets', appId: 'sheets', workspaceSelector: '#sheet-wrap', filename: 'sheets-workspace.png', workflow: 'The integrated Suite Sheets workspace showing a fictional delivery tracker.' },
   { id: 'decks', productId: 'slides', productName: 'Brightdesk Decks', appId: 'slides', workspaceSelector: '#slide-wrap', filename: 'decks-workspace.png', workflow: 'The integrated Suite Decks workspace showing a fictional presentation.' },
