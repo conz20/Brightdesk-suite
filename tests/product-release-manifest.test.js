@@ -5,7 +5,8 @@ const assert = require('node:assert/strict');
 const {
   PRODUCT_REPOSITORIES,
   RELEASE_ASSET_REPOSITORY,
-  validateProductReleaseManifest
+  validateProductReleaseManifest,
+  validateCompleteBrightdeskReleaseManifest
 } = require('../src/product-release-manifest');
 
 const digest = 'a'.repeat(64);
@@ -21,7 +22,9 @@ function packageRecord(overrides = {}) {
     fileName: 'Brightdesk-Pages-0.1.0-x64.exe',
     downloadUrl: 'https://github.com/conz20/Brightdesk-suite/releases/download/v0.1.0/Brightdesk-Pages-0.1.0-x64.exe',
     sizeBytes: 1024,
-    sha256: digest
+    sha256: digest,
+    sourceCommit: 'b'.repeat(40),
+    buildWorkflowRunUrl: 'https://github.com/conz20/Brightdesk-Pages/actions/runs/123456'
   };
   return { ...record, ...overrides };
 }
@@ -100,6 +103,7 @@ test('all ten approved products can have separately traceable package records', 
       productId,
       sourceRepository,
       fileName,
+      buildWorkflowRunUrl: `https://github.com/${sourceRepository}/actions/runs/123456`,
       downloadUrl: `https://github.com/conz20/Brightdesk-suite/releases/download/v0.1.0/${fileName}`
     });
   });
@@ -149,3 +153,95 @@ test('rejects malformed or unsupported manifest roots', () => {
   assert.throws(() => validateProductReleaseManifest({ schemaVersion: 2, packages: [packageRecord()] }), /schemaVersion must be 1/);
   assert.throws(() => validateProductReleaseManifest({ schemaVersion: 1, packages: [] }), /non-empty array/);
 });
+
+function completeReleaseManifest() {
+  const formats = [
+    { platform: 'windows', architecture: 'x64', format: 'nsis-exe', extension: '.exe' },
+    { platform: 'macos', architecture: 'universal', format: 'dmg', extension: '.dmg' },
+    { platform: 'macos', architecture: 'universal', format: 'pkg', extension: '.pkg' },
+    { platform: 'macos', architecture: 'universal', format: 'zip', extension: '.zip' },
+    { platform: 'linux', architecture: 'x64', format: 'AppImage', extension: '.AppImage' },
+    { platform: 'linux', architecture: 'x64', format: 'deb', extension: '.deb' }
+  ];
+  const products = [
+    ...Object.entries(PRODUCT_REPOSITORIES).map(([productId, sourceRepository]) => ({
+      productId, sourceRepository
+    })),
+    { productId: 'suite', sourceRepository: RELEASE_ASSET_REPOSITORY }
+  ];
+
+  return {
+    schemaVersion: 1,
+    packages: products.flatMap(({ productId, sourceRepository }, productIndex) => {
+      const assetName = productId === 'suite'
+        ? 'Brightdesk-Office-Suite'
+        : sourceRepository.split('/')[1];
+      const sourceCommit = String(productIndex + 1).padStart(40, '0');
+      const runId = 500000 + productIndex;
+
+      return formats.map(({ platform, architecture, format, extension }) => {
+        const fileName = assetName + '-0.1.0-' + architecture + extension;
+        return {
+          productId,
+          sourceRepository,
+          version: '0.1.0',
+          platform,
+          architecture,
+          format,
+          fileName,
+          downloadUrl: 'https://github.com/conz20/Brightdesk-suite/releases/download/v0.1.0/' + encodeURIComponent(fileName),
+          sizeBytes: 4096,
+          sha256: digest,
+          sourceCommit,
+          buildWorkflowRunUrl: 'https://github.com/' + sourceRepository + '/actions/runs/' + runId
+        };
+      });
+    })
+  };
+}
+
+test('requires a valid source commit and a workflow run URL from that same source repository', () => {
+  assert.throws(
+    () => validateProductReleaseManifest(manifest(packageRecord({ sourceCommit: 'not-a-commit' }))),
+    /invalid source commit SHA/
+  );
+  assert.throws(
+    () => validateProductReleaseManifest(manifest(packageRecord({
+      buildWorkflowRunUrl: 'https://github.com/conz20/Brightdesk-suite/actions/runs/123456'
+    }))),
+    /does not match its source repository/
+  );
+  assert.throws(
+    () => validateProductReleaseManifest(manifest(packageRecord({
+      buildWorkflowRunUrl: 'https://example.com/conz20/Brightdesk-Pages/actions/runs/123456'
+    }))),
+    /does not match its source repository/
+  );
+});
+
+test('requires the complete 66-package release and consistent per-repository provenance', () => {
+  const complete = completeReleaseManifest();
+  const validated = validateCompleteBrightdeskReleaseManifest(complete);
+  assert.equal(validated.packages.length, 66);
+  assert.equal(new Set(validated.packages.map(item => item.productId)).size, 11);
+  assert.equal(Object.isFrozen(validated.packages), true);
+});
+
+test('rejects incomplete, mixed-version or mixed-source-commit releases', () => {
+  const incomplete = completeReleaseManifest();
+  incomplete.packages.pop();
+  assert.throws(() => validateCompleteBrightdeskReleaseManifest(incomplete), /exactly 66 packages/);
+
+  const mixedVersions = completeReleaseManifest();
+  mixedVersions.packages[0].version = '0.2.0';
+  assert.throws(() => validateCompleteBrightdeskReleaseManifest(mixedVersions), /matching release version/);
+
+  const mixedSourceCommits = completeReleaseManifest();
+  mixedSourceCommits.packages[1].sourceCommit = 'f'.repeat(40);
+  assert.throws(() => validateCompleteBrightdeskReleaseManifest(mixedSourceCommits), /same source commit/);
+
+  const missingProvenance = completeReleaseManifest();
+  delete missingProvenance.packages[0].sourceCommit;
+  assert.throws(() => validateCompleteBrightdeskReleaseManifest(missingProvenance), /exact source commit SHA/);
+});
+
