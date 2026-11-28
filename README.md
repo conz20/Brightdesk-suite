@@ -77,6 +77,8 @@ This table describes the first-use scope represented in source code. It is not a
 
 The Database and Sheets demo tables use fictional placeholder contact labels such as **Example Contact**; they are sample data, not real customer records.
 
+The 92-entry spelling catalogue is source metadata only. No dictionary pack is currently built, licence-cleared, engine-verified or published. The Suite does not download dictionary files directly from third-party hosts; new packs will become installable only through the signed official Brightdesk resource channel. Previously installed integrity-verified dictionaries remain available offline.
+
 ## Rust Node-API engine
 
 The Suite includes a Rust engine exposed to the Electron main process through a Node-API 8 native module. Electron and JavaScript continue to own application orchestration, user-interface state, file access and provider selection. The renderer does not load native code directly.
