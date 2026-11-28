@@ -12,7 +12,7 @@ Brightdesk is an independent desktop productivity suite built around an original
 
 The Brightdesk identity is the geometric four-panel symbol paired with the Brightdesk wordmark and the **OFFICE SUITE** descriptor. The four coloured panels form one recognisable mark; the wordmark and descriptor complete the Suite identity.
 
-The approved logo is maintained in [assets/brand/brightdesk-logo.svg](assets/brand/brightdesk-logo.svg). Keep its proportions, four-panel construction, colours and wordmark together. Do not replace it with a copyright symbol, a generic letterform, a different badge, or an unrelated product icon.
+The approved logo is maintained in [assets/brand/brightdesk-logo.svg](assets/brand/brightdesk-logo.svg). Keep its proportions, four-panel construction, colours and wordmark together. Do not replace it with a generic symbol, a different badge, or an unrelated product icon.
 
 ## The Brightdesk Suite
 
