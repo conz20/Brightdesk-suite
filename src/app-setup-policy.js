@@ -4,6 +4,8 @@
   const policy = factory();
   if (typeof module === 'object' && module.exports) module.exports = policy;
   if (root) root.BrightdeskAppSetupPolicy = policy;
+  // Explicitly expose the browser API even when evaluated through an embedded JS realm.
+  if (typeof window !== 'undefined') window.BrightdeskAppSetupPolicy = policy;
 })(typeof globalThis === 'object' ? globalThis : this, () => {
   function resolveAppSetup(savedSetup, launchAppId, availableIds, suiteLaunchedProduct = false) {
     const available = [...new Set(availableIds)];
