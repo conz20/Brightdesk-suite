@@ -1,4 +1,4 @@
-# README document-boundary regression test
+// README document-boundary regression test
 'use strict';
 
 const test = require('node:test');
