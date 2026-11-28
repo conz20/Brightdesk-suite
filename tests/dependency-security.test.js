@@ -157,7 +157,8 @@ test('dependency lock maintenance opens an owner-reviewed pull request instead o
   assert.match(workflow, /GH_TOKEN:\s*\$\{\{\s*secrets\.GITHUB_TOKEN\s*\}\}/);
   assert.match(workflow, /git push --set-upstream origin "\$branch"/);
   assert.match(workflow, /gh pr create/);
-  assert.match(workflow, /gh workflow run quality\.yml --ref "\$branch"/);
+  assert.match(workflow, /gh workflow run ci\.yml --repo "\$GITHUB_REPOSITORY" --ref "\$branch"/);
+  assert.match(workflow, /gh workflow run quality\.yml --repo "\$GITHUB_REPOSITORY" --ref "\$branch"/);
   assert.match(workflow, /existing=.*gh pr list/);
   assert.match(workflow, /npm run build/);
   assert.match(workflow, /npm run typecheck/);
@@ -177,7 +178,8 @@ test('third-party notice maintenance opens an owner-reviewed pull request instea
   assert.match(workflow, /GH_TOKEN:\s*\$\{\{\s*secrets\.GITHUB_TOKEN\s*\}\}/);
   assert.match(workflow, /git push --set-upstream origin "\$branch"/);
   assert.match(workflow, /gh pr create/);
-  assert.match(workflow, /gh workflow run quality\.yml --ref "\$branch"/);
+  assert.match(workflow, /gh workflow run ci\.yml --repo "\$GITHUB_REPOSITORY" --ref "\$branch"/);
+  assert.match(workflow, /gh workflow run quality\.yml --repo "\$GITHUB_REPOSITORY" --ref "\$branch"/);
   assert.match(workflow, /existing=.*gh pr list/);
   assert.match(workflow, /npm run build/);
   assert.match(workflow, /npm run typecheck/);
