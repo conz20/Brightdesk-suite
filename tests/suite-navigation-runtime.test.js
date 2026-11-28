@@ -297,10 +297,12 @@ test('Notifications closes cleanly when navigating to another Suite screen', asy
   assert.equal(panel.hidden, true);
   assert.equal(trigger.getAttribute('aria-expanded'), 'false');
 
-  trigger.click();
-  assert.equal(panel.hidden, false);
-  byId(window, 'open-settings').click();
-  assert.equal(panel.hidden, true);
-  assert.equal(trigger.getAttribute('aria-expanded'), 'false');
+  for (const id of ['files-nav', 'home-nav', 'open-settings']) {
+    trigger.click();
+    assert.equal(panel.hidden, false);
+    byId(window, id).click();
+    assert.equal(panel.hidden, true, id + ' should close Notifications');
+    assert.equal(trigger.getAttribute('aria-expanded'), 'false');
+  }
   assert.equal(byId(window, 'settings-manager').hidden, false);
 });
