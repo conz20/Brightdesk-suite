@@ -222,15 +222,16 @@ test('Files buttons call the local open and save bridge actions', async t => {
   assert.equal(byId(window, 'workspace').hidden, false);
   assert.equal(byId(window, 'editor').hidden, false);
   assert.equal(byId(window, 'doc-title').value, 'Opened document');
+  assert.equal(byId(window, 'save-status').textContent, 'File opened');
   assert.match(byId(window, 'editor').innerHTML, /Opened from Files/);
 });
 
 test('opening each supported file type from Files displays its matching workspace', async t => {
   const examples = [
-    { kind: 'pages', title: 'Opened page', html: '<p>Page content</p>', target: 'editor' },
-    { kind: 'sheets', title: 'Opened sheet', cells: [['Item', 'Count'], ['Apples', '3']], target: 'sheet-wrap' },
-    { kind: 'slides', title: 'Opened deck', slides: [{ title: 'First slide', body: 'Deck content' }], target: 'slide-wrap' },
-    { kind: 'notes', title: 'Opened note', text: 'Note content', target: 'notes-wrap' }
+    { kind: 'pages', title: 'Opened page', html: '<p>Page content</p>', target: 'editor', appTitle: 'Brightdesk Pages' },
+    { kind: 'sheets', title: 'Opened sheet', cells: [['Item', 'Count'], ['Apples', '3']], target: 'sheet-wrap', appTitle: 'Brightdesk Sheets' },
+    { kind: 'slides', title: 'Opened deck', slides: [{ title: 'First slide', body: 'Deck content' }], target: 'slide-wrap', appTitle: 'Brightdesk Decks' },
+    { kind: 'notes', title: 'Opened note', text: 'Note content', target: 'notes-wrap', appTitle: 'Brightdesk Notes' }
   ];
   for (const example of examples) {
     await t.test(example.kind, async subtest => {
@@ -243,6 +244,7 @@ test('opening each supported file type from Files displays its matching workspac
       assert.equal(byId(window, 'workspace').hidden, false);
       assert.equal(byId(window, example.target).hidden, false);
       assert.equal(byId(window, 'doc-title').value, example.title);
+      assert.equal(byId(window, 'app-title').textContent, example.appTitle);
     });
   }
 });
