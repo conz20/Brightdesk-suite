@@ -70,3 +70,20 @@ The exact pins above describe the currently recorded baseline; they are not a pe
 - Continue maintenance after 0.1.0. Post-release defects are expected to be corrected in subsequent stable updates; release does not end development.
 
 This rolling policy supersedes the earlier instruction that the listed exact pins could change only after a separate approval. The owner has explicitly authorised this latest-stable-first maintenance approach. The current exact pins remain in force until their replacements have passed the required checks; candidate availability alone does not promote a version.
+
+
+## Version candidate audit — 28 November 2026
+
+This is an upstream-version snapshot, not an approval to promote any candidate before Brightdesk compatibility checks pass. The current pins above remain the working baseline until a candidate passes the required repository and platform checks.
+
+| Component | Current Suite pin / lock | Newest stable candidate checked | Next action |
+|---|---:|---:|---|
+| Node.js 24 line | 24.22.2 | 24.22.3 | Patch-update candidate; test exact runtime, npm lock, builds and native modules. Node.js 26.13.1 is the newer Active LTS line and must be evaluated as a separate major-runtime compatibility trial, not silently substituted. |
+| Electron | 45.2.1 | 45.5.0 | Test the newest stable patch on the current Electron 45 line; Electron 46 is prerelease at this snapshot. |
+| electron-builder | 26.18.0 | 26.18.1 | Test the newest stable 26.x patch; 27.x is prerelease and is not a production default. |
+| Rust | 1.99.1 | 1.100.1 | Suite PR #126 is the active candidate. Its quality, Suite CI, Rust Node-API and README checks passed; macOS installer verification was still running at the latest check. Keep draft until that completes. |
+| Vite | 6.4.5 | 8.4.0 | Suite PR #100 proposes 8.3.6 and is stale. Its exact-head quality and Suite CI fail because tests/dependency-security.test.js still expects 6.4.5; README freshness also fails because package files changed without a README update. These are test/documentation failures, not proof that Vite 8 is incompatible. Recreate the update against current main using 8.4.0 and regenerate the lockfile. |
+| Vitest | 5.1.0 | 5.1.2 | Test the current stable patch and keep its Vite peer compatibility aligned with the selected Vite version. |
+| TypeScript | 5.9.3 (locked) | 7.0.2 | Treat as a separate major upgrade; run the full typecheck and product builds before promotion. |
+
+Official version sources checked: [Node.js downloads](https://nodejs.org/en/download/), [Electron stable releases](https://releases.electronjs.org/?channel=stable), [electron-builder changelog](https://www.electron.build/changelog/), [Rust release notes](https://dev.rust-lang.org/releases.html), [Vite npm releases](https://www.npmjs.com/package/vite), [Vitest npm releases](https://www.npmjs.com/package/vitest) and [TypeScript npm releases](https://www.npmjs.com/package/typescript).
