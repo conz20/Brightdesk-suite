@@ -150,12 +150,17 @@ test('dependency lock maintenance opens an owner-reviewed pull request instead o
     'utf8'
   );
 
+  assert.match(workflow, /if: github\.ref == 'refs\/heads\/main'/);
   assert.match(workflow, /pull-requests:\s*write/);
   assert.match(workflow, /contents:\s*write/);
+  assert.match(workflow, /actions:\s*write/);
   assert.match(workflow, /GH_TOKEN:\s*\$\{\{\s*secrets\.GITHUB_TOKEN\s*\}\}/);
   assert.match(workflow, /git push --set-upstream origin "\$branch"/);
   assert.match(workflow, /gh pr create/);
   assert.match(workflow, /gh workflow run quality\.yml --ref "\$branch"/);
+  assert.match(workflow, /existing=.*gh pr list/);
+  assert.match(workflow, /npm run build/);
+  assert.match(workflow, /npm run typecheck/);
   assert.doesNotMatch(workflow, /git push\s+(?:origin\s+)?main(?:\s|$)/m);
 });
 
@@ -165,12 +170,17 @@ test('third-party notice maintenance opens an owner-reviewed pull request instea
     'utf8'
   );
 
+  assert.match(workflow, /if: github\.ref == 'refs\/heads\/main'/);
   assert.match(workflow, /pull-requests:\s*write/);
   assert.match(workflow, /contents:\s*write/);
+  assert.match(workflow, /actions:\s*write/);
   assert.match(workflow, /GH_TOKEN:\s*\$\{\{\s*secrets\.GITHUB_TOKEN\s*\}\}/);
   assert.match(workflow, /git push --set-upstream origin "\$branch"/);
   assert.match(workflow, /gh pr create/);
   assert.match(workflow, /gh workflow run quality\.yml --ref "\$branch"/);
+  assert.match(workflow, /existing=.*gh pr list/);
+  assert.match(workflow, /npm run build/);
+  assert.match(workflow, /npm run typecheck/);
   assert.doesNotMatch(workflow, /git push\s+(?:origin\s+)?main(?:\s|$)/m);
   assert.match(workflow, /npm run lock:verify/);
   assert.match(workflow, /npm ci --ignore-scripts --no-audit --no-fund/);
