@@ -15,8 +15,8 @@ concurrency:
 
 jobs:
   build:
-    # Reuse the already-configured private Mac runner; avoid paid hosted-runner usage.
-    runs-on: self-hosted
+    # GitHub-hosted macOS keeps integration checks independent of the owner's MacBook.
+    runs-on: macos-latest
     timeout-minutes: 30
     steps:
       - name: Register post-job workspace cleanup
