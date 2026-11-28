@@ -22,7 +22,7 @@ The MIT License is a permissive open-source licence. It allows recipients to use
 
 **An MIT licence does not prevent someone from copying, modifying, forking, redistributing or commercially reusing the licensed code.** It does not make the code exclusive to Brightdesk and does not grant trademark rights to the Brightdesk name, wordmark, product names or logos.
 
-Do not describe an MIT-licensed repository as protected from all copying or reuse. If Brightdesk needs different restrictions on code reuse, redistribution or source publication, stop and obtain a separate owner-approved licensing review before changing the licence or publishing additional material. Do not replace MIT with a custom, proprietary, copyleft or dual licence as an incidental maintenance change.
+Do not describe an MIT-licensed repository as protected from all copying or reuse. On 29 November 2026 the owner directed a future non-MIT Brightdesk Freeware Licence for eligible Brightdesk-owned customer software. This supersedes the previous future-target recommendation to retain MIT. It does not revoke or narrow any existing MIT grant. Keep current MIT-covered files and notices unchanged until the contributor/rights-holder audit, required written permissions, file-level third-party review, clear prospective version/file boundary and qualified legal review are complete. Do not apply the draft to current code as though it overrides MIT. The proposed terms and decision record are kept separately in the private Brightdesk-Archives repository.
 
 ## Brightdesk names and brand assets
 
