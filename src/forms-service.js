@@ -1,4 +1,5 @@
-'use strict';
+(function attachBrightdeskFormsService(root) {
+  'use strict';
 const TYPES = new Set(['short-text','long-text','choice','multi-choice','date']);
 const stamp = value => { const d = value instanceof Date ? value : new Date(value || Date.now()); if (Number.isNaN(d.getTime())) throw new Error('A valid date is required.'); return d.toISOString(); };
 const makeId = prefix => globalThis.crypto?.randomUUID?.() || `${prefix}-${Date.now()}-${Math.random().toString(16).slice(2)}`;
@@ -13,4 +14,6 @@ function deleteQuestion(form,id,opts={}) { const next=clone(form);next.questions
 function validDate(v) { if(!/^\d{4}-\d{2}-\d{2}$/.test(String(v)))throw new Error('Enter a valid date.');const d=new Date(`${v}T00:00:00.000Z`);if(Number.isNaN(d.getTime())||d.toISOString().slice(0,10)!==v)throw new Error('Enter a valid date.');return v; }
 function submitResponse(form,input={},opts={}) { const next=clone(form);if(!next.questions.length)throw new Error('Add at least one question before collecting responses.');const answers={};for(const q of next.questions){let v=input[q.id];if(q.type==='multi-choice'){v=Array.isArray(v)?[...new Set(v.map(String))]:[];if(v.some(x=>!q.options.includes(x)))throw new Error(`Choose valid answers for ${q.label}.`);}else v=String(v??'').trim();if(q.required&&(Array.isArray(v)?!v.length:!v))throw new Error(`${q.label} is required.`);if(q.type==='choice'&&v&&!q.options.includes(v))throw new Error(`Choose a valid answer for ${q.label}.`);if(q.type==='date'&&v)v=validDate(v);answers[q.id]=v;}const now=stamp(opts.now);next.responses.push({id:opts.id||makeId('response'),answers,submittedAt:now});next.updatedAt=now;return next; }
 function deleteResponse(form,id,opts={}) { const next=clone(form);next.responses=next.responses.filter(r=>r.id!==id);next.updatedAt=stamp(opts.now);return next; }
-const api={createForm,updateForm,addQuestion,updateQuestion,deleteQuestion,submitResponse,deleteResponse};if(typeof window!=='undefined')window.BrightdeskFormsService=api;if(typeof module!=='undefined'&&module.exports)module.exports=api;
+const api={createForm,updateForm,addQuestion,updateQuestion,deleteQuestion,submitResponse,deleteResponse};if (root) root.BrightdeskFormsService = api;if(typeof module!=='undefined'&&module.exports)module.exports=api;
+
+})(typeof globalThis !== 'undefined' ? globalThis : window);

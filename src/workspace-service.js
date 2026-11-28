@@ -1,4 +1,5 @@
-'use strict';
+(function attachBrightdeskWorkspaceService(root) {
+  'use strict';
 const BLOCK_TYPES=new Set(['paragraph','heading','bullet','callout','divider','checklist']);
 const makeId=p=>globalThis.crypto?.randomUUID?.()||`${p}-${Date.now()}-${Math.random().toString(16).slice(2)}`;
 const stamp=v=>{const d=v instanceof Date?v:new Date(v||Date.now());if(Number.isNaN(d.getTime()))throw new Error('A valid date and time is required.');return d.toISOString();};
@@ -22,4 +23,6 @@ function toggleChecklistItem(w,pageId,blockId,itemId,checked,opts={}){return upd
 function deleteChecklistItem(w,pageId,blockId,itemId,opts={}){const n=clone(w),page=findPage(n,pageId),block=findBlock(page,blockId);if(block.type!=='checklist')throw new Error('That block is not a checklist.');if(!block.items.some(i=>i.id===itemId))throw new Error('Checklist item not found.');block.items=block.items.filter(i=>i.id!==itemId);page.updatedAt=stamp(opts.now);n.updatedAt=page.updatedAt;return n;}
 function deleteWorkspace(workspaces,id){if(!Array.isArray(workspaces)||workspaces.length<=1)throw new Error('Keep at least one workspace.');if(!workspaces.some(w=>w.id===id))throw new Error('Workspace not found.');return workspaces.filter(w=>w.id!==id);}
 function searchPages(w,query){const q=String(query||'').trim().toLowerCase();return w.pages.filter(p=>!q||p.title.toLowerCase().includes(q)||p.blocks.some(b=>b.content.toLowerCase().includes(q)||b.items.some(i=>i.text.toLowerCase().includes(q)))).map(p=>({...p,blocks:p.blocks.map(b=>({...b,items:b.items.map(i=>({...i}))}))}));}
-const api={createWorkspace,renameWorkspace,addPage,renamePage,deletePage,addBlock,updateBlock,deleteBlock,moveBlock,addChecklistItem,updateChecklistItem,toggleChecklistItem,deleteChecklistItem,deleteWorkspace,searchPages};if(typeof window!=='undefined')window.BrightdeskWorkspaceService=api;if(typeof module!=='undefined'&&module.exports)module.exports=api;
+const api={createWorkspace,renameWorkspace,addPage,renamePage,deletePage,addBlock,updateBlock,deleteBlock,moveBlock,addChecklistItem,updateChecklistItem,toggleChecklistItem,deleteChecklistItem,deleteWorkspace,searchPages};if (root) root.BrightdeskWorkspaceService = api;if(typeof module!=='undefined'&&module.exports)module.exports=api;
+
+})(typeof globalThis !== 'undefined' ? globalThis : window);
