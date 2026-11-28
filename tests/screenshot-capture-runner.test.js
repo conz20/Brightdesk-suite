@@ -21,7 +21,11 @@ test('screenshot capture runs on pull requests and main pushes, using the exact 
   assert.equal(manifest.scripts['capture:screenshots'], 'node scripts/capture-suite-screenshots.js');
   assert.ok(workflow.includes("github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository"));
   assert.ok(workflow.includes('ref: ${{ github.event.pull_request.head.sha || github.sha }}'));
-  assert.ok(workflow.includes('GITHUB_SHA: ${{ github.event.pull_request.head.sha || github.sha }}'));
+  assert.ok(workflow.includes('BRIGHTDESK_SOURCE_COMMIT: ${{ github.event.pull_request.head.sha || github.sha }}'));
+  assert.doesNotMatch(workflow, /^\s*GITHUB_SHA:/m);
+  const capture = fs.readFileSync(path.join(root, 'src', 'screenshot-capture.js'), 'utf8');
+  assert.match(capture, /process\.env\.BRIGHTDESK_SOURCE_COMMIT/);
+  assert.doesNotMatch(capture, /process\.env\.GITHUB_SHA/);
   assert.ok(workflow.includes("github.event_name == 'push' && github.ref == 'refs/heads/main'"));
   assert.match(workflow, /actions\/upload-artifact@[a-f0-9]{40}/);
   assert.match(workflow, /retention-days: 14/);
