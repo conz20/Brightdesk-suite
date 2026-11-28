@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-labelledby="title desc">
 <title id="title">Brightdesk Suite Home with a narrow vertical icon-and-label navigation rail</title>
-<desc id="desc">Brightdesk Suite Home at 1600 by 900. A narrow, full-height deep-navy navigation rail sits at the far left. Home, Apps and Files are three vertically stacked destinations, each with its original icon above its label; Home is selected. There are no secondary descriptions, extra sidebar heading or footer content. The main area begins beside the narrow rail and shows all ten product cards and Notifications and Settings controls.</desc>
-<defs><linearGradient id="side" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#14233F"/><stop offset="1" stop-color="#0D1930"/></linearGradient><linearGradient id="banner" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#E8F0FF"/><stop offset="1" stop-color="#F0ECFF"/></linearGradient><filter id="shadow" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="7" stdDeviation="14" flood-color="#1A2B4B" flood-opacity=".09"/></filter></defs>
+<desc id="desc">Brightdesk Suite Home at 1600 by 900. A narrow, full-height solid deep-navy navigation rail sits at the far left. Home, Apps and Files are three vertically stacked destinations, each with its original icon above its label; Home is selected. There are no secondary descriptions, extra sidebar heading or footer content. The main area begins beside the narrow rail and shows all ten product cards and Notifications and Settings controls.</desc>
+<defs><linearGradient id="banner" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#E8F0FF"/><stop offset="1" stop-color="#F0ECFF"/></linearGradient><filter id="shadow" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="7" stdDeviation="14" flood-color="#1A2B4B" flood-opacity=".09"/></filter></defs>
 <rect width="1600" height="900" fill="#F2F5FA"/>
-<rect x="0" y="0" width="76" height="900" fill="url(#side)"/>
+<rect x="0" y="0" width="76" height="900" fill="#14233F"/>
 <g id="sidebar-home">
   <rect x="8" y="12" width="60" height="64" rx="9" fill="#293E65"/>
   <g id="home-navigation-icon" transform="translate(26 20) scale(1.0)" fill="none" stroke="#C9D6ED" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
