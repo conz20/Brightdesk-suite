@@ -97,15 +97,18 @@ test('suite screenshot navigation opens Apps, Files, Settings and Notifications 
   try {
     const doc = dom.window.document;
     const screens = ['#app-manager', '#files-manager', '#settings-manager', '#notification-panel'];
-    const activate = selector => {
+    const activate = (selector, view) => {
       for (const screen of screens) doc.querySelector(screen).hidden = screen !== selector;
+      if (selector === '#app-manager') doc.querySelector('#app-manager').classList.toggle('home-view', view === 'home');
     };
-    doc.querySelector('#app-centre-nav').addEventListener('click', () => activate('#app-manager'));
-    doc.querySelector('#files-nav').addEventListener('click', () => activate('#files-manager'));
-    doc.querySelector('#open-settings').addEventListener('click', () => activate('#settings-manager'));
-    doc.querySelector('#open-notifications').addEventListener('click', () => activate('#notification-panel'));
+    doc.querySelector('#home-nav').addEventListener('click', () => activate('#app-manager', 'home'));
+    doc.querySelector('#app-centre-nav').addEventListener('click', () => activate('#app-manager', 'apps'));
+    doc.querySelector('#files-nav').addEventListener('click', () => activate('#files-manager', 'files'));
+    doc.querySelector('#open-settings').addEventListener('click', () => activate('#settings-manager', 'settings'));
+    doc.querySelector('#open-notifications').addEventListener('click', () => activate('#notification-panel', 'notifications'));
 
     for (const [view, button, selector] of [
+      ['home', '#home-nav', '#app-manager'],
       ['apps', '#app-centre-nav', '#app-manager'],
       ['files', '#files-nav', '#files-manager'],
       ['settings', '#open-settings', '#settings-manager'],
