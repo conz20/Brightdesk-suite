@@ -95,7 +95,7 @@ test('one Brightdesk Home artwork combines the suite sidebar and ten-product gri
   assert.match(svg, /id="settings-cogwheel"/);
   assert.match(svg, /id="notifications-bell"/);
 
-  assert.match(read('src/styles.css'), /\.sidebar\{background:linear-gradient\(180deg,#14233f 0%,#0d1930 100%\)/);
+  assert.match(read('src/styles.css'), /\.sidebar\{background:#14233f/);
   const home = read('assets/product-experience/brightdesk-home.svg');
   assert.match(home, /Your apps/);
   assert.match(home, /Your products/);
@@ -150,9 +150,9 @@ test('production Home artwork matches the live desktop headings and card layout'
   assert.ok(styles.includes('min(100%, 240px)'));
   assert.ok(styles.includes('gap: 16px;'));
   assert.ok(styles.includes('min-height: 240px;'));
-  assert.ok(readme.includes('approved production Home screen design and the single visual source of truth'));
+  assert.ok(readme.includes('refreshed Home screen design reference'));
   assert.ok(readme.includes('top bar reads **Your apps**'));
-  assert.ok(readme.includes('238 px deep-navy sidebar'));
+  assert.ok(readme.includes('76 px deep-navy navigation rail'));
   assert.ok(readme.includes('38 px circular Notifications and Settings controls'));
   assert.ok(guide.includes('top-bar eyebrow **YOUR WORKSPACE** and heading **Your apps**'));
 });
@@ -166,7 +166,9 @@ test('production Home activates its dedicated shell layout and circular utility 
   assert.equal(html.includes('brand-mark-image'), false);
   assert.ok(!html.includes('<small data-i18n="sidebar.workspace">YOUR WORKSPACE</small>'));
   assert.ok(app.includes("document.body.classList.toggle('suite-home', home)"));
-  assert.ok(styles.includes('width: 238px;'));
+  assert.ok(styles.includes('width: 76px;'));
+  assert.ok(styles.includes('body.suite-navigation .sidebar'));
+  assert.ok(app.includes("document.body.classList.toggle('suite-navigation', suitePage && !launchAppId)"));
   assert.ok(styles.includes('width: 38px;'));
   assert.ok(styles.includes('body.suite-home .main'));
   assert.ok(styles.includes('font-size: 34px;'));
@@ -174,7 +176,7 @@ test('production Home activates its dedicated shell layout and circular utility 
 });
 
 
-test('Home sidebar footer and navigation match the production artwork', () => {
+test('Suite navigation rail hides sidebar extras and keeps the compact icon labels', () => {
   const html = read('src/index.html');
   const app = read('src/app.js');
   const styles = read('src/styles.css');
@@ -184,11 +186,37 @@ test('Home sidebar footer and navigation match the production artwork', () => {
   const preload = read('src/preload.js');
   assert.ok(preload.includes('platform: process.platform,'));
   assert.ok(!app.includes("$('version-label').textContent ="));
-  assert.ok(styles.includes('body.suite-home .sidebar > .nav small { display: none; }'));
-  assert.ok(styles.includes('body.suite-home .main > footer { display: none; }'));
-  assert.ok(readme.includes('with no secondary captions'));
+  assert.ok(app.includes("document.body.classList.toggle('suite-navigation', suitePage && !launchAppId)"));
+  assert.ok(styles.includes('body.suite-navigation .section-label'));
+  assert.ok(styles.includes('body.suite-navigation .sidebar-divider'));
+  assert.ok(styles.includes('body.suite-navigation .sidebar-bottom'));
+  assert.ok(styles.includes('body.suite-navigation .nav > span'));
+  assert.ok(styles.includes('body.suite-navigation .nav {'));
+  assert.ok(readme.includes('76 px wide'));
+  assert.ok(readme.includes('icon above its name'));
 });
 
+
+
+test('Suite-level navigation uses a solid 76 px rail with vertically stacked icon labels', () => {
+  const html = read('src/index.html');
+  const app = read('src/app.js');
+  const styles = read('src/styles.css');
+  const readme = read('README.md');
+  const guide = read('docs/BRIGHTDESK_VISUAL_STANDARD.md');
+
+  for (const id of ['home-nav', 'app-centre-nav', 'files-nav']) {
+    assert.match(html, new RegExp('id="' + id + '"'));
+  }
+  assert.match(app, /document\.body\.classList\.toggle\('suite-navigation', suitePage && !launchAppId\)/);
+  assert.match(styles, /body\.suite-navigation \.sidebar\s*\{[^}]*width: 76px;[^}]*background: #14233f;/s);
+  assert.match(styles, /body\.suite-navigation \.nav\s*\{[^}]*flex-direction: column;/s);
+  assert.match(styles, /body\.suite-navigation \.nav \.app-icon-image\s*\{[^}]*width: 24px;/s);
+  assert.match(styles, /body\.suite-navigation \.nav > span\s*\{[^}]*text-align: center;/s);
+  assert.match(styles, /body\.suite-navigation \.sidebar-bottom\s*\{[^}]*display: none;/s);
+  assert.match(readme, /76 px wide/);
+  assert.match(guide, /76 px.*solid.*navy/i);
+});
 
 test('Home product section uses one clear heading without the Apps eyebrow', () => {
   const styles = read('src/styles.css');
