@@ -210,10 +210,10 @@ test('Suite-level navigation uses a solid 76 px rail with vertically stacked ico
   }
   assert.match(app, /document\.body\.classList\.toggle\('suite-navigation', suitePage && !launchAppId\)/);
   assert.match(styles, /body\.suite-navigation \.sidebar\s*\{[^}]*width: 76px;[^}]*background: #14233f;/s);
-  assert.match(styles, /body\.suite-navigation \.nav\s*\{[^}]*flex-direction: column;/s);
-  assert.match(styles, /body\.suite-navigation \.nav \.app-icon-image\s*\{[^}]*width: 24px;/s);
-  assert.match(styles, /body\.suite-navigation \.nav > span\s*\{[^}]*text-align: center;/s);
-  assert.match(styles, /body\.suite-navigation \.sidebar-bottom\s*\{[^}]*display: none;/s);
+  assert.match(styles, /body\\.suite-navigation \\.sidebar > \\.nav\\s*\\{[^}]*flex-direction: column;/s);
+  assert.match(styles, /body\\.suite-navigation \\.sidebar > \\.nav \\.app-icon-image\\s*\\{[^}]*width: 24px;/s);
+  assert.match(styles, /body\\.suite-navigation \\.sidebar > \\.nav > span\\s*\\{[^}]*text-align: center;/s);
+  assert.match(styles, /body\\.suite-navigation \\.sidebar \\.sidebar-bottom\\s*\\{[^}]*display: none;/s);
   assert.match(readme, /76 px wide/);
   assert.match(guide, /76 px.*solid.*navy/i);
 });
