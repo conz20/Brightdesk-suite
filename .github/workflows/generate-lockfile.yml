@@ -13,8 +13,10 @@ permissions:
 
 jobs:
   generate-lockfile:
+    if: github.ref == 'refs/heads/main'
     permissions:
       contents: write
+      pull-requests: write
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
@@ -34,20 +36,26 @@ jobs:
       - name: Verify lockfile
         run: npm ls --package-lock-only --depth=0
 
-      - name: Commit lockfile
+      - name: Create lockfile update pull request
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
-          if [ -f package-lock.json ]; then
-            git config user.name "github-actions[bot]"
-            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            git add package-lock.json
-            if ! git diff --cached --quiet; then
-              VERSION="$(node -p "require('./package.json').version")"
-              git commit -m "Generate package-lock.json for Brightdesk v${VERSION}"
-              git push
-            else
-              echo "package-lock.json is already up to date."
-            fi
-          else
+          if [ ! -f package-lock.json ]; then
             echo "package-lock.json was not generated." >&2
             exit 1
           fi
+          git add package-lock.json
+          if git diff --cached --quiet; then
+            echo "package-lock.json is already up to date."
+            exit 0
+          fi
+          VERSION="$(node -p "require('./package.json').version")"
+          BRANCH="automation/lockfile-${GITHUB_RUN_ID}"
+          git switch -c "$BRANCH"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Generate package-lock.json for Brightdesk v${VERSION}"
+          git push --set-upstream origin "$BRANCH"
+          gh pr create --repo "$GITHUB_REPOSITORY" --base main --head "$BRANCH" \
+            --title "Update Brightdesk dependency lockfile" \
+            --body "Automated dependency lockfile update. Please review the lockfile diff and CI results before merging."
