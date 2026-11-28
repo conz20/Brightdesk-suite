@@ -259,10 +259,6 @@ input:disabled, select:disabled, textarea:disabled, button:disabled { cursor: no
   padding: 17px 19px; margin: 0 0 15px; border: 1px solid #dfe6ef;
   border-radius: 13px; background: linear-gradient(115deg,#fff 0%,#f7f9fc 100%);
 }
-.settings-context { min-width: 220px; }
-.settings-context .eyebrow { color: #718198; font-size: 9px; }
-.settings-context p { margin: 5px 0 0; color: #64748a; font-size: 12px; line-height: 1.5; }
-.settings-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; }
 .settings-action { min-height: 36px; white-space: nowrap; font-size: 11px; }
 .app-manager { max-width: 1500px; margin-inline: auto; }
 .app-manager .manager-hero { margin-bottom: 16px; }
