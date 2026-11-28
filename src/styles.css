@@ -429,7 +429,7 @@ input:disabled, select:disabled, textarea:disabled, button:disabled { cursor: no
 @media(max-width:700px){.files-hero{padding:20px}.files-hero h2{font-size:22px}.files-action-card{min-height:190px;padding:19px}}
 
 /* The production sidebar follows the approved deep-navy Brightdesk shell. */
-.sidebar{background:linear-gradient(180deg,#14233f 0%,#0d1930 100%);border-right:1px solid #253957;color:#fff}
+.sidebar{background:#14233f;border-right:1px solid #253957;color:#fff}
 .brand b{color:#fff}
 .brand small{color:#8292b2}
 .brand-mark-image{border-radius:12px;box-shadow:none;object-fit:contain}
@@ -559,3 +559,104 @@ body.suite-home .sidebar > .nav small { display: none; }
 body.suite-home .main > footer { display: none; }
 
 body.suite-home .app-manager.home-view .manager-hero .eyebrow { display: none; }
+
+
+/* Compact Suite navigation rail: matches the approved 76 px Home artwork. */
+body.suite-navigation .sidebar {
+  width: 76px;
+  min-width: 76px;
+  min-height: 100vh;
+  flex: 0 0 76px;
+  align-items: center;
+  gap: 0;
+  padding: 12px 8px;
+  background: #14233f;
+  border-right: 1px solid #253957;
+}
+body.suite-navigation .sidebar .section-label,
+body.suite-navigation .sidebar .sidebar-divider,
+body.suite-navigation .sidebar .sidebar-bottom {
+  display: none;
+}
+body.suite-navigation .sidebar > .nav {
+  display: flex;
+  width: 60px;
+  min-width: 60px;
+  min-height: 64px;
+  flex: 0 0 64px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin: 0 0 8px;
+  padding: 6px 4px;
+  border-radius: 9px;
+  text-align: center;
+  color: #c4cfe2;
+}
+body.suite-navigation .sidebar > .nav[hidden] {
+  display: none !important;
+}
+body.suite-navigation .sidebar > .nav .app-icon-image {
+  display: block;
+  width: 24px;
+  height: 24px;
+  flex: 0 0 24px;
+  border-radius: 0;
+  object-fit: contain;
+  filter: none;
+}
+body.suite-navigation .sidebar > .nav > span {
+  display: block;
+  width: 100%;
+  text-align: center;
+}
+body.suite-navigation .sidebar > .nav b {
+  display: block;
+  color: inherit;
+  font-size: 10.5px;
+  line-height: 1.15;
+  font-weight: 650;
+  white-space: nowrap;
+}
+body.suite-navigation .sidebar > .nav small {
+  display: none;
+}
+body.suite-navigation .sidebar > .nav:hover {
+  background: #203654;
+  color: #fff;
+}
+body.suite-navigation .sidebar > .nav.active {
+  background: #293e65;
+  color: #fff;
+  box-shadow: none;
+}
+body.suite-navigation .sidebar > .nav:focus-visible {
+  outline: 2px solid #9bb8ed;
+  outline-offset: 2px;
+}
+body.suite-navigation .main {
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+/* Keep the rail usable on narrow windows while retaining icon-over-label rows. */
+@media (max-width: 700px) {
+  body.suite-navigation .sidebar {
+    width: 100%;
+    min-width: 0;
+    min-height: 0;
+    height: auto;
+    flex: 0 0 auto;
+    flex-direction: row;
+    justify-content: flex-start;
+    padding: 10px;
+  }
+  body.suite-navigation .sidebar > .nav {
+    width: 60px;
+    min-width: 60px;
+    min-height: 64px;
+    flex: 0 0 60px;
+    margin: 0 6px 0 0;
+  }
+}
