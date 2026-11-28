@@ -4,6 +4,8 @@ Ten focused desktop products. One consistent Brightdesk experience.
 
 Brightdesk is an independent, local-first desktop productivity suite. It uses original product names, code, interface design and artwork. It is not affiliated with Microsoft, Adobe or ArtCraft.
 
+The Brightdesk Suite source is distributed under the MIT License. See [LICENSE](LICENSE) for the complete licence text and notices.
+
 ## The ten approved products
 
 | Product | Original icon | Purpose |
