@@ -151,6 +151,7 @@ test('Settings actions open language preferences, return to Settings and save up
   byId(window, 'update-settings-button').click();
   await tick();
   assert.equal(byId(window, 'update-settings-panel').hidden, false);
+  assert.equal(byId(window, 'update-settings-panel').dataset.settingsLoaded, 'true');
   assert.equal(byId(window, 'update-settings-button').getAttribute('aria-expanded'), 'true');
   assert.match(byId(window, 'update-settings-panel').textContent, /Pages, Sheets, Decks, Notes, Database, Forms, Lists, Planner, To Do and Workspace/);
   assert.equal(byId(window, 'update-manual-download').disabled, true);
