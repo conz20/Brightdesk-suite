@@ -5,7 +5,7 @@ Purpose
 -------
 Register and start private GitHub Actions runners on an Apple-silicon Mac for the Brightdesk repositories whose Mac checks are waiting for their own repository-scoped runner.
 
-The setup covers these nine repositories:
+The setup covers these ten repositories:
 - Brightdesk-suite (Brightdesk Suite)
 - Brightdesk-Common-Actions
 - Brightdesk-Developer-Tools
@@ -15,6 +15,7 @@ The setup covers these nine repositories:
 - Brightdesk-Services
 - Brightdesk-Assets
 - Brightdesk-Lists
+- Brightdesk-Voice
 
 Brightdesk Suite uses the runner name `Brightdesk-Brightdesk-Suite-Mac-ARM64` with the standard self-hosted, macOS and ARM64 labels. Brightdesk-Lists receives the additional label "brightdesk-product-ci" because its quality workflow requires that label. All runners retain GitHub's normal self-hosted, macOS and ARM64 labels.
 
@@ -23,7 +24,7 @@ BEFORE YOU START
 1. This package is for an Apple-silicon Mac only.
 2. Install GitHub CLI (gh) from the official GitHub distribution and sign in as conz20:
    gh auth login --hostname github.com
-3. The signed-in GitHub credential must have administrator access to all nine private repositories, including permission to register repository-level self-hosted runners.
+3. The signed-in GitHub credential must have administrator access to all ten private repositories, including permission to register repository-level self-hosted runners.
 4. Keep normal macOS security protections enabled. Do not send your GitHub CLI credential or a runner token to ChatGPT or anyone else.
 
 RUN THE SETUP
@@ -60,7 +61,7 @@ If GitHub CLI does not have sufficient repository administration access, the scr
 
 SECURITY AND SCOPE
 ------------------
-A self-hosted runner executes workflow code from the private repository to which it is registered. These runners are limited to the nine named Brightdesk repositories. Do not attach them to public repositories or run untrusted fork code on them.
+A self-hosted runner executes workflow code from the private repository to which it is registered. These runners are limited to the ten named Brightdesk repositories. Do not attach them to public repositories or run untrusted fork code on them.
 
 The GitHub CLI credential is used only by `gh api` to request a short-lived registration token for the specific repository. The temporary registration token is passed to the official `config.sh --token` option, as required by the runner configurator. It is not printed or saved to a file and is cleared from the setup script immediately after configuration. The temporary token is present in the configurator process arguments while that command runs.
 
