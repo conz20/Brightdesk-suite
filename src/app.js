@@ -978,7 +978,7 @@ function importProject(data){
   if(kind==='sheets')state.docs.sheets={title:data.title||'Imported spreadsheet',cells:(data.cells||[]).map(row=>row.map(v=>String(v??'')))};
   if(kind==='slides')state.docs.slides={title:data.title||'Imported presentation',slides:data.slides||clone(defaults.slides.slides),current:0};
   if(kind==='notes')state.docs.notes={title:data.title||'Imported note',text:data.text||''};
-  state.app=kind; state.ribbonTab='home';
+  state.app=kind; state.view='workspace'; state.ribbonTab='home'; state.focusMode=false;
 }
 function escapeHtml(value){return String(value).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));}
 async function openFile(){try{const data=await window.brightdesk.openFile();if(!data)return;importProject(data);persist();render();setStatus('File opened');}catch(error){alert(`Could not open file: ${error.message}`);}}
