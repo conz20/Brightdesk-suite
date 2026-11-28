@@ -4,9 +4,9 @@
 <desc id="desc">Desktop productivity Home experience. One professional sidebar links Home, Apps and Files, with ten original product cards in the main area and Notifications and Settings controls in the top-right. Product shortcuts are not repeated beside the Home application grid. When the update service reports an update, it appears as a desktop notification and remains in the notification bell history.</desc>
 <defs><linearGradient id="side" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#14233F"/><stop offset="1" stop-color="#0D1930"/></linearGradient><linearGradient id="banner" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#E8F0FF"/><stop offset="1" stop-color="#F0ECFF"/></linearGradient><filter id="shadow" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="7" stdDeviation="14" flood-color="#1A2B4B" flood-opacity=".09"/></filter></defs>
 <rect width="1600" height="900" fill="#F2F5FA"/>
-<rect width="238" height="900" fill="url(#side)"/>
+<rect width="190" height="900" fill="url(#side)"/>
 <g id="sidebar-home">
-  <rect x="15" y="64" width="208" height="48" rx="10" fill="#293E65"/>
+  <rect x="15" y="64" width="160" height="48" rx="10" fill="#293E65"/>
   <path d="M29 85l9-8 9 8v11h-7v-7h-4v7h-7z" fill="none" stroke="#FFFFFF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
   <text x="58" y="94" font-family="Arial, sans-serif" font-size="14" font-weight="700" fill="#FFFFFF">Home</text>
 </g>
@@ -28,8 +28,9 @@
   </g>
   <text x="58" y="195" font-family="Arial, sans-serif" font-size="13" fill="#C4CFE2">Files</text>
 </g>
-<path d="M25 810h188" stroke="#344766"/>
+<path d="M20 810h150" stroke="#344766"/>
 <text x="28" y="865" font-family="Arial, sans-serif" font-size="10" fill="#7184A7">Local-first · Your files stay here</text>
+<g id="main-content" transform="translate(222 0) scale(1.0384315 1) translate(-270 0)">
 <text x="270" y="65" font-family="Arial, sans-serif" font-size="12" font-weight="700" letter-spacing="2" fill="#5F6F88">YOUR WORKSPACE</text>
 <text x="270" y="111" font-family="Arial, sans-serif" font-size="34" font-weight="700" fill="#1B2941">Your apps</text>
 
@@ -241,5 +242,6 @@
 <rect x="1311" y="704" width="156" height="22" rx="11" fill="#EFF8F2"/><circle cx="1323" cy="715" r="3.4" fill="#28764B"/><text x="1333" y="719.5" font-family="Arial, sans-serif" font-size="10.5" font-weight="700" fill="#28764B">IN YOUR SUITE</text>
 <rect x="1311" y="740" width="92" height="34" rx="9" fill="#233B67"/><text x="1357" y="762" text-anchor="middle" font-family="Arial, sans-serif" font-size="12.5" font-weight="700" fill="#FFFFFF">Open</text>
 <rect x="1411" y="740" width="106" height="34" rx="9" fill="#FFFFFF" stroke="#DCE3ED"/><text x="1464" y="762" text-anchor="middle" font-family="Arial, sans-serif" font-size="10.5" font-weight="700" fill="#52627A">Remove from Suite</text></g>
+</g>
 </g>
 </svg>

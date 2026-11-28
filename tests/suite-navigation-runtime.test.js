@@ -314,16 +314,23 @@ test('Notifications closes cleanly when navigating to another Suite screen', asy
 });
 
 
-test('Switch product side navigation opens the selected installed product', async t => {
+test('all nine compact Switch product entries open their matching product windows', async t => {
   const { window, calls } = await bootSuite(t, { launchAppId: 'pages', suiteLaunchedProduct: true });
   const switchNav = byId(window, 'dynamic-app-nav');
   assert.equal(switchNav.hidden, false);
   assert.equal(switchNav.querySelector('[data-app="pages"]'), null);
-  const sheets = switchNav.querySelector('[data-app="sheets"]');
-  assert.ok(sheets, 'Sheets should appear in the Switch product list');
-  sheets.click();
-  await tick();
-  assert.deepEqual(calls.openedProducts, ['sheets']);
+  const expectedProducts = ['sheets', 'slides', 'notes', 'database', 'forms', 'lists', 'planner', 'todo', 'loop'];
+  const entries = [...switchNav.querySelectorAll('button[data-app]')];
+  assert.deepEqual(entries.map(button => button.dataset.app), expectedProducts);
+  assert.equal(switchNav.querySelectorAll('small').length, 0, 'Switch product labels must not have secondary captions');
+  for (const id of expectedProducts) {
+    const entry = switchNav.querySelector(`[data-app="${id}"]`);
+    assert.ok(entry, id + ' must appear in the Switch product list');
+    assert.equal(entry.disabled, false, id + ' must be clickable');
+    entry.click();
+    await tick();
+  }
+  assert.deepEqual(calls.openedProducts, expectedProducts);
 });
 
 

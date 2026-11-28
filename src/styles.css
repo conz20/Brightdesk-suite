@@ -729,3 +729,22 @@ body.suite-home .app-manager.home-view .manager-hero .eyebrow { display: none; }
     grid-template-columns: repeat(5, minmax(0, 1fr));
   }
 }
+
+
+/* Compact production sidebar: useful navigation without letting it dominate the workspace. */
+.sidebar { width: 190px; flex: 0 0 190px; padding: 22px 10px 16px; }
+.sidebar .section-label { padding: 0 8px 12px; }
+.sidebar > .nav { min-height: 42px; margin: 1px 0; padding: 6px 8px; gap: 9px; }
+.sidebar > .nav b { font-size: 13px; }
+.sidebar #dynamic-app-nav .nav { min-height: 36px; margin: 1px 0; padding: 5px 8px; gap: 9px; }
+.sidebar #dynamic-app-nav .nav .app-icon-image { width: 26px; height: 26px; flex: 0 0 26px; border-radius: 7px; filter: none; }
+.sidebar #dynamic-app-nav .nav b { font-size: 13px; line-height: 1.2; }
+.sidebar #dynamic-app-nav .nav small { display: none; }
+.sidebar .sidebar-divider { margin: 10px 5px 8px; }
+.sidebar .sidebar-bottom { padding: 12px 8px 0; gap: 8px; }
+@media (max-width: 900px) and (min-width: 701px) {
+  .sidebar { width: 180px; flex-basis: 180px; padding: 18px 8px 14px; }
+}
+@media (max-width: 700px) {
+  .sidebar { width: 100%; flex-basis: auto; min-height: 0; padding: 12px; }
+}

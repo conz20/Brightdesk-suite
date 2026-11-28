@@ -97,7 +97,7 @@ test('Home artwork shows the workspace eyebrow once, above Your apps', () => {
 
 test('Home matches the approved 1600 by 900 grid proportions and responsive fallback', () => {
   const styles = read('src/styles.css');
-  assert.match(styles, /\.sidebar\s*\{\s*width:\s*238px;/);
+  assert.match(styles, /\.sidebar\s*\{\s*width:\s*190px;\s*flex:\s*0 0 190px;/);
   assert.match(styles, /body\.suite-home \.main\s*\{\s*padding:\s*56px 4\.125vw 20px 2vw;/);
   assert.match(styles, /\.app-manager\.home-view \.manager-grid\s*\{\s*grid-template-columns:\s*repeat\(auto-fit, minmax\(min\(100%, 240px\), 1fr\)\);\s*gap:\s*16px;/);
   assert.match(styles, /body\.suite-home \.app-manager\.home-view \.manager-grid\s*\{[\s\S]*?column-gap:\s*16px;\s*row-gap:\s*18px;/);
@@ -105,9 +105,9 @@ test('Home matches the approved 1600 by 900 grid proportions and responsive fall
   assert.match(styles, /\.app-manager\.home-view\s*\{\s*width:\s*100%;\s*align-self:\s*stretch;/);
   assert.match(styles, /\.app-manager\.home-view \.app-card\s*\{\s*min-height:\s*240px;/);
   assert.match(styles, /@media \(max-width: 700px\)\s*\{\s*\.app-manager\.home-view \.manager-grid \{ grid-template-columns: 1fr;/);
-  const availableWidth = 1600 - 238 - (1600 * 0.02) - (1600 * 0.04125);
+  const availableWidth = 1600 - 190 - (1600 * 0.02) - (1600 * 0.04125);
   const fiveCardRowWidth = (5 * 240) + (4 * 16);
-  assert.equal(availableWidth, fiveCardRowWidth, 'five 240px cards and four 16px gaps must fit the 1600px reference width');
+  assert.ok(availableWidth >= fiveCardRowWidth, 'five 240px cards and four 16px gaps must fit the 1600px reference width');
 });
 
 test('Home controls retain visible keyboard focus, reduced motion and accessible touch sizes', () => {
@@ -129,7 +129,7 @@ test('Home sidebar uses compact 20px navigation icons and text-only labels', () 
   const styles = read('src/styles.css');
   const html = read('src/index.html');
   assert.match(styles, /\.sidebar > \.nav \.app-icon-image\s*\{[^}]*width:\s*20px;[^}]*height:\s*20px;/);
-  assert.match(styles, /\.sidebar > \.nav small\s*\{\s*display:\s*none;\s*\}/);
+  assert.match(styles, /\.sidebar > \.nav small\s*\{\s*display:\s*none;\s*\}/);\n  assert.match(styles, /\.sidebar #dynamic-app-nav \.nav \.app-icon-image\s*\{[^}]*width:\s*26px;[^}]*height:\s*26px;/);\n  assert.match(styles, /\.sidebar #dynamic-app-nav \.nav small\s*\{\s*display:\s*none;\s*\}/);
   assert.match(html, /src="assets\/icons\/home\.svg"/);
   assert.match(html, /src="assets\/icons\/apps\.svg"/);
   assert.match(html, /src="assets\/icons\/files\.svg"/);

@@ -597,8 +597,8 @@ function syncAppNavigation() {
   navigationProducts.forEach(item => {
     const button=document.createElement('button'); button.type='button'; button.className='nav'; button.dataset.app=item.id;
     const icon=document.createElement('img'); icon.className='app-icon-image'; icon.src=appIconPath(item); icon.alt=''; icon.setAttribute('aria-hidden','true');
-    const label=document.createElement('span'); const name=document.createElement('b'); name.textContent=t(`apps.${item.id}`); const sub=document.createElement('small'); sub.textContent=item.subtitle;
-    label.append(name,sub); button.append(icon,label);
+    const label=document.createElement('span'); const name=document.createElement('b'); name.textContent=t(`apps.${item.id}`);
+    label.append(name); button.append(icon,label);
     button.addEventListener('click', async () => {
       try { await window.brightdesk.openApplication(item.id); }
       catch (error) { alert(error.message || `Could not open ${item.name}.`); }
