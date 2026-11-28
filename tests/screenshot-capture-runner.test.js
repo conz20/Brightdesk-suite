@@ -19,12 +19,14 @@ test('screenshot capture runs on pull requests and main pushes, using the exact 
   const workflow = fs.readFileSync(path.join(root, '.github', 'workflows', 'ci.yml'), 'utf8');
   const manifest = require('../package.json');
   assert.equal(manifest.scripts['capture:screenshots'], 'node scripts/capture-suite-screenshots.js');
-  assert.match(workflow, /github\.event_name == 'push' && github\.ref == 'refs\/heads\/main'/);
+  assert.ok(workflow.includes("if: github.event_name == 'pull_request' ||"));
+  assert.ok(workflow.includes('ref: ${{ github.event.pull_request.head.sha || github.sha }}'));
+  assert.ok(workflow.includes('GITHUB_SHA: ${{ github.event.pull_request.head.sha || github.sha }}'));
+  assert.ok(workflow.includes("github.event_name == 'push' && github.ref == 'refs/heads/main'"));
   assert.match(workflow, /actions\/upload-artifact@[a-f0-9]{40}/);
   assert.match(workflow, /retention-days: 14/);
-  assert.match(workflow, /continue-on-error: \\u0024\\{\\{ github\\.event_name == 'push' \\}\\}/);
+  assert.ok(workflow.includes("continue-on-error: ${{ github.event_name == 'push' }}"));
 });
-
 
 test('screenshot capture targets the real Suite product windows instead of switching the Home renderer', () => {
   const capture = fs.readFileSync(path.join(root, 'src', 'screenshot-capture.js'), 'utf8');
