@@ -98,6 +98,7 @@ jobs:
           Only THIRD_PARTY_NOTICES.md is staged. This workflow does not regenerate or modify package-lock.json and does not change any upstream licence grant."
 
           # GITHUB_TOKEN-created PRs do not start pull_request workflows.
-          # Explicitly dispatch the existing quality gate against the PR branch.
+          # Dispatch both standard validation workflows against the PR branch.
+          gh workflow run ci.yml --repo "$GITHUB_REPOSITORY" --ref "$branch"
           gh workflow run quality.yml --repo "$GITHUB_REPOSITORY" --ref "$branch"
-          echo "Created $title on $branch and dispatched the quality gate."
+          echo "Created $title on $branch and dispatched Suite CI and the quality gate."
