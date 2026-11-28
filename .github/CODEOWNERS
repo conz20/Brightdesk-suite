@@ -1,0 +1,4 @@
+# Bright Desk owner-review routing.
+# This GitHub handle is used only to request owner review.
+# CODEOWNERS does not enforce protection unless a branch rule requires review.
+* @conz20
