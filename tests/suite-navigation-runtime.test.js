@@ -61,6 +61,7 @@ async function bootSuite(t) {
   }));
 
   for (const file of [
+    'src/formula.js',
     'src/app-catalog.js',
     'src/page-layout.js',
     'src/i18n.js',
