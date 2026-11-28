@@ -1040,7 +1040,8 @@ $('lists-rename').addEventListener('click',renameCurrentList);
 $('lists-delete').addEventListener('click',deleteCurrentList);
 $('lists-column-type').addEventListener('change',()=>{$('lists-column-options-wrap').hidden=$('lists-column-type').value!=='choice';});
 $('export-button').addEventListener('click',exportCurrent);$('open-button').addEventListener('click',openFile);$('save-project').addEventListener('click',saveProject);
-$('updates-button').addEventListener('click',async()=>{const msg=$('update-message');msg.hidden=false;msg.textContent=t('common.updateChecking');try{const r=await window.brightdesk.checkForUpdates();msg.textContent=r?.message||(r?.ok?'Update check started. You will be notified if an update is available.':'Update checks are not configured yet.');}catch(e){msg.textContent=`Update check failed: ${e.message}`;}});
+$('update-settings-button').addEventListener('click',closeNotificationPanel);
+$('updates-button').addEventListener('click',async()=>{closeNotificationPanel();const msg=$('update-message');msg.hidden=false;msg.textContent=t('common.updateChecking');try{const r=await window.brightdesk.checkForUpdates();msg.textContent=r?.message||(r?.ok?'Update check started. You will be notified if an update is available.':'Update checks are not configured yet.');}catch(e){msg.textContent=`Update check failed: ${e.message}`;}});
 window.brightdesk.onUpdateState?.(handleUpdateState);
 loadLocal();
 (async()=>{
