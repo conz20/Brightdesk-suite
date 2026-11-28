@@ -24,6 +24,16 @@ The integration must retain:
 
 Do not delete, flatten, replace, or rewrite product or shared repository source to make the Suite repository appear smaller. Repository consolidation is a separate lossless migration and may remove a snapshot only after a file-by-file reconciliation and parity proof.
 
+## Sidebar and navigation boundary
+
+The existing sidebar is part of the approved Brightdesk experience and must remain intact:
+
+- Keep **Home**, **Apps** and **Files** in their current order and retain their existing icons, visual treatment and behaviour.
+- Keep the contextual **Switch product** navigation that appears while working inside a product workspace.
+- Do not add separate sidebar destinations for Launcher, Installer, Uninstaller or Updater.
+- Put the new catalogue, standalone installation status and Install / Update / Uninstall actions inside the existing **Apps** screen. Keep Home as the ten-product starting view and Files as the local file-access destination.
+- Keep Suite membership controls separate from standalone OS installation controls. Adding or removing a workspace from the Suite must not install or uninstall the standalone application.
+
 ## Important state distinction
 
 The current Suite has an integrated product catalogue and a saved selection of which products appear inside the Suite. It also has native launch routing for separately installed product applications. These are useful foundations, but they are not the same as a verified operating-system installation manager.
