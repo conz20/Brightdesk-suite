@@ -13,7 +13,8 @@ function assertMainWindowReady(state) {
   if (!state || state.title !== 'Brightdesk' ||
       state.hasSidebar !== true ||
       state.hasAppManager !== true ||
-      state.hasLanguageManager !== true) {
+      state.hasLanguageManager !== true ||
+      state.hasSettingsManager !== true) {
     throw new Error('The packaged Brightdesk main interface did not load its required workspace controls.');
   }
   return true;
