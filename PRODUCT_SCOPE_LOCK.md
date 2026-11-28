@@ -25,7 +25,7 @@ Integration status must not be presented as final acceptance. Real user workflow
 
 ## Approved Suite navigation and Home layout
 
-The approved sidebar uses **Home**, **Apps** and **Files**. No descriptive captions appear beneath the labels. The Home screen shows all ten approved products in the approved product-card layout.
+The approved sidebar uses **Home**, **Apps** and **Files**; no descriptive captions appear beneath the labels. The Home screen shows all ten approved products in the approved product-card layout.
 
 The **Switch product** list appears only inside an active product workspace. It must not replace or appear in the Suite shell's Home, Apps, Files or Settings navigation.
 
@@ -35,9 +35,9 @@ Outlook, OneDrive and Teams are not part of Brightdesk and must not be added.
 
 ## Pricing, accounts and privacy lock
 
-- **Free forever:** no subscriptions, trials, paid tiers or billing. No subscriptions, trials, paid tiers or billing are offered to customers.
+- Free forever. No subscriptions, trials, paid tiers or billing.
 - No customer accounts, sign-in, passwords, profiles, activation codes, serial numbers or licence servers.
-- No telemetry, analytics, advertising, crash reporting, cloud sync or collaboration; no customer text uploads. No remote AI service or customer document uploads.
+- No telemetry, analytics, advertising, crash reporting, cloud sync, collaboration or customer text uploads. No remote AI service or customer document uploads.
 - Product data, document processing and spelling checks stay on the device.
 - Network access is limited to Brightdesk-controlled product-update and language-resource services. Third-party dictionary downloads are not permitted. Dictionary downloads remain disabled until approved, signed Brightdesk-hosted packs are released.
 
