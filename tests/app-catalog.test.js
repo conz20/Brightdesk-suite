@@ -284,7 +284,7 @@ test('the Suite Home artwork and README no longer repeat Suite logo or wordmark 
   assert.equal(artwork.includes('Brightdesk Office Suite'), false);
   assert.equal(artwork.includes('brightdesk</text>'), false);
   assert.equal(artwork.includes('BRIGHTDESK OFFICE SUITE'), false);
-  assert.ok(artwork.includes('Ten original desktop products'));
+  assert.ok(artwork.includes('ten original product cards'));
   const main = fs.readFileSync(path.join(root, 'src', 'main.js'), 'utf8');
   assert.ok(main.includes("'Brightdesk Office Suite'"));
 });
