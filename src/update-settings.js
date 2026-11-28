@@ -23,6 +23,7 @@
     const panel = byId('update-settings-panel');
     if (!panel || panel.dataset.sectionsReady === 'true') return;
     panel.dataset.sectionsReady = 'true';
+    panel.dataset.settingsLoaded = 'false';
     panel.innerHTML = `
       <section class="update-settings-section" aria-labelledby="suite-update-heading">
         <div class="update-settings-header">
@@ -68,6 +69,9 @@
     } catch (error) {
       const status = message();
       if (status) { status.hidden = false; status.textContent = `Could not load update preferences: ${error.message}`; }
+    } finally {
+      const panel = byId('update-settings-panel');
+      if (panel) panel.dataset.settingsLoaded = 'true';
     }
   }
 
