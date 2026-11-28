@@ -4,7 +4,7 @@ Ten focused desktop products. One consistent Brightdesk experience.
 
 Brightdesk is an independent, local-first desktop productivity suite. It uses original product names, code, interface design and artwork. It is not affiliated with Microsoft, Adobe or ArtCraft.
 
-The Brightdesk Suite source code is distributed under the standard MIT License. The complete grant, conditions and disclaimer are in [LICENSE](LICENSE). MIT permits use, modification and redistribution of covered code, including commercial redistribution, provided its notice requirements are followed. Brightdesk's official downloads remain free of charge. The MIT licence does not grant rights to use Brightdesk branding or imply that a modified build is an official release. Third-party components retain their own licences; see [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
+The Brightdesk Suite source code is distributed under the standard MIT License. The complete grant, conditions and disclaimer are in [LICENSE](LICENSE). MIT permits use, modification and redistribution of covered code, including commercial redistribution, provided its notice requirements are followed. Brightdesk's official downloads remain free of charge. The MIT licence does not grant rights to use Brightdesk branding or imply that a modified build is an official release. Third-party components retain their own licences; see [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md). The detailed [Brightdesk licensing, copyright, brand and asset-provenance standard](docs/LICENSING_AND_BRAND_STANDARD.md) explains licence boundaries, third-party evidence and original brand assets.
 
 <p align="center"><img src="assets/brand/brightdesk-copyright-mark.svg" alt="Brightdesk copyright identity mark" width="440"></p>
 
