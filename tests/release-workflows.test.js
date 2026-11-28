@@ -308,6 +308,18 @@ test('Suite CI uses GitHub-hosted macOS and does not depend on local runners', (
   assert.ok(!workflow.includes('runs-on: self-hosted'));
 });
 
+test('Linux CI builds and tests the native engine on GitHub-hosted Ubuntu', () => {
+  const workflow = read('.github/workflows/ci.yml');
+  const job = workflow.split('  linux-native:')[1] ?? '';
+  assert.match(job, /runs-on: ubuntu-latest/);
+  assert.match(job, /node-version: 24\.22\.2/);
+  assert.match(job, /toolchain: 1\.99\.1/);
+  assert.match(job, /npm run native:build/);
+  assert.match(job, /BRIGHTDESK_REQUIRE_NATIVE_ENGINE: "1"/);
+  assert.match(job, /run: npm test/);
+  assert.doesNotMatch(job, /self-hosted/);
+});
+
 test('release collector checkout uses one valid with block and preserves the exact commit checkout', () => {
   const workflow = read('.github/workflows/build-release.yml');
   const start = workflow.indexOf('- name: Check out the exact release source');
