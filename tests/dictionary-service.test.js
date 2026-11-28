@@ -135,8 +135,8 @@ test('verified installed dictionaries remain usable offline while new catalogue 
   assert.equal(catalogueEntry.packStatus, 'not-built');
   const folder = path.join(userData, 'dictionaries', 'bg');
   await fs.mkdir(folder, { recursive: true });
-  const legacyAff = 'SET UTF-8\\n';
-  const legacyDic = '1\\nword\\n';
+  const legacyAff = 'SET UTF-8\n';
+  const legacyDic = '1\nword\n';
   const legacyLicense = 'A fixed original licence text that is long enough to pass the validation rules.';
   const legacyReadme = 'Fixed original author and contributor attribution information for testing.';
   const hash = value => crypto.createHash('sha256').update(value).digest('hex');
