@@ -7,6 +7,8 @@ const SAMPLE_DATA_DESCRIPTION = 'Fictional Brightdesk sample records created for
 const APP_IDS = ['pages', 'sheets', 'slides', 'notes', 'database', 'forms', 'lists', 'planner', 'todo', 'loop'];
 
 function seedRendererStorage() {
+  const appIds = (window.BrightdeskAppCatalog || []).map(item => item.id);
+  if (appIds.length !== 10) throw new Error('The screenshot renderer must load exactly ten approved Brightdesk products.');
   const now = new Date('2026-11-14T10:00:00.000Z');
   const docs = {
     pages: {
@@ -84,13 +86,13 @@ function seedRendererStorage() {
   localStorage.setItem('brightdesk-workspaces-v1', JSON.stringify([project]));
 
   localStorage.setItem('brightdesk-app-setup-v1', JSON.stringify({
-    schemaVersion: 2, installedApps: APP_IDS.slice(), hiddenProducts: [], setupComplete: true
+    schemaVersion: 2, installedApps: appIds.slice(), hiddenProducts: [], setupComplete: true
   }));
   localStorage.setItem('brightdesk-docs-v3', JSON.stringify(docs));
   localStorage.setItem('brightdesk-display-language', 'en-AU');
   localStorage.setItem('brightdesk-proofing-language', 'en-AU');
   localStorage.setItem('brightdesk-notifications-v1', '[]');
-  return { installedApps: APP_IDS.length, taskCount: docs.todo.tasks.length, listCount: docs.lists.lists.length };
+  return { installedApps: appIds.length, taskCount: docs.todo.tasks.length, listCount: docs.lists.lists.length };
 }
 
 function waitForSuiteHome() {
