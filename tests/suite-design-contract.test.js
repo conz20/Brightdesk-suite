@@ -101,6 +101,7 @@ test('Home matches the approved 1600 by 900 grid proportions and responsive fall
   assert.match(styles, /body\.suite-home \.main\s*\{\s*padding:\s*56px 4\.125vw 20px 2vw;/);
   assert.match(styles, /\.app-manager\.home-view \.manager-grid\s*\{\s*grid-template-columns:\s*repeat\(auto-fit, minmax\(min\(100%, 240px\), 1fr\)\);\s*gap:\s*16px;/);
   assert.match(styles, /body\.suite-home \.app-manager\.home-view \.manager-grid\s*\{[\s\S]*?column-gap:\s*16px;\s*row-gap:\s*18px;/);
+  assert.match(styles, /@media \(min-width: 1500px\)\s*\{\s*\.app-manager\.home-view \.manager-grid\s*\{\s*grid-template-columns:\s*repeat\(5, minmax\(0, 1fr\)\);/);
   assert.match(styles, /\.app-manager\.home-view \.app-card\s*\{\s*min-height:\s*240px;/);
   assert.match(styles, /@media \(max-width: 700px\)\s*\{\s*\.app-manager\.home-view \.manager-grid \{ grid-template-columns: 1fr;/);
   const availableWidth = 1600 - 238 - (1600 * 0.02) - (1600 * 0.04125);

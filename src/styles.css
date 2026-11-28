@@ -721,3 +721,11 @@ body.suite-home .app-manager.home-view .manager-hero .eyebrow { display: none; }
   font-size: 12px;
   line-height: 1.5;
 }
+
+
+/* Match the approved 1600 × 900 Home artwork: five product cards across, two rows. */
+@media (min-width: 1500px) {
+  .app-manager.home-view .manager-grid {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+}
