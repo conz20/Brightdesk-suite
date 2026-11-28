@@ -10,6 +10,19 @@ const path = require('node:path');
 const root = path.resolve(__dirname, '..');
 const read = (file) => fs.readFileSync(path.join(root, file), 'utf8');
 
+test('required verification workflows rerun when the pull-request description is edited', () => {
+  for (const file of [
+    '.github/workflows/ci.yml',
+    '.github/workflows/quality.yml',
+    '.github/workflows/rust-engine.yml',
+    '.github/workflows/verify-macos-installer.yml',
+    '.github/workflows/readme-freshness.yml'
+  ]) {
+    const workflow = read(file);
+    assert.match(workflow, /pull_request:[\\s\\S]*?types:\\s*\\[[^\\]]*\\bedited\\b[^\\]]*\\]/, file + ' must allow an exact-head recheck after a PR edit');
+  }
+});
+
 test('Dependabot checks npm dependencies and GitHub Actions weekly', () => {
   const workflow = read('.github/dependabot.yml');
   assert.match(workflow, /package-ecosystem: npm/);
