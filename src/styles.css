@@ -433,6 +433,11 @@ input:disabled, select:disabled, textarea:disabled, button:disabled { cursor: no
 
 
 /* Production Home geometry: keep the live product grid aligned with brightdesk-home.svg. */
+.app-manager.home-view {
+  width: 100%;
+  align-self: stretch;
+}
+
 .app-manager.home-view .manager-grid {
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
   gap: 16px;

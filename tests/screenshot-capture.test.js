@@ -20,6 +20,41 @@ test('screenshot capture enforces the approved 1600 by 900 reference size', () =
   assert.throws(() => assertScreenshotSize({ width: 1600, height: 899 }, 'Suite Home'), /1600 × 900/);
 });
 
+
+test('Suite Home capture requires ten visible cards in the approved five-column layout', async () => {
+  const dom = new JSDOM('<section id="app-manager" class="home-view"><button id="home-nav" class="active"></button><div id="app-manager-grid"></div></section>', {
+    url: 'https://brightdesk.local',
+    runScripts: 'outside-only'
+  });
+  try {
+    const { window } = dom;
+    Object.defineProperty(window, 'innerWidth', { value: 1600 });
+    Object.defineProperty(window, 'innerHeight', { value: 900 });
+    const grid = window.document.querySelector('#app-manager-grid');
+    for (let index = 0; index < 10; index += 1) {
+      const card = window.document.createElement('article');
+      const column = index % 5;
+      const row = Math.floor(index / 5);
+      card.getBoundingClientRect = () => ({
+        left: 270 + column * 256,
+        right: 510 + column * 256,
+        top: 292 + row * 258,
+        bottom: 532 + row * 258,
+        width: 240,
+        height: 240
+      });
+      grid.appendChild(card);
+    }
+    window.getComputedStyle = () => ({ gridTemplateColumns: '240px 240px 240px 240px 240px' });
+    const result = await window.eval('(' + waitForSuiteHome.toString() + ')()');
+    assert.equal(result.productCards, 10);
+    assert.equal(result.columns, 5);
+    assert.equal(result.allCardsVisible, true);
+  } finally {
+    dom.window.close();
+  }
+});
+
 test('renderer seed creates fictional local records for all ten approved products', () => {
   const dom = new JSDOM('<main id="app-manager" hidden><div id="app-manager-grid"></div></main><button id="home-nav"></button>', { url: 'https://brightdesk.local', runScripts: 'outside-only' });
   try {

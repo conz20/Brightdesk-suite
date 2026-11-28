@@ -114,8 +114,15 @@ function waitForSuiteHome() {
       const manager = document.querySelector('#app-manager');
       const grid = document.querySelector('#app-manager-grid');
       const home = document.querySelector('#home-nav');
-      if (manager && !manager.hidden && grid && grid.children.length === 10 && home && home.classList.contains('active')) {
-        resolve({ title: document.title, productCards: grid.children.length });
+      const columns = grid ? window.getComputedStyle(grid).gridTemplateColumns.trim().split(/\\s+/).filter(Boolean).length : 0;
+      const cardRects = grid ? [...grid.children].map(card => card.getBoundingClientRect()) : [];
+      const allCardsVisible = cardRects.length === 10 && cardRects.every(rect =>
+        rect.width >= 230 && rect.height >= 220 &&
+        rect.left >= 0 && rect.top >= 0 &&
+        rect.right <= window.innerWidth && rect.bottom <= window.innerHeight
+      );
+      if (manager && !manager.hidden && grid && grid.children.length === 10 && columns === 5 && allCardsVisible && home && home.classList.contains('active')) {
+        resolve({ title: document.title, productCards: grid.children.length, columns, allCardsVisible });
         return;
       }
       if (Date.now() >= deadline) {
