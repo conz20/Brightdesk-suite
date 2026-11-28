@@ -18,7 +18,7 @@ const base = {
   sampleDataDescription: 'Fictional sample content in a disposable profile.'
 };
 
-test('the capture plan contains the Suite and exactly the ten approved products', () => {
+test('the capture plan contains five Suite screens and exactly the ten approved products', () => {
   assert.equal(SCREENSHOT_TARGETS.length, 15);
   assert.deepEqual(SCREENSHOT_TARGETS.map(item => item.id), ['suite','suite-apps','suite-files','suite-settings','suite-notifications','pages','sheets','decks','notes','database','forms','lists','planner','todo','workspace']);
 });
