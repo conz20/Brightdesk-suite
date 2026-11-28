@@ -70,7 +70,7 @@ test('the live desktop shell provides Home, Apps and Files navigation', () => {
   assert.match(app, /state\.view = 'home'/);
   assert.match(app, /state\.view = 'files'/);
   assert.match(app, /finish-app-setup'\)\.addEventListener\('click',[\s\S]*?state\.view='home'/);
-  assert.match(app, /back-to-apps'\)\.addEventListener\('click',[\s\S]*?state\.view='manager'/);
+  assert.match(app, /back-to-apps'\)\.addEventListener\('click',[\s\S]*?state\.previousView/);
   assert.match(app, /\$\('home-nav'\)\.addEventListener/);
   assert.match(app, /\$\('files-nav'\)\.addEventListener/);
   assert.match(app, /\$\('files-open-button'\)\.addEventListener\('click', openFile\)/);
