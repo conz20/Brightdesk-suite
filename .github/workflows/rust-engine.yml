@@ -13,6 +13,7 @@ concurrency:
   cancel-in-progress: true
 jobs:
   native:
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
     # This repository's free self-hosted Mac runner replaces paid hosted runners.
     runs-on: self-hosted
     steps:
