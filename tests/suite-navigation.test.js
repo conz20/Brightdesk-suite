@@ -3,9 +3,7 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
-
 const read = (file) => fs.readFileSync(path.join(__dirname, '..', file), 'utf8');
-
 test('Apps shows one suite-level sidebar entry instead of repeating the ten product cards', () => {
   const html = read('src/index.html');
   const app = read('src/app.js');
@@ -25,14 +23,12 @@ test('Apps shows one suite-level sidebar entry instead of repeating the ten prod
   assert.match(app, /\$\('app-centre-nav'\)\.hidden = !suitePage \|\| Boolean\(launchAppId\)/);
   assert.match(app, /manager \? t\('sidebar\.applications'\)/);
 });
-
 test('removing an app from the Suite requires confirmation and does not delete local documents', () => {
   const app = read('src/app.js');
   assert.match(app, /window\.confirm\(`Remove \$\{product\?\.name \|\| 'this product'\} from the Suite/);
   assert.match(app, /removeAppSelection\(/);
   assert.doesNotMatch(app, /delete state\.docs/);
 });
-
 test('product settings menu can hide an installed product from Switch product navigation', () => {
   const app = read('src/app.js');
   assert.match(app, /hiddenProducts: \[\]/);
@@ -46,7 +42,6 @@ test('product settings menu can hide an installed product from Switch product na
   assert.match(read('src/assets/icons/more.svg'), /circle/);
   assert.match(read('src/styles.css'), /app-card-menu-trigger/);
 });
-
 test('the live desktop shell provides Home, Apps and Files navigation', () => {
   const html = read('src/index.html');
   const app = read('src/app.js');
@@ -76,7 +71,6 @@ test('the live desktop shell provides Home, Apps and Files navigation', () => {
   assert.match(app, /\$\('files-open-button'\)\.addEventListener\('click', openFile\)/);
   assert.match(app, /\$\('files-save-button'\)\.addEventListener\('click', saveProject\)/);
 });
-
 test('all ten approved products can appear in the product-switching sidebar during workspace use', () => {
   const app = read('src/app.js');
   const catalogue = require('../src/app-catalog');
@@ -85,16 +79,14 @@ test('all ten approved products can appear in the product-switching sidebar duri
   assert.match(app, /button\.addEventListener\('click', async \(\) =>[\s\S]*?window\.brightdesk\.openApplication\(item\.id\)/);
   assert.match(app, /const suitePage = home \|\| manager \|\| files/);
 });
-
 test('one Brightdesk Home artwork combines the suite sidebar and ten-product grid', () => {
   const svg = read('assets/product-experience/brightdesk-home.svg');
   assert.equal((svg.match(/id="sidebar-applications"/g) || []).length, 1);
   assert.doesNotMatch(svg, /id="sidebar-(?:pages|sheets|decks|notes|database|forms|lists|planner|todo|workspace)-/);
   assert.match(svg, /A narrow, full-height solid deep-navy navigation rail/);
-  assert.match(svg, /Product shortcuts are not repeated beside the Home application grid/);
+  assert.match(svg, /Home, Apps and Files are three vertically stacked destinations/);
   assert.match(svg, /id="settings-cogwheel"/);
   assert.match(svg, /id="notifications-bell"/);
-
   assert.match(read('src/styles.css'), /\.sidebar\{background:#14233f/);
   const home = read('assets/product-experience/brightdesk-home.svg');
   assert.match(home, /Your apps/);
@@ -102,7 +94,6 @@ test('one Brightdesk Home artwork combines the suite sidebar and ten-product gri
   assert.match(home, /id="apps-launcher-icon"/);
   assert.equal((home.match(/<svg x="/g) || []).length, 10, 'Home must embed all ten original product icons');
 });
-
 test('Apps cards use the approved icon-first layout without concept preview images', () => {
   const app = read('src/app.js');
   const styles = read('src/styles.css');
@@ -112,7 +103,6 @@ test('Apps cards use the approved icon-first layout without concept preview imag
   assert.match(styles, /\.app-card\{[^}]*border-radius:16px/);
   assert.doesNotMatch(styles, /app-preview/);
 });
-
 test('README and visual standard explain the contextual product-switching rule', () => {
   const readme = read('README.md');
   const standard = read('docs/BRIGHTDESK_VISUAL_STANDARD.md');
@@ -131,8 +121,6 @@ test('README and visual standard explain the contextual product-switching rule',
   assert.ok(standard.includes("In the Suite's own workspace context"));
   assert.ok(standard.includes('Switch product'));
 });
-
-
 test('production Home artwork matches the live desktop headings and card layout', () => {
   const html = read('src/index.html');
   const styles = read('src/styles.css');
@@ -156,8 +144,6 @@ test('production Home artwork matches the live desktop headings and card layout'
   assert.ok(readme.includes('38 px circular Notifications and Settings controls'));
   assert.ok(guide.includes('top-bar eyebrow **YOUR WORKSPACE** and heading **Your apps**'));
 });
-
-
 test('production Home activates its dedicated shell layout and circular utility controls', () => {
   const html = read('src/index.html');
   const app = read('src/app.js');
@@ -174,8 +160,6 @@ test('production Home activates its dedicated shell layout and circular utility 
   assert.ok(styles.includes('font-size: 34px;'));
   assert.ok(styles.includes('padding: 56px 4.125vw 20px 2vw;'));
 });
-
-
 test('Suite navigation rail hides sidebar extras and keeps the compact icon labels', () => {
   const html = read('src/index.html');
   const app = read('src/app.js');
@@ -195,16 +179,12 @@ test('Suite navigation rail hides sidebar extras and keeps the compact icon labe
   assert.ok(readme.includes('76 px wide'));
   assert.ok(readme.includes('icon above its name'));
 });
-
-
-
 test('Suite-level navigation uses a solid 76 px rail with vertically stacked icon labels', () => {
   const html = read('src/index.html');
   const app = read('src/app.js');
   const styles = read('src/styles.css');
   const readme = read('README.md');
   const guide = read('docs/BRIGHTDESK_VISUAL_STANDARD.md');
-
   for (const id of ['home-nav', 'app-centre-nav', 'files-nav']) {
     assert.match(html, new RegExp('id="' + id + '"'));
   }
@@ -217,7 +197,6 @@ test('Suite-level navigation uses a solid 76 px rail with vertically stacked ico
   assert.match(readme, /76 px wide/);
   assert.match(guide, /76 px.*solid.*navy/i);
 });
-
 test('Home product section uses one clear heading without the Apps eyebrow', () => {
   const styles = read('src/styles.css');
   const readme = read('README.md');
