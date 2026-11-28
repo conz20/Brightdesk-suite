@@ -158,10 +158,10 @@ test('dependency-maintenance workflows propose changes through owner-review pull
     assert.match(workflow, /if: github\.ref == 'refs\/heads\/main'/, file);
     assert.match(workflow, /contents: write/, file);
     assert.match(workflow, /pull-requests: write/, file);
-    assert.match(workflow, /GH_TOKEN: \\$\{\\{ github\.token \\}\\}/, file);
+    assert.ok(workflow.includes('GH_TOKEN: ${{ github.token }}'), file);
     assert.match(workflow, /gh pr create/, file);
     assert.match(workflow, /git push --set-upstream origin "\$BRANCH"/, file);
-    assert.doesNotMatch(workflow, /git push\\s*$/m, file);
+    assert.doesNotMatch(workflow, /git push\s*$/m, file);
   }
 });
 
