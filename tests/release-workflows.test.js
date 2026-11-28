@@ -17,11 +17,11 @@ test('Dependabot checks npm dependencies and GitHub Actions weekly', () => {
   assert.equal((workflow.match(/interval: weekly/g) || []).length, 2);
 });
 
-test('one consolidated quality gate uses the self-hosted runner and verifies the committed dependency lock', () => {
+test('one consolidated quality gate uses GitHub-hosted macOS and verifies the committed dependency lock', () => {
   const workflow = read('.github/workflows/quality.yml');
   assert.match(workflow, /pull_request:\s*\n\s*branches: \[main\]/);
   assert.match(workflow, /cron:/);
-  assert.match(workflow, /runs-on: self-hosted/);
+  assert.match(workflow, /runs-on: macos-latest/);
   assert.match(workflow, /node-version: 24\.22\.2/);
   for (const command of [
     'npm run check:node',
@@ -145,26 +145,27 @@ test('local release verification runs tests and builds only for the current nati
   assert.doesNotMatch(script, /publish always|gh release create/i);
 });
 
-test('dependency-maintenance workflows use the existing self-hosted runner', () => {
+test('dependency-maintenance workflows use GitHub-hosted Linux', () => {
   for (const file of ['.github/workflows/generate-lockfile.yml', '.github/workflows/generate-third-party-notices.yml']) {
-    assert.match(read(file), /runs-on: self-hosted/, `${file} must not consume hosted-runner minutes`);
+    assert.match(read(file), /runs-on: ubuntu-latest/, file);
+    assert.doesNotMatch(read(file), /runs-on: self-hosted/, file);
   }
 });
 
 
-test('installer pipeline uses the private native runner for each operating system', () => {
+test('installer pipeline uses GitHub-hosted runners for all three operating systems', () => {
   const workflow = read('.github/workflows/build-release.yml');
-  assert.match(workflow, /runner: \["self-hosted", "Linux", "X64"\]/);
-  assert.match(workflow, /runner: \["self-hosted", "Windows", "X64"\]/);
-  assert.match(workflow, /runner: \["self-hosted", "macOS", "ARM64"\]/);
-  assert.match(workflow, /runs-on: self-hosted/);
-  assert.doesNotMatch(workflow, /ubuntu-latest|windows-latest|macos-latest/);
+  assert.match(workflow, /runner: ubuntu-latest/);
+  assert.match(workflow, /runner: windows-latest/);
+  assert.match(workflow, /runner: macos-latest/);
+  assert.match(workflow, /runs-on: \$\{\{ matrix\.runner \}\}/);
+  assert.doesNotMatch(workflow, /runs-on: self-hosted/);
 });
 
-test('README freshness check uses the existing self-hosted runner', () => {
+test('README freshness check uses a lightweight GitHub-hosted runner', () => {
   const workflow = read('.github/workflows/readme-freshness.yml');
-  assert.match(workflow, /runs-on: self-hosted/);
-  assert.doesNotMatch(workflow, /ubuntu-latest|windows-latest|macos-latest/);
+  assert.match(workflow, /runs-on: ubuntu-slim/);
+  assert.doesNotMatch(workflow, /runs-on: self-hosted/);
 });
 
 test('README freshness script remains compatible with macOS system Bash 3.2', () => {
@@ -173,11 +174,11 @@ test('README freshness script remains compatible with macOS system Bash 3.2', ()
   assert.match(workflow, /while IFS= read -r file; do/, 'changed files are processed with Bash 3.2-compatible syntax');
 });
 
-test('README freshness workflow protects the private runner from forked pull requests', () => {
+test('README freshness workflow keeps its fork pull-request guard on hosted CI', () => {
   const workflow = read('.github/workflows/readme-freshness.yml');
   const guard = /if:\s*github\.event_name != 'pull_request' \|\| github\.event\.pull_request\.head\.repo\.full_name == github\.repository/;
   assert.match(workflow, /pull_request:/);
-  assert.match(workflow, /runs-on:\s*self-hosted/);
+  assert.match(workflow, /runs-on:\s*ubuntu-slim/);
   assert.match(workflow, guard);
 });
 
@@ -289,23 +290,22 @@ test('Windows runner setup explicitly supports Windows 10 and Windows 11', () =>
   assert.match(releaseGuide, /The release workflow already targets/);
 });
 
-test('release workflow registers post-job cleanup in every self-hosted job', () => {
+test('release workflow uses ephemeral hosted runners without self-hosted cleanup hooks', () => {
   const workflow = read('.github/workflows/build-release.yml');
-  const actionRef = 'uses: conz20/Brightdesk-suite/.github/actions/runner-workspace-cleanup@';
-  assert.equal(workflow.split(actionRef).length - 1, 4);
+  assert.equal(workflow.split('uses: conz20/Brightdesk-suite/.github/actions/runner-workspace-cleanup@').length - 1, 0);
   assert.ok(!workflow.includes('run: node scripts/cleanup-runner-workspace.js'));
   assert.equal((workflow.match(/persist-credentials: false/g) || []).length, 3);
   assert.doesNotMatch(workflow, /cache: npm/);
   assert.ok(workflow.includes('node-version: 24.22.2'));
 });
 
-test('self-hosted CI disables checkout credentials and registers post-job cleanup', () => {
+test('Suite CI uses GitHub-hosted macOS and does not depend on local runners', () => {
   const workflow = read('.github/workflows/ci.yml');
-  assert.ok(workflow.includes('runs-on: self-hosted'));
+  assert.ok(workflow.includes('runs-on: macos-latest'));
   assert.ok(workflow.includes('persist-credentials: false'));
   assert.ok(!workflow.includes('cache: npm'));
-  assert.ok(workflow.includes('uses: conz20/Brightdesk-suite/.github/actions/runner-workspace-cleanup@'));
-  assert.ok(!workflow.includes('run: node scripts/cleanup-runner-workspace.js'));
+  assert.ok(!workflow.includes('runner-workspace-cleanup'));
+  assert.ok(!workflow.includes('runs-on: self-hosted'));
 });
 
 test('release collector checkout uses one valid with block and preserves the exact commit checkout', () => {
@@ -320,32 +320,26 @@ test('release collector checkout uses one valid with block and preserves the exa
 });
 
 
-test('every self-hosted workflow registers post-job source cleanup before other actions', () => {
-  const expected = [
-    ['.github/workflows/build-release.yml', 4],
-    ['.github/workflows/ci.yml', 1],
-    ['.github/workflows/quality.yml', 1],
-    ['.github/workflows/rust-engine.yml', 1],
-    ['.github/workflows/readme-freshness.yml', 1],
-    ['.github/workflows/verify-macos-installer.yml', 1],
-    ['.github/workflows/generate-lockfile.yml', 1],
-    ['.github/workflows/generate-third-party-notices.yml', 1]
+test('all active Suite workflows use GitHub-hosted runners', () => {
+  const hosted = [
+    ['.github/workflows/ci.yml', 'macos-latest'],
+    ['.github/workflows/quality.yml', 'macos-latest'],
+    ['.github/workflows/rust-engine.yml', 'macos-latest'],
+    ['.github/workflows/verify-macos-installer.yml', 'macos-latest'],
+    ['.github/workflows/readme-freshness.yml', 'ubuntu-slim'],
+    ['.github/workflows/generate-lockfile.yml', 'ubuntu-latest'],
+    ['.github/workflows/generate-third-party-notices.yml', 'ubuntu-latest']
   ];
-  const action = read('.github/actions/runner-workspace-cleanup/action.yml');
-  assert.ok(action.includes('using: node24'));
-  assert.ok(action.includes('main: register.js'));
-  assert.ok(action.includes('post: cleanup.js'));
-  assert.ok(action.includes('post-if: always()'));
-
-  for (const [file, count] of expected) {
+  for (const [file, runner] of hosted) {
     const workflow = read(file);
-    const registrations = workflow.split('uses: conz20/Brightdesk-suite/.github/actions/runner-workspace-cleanup@').length - 1;
-    assert.equal(registrations, count, file);
-    assert.ok(!workflow.includes('run: node scripts/cleanup-runner-workspace.js'));
-    const actionIndex = workflow.indexOf('Register post-job workspace cleanup');
-    const checkoutIndex = workflow.indexOf('uses: actions/checkout@');
-    if (checkoutIndex >= 0) assert.ok(actionIndex >= 0 && actionIndex < checkoutIndex, file);
+    assert.ok(workflow.includes('runs-on: ' + runner), file + ' uses ' + runner);
+    assert.doesNotMatch(workflow, /runs-on: self-hosted/, file);
   }
+  const release = read('.github/workflows/build-release.yml');
+  assert.match(release, /runner: ubuntu-latest/);
+  assert.match(release, /runner: windows-latest/);
+  assert.match(release, /runner: macos-latest/);
+  assert.doesNotMatch(release, /runs-on: self-hosted/);
 });
 
 
