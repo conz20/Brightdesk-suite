@@ -39,28 +39,25 @@ function deriveProductLifecycleState({
       && installation.registered === true
       && parseReleaseVersion(installedVersion)
   );
-  const isRunning = installed && running === true;
+  const inSuite = suiteEnabled === true;
+  const isRunning = running === true && (installed || inSuite);
   const updateAvailable = installed
     && compareReleaseVersions(latestVersion, installedVersion) === 1;
 
   const actions = [];
+  if (inSuite) actions.push('open-in-suite', 'remove-from-suite');
+  else actions.push('add-to-suite');
   if (installed) {
-    actions.push('open');
-    actions.push(suiteEnabled ? 'remove-from-suite' : 'add-to-suite');
+    actions.push('open-standalone');
     if (updateAvailable) actions.push('update');
     actions.push('uninstall');
   } else {
-    if (suiteEnabled) {
-      actions.push('open-in-suite', 'remove-from-suite');
-    } else {
-      actions.push('add-to-suite');
-    }
     actions.push('install');
   }
 
   return Object.freeze({
     productId,
-    inSuite: suiteEnabled === true,
+    inSuite,
     installed,
     installedVersion: installed ? installedVersion : null,
     running: isRunning,
