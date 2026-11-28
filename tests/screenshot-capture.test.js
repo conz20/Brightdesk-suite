@@ -16,6 +16,7 @@ test('renderer seed creates fictional local records for all ten approved product
   const dom = new JSDOM('<main id="app-manager" hidden><div id="app-manager-grid"></div></main><button id="home-nav"></button>', { url: 'https://brightdesk.local', runScripts: 'outside-only' });
   try {
     Object.assign(dom.window, {
+      BrightdeskAppCatalog: ['pages','sheets','slides','notes','database','forms','lists','planner','todo','loop'].map(id => ({ id })),
       BrightdeskTodoService: todo,
       BrightdeskListsService: lists,
       BrightdeskFormsService: forms,
@@ -67,7 +68,7 @@ test('product capture rejects a different product window even when its workspace
   try {
     await assert.rejects(
       dom.window.eval('(' + waitForProductWorkspace.toString() + ')("pages","#editor",50)'),
-      /Pages workspace did not load in its own Suite product window/
+      /pages workspace did not load in its own Suite product window/i
     );
   } finally {
     dom.window.close();
