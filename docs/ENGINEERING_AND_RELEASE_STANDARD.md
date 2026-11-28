@@ -24,19 +24,21 @@ Use original Brightdesk names, interface design, icons, SVGs, fonts and other ar
 
 The Suite's current source tree contains JavaScript, TypeScript, Rust, HTML, CSS, shell scripts and PowerShell scripts. JSON, YAML and Markdown are also used for manifests, CI configuration and documentation; SVG is used for original vector artwork. Keep each format accurately classified: configuration and documentation formats are not programming languages.
 
-The customer packages use the repository-pinned Node.js **24.22.2** toolchain. Rust is a first-class part of the engineering portfolio. Where Rust crates or Node-API bindings exist, validate formatting, Clippy, locked Cargo tests, native compilation and the JavaScript/native integration tests. Do not claim Rust is active in a product merely because a portfolio workflow is configured to check it.
+Use the newest stable toolchains that pass Brightdesk's compatibility and release checks. Before every planned update, check the official upstream release source, security advisories and support status. Keep the exact tested pins in the central [Version Compatibility Standard](VERSION_COMPATIBILITY.md), not duplicated as permanent version numbers in this portfolio-wide policy. A newer major runtime is a separate compatibility candidate and must not silently replace a working runtime. Rust is a first-class part of the engineering portfolio. Where Rust crates or Node-API bindings exist, validate formatting, Clippy, locked Cargo tests, native compilation and the JavaScript/native integration tests. Do not claim Rust is active in a product merely because a portfolio workflow is configured to check it.
 
 Each product repository must keep its own evidence-based language inventory. Re-scan tracked source files and toolchain manifests as the code changes. File presence alone does not prove that code builds, is used at runtime or passes tests.
 
 ## Version compatibility and migrations
 
-The approved runtime and build-tool versions are exact portfolio pins, not suggestions or loose minimums. Use Node.js **24.22.2**, Electron **45.2.1**, electron-builder **26.18.0** and Rust **1.99.1** where those tools apply. Keep package manifests, lockfiles, runtime selector files, development containers, build scripts and GitHub Actions aligned. A support repository that does not use Electron must not add Electron merely for consistency.
+The portfolio follows a latest-stable-first maintenance policy. Before each planned update, check official upstream release sources, current security advisories and support status. Prefer the newest stable version that is compatible with Brightdesk's operating systems, Electron runtime, native modules, APIs and release targets. Keep exact tested pins, candidate evidence and documented exceptions in the [Version Compatibility Standard](VERSION_COMPATIBILITY.md).
 
-Do not bring an older implementation, API example or tutorial into a newer Brightdesk project unchanged. Check which versions it targets, then port useful work to the currently approved APIs and update its tests, configuration and documentation together. Never mix incompatible major-version APIs or use an older runtime to make a test pass.
+A newer major runtime must be tested as a separate candidate before adoption. Keep manifests, lockfiles, runtime selectors, development containers, build scripts, installer settings and CI aligned with the selected version. A supporting repository that does not use Electron must not add Electron merely for consistency.
 
-Changing the approved baseline requires explicit owner approval and a coordinated compatibility review across the Suite, all ten products and relevant engineering repositories. Do not automatically chase upstream releases.
+Do not bring an older implementation, API example or tutorial into a newer Brightdesk project unchanged. Check which versions it targets, then port useful work to the currently supported APIs and update its tests, configuration and documentation together. Never mix incompatible major-version APIs or use an older runtime to make a test pass.
 
-The detailed rules, migration checklist and read-only compatibility checks are in the [Version Compatibility Standard](VERSION_COMPATIBILITY.md). Cargo's `rust-version` field describes an MSRV floor; it is not the selected compiler. The active compiler is the version pinned by `rust-toolchain.toml` and CI.
+If an update is incompatible or causes a regression, revert only the affected component to its previous stable compatible version, record the evidence and retry condition, and continue unrelated updates. Do not globally downgrade the portfolio or stop all maintenance because one component fails.
+
+Cargo's `rust-version` field describes an MSRV floor; it is not the selected compiler. The active compiler is the version pinned by `rust-toolchain.toml` and CI.
 
 ## Required engineering practice
 
@@ -90,3 +92,4 @@ Feature branches and draft pull requests are for development and review. Do not 
 - [Versioning](VERSIONING.md)
 - [Rust engine integration](RUST_ENGINE_INTEGRATION.md)
 - [Local release verification](LOCAL-RELEASE-VERIFICATION.md)
+- [Licensing, copyright and asset provenance](LICENSING_AND_BRAND_STANDARD.md)
