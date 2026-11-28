@@ -127,16 +127,16 @@ Each approved product has its own repository and product documentation:
 
 The Suite coordinates exactly ten independently maintained customer-product repositories: Pages, Sheets, Decks, Notes, Database, Forms, Lists, Planner, To Do and Workspace. Brightdesk-AI is separate private engineering tooling; it is not a customer product, is not included in customer downloads and is not required for normal product use.
 
-### Current 27-repository portfolio — 26 November 2026
+### Current 28-repository portfolio — 28 November 2026
 
-The live GitHub inventory contains **27 repositories** owned by `conz20`, all with `main` as their default branch:
+The live GitHub inventory contains **28 repositories** owned by `conz20`, all active, unarchived and using `main` as their default branch:
 
 - **Suite (1):** Brightdesk-suite.
 - **Customer products (exactly 10):** Brightdesk-Pages, Brightdesk-Sheets, Brightdesk-Decks, Brightdesk-Notes, Brightdesk-Database, Brightdesk-Forms, Brightdesk-Lists, Brightdesk-Planner, Brightdesk-To-Do and Brightdesk-Workspace.
 - **Separate AI engineering repository (1):** Brightdesk-AI. It is not a customer product.
-- **Shared, engineering and supporting repositories (15):** Brightdesk-Fonts, Brightdesk-Localization, Brightdesk-Engine, Brightdesk-Design-System, Brightdesk-Common-Libs, Brightdesk-Common-Actions, Brightdesk-Developer-Tools, Brightdesk-Extensions, Brightdesk-Wiki, Brightdesk-Release-Tools, Brightdesk-Services, Brightdesk-Type-Preview, Brightdesk-Assets, Brightdesk-Printing and Brightdesk-Voice.
+- **Shared, engineering and supporting repositories (16):** Brightdesk-Fonts, Brightdesk-Localization, Brightdesk-Engine, Brightdesk-Design-System, Brightdesk-Common-Libs, Brightdesk-Common-Actions, Brightdesk-Developer-Tools, Brightdesk-Extensions, Brightdesk-Wiki, Brightdesk-Release-Tools, Brightdesk-Services, Brightdesk-Type-Preview, Brightdesk-Assets, Brightdesk-Printing, Brightdesk-Voice and Brightdesk-Archives.
 
-GitHub currently reports **13 public and 14 private** repositories. The public repositories are Brightdesk-suite, Pages, Sheets, Decks, Database, Forms, Planner, To Do, Workspace, Design-System, Extensions, Wiki and Assets. This does not meet the portfolio requirement that all 27 repositories remain private. This is an observed policy discrepancy, not permission to change repository visibility. No repository visibility, permissions or settings were changed.
+GitHub currently reports **13 public and 15 private** repositories. The public repositories are Brightdesk-suite, Pages, Sheets, Decks, Database, Forms, Planner, To Do, Workspace, Design-System, Extensions, Wiki and Assets. This does not meet the previously recorded portfolio requirement that all 28 repositories remain private. This is an observed policy discrepancy, not permission to change repository visibility. No repository visibility, permissions or settings were changed.
 
 ### Shared repository responsibilities and current limits
 
@@ -155,6 +155,7 @@ GitHub currently reports **13 public and 14 private** repositories. The public r
 - **Assets** owns original visual-asset provenance and integrity. Its approved asset manifest remains empty until rights and SHA-256 evidence are complete.
 - **Printing** is shared local printing infrastructure. Draft PR #2's exact-head quality workflow passed on head `6d65982` (152 tests); Windows/Linux native helper builds and real-printer acceptance remain unverified.
 - **Voice** is separate local dictation engineering infrastructure, not customer product 11. CPAL adapter PR #30 is open/draft at `8ec7b91`; its current workflow is pending without executed jobs. No real microphone-to-text capability is claimed.
+- **Archives** is the private owner-controlled recovery repository. Its manifest lists all 28 repositories, but the baseline is still pending, every repository backup is marked `not_started`, and continuous backup is not configured or verified. Do not describe it as a completed automatic backup system.
 
 Repository presence, a README, a draft PR or a passing synthetic test suite is not proof of a working product integration. Shared capabilities must be verified in the Suite and each of the ten products independently. Brightdesk-Services remains optional; no customer workflow may depend on it.
 
