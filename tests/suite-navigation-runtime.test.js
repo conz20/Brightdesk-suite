@@ -31,6 +31,7 @@ async function bootSuite(t) {
     updateChecks: 0,
     downloadRequests: 0,
     installRequests: 0,
+    updateListeners: [],
     savedUpdateSettings: []
   };
   window.brightdesk = {
@@ -44,7 +45,7 @@ async function bootSuite(t) {
     listLanguagePacks: async () => ({ available: [], installed: [JSON.parse(read('src/languages/en-AU.json'))], spellCheckerLanguages: ['en-AU'] }),
     setProofingLanguage: async () => ({ supported: true }),
     listDictionaries: async () => [],
-    onUpdateState: () => {},
+    onUpdateState: listener => { calls.updateListeners.push(listener); },
     checkForUpdates: async () => { calls.updateChecks += 1; return { ok: true, message: 'No update is currently available.' }; },
     getUpdateSettings: async () => ({ autoCheck: true }),
     setUpdateSettings: async settings => { calls.savedUpdateSettings.push(settings); return settings; },
@@ -152,6 +153,11 @@ test('Settings actions open language preferences, return to Settings and save up
   assert.equal(byId(window, 'update-settings-panel').hidden, false);
   assert.equal(byId(window, 'update-settings-button').getAttribute('aria-expanded'), 'true');
   assert.match(byId(window, 'update-settings-panel').textContent, /Pages, Sheets, Decks, Notes, Database, Forms, Lists, Planner, To Do and Workspace/);
+  assert.equal(byId(window, 'update-manual-download').disabled, true);
+  assert.equal(byId(window, 'update-manual-install').disabled, true);
+  calls.updateListeners[0]({ status: 'available', message: 'A Brightdesk update is available.' });
+  assert.equal(byId(window, 'update-manual-download').disabled, false);
+  assert.equal(byId(window, 'update-manual-install').disabled, true);
   const autoCheck = byId(window, 'update-auto-check');
   assert.equal(autoCheck.checked, true);
   autoCheck.checked = false;
@@ -166,6 +172,9 @@ test('Settings actions open language preferences, return to Settings and save up
   byId(window, 'update-manual-download').click();
   await tick();
   assert.equal(calls.downloadRequests, 1);
+  calls.updateListeners[0]({ status: 'downloaded', message: 'The Brightdesk update has been downloaded.' });
+  assert.equal(byId(window, 'update-manual-download').disabled, true);
+  assert.equal(byId(window, 'update-manual-install').disabled, false);
   byId(window, 'update-manual-install').click();
   await tick();
   assert.equal(calls.installRequests, 1);
