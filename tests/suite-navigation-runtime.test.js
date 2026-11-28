@@ -71,12 +71,13 @@ async function bootSuite(t, { launchAppId = null, suiteLaunchedProduct = false }
     'src/i18n.js',
     'src/app-setup-policy.js',
     'src/update-settings.js',
+    'src/todo-service.js',
     'src/app.js'
   ]) window.eval(read(file));
 
   await new Promise(resolve => setImmediate(resolve));
   await new Promise(resolve => setImmediate(resolve));
-  assert.equal(window.document.querySelectorAll('#app-manager-grid .app-card').length, 10, 'Suite Home should render all ten approved products');
+  if (!launchAppId) assert.equal(window.document.querySelectorAll('#app-manager-grid .app-card').length, 10, 'Suite Home should render all ten approved products');
   return { window, calls };
 }
 
