@@ -88,7 +88,7 @@
     "electron": "45.2.1",
     "electron-builder": "26.18.0"
   },
-  "author": "Connor Molloy",
+  "author": "Bright Desk",
   "license": "MIT",
   "engines": {
     "node": "24.22.2"
