@@ -188,3 +188,12 @@ test('third-party notice maintenance opens an owner-reviewed pull request instea
   assert.match(workflow, /git add THIRD_PARTY_NOTICES\.md/);
   assert.doesNotMatch(workflow, /git add package-lock\.json/);
 });
+
+
+test('Suite CI can be explicitly dispatched for PRs created by GITHUB_TOKEN', () => {
+  const workflow = fs.readFileSync(
+    path.join(__dirname, '..', '.github', 'workflows', 'ci.yml'),
+    'utf8'
+  );
+  assert.match(workflow, /workflow_dispatch:/);
+});
