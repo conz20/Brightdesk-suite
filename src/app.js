@@ -833,6 +833,7 @@ function render() {
   const files = state.view === 'files';
   const languages = state.view === 'languages';
   const suitePage = home || manager || files;
+  document.body.classList.toggle('suite-navigation', suitePage && !launchAppId);
   $('sidebar-section-label').textContent = languages ? t('sidebar.settings') : (suitePage ? t('sidebar.workspace') : t('sidebar.yourApps'));
   $('sidebar-section-label').hidden = Boolean(launchAppId);
   $('home-nav').hidden = !suitePage || Boolean(launchAppId);
