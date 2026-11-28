@@ -4,6 +4,18 @@ const { assertPackagedVersion } = require('./startup-smoke');
 const { SCREENSHOT_TARGETS, createScreenshotEvidence, writeScreenshotEvidence, verifyScreenshotSet } = require('./screenshot-evidence');
 
 const SAMPLE_DATA_DESCRIPTION = 'Fictional Brightdesk sample records created for visual review in an isolated disposable profile. No real customer documents, contacts or personal data are used.';
+
+const APPROVED_SCREENSHOT_SIZE = Object.freeze({ width: 1600, height: 900 });
+
+function assertScreenshotSize(size, productName = 'Brightdesk') {
+  if (!size || size.width !== APPROVED_SCREENSHOT_SIZE.width || size.height !== APPROVED_SCREENSHOT_SIZE.height) {
+    const width = size?.width ?? 'unknown';
+    const height = size?.height ?? 'unknown';
+    throw new Error(`${productName} screenshot must be captured at 1600 × 900; received ${width} × ${height}.`);
+  }
+  return size;
+}
+
 const APP_IDS = ['pages', 'sheets', 'slides', 'notes', 'database', 'forms', 'lists', 'planner', 'todo', 'loop'];
 
 function seedRendererStorage() {
@@ -282,9 +294,8 @@ async function runScreenshotCaptureTest({ app, packageVersion, readTerms, readBu
       );
       const image = await captureWindow.webContents.capturePage(undefined, { stayHidden: true });
       const size = image.getSize();
-      if (image.isEmpty() || size.width < 1000 || size.height < 650) {
-        throw new Error(target.productName + ' capture is empty or too small (' + size.width + ' × ' + size.height + ').');
-      }
+      if (image.isEmpty()) throw new Error(target.productName + ' capture is empty.');
+      assertScreenshotSize(size, target.productName);
       captureStage = `writing the ${target.productName} screenshot evidence`;
       const imageBytes = image.toPNG();
       const evidence = createScreenshotEvidence({
@@ -314,4 +325,4 @@ async function runScreenshotCaptureTest({ app, packageVersion, readTerms, readBu
   }
 }
 
-module.exports = { seedRendererStorage, waitForSuiteHome, waitForSuiteScreen, waitForProductWorkspace, runScreenshotCaptureTest };
+module.exports = { seedRendererStorage, waitForSuiteHome, waitForSuiteScreen, waitForProductWorkspace, assertScreenshotSize, runScreenshotCaptureTest };

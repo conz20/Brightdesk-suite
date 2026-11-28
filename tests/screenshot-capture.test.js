@@ -9,8 +9,14 @@ const forms = require('../src/forms-service');
 const planner = require('../src/planner-service');
 const database = require('../src/database-service');
 const workspace = require('../src/workspace-service');
-const { seedRendererStorage, waitForProductWorkspace, waitForSuiteHome, waitForSuiteScreen } = require('../src/screenshot-capture');
+const { seedRendererStorage, waitForProductWorkspace, waitForSuiteHome, waitForSuiteScreen, assertScreenshotSize } = require('../src/screenshot-capture');
 const { SCREENSHOT_TARGETS } = require('../src/screenshot-evidence');
+
+
+test('screenshot capture enforces the approved 1600 by 900 reference size', () => {
+  assert.deepEqual(assertScreenshotSize({ width: 1600, height: 900 }, 'Suite Home'), { width: 1600, height: 900 });
+  assert.throws(() => assertScreenshotSize({ width: 1024, height: 653 }, 'Suite Home'), /1600 × 900/);
+});
 
 test('renderer seed creates fictional local records for all ten approved products', () => {
   const dom = new JSDOM('<main id="app-manager" hidden><div id="app-manager-grid"></div></main><button id="home-nav"></button>', { url: 'https://brightdesk.local', runScripts: 'outside-only' });

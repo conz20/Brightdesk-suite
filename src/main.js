@@ -110,12 +110,26 @@ function registerApplicationWindow(window) {
 }
 
 function createWindow({ show = true } = {}) {
+  const screenshotCapture = process.env.BRIGHTDESK_SCREENSHOT_CAPTURE_TEST === '1';
   mainWindow = registerApplicationWindow(new BrowserWindow({
-    width: 1440, height: 920, minWidth: 980, minHeight: 680, show,
+    width: screenshotCapture ? 1600 : 1440,
+    height: screenshotCapture ? 900 : 920,
+    minWidth: screenshotCapture ? 1600 : 980,
+    minHeight: screenshotCapture ? 900 : 680,
+    show: screenshotCapture ? false : show,
     title: applicationId ? `Brightdesk ${PRODUCT_MANIFEST[applicationId].name}` : 'Brightdesk Office Suite',
     icon: applicationId ? path.join(__dirname, 'assets', 'icons', PRODUCT_MANIFEST[applicationId].iconAsset) : undefined,
     backgroundColor: '#f5f6fa',
-    webPreferences: { preload: path.join(__dirname, 'preload.js'), contextIsolation: true, nodeIntegration: false, sandbox: true, additionalArguments: applicationId ? [`--brightdesk-app=${applicationId}`] : [] }
+    webPreferences: {
+      preload: path.join(__dirname, 'preload.js'),
+      contextIsolation: true,
+      nodeIntegration: false,
+      sandbox: true,
+      backgroundThrottling: !screenshotCapture,
+      offscreen: screenshotCapture ? { deviceScaleFactor: 1 } : false,
+      paintWhenInitiallyHidden: true,
+      additionalArguments: applicationId ? [`--brightdesk-app=${applicationId}`] : []
+    }
   }));
   return mainWindow.loadFile(path.join(__dirname, 'index.html'));
 }
@@ -124,10 +138,10 @@ function createSuiteProductWindow(requestedApplicationId) {
   const entry = PRODUCT_MANIFEST[requestedApplicationId];
   const screenshotCapture = process.env.BRIGHTDESK_SCREENSHOT_CAPTURE_TEST === '1';
   const window = registerApplicationWindow(new BrowserWindow({
-    width: 1440,
-    height: 920,
-    minWidth: 980,
-    minHeight: 680,
+    width: screenshotCapture ? 1600 : 1440,
+    height: screenshotCapture ? 900 : 920,
+    minWidth: screenshotCapture ? 1600 : 980,
+    minHeight: screenshotCapture ? 900 : 680,
     show: !screenshotCapture,
     title: `Brightdesk ${entry.name}`,
     icon: path.join(__dirname, 'assets', 'icons', entry.iconAsset),
@@ -137,6 +151,9 @@ function createSuiteProductWindow(requestedApplicationId) {
       contextIsolation: true,
       nodeIntegration: false,
       sandbox: true,
+      backgroundThrottling: !screenshotCapture,
+      offscreen: screenshotCapture ? { deviceScaleFactor: 1 } : false,
+      paintWhenInitiallyHidden: true,
       additionalArguments: [`--brightdesk-app=${requestedApplicationId}`, '--brightdesk-suite-window=1']
     }
   }));
