@@ -6,9 +6,9 @@ Brightdesk is an independent, local-first desktop productivity suite. It uses or
 
 ## Free forever and private by design
 
-Brightdesk is **free forever**. There are no subscriptions, trials, paid tiers or billing. Customers do not create accounts, sign in, set passwords or profiles, enter activation codes or serial numbers, or contact a licence server.
+**Free forever.** Brightdesk has no subscriptions, trials, paid tiers or billing. Customers do not create accounts, sign in, set passwords or profiles, enter activation codes or serial numbers, or contact a licence server.
 
-Brightdesk does not include telemetry, analytics, advertising, crash reporting, cloud sync, online collaboration or uploads of customer text and documents. Product data and spelling checks stay on the device. Internet access is limited to Brightdesk-controlled product-update and language-resource services. Dictionary downloads remain disabled until approved, signed Brightdesk-hosted packs are released.
+**No telemetry, analytics, advertising, crash reporting, cloud sync or collaboration.** Brightdesk does not upload customer text or documents. Product data and spelling checks stay on the device. Internet access is limited to Brightdesk-controlled product-update and language-resource services. Dictionary downloads remain disabled until approved, signed Brightdesk-hosted packs are released.
 
 
 ## The ten approved products
