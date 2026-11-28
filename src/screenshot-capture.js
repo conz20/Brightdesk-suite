@@ -200,34 +200,54 @@ function waitForProductWorkspace(appId, workspaceSelector, timeoutMs = 10000) {
 async function runScreenshotCaptureTest({ app, packageVersion, readTerms, readBundledLanguagePack, createWindow, getMainWindow, openProductWindow }) {
   let window;
   let activeProductWindow;
+  let captureStage = 'initialising screenshot capture';
+  const watchRendererConsole = (contents, label) => {
+    contents.on('console-message', (...args) => {
+      const details = args[1];
+      const level = details && typeof details === 'object' ? details.level : args[1];
+      const message = details && typeof details === 'object' ? details.message : args[2];
+      if (Number(level) >= 2 || level === 'error') {
+        console.error(`[${label} renderer] ${message || 'Renderer console error'}`);
+      }
+    });
+  };
   try {
     if (typeof openProductWindow !== 'function') throw new Error('Screenshot capture requires the Suite product-window manager.');
     const outputDir = process.env.BRIGHTDESK_SCREENSHOT_OUTPUT_DIR;
     const sourceCommit = process.env.GITHUB_SHA;
     if (!outputDir || !require('node:path').isAbsolute(outputDir)) throw new Error('Screenshot capture requires an absolute output directory.');
     if (!sourceCommit || !/^[a-f0-9]{40}$/i.test(sourceCommit)) throw new Error('Screenshot capture requires the exact GitHub source commit.');
+    captureStage = 'checking the packaged application version';
     assertPackagedVersion(app.getVersion(), packageVersion);
+    captureStage = 'reading the local terms';
     await readTerms();
+    captureStage = 'loading the bundled Australian English language pack';
     await readBundledLanguagePack('en-AU');
+    captureStage = 'opening the hidden Suite window';
     await createWindow({ show: false });
     window = getMainWindow();
     if (!window || window.isDestroyed()) throw new Error('The Brightdesk Electron window did not open.');
+    watchRendererConsole(window.webContents, 'Suite');
 
+    captureStage = 'seeding fictional screenshot data in the Suite renderer';
     const seed = await window.webContents.executeJavaScript('(' + seedRendererStorage.toString() + ')()', true);
     if (!seed || seed.installedApps !== 10 || seed.taskCount !== 3 || seed.listCount !== 1) {
       throw new Error('The fictional screenshot sample data could not be prepared.');
     }
+    captureStage = 'reloading the Suite with its fictional screenshot data';
     await new Promise((resolve, reject) => {
       const timeout = setTimeout(() => reject(new Error('The Suite window did not reload its screenshot sample data.')), 20000);
       window.webContents.once('did-finish-load', () => { clearTimeout(timeout); resolve(); });
       window.webContents.reload();
     });
+    captureStage = 'waiting for the ten-product Suite Home';
     const home = await window.webContents.executeJavaScript('(' + waitForSuiteHome.toString() + ')()', true);
     if (home.productCards !== 10) throw new Error('Suite Home does not contain all ten products.');
 
     const osName = ({ darwin: 'macOS', win32: 'Windows', linux: 'Linux' })[process.platform] || process.platform;
     const osInfo = { name: osName, version: require('node:os').release(), architecture: require('node:os').arch() };
     for (const target of SCREENSHOT_TARGETS) {
+      captureStage = `opening ${target.productName} for capture`;
       let captureWindow = window;
       if (target.appId) {
         activeProductWindow = await openProductWindow(target.appId);
@@ -235,6 +255,8 @@ async function runScreenshotCaptureTest({ app, packageVersion, readTerms, readBu
           throw new Error('The ' + target.productName + ' product window did not open.');
         }
         captureWindow = activeProductWindow;
+        watchRendererConsole(captureWindow.webContents, target.productName);
+        captureStage = `waiting for the ${target.productName} workspace`;
         const state = await captureWindow.webContents.executeJavaScript(
           '(' + waitForProductWorkspace.toString() + ')(' + JSON.stringify(target.appId) + ',' + JSON.stringify(target.workspaceSelector) + ')',
           true
@@ -243,6 +265,7 @@ async function runScreenshotCaptureTest({ app, packageVersion, readTerms, readBu
           throw new Error('The ' + target.productName + ' workspace was not ready in its product window.');
         }
       } else {
+        captureStage = `navigating to the Suite ${target.view} screen`;
         const state = await captureWindow.webContents.executeJavaScript(
           '(' + waitForSuiteScreen.toString() + ')(' + JSON.stringify(target.view) + ',' + JSON.stringify(target.workspaceSelector) + ')',
           true
@@ -252,6 +275,7 @@ async function runScreenshotCaptureTest({ app, packageVersion, readTerms, readBu
         }
       }
 
+      captureStage = `capturing the ${target.productName} screen`;
       await captureWindow.webContents.executeJavaScript(
         'new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)))',
         true
@@ -261,6 +285,7 @@ async function runScreenshotCaptureTest({ app, packageVersion, readTerms, readBu
       if (image.isEmpty() || size.width < 1000 || size.height < 650) {
         throw new Error(target.productName + ' capture is empty or too small (' + size.width + ' × ' + size.height + ').');
       }
+      captureStage = `writing the ${target.productName} screenshot evidence`;
       const imageBytes = image.toPNG();
       const evidence = createScreenshotEvidence({
         targetId: target.id,
@@ -282,7 +307,7 @@ async function runScreenshotCaptureTest({ app, packageVersion, readTerms, readBu
     if (window && !window.isDestroyed()) window.destroy();
     app.exit(0);
   } catch (error) {
-    console.error('Brightdesk screenshot capture failed:', error.stack || error.message);
+    console.error(`Brightdesk screenshot capture failed during ${captureStage}:`, error.stack || error.message);
     if (activeProductWindow && !activeProductWindow.isDestroyed()) activeProductWindow.destroy();
     if (window && !window.isDestroyed()) window.destroy();
     app.exit(1);
