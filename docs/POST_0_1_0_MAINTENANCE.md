@@ -98,6 +98,14 @@ The 27-repository count is authoritative. Reconcile this list against GitHub on 
 
 **Release boundary:** this backlog is for work after 0.1.0. A candidate discovered here must not be slipped into 0.1.0 without a separate scope, risk and verification decision.
 
+## Portfolio manifest audit — 2026-11-28
+
+The 27-repository manifest review found 26 Node.js package manifests and one Rust-only repository (Brightdesk-Engine). Twenty-five Node.js manifests pin Node 24.22.2; Brightdesk-Design-System already declares Node 24.22.3. Do not downgrade that repository. Keep the approved 0.1.0 pins unchanged and make the first post-release Node maintenance action a reviewed alignment to stable Node 24.22.3 across the Node repositories, subject to native-module compatibility, all-platform builds, product tests and lockfile verification.
+
+The Suite and all ten standalone product manifests currently share these direct dependency pins: `docx@9.15.1`, `electron-updater@6.8.11`, `exceljs@4.4.0`, `fast-xml-parser@5.11.2`, `jszip@3.10.2`, `mammoth@1.12.2`, `nspell@2.1.5` and `pptxgenjs@4.0.1`; their development pins are `electron@45.2.1` and `electron-builder@26.18.0`.
+
+The eight Rust toolchain manifests reviewed (Suite, AI, Lists, Planner, To Do, Workspace, Voice and Engine) all pin Rust 1.99.1. Rust 1.100.0 remains on the permanent post-release review list. This is a manifest inventory, not a claim that every repository's complete transitive lockfile has already been independently audited.
+
 ## Stable runtime updates queued for the first post-0.1.0 maintenance cycle
 
 Checked against official release sources on 2026-11-28. Keep the 0.1.0 pins unchanged; these are confirmed stable follow-ups, not prereleases.
