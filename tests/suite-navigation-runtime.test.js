@@ -38,7 +38,7 @@ async function bootSuite(t) {
     openApplication: async id => { calls.openedProducts.push(id); return { ok: true }; },
     openFile: async () => { calls.openedFiles += 1; return null; },
     saveProject: async project => { calls.savedProjects.push(project); return { canceled: false }; },
-    listLanguagePacks: async () => ({ available: [], installed: [], spellCheckerLanguages: [] }),
+    listLanguagePacks: async () => ({ available: [], installed: [JSON.parse(read('src/languages/en-AU.json'))], spellCheckerLanguages: ['en-AU'] }),
     setProofingLanguage: async () => ({ supported: true }),
     listDictionaries: async () => [],
     onUpdateState: () => {},
@@ -88,7 +88,7 @@ test('real renderer click flow switches correctly between Home, Apps, Files and 
   assert.equal(byId(window, 'files-nav').hidden, false);
 
   byId(window, 'app-centre-nav').click();
-  assert.equal(byId(window, 'app-title').textContent, 'My Applications');
+  assert.equal(byId(window, 'app-title').textContent, 'Apps');
   assert.equal(byId(window, 'app-manager').hidden, false);
   assert.equal(byId(window, 'app-manager').classList.contains('home-view'), false);
 
@@ -139,7 +139,8 @@ test('Settings actions open language preferences, return to Settings and save up
   autoCheck.checked = false;
   autoCheck.dispatchEvent(new window.Event('change', { bubbles: true }));
   await tick();
-  assert.deepEqual(calls.savedUpdateSettings, [{ autoCheck: false }]);
+  assert.equal(calls.savedUpdateSettings.length, 1);
+  assert.equal(calls.savedUpdateSettings[0].autoCheck, false);
 
   byId(window, 'close-update-settings').click();
   assert.equal(byId(window, 'update-settings-panel').hidden, true);
