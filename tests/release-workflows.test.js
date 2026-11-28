@@ -19,7 +19,7 @@ test('required verification workflows rerun when the pull-request description is
     '.github/workflows/readme-freshness.yml'
   ]) {
     const workflow = read(file);
-    assert.match(workflow, /pull_request:[\\s\\S]*?types:\\s*\\[[^\\]]*\\bedited\\b[^\\]]*\\]/, file + ' must allow an exact-head recheck after a PR edit');
+    assert.match(workflow, /pull_request:[\s\S]*?types:\s*\[[^\]]*\bedited\b[^\]]*\]/, file + ' must allow an exact-head recheck after a PR edit');
   }
 });
 
@@ -167,12 +167,12 @@ test('dependency-maintenance workflows use free public Ubuntu runners and a priv
 
 test('installer pipeline uses free standard public runners and private platform-specific fallbacks', () => {
   const workflow = read('.github/workflows/build-release.yml');
-  assert.match(workflow, /hosted_runner: ubuntu-24\\.04/);
+  assert.match(workflow, /hosted_runner: ubuntu-24\.04/);
   assert.match(workflow, /hosted_runner: windows-2025/);
   assert.match(workflow, /hosted_runner: macos-15/);
-  assert.match(workflow, /private_runner: '\\["self-hosted", "Linux", "X64"\\]'/);
-  assert.match(workflow, /private_runner: '\\["self-hosted", "Windows", "X64"\\]'/);
-  assert.match(workflow, /private_runner: '\\["self-hosted", "macOS", "ARM64"\\]'/);
+  assert.match(workflow, /private_runner: '\["self-hosted", "Linux", "X64"\]'/);
+  assert.match(workflow, /private_runner: '\["self-hosted", "Windows", "X64"\]'/);
+  assert.match(workflow, /private_runner: '\["self-hosted", "macOS", "ARM64"\]'/);
   assert.match(workflow, /runs-on: \$\{\{ github\.event\.repository\.private == false && matrix\.hosted_runner \|\| fromJSON\(matrix\.private_runner\) \}\}/);
   assert.doesNotMatch(workflow, /ubuntu-latest|windows-latest|macos-latest/);
 });
