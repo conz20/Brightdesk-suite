@@ -25,6 +25,7 @@ jobs:
       - name: Check out Brightdesk
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
           persist-credentials: false
 
       - name: Set up required Node.js version
@@ -55,18 +56,18 @@ jobs:
 
       - name: Capture current Electron Suite and integrated product workspaces
         id: screenshot-capture
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        continue-on-error: true
+        if: github.event_name == 'pull_request' || (github.event_name == 'push' && github.ref == 'refs/heads/main')
+        continue-on-error: ${{ github.event_name == 'push' }}
         env:
           BRIGHTDESK_SCREENSHOT_OUTPUT_DIR: ${{ runner.temp }}/brightdesk-screenshots
-          GITHUB_SHA: ${{ github.sha }}
+          GITHUB_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
         run: npm run capture:screenshots
 
       - name: Upload pending-review screenshot evidence
         if: steps.screenshot-capture.outcome == 'success'
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
         with:
-          name: Brightdesk-Screenshots-${{ github.sha }}
+          name: Brightdesk-Screenshots-${{ github.event.pull_request.head.sha || github.sha }}
           path: ${{ runner.temp }}/brightdesk-screenshots/*
           if-no-files-found: error
           retention-days: 14
