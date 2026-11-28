@@ -117,7 +117,7 @@ test('README and visual standard explain the contextual product-switching rule',
   const readme = read('README.md');
   const standard = read('docs/BRIGHTDESK_VISUAL_STANDARD.md');
   const home = read('assets/product-experience/brightdesk-home.svg');
-  assert.match(readme, /approved sidebar uses \*\*Home\*\*, \*\*Apps\*\* and \*\*Files\*\*/);
+  assert.match(readme, /76 px rail/);
   assert.match(readme, /in the \*\*Switch product\*\*/);
   assert.ok(readme.includes("hide or restore an enabled product in the Suite's **Switch product** list"));
   assert.equal((readme.match(/assets\/product-experience\/brightdesk-home\.svg/g) || []).length, 1);
