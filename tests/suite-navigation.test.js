@@ -290,3 +290,26 @@ test('Settings screen keeps suite navigation available and language settings ret
   assert.match(app, /\$\('app-centre-nav'\)\.addEventListener/);
   assert.match(app, /\$\('files-nav'\)\.addEventListener/);
 });
+
+
+test('Suite navigation image assets all exist in the packaged renderer', () => {
+  const html = read('src/index.html');
+  const imagePaths = [...html.matchAll(/<img\\b[^>]*\\bsrc="([^"]+)"/g)].map(match => match[1]);
+  assert.ok(imagePaths.length > 0);
+  for (const imagePath of imagePaths) {
+    assert.ok(!imagePath.startsWith('http'), imagePath + ' must stay local');
+    assert.ok(fs.existsSync(path.join(__dirname, '..', 'src', imagePath)), imagePath + ' must exist');
+  }
+});
+
+test('Settings cards expose working local language and update actions', () => {
+  const html = read('src/index.html');
+  const settings = html.slice(html.indexOf('id="settings-manager"'), html.indexOf('id="files-manager"'));
+  assert.match(settings, /Language &amp; dictionaries/);
+  assert.match(settings, /id="manage-languages"/);
+  assert.match(settings, /id="updates-button"/);
+  assert.match(settings, /id="update-settings-button"/);
+  assert.match(settings, /id="update-settings-panel"/);
+  assert.match(settings, /id="update-message"/);
+  assert.doesNotMatch(settings, /language\\.svg|updates\\.svg/);
+});
