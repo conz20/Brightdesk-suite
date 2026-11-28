@@ -22,10 +22,11 @@ jobs:
   build-macos:
     if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
     name: Build and verify macOS universal installer
-    runs-on: ["self-hosted", "macOS", "ARM64"]
+    runs-on: ${{ github.event.repository.private == false && 'macos-15' || fromJSON('["self-hosted","macOS","ARM64"]') }}
     timeout-minutes: 90
     steps:
       - name: Register post-job workspace cleanup
+        if: runner.environment == 'self-hosted'
         uses: conz20/Brightdesk-suite/.github/actions/runner-workspace-cleanup@7727da85c4e6e660f3376b5b330d78b6782c1976
 
       - name: Check out Brightdesk

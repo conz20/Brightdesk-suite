@@ -15,10 +15,11 @@ jobs:
     name: Require README updates for product changes
     # Never execute fork-controlled pull-request code on the private self-hosted machine.
     if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
-    # Reuse the private runner; keep this required check outside paid hosted billing.
-    runs-on: self-hosted
+    # Public repositories use free standard Ubuntu runners; private repositories use the self-hosted fallback.
+    runs-on: ${{ github.event.repository.private == false && 'ubuntu-24.04' || 'self-hosted' }}
     steps:
       - name: Register post-job workspace cleanup
+        if: runner.environment == 'self-hosted'
         uses: conz20/Brightdesk-suite/.github/actions/runner-workspace-cleanup@7727da85c4e6e660f3376b5b330d78b6782c1976
 
       - name: Check out the change

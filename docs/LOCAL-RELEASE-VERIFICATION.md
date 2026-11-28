@@ -30,24 +30,23 @@ Run it separately on each operating system you intend to distribute Brightdesk f
 
 ## No-cost GitHub Actions runners
 
-The manual installer workflow uses private self-hosted runners instead of GitHub-hosted runners. This avoids consuming paid hosted-runner minutes and keeps source code on computers controlled by the project owner.
+Brightdesk Suite is currently a public repository. GitHub documents standard GitHub-hosted runners as free and unlimited for public repositories. The workflows select these standard runner images while the repository is public:
 
-Register one runner for each required platform in the repository's **Settings → Actions → Runners** page:
+- **macOS:** `macos-15` (Apple-silicon ARM64) for Suite UI tests, Rust Node-API tests and macOS installer verification.
+- **Windows:** `windows-2025` (x64) for native Windows installer builds.
+- **Linux:** `ubuntu-24.04` (x64) for Linux packages, README checks and dependency-maintenance jobs.
 
-- **macOS:** labels `self-hosted`, `macOS`, `ARM64` (the existing Apple-silicon Mac runner).
-- **Windows:** labels `self-hosted`, `Windows`, `X64` (a 64-bit Windows 10 or Windows 11 PC; GitHub lists both as supported self-hosted runner operating systems).
-- **Linux:** labels `self-hosted`, `Linux`, `X64` (a Linux x64 computer).
+The release workflow builds each operating system on its matching runner, then collects and verifies the platform artifacts. These builds run on GitHub infrastructure and do not depend on the owner's MacBook. Standard runner compute is free for this public repository; larger runners are not used.
 
-GitHub assigns the standard operating-system and architecture labels when each runner is registered. Do not add a custom label in place of the standard labels above. Keep the runner service active while a build is queued. The installer workflow waits for all three matching runners; if a platform runner is offline or not registered, that platform's job remains queued and the full bundle cannot be collected.
+Runner selection checks the repository visibility. When `github.event.repository.private == false`, it selects the standard hosted runner. If the repository is private or visibility is unavailable, it selects the self-hosted fallback instead, avoiding accidental billable hosted-runner use. If the repository becomes private, the required self-hosted runners must be registered and online; do not switch to a paid runner.
 
-The existing Mac runner can handle the preparation, collection and macOS build jobs. A Windows runner is required for the native Windows installer, and a Linux x64 runner is required for the native Linux packages. Do not substitute a cross-build from another operating system and call it verified. The workflow does not publish a release unless the manual `publish_release` input is explicitly enabled; its default remains disabled.
+No runner registration or physical Windows/Linux computer is required while the repository remains public.
 
-Runner setup requires access to each physical computer and a one-time registration from the repository settings. Never copy a runner registration token into source files, logs, issues or documentation. Keep all runners private to this repository and do not run untrusted fork pull-request code on them.
-
+### Optional Mac foundation runner setup
 
 ### Mac foundation runner setup
 
-The private Mac setup helper in [tools/runner-setup/macos](../tools/runner-setup/macos/README.txt) registers repository-scoped runners for the eight infrastructure repositories whose quality checks require a Mac runner: Brightdesk-Common-Actions, Brightdesk-Developer-Tools, Brightdesk-Extensions, Brightdesk-Wiki, Brightdesk-Release-Tools, Brightdesk-Services, Brightdesk-Assets and Brightdesk-Lists. Lists receives the additional `brightdesk-product-ci` label required by its quality workflow.
+If the repository becomes private, the optional Mac setup helper in [tools/runner-setup/macos](../tools/runner-setup/macos/README.txt) can register repository-scoped fallback runners for the Suite and eight infrastructure repositories: Brightdesk-Common-Actions, Brightdesk-Developer-Tools, Brightdesk-Extensions, Brightdesk-Wiki, Brightdesk-Release-Tools, Brightdesk-Services, Brightdesk-Assets and Brightdesk-Lists. Lists receives the additional `brightdesk-product-ci` label required by its quality workflow.
 
 On the Apple-silicon Mac, first sign in to GitHub CLI as `conz20` with administrator access to those repositories:
 

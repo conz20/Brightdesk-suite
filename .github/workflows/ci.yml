@@ -16,11 +16,12 @@ concurrency:
 jobs:
   build:
     if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
-    # Reuse the already-configured private Mac runner; avoid paid hosted-runner usage.
-    runs-on: self-hosted
+    # Public repositories use free standard macOS runners; private repositories use the self-hosted fallback.
+    runs-on: ${{ github.event.repository.private == false && 'macos-15' || 'self-hosted' }}
     timeout-minutes: 30
     steps:
       - name: Register post-job workspace cleanup
+        if: runner.environment == 'self-hosted'
         uses: conz20/Brightdesk-suite/.github/actions/runner-workspace-cleanup@7727da85c4e6e660f3376b5b330d78b6782c1976
 
       - name: Check out Brightdesk

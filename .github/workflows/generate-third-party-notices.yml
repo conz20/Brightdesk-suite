@@ -18,9 +18,11 @@ jobs:
   notices:
     permissions:
       contents: write
-    runs-on: self-hosted
+    # Public repository jobs use free Ubuntu runners; private repositories use the self-hosted fallback.
+    runs-on: ${{ github.event.repository.private == false && 'ubuntu-24.04' || 'self-hosted' }}
     steps:
       - name: Register post-job workspace cleanup
+        if: runner.environment == 'self-hosted'
         uses: conz20/Brightdesk-suite/.github/actions/runner-workspace-cleanup@7727da85c4e6e660f3376b5b330d78b6782c1976
 
       - name: Check out Brightdesk

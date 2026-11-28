@@ -63,6 +63,7 @@ test('every release job registers cleanup as a post-job action', () => {
   const workflow = fs.readFileSync(path.join(__dirname, '..', '.github', 'workflows', 'build-release.yml'), 'utf8');
   const registrations = workflow.split('uses: conz20/Brightdesk-suite/.github/actions/runner-workspace-cleanup@').length - 1;
   assert.equal(registrations, 4);
+  assert.equal((workflow.match(/if: runner\.environment == 'self-hosted'/g) || []).length, 4);
   assert.ok(!workflow.includes('run: node scripts/cleanup-runner-workspace.js'));
 
   const action = fs.readFileSync(path.join(__dirname, '..', '.github', 'actions', 'runner-workspace-cleanup', 'action.yml'), 'utf8');

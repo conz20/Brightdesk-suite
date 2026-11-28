@@ -20,11 +20,12 @@ concurrency:
 jobs:
   prepare:
     name: Test and lock dependencies
-    # Run on an already registered private runner; no hosted minutes are consumed.
-    runs-on: self-hosted
+    # Public repository: standard GitHub-hosted runners are free; private repositories use the owner-operated fallback.
+    runs-on: ${{ github.event.repository.private == false && 'macos-15' || 'self-hosted' }}
     timeout-minutes: 60
     steps:
       - name: Register post-job workspace cleanup
+        if: runner.environment == 'self-hosted'
         uses: conz20/Brightdesk-suite/.github/actions/runner-workspace-cleanup@7727da85c4e6e660f3376b5b330d78b6782c1976
 
       - name: Check out Brightdesk
@@ -75,17 +76,21 @@ jobs:
       matrix:
         include:
           - platform: Linux
-            runner: ["self-hosted", "Linux", "X64"]
+            hosted_runner: ubuntu-24.04
+            private_runner: '["self-hosted", "Linux", "X64"]'
             script: linux
           - platform: Windows
-            runner: ["self-hosted", "Windows", "X64"]
+            hosted_runner: windows-2025
+            private_runner: '["self-hosted", "Windows", "X64"]'
             script: win
           - platform: macOS
-            runner: ["self-hosted", "macOS", "ARM64"]
+            hosted_runner: macos-15
+            private_runner: '["self-hosted", "macOS", "ARM64"]'
             script: mac
-    runs-on: ${{ matrix.runner }}
+    runs-on: ${{ github.event.repository.private == false && matrix.hosted_runner || fromJSON(matrix.private_runner) }}
     steps:
       - name: Register post-job workspace cleanup
+        if: runner.environment == 'self-hosted'
         uses: conz20/Brightdesk-suite/.github/actions/runner-workspace-cleanup@7727da85c4e6e660f3376b5b330d78b6782c1976
 
       - name: Check out Brightdesk
@@ -175,13 +180,14 @@ jobs:
   collect:
     name: Collect verified installers
     needs: [prepare, build]
-    # Collect on the existing private runner to avoid hosted-runner billing.
-    runs-on: self-hosted
+    # Public repositories collect on free Ubuntu; private repositories use the self-hosted fallback.
+    runs-on: ${{ github.event.repository.private == false && 'ubuntu-24.04' || 'self-hosted' }}
     timeout-minutes: 30
     outputs:
       version: ${{ steps.release-version.outputs.version }}
     steps:
       - name: Register post-job workspace cleanup
+        if: runner.environment == 'self-hosted'
         uses: conz20/Brightdesk-suite/.github/actions/runner-workspace-cleanup@7727da85c4e6e660f3376b5b330d78b6782c1976
 
       - name: Check out the exact release source
@@ -237,13 +243,14 @@ jobs:
     name: Publish GitHub Release (manual approval only)
     needs: collect
     if: github.event_name == 'workflow_dispatch' && inputs.publish_release == true && github.ref == 'refs/heads/main'
-    # Publishing remains manual and uses the private runner too.
-    runs-on: self-hosted
+    # Publishing remains manual; standard public runners are free.
+    runs-on: ${{ github.event.repository.private == false && 'ubuntu-24.04' || 'self-hosted' }}
     timeout-minutes: 15
     permissions:
       contents: write
     steps:
       - name: Register post-job workspace cleanup
+        if: runner.environment == 'self-hosted'
         uses: conz20/Brightdesk-suite/.github/actions/runner-workspace-cleanup@7727da85c4e6e660f3376b5b330d78b6782c1976
 
       - name: Set up required Node.js version
