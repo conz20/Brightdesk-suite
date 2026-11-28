@@ -130,6 +130,10 @@ test('suite screenshot navigation opens every Suite screen before capture', asyn
       const result = await dom.window.eval('(' + waitForSuiteScreen.toString() + ')(' + JSON.stringify(view) + ',' + JSON.stringify(selector) + ',100)');
       assert.equal(result.active, true, view + ' must be visible before screenshot capture');
       assert.equal(doc.querySelector(selector).hidden, false, view + ' must not remain hidden');
+      if (view === 'notifications') {
+        const repeated = await dom.window.eval('(' + waitForSuiteScreen.toString() + ')(' + JSON.stringify(view) + ',' + JSON.stringify(selector) + ',100)');
+        assert.equal(repeated.active, true, 'Notifications capture navigation must be repeatable');
+      }
     }
   } finally {
     dom.window.close();
