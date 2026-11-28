@@ -271,10 +271,10 @@ test('product settings can hide Switch product navigation without removing local
   workspaceCard.querySelector('[data-action="remove-from-suite"]').click();
   const setup = JSON.parse(window.localStorage.getItem('brightdesk-app-setup-v1'));
   assert.equal(setup.installedApps.includes('loop'), false);
-  const removedCard = window.document.querySelector('[data-app-id="workspace"]');
+  const removedCard = window.document.querySelector('[data-app-id="loop"]');
   removedCard.querySelector('[data-action="add-to-suite"]').click();
   const restoredSetup = JSON.parse(window.localStorage.getItem('brightdesk-app-setup-v1'));
-  assert.equal(restoredSetup.installedApps.includes('workspace'), true);
+  assert.equal(restoredSetup.installedApps.includes('loop'), true);
   const docs = JSON.parse(window.localStorage.getItem('brightdesk-docs-v3'));
   assert.equal(docs.pages.title, 'Protected project');
   assert.equal(docs.pages.html, '<p>Keep this document.</p>');
