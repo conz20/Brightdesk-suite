@@ -655,3 +655,69 @@ body.suite-home .app-manager.home-view .manager-hero .eyebrow { display: none; }
 .sidebar > .nav small {
   display: none;
 }
+
+
+/* Dedicated Settings destination: balanced cards, clear actions and responsive layout. */
+.settings-manager {
+  width: 100%;
+  max-width: 1180px;
+  flex: 1;
+  min-width: 0;
+  margin: 24px auto 10px;
+}
+.settings-manager > .manager-hero {
+  margin: 0 0 24px;
+}
+.settings-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+.settings-card {
+  display: flex;
+  min-width: 0;
+  min-height: 218px;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 24px;
+  border: 1px solid #e1e6ef;
+  border-radius: 15px;
+  background: #fff;
+  box-shadow: 0 5px 18px #1a2b4b0a;
+}
+.settings-card h3 {
+  margin: 0 0 9px;
+  color: #27364d;
+  font-size: 17px;
+  letter-spacing: -.2px;
+}
+.settings-card p {
+  flex: 1;
+  margin: 0 0 20px;
+  color: #68778f;
+  font-size: 12px;
+  line-height: 1.65;
+}
+.settings-card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+  width: 100%;
+}
+.settings-card .settings-action {
+  min-height: 38px;
+  font-size: 12px;
+}
+.settings-manager .update-settings-panel {
+  margin-top: 18px;
+}
+.settings-manager .update-message {
+  margin-top: 16px;
+}
+@media (max-width: 760px) {
+  .settings-manager { margin-top: 18px; }
+  .settings-grid { grid-template-columns: 1fr; gap: 12px; }
+  .settings-card { min-height: 190px; padding: 20px; }
+  .settings-card-actions { display: grid; grid-template-columns: 1fr; }
+  .settings-card-actions button { width: 100%; }
+}
