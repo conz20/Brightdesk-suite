@@ -22,6 +22,7 @@ concurrency:
 
 jobs:
   quality:
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
     name: Validate Brightdesk Office Suite
     # Use the existing private Mac runner; do not consume paid GitHub-hosted minutes.
     runs-on: self-hosted
