@@ -16,32 +16,88 @@ permissions:
 
 jobs:
   notices:
+    if: github.ref == 'refs/heads/main'
     permissions:
       contents: write
+      pull-requests: write
+      actions: write
     runs-on: ubuntu-latest
+    timeout-minutes: 45
     steps:
-      - name: Check out Brightdesk
-        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
-      - name: Set up Node.js 24.22.2
+      - name: Check out Brightdesk Suite
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: main
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Set up required Node.js version
         uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
-          node-version: 24.22.2
-      - name: Prepare exact dependency lock
-        run: npm run lock:prepare
-      - name: Verify dependency lock
-        run: npm run lock:verify
+          node-version: '24.22.2'
+          cache: npm
+
+      - name: Verify runtime and committed dependency lock
+        run: |
+          npm run check:node
+          npm run lock:verify
+
       - name: Install exact locked dependencies
         run: npm ci --ignore-scripts --no-audit --no-fund
+
       - name: Generate and verify third-party notices
         run: npm run verify:licenses
-      - name: Commit generated notices
+
+      - name: Build and type-check the Suite
         run: |
-          git add THIRD_PARTY_NOTICES.md
-          if git diff --cached --quiet; then
-            echo "Third-party notices are already up to date."
+          npm run build
+          npm run typecheck
+
+      - name: Open an owner-reviewed third-party notices pull request
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -Eeuo pipefail
+
+          title="chore: refresh third-party licence notices"
+          existing="$(gh pr list --repo "$GITHUB_REPOSITORY" --base main --state open --json number,title --jq '.[] | select(.title == "chore: refresh third-party licence notices") | .number' | head -n 1)"
+          if [[ -n "$existing" ]]; then
+            echo "::notice::Third-party notices PR #${existing} is already open. No duplicate PR was created."
             exit 0
           fi
+
+          git add THIRD_PARTY_NOTICES.md
+          if git diff --cached --quiet; then
+            echo "THIRD_PARTY_NOTICES.md is already current; no pull request is needed."
+            exit 0
+          fi
+
+          branch="automation/third-party-notices-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git commit -m "Generate third-party dependency notices"
-          git push
+          git switch -c "$branch"
+          git commit -m "$title"
+          gh auth setup-git
+          git push --set-upstream origin "$branch"
+
+          gh pr create \
+            --repo "$GITHUB_REPOSITORY" \
+            --base main \
+            --head "$branch" \
+            --title "$title" \
+            --body "## Summary
+          - Regenerate THIRD_PARTY_NOTICES.md from the exact committed dependency lock on main.
+          - Verify dependency licences and run the Suite build and type check.
+          - Keep the generated change in an owner-reviewed pull request; this workflow never pushes generated files to main.
+
+          ## Verification
+          The Brightdesk quality gate is explicitly dispatched against this PR branch after creation. This is necessary because GitHub does not start pull_request workflows for PRs created with GITHUB_TOKEN.
+
+          ## Scope
+          Only THIRD_PARTY_NOTICES.md is staged. This workflow does not regenerate or modify package-lock.json and does not change any upstream licence grant."
+
+          # GITHUB_TOKEN-created PRs do not start pull_request workflows.
+          # Explicitly dispatch the existing quality gate against the PR branch.
+          gh workflow run quality.yml --repo "$GITHUB_REPOSITORY" --ref "$branch"
+          echo "Created $title on $branch and dispatched the quality gate."
