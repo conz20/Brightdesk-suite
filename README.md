@@ -16,13 +16,13 @@ The Suite's identity belongs in the installed application identity and native ap
 
 ## The Brightdesk Suite experience
 
-<p align="center"><img src="assets/product-experience/brightdesk-home.svg" alt="Brightdesk Suite Home design showing a compact Home, Apps and Files icon-and-label navigation panel and all ten original product cards" width="100%"></p>
+<p align="center"><img src="assets/product-experience/brightdesk-home.svg" alt="Brightdesk Suite Home design showing a slim full-height icon-and-label navigation rail for Home, Apps and Files beside all ten product cards" width="100%"></p>
 
-The artwork above is the approved Home screen design reference. It shows the intended Brightdesk Suite appearance: a compact Home, Apps and Files navigation panel, ten original product cards, and Notifications and Settings controls.
+The artwork above is the refreshed Home screen design reference. It shows the intended Brightdesk Suite appearance: a slim, full-height Home, Apps and Files navigation rail, ten original product cards, and Notifications and Settings controls.
 
-The artwork uses a compact 238 px-wide, deep-navy navigation panel containing only the small uppercase **YOUR WORKSPACE** heading and the three icon-and-label destinations: **Home**, **Apps** and **Files**. **Home** is selected. There are no secondary captions, repeated Brightdesk logo or wordmark, divider, or footer in this compact illustration. The Files icon is an open folder with a visible document stack.
+The illustrated rail is **184 px wide** at the 1600 × 900 reference size and runs the full height of the screen. It contains only three stacked navigation buttons: each has its original icon on the left and its name on the right — **Home**, **Apps** and **Files**. **Home** is selected. There are no secondary descriptions, extra sidebar heading, repeated Brightdesk logo or wordmark, divider, or footer in this artwork. The Files icon is an open folder with a visible document stack.
 
-This is a compact presentation of the navigation, not a change to the live application layout. The actual desktop sidebar remains full-height and retains its **Desktop** and **Local-first · Your files stay here** footer. The Suite identity remains in the installed application identity and native application window.
+The icon-and-label rows represent navigation destinations, not decorative labels. In the running Suite, these destinations are actual buttons: **Home** opens the Home view, **Apps** opens product management, and **Files** opens local file access. The artwork is a visual design reference; it does not by itself change the live application layout. The currently implemented desktop sidebar remains 238 px wide and retains its **YOUR WORKSPACE** heading and **Desktop** / **Local-first · Your files stay here** footer. The Suite identity remains in the installed application identity and native application window.
 
 The no-caption treatment applies specifically to Home. The same **Home**, **Apps** and **Files** destinations remain available when moving around the Suite; **Apps** becomes selected on product management and **Files** becomes selected on the local file-access page. Those non-Home views can show short explanatory captions beneath the navigation labels.
 
@@ -30,7 +30,7 @@ When a product workspace is active in the Suite, the Home/Apps/Files navigation 
 
 The top bar reads **Your apps**. The product grid is headed **Your products** with the line **Ten focused tools, connected by one Brightdesk experience.** The redundant **MY APPS** label is hidden on Home so the section has one clear heading.
 
-At the 1600 × 900 reference size, the design uses a 238 px deep-navy sidebar, a 34 px Home heading, 38 px circular Notifications and Settings controls, and 240 px product cards with 16 px column and 18 px row gaps. The grid presents five cards per row at this size and adapts to fewer columns on narrower screens.
+The currently implemented desktop interface uses a 238 px deep-navy sidebar. In the 1600 × 900 artwork, the main area retains a 34 px Home heading, 38 px circular Notifications and Settings controls, and 240 px product cards with 16 px column and 18 px row gaps. The grid presents five cards per row at this size and adapts to fewer columns on narrower screens.
 
 Home opens to the ten-product grid. Apps opens product management. Files provides local Open file and Save project actions. Product settings let users hide or restore an enabled product in the Suite's **Switch product** list; hiding a product changes navigation visibility only.
 
