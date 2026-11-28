@@ -22,7 +22,7 @@ The top bar reads **Your apps**. The product grid is headed **Your products** wi
 
 At the 1600 × 900 reference size, the design uses a 238 px deep-navy sidebar, a 34 px Home heading, 38 px circular Notifications and Settings controls, and 240 px product cards with 16 px column and 18 px row gaps. The grid presents five cards per row at this size and adapts to fewer columns on narrower screens.
 
-Home opens to the ten-product grid. Apps opens product management. Files provides local Open file and Save project actions. Installed products appear in the **Switch product** group only while a product workspace is open. The contextual **Switch product** list shows the other workspaces enabled in the Suite; hiding a product changes navigation visibility only.
+Home opens to the ten-product grid. Apps opens product management. Files provides local Open file and Save project actions. Installed products appear in the **Switch product** group only while a product workspace is open. The contextual **Switch product** list shows the other workspaces enabled in the Suite. Product settings let users hide or restore an enabled product in the Suite's **Switch product** list; hiding a product changes navigation visibility only.
 
 The Home artwork is a design reference, not a screenshot of a running release. The live desktop interface should follow this visual direction and remain aligned with the approved artwork.
 
