@@ -116,21 +116,36 @@ function waitForSuiteHome() {
 
 function waitForSuiteScreen(view, screenSelector, timeoutMs = 10000) {
   const controls = {
-    home: '#home-nav',
-    apps: '#app-centre-nav',
-    files: '#files-nav',
-    settings: '#open-settings',
-    notifications: '#open-notifications'
+    home: ['#home-nav'],
+    apps: ['#app-centre-nav'],
+    files: ['#files-nav'],
+    settings: ['#open-settings'],
+    languages: ['#open-settings', '#manage-languages'],
+    'update-settings': ['#open-settings', '#update-settings-button'],
+    notifications: ['#open-settings', '#open-notifications']
   };
   if (!Object.hasOwn(controls, view)) {
     return Promise.reject(new Error('Unsupported Suite screenshot view: ' + view));
   }
-  const controlSelector = controls[view];
-  const control = controlSelector ? document.querySelector(controlSelector) : null;
-  if (controlSelector && (!control || control.hidden || control.disabled)) {
-    return Promise.reject(new Error('The ' + view + ' navigation control is unavailable.'));
+
+  if (view !== 'update-settings') {
+    const panel = document.querySelector('#update-settings-panel');
+    const closeButton = document.querySelector('#close-update-settings');
+    if (panel && !panel.hidden && closeButton) closeButton.click();
   }
-  if (control) control.click();
+  if (view !== 'notifications') {
+    const notificationPanel = document.querySelector('#notification-panel');
+    const notificationButton = document.querySelector('#open-notifications');
+    if (notificationPanel && !notificationPanel.hidden && notificationButton) notificationButton.click();
+  }
+
+  for (const selector of controls[view]) {
+    const control = document.querySelector(selector);
+    if (!control || control.hidden || control.disabled) {
+      return Promise.reject(new Error('The ' + view + ' navigation control ' + selector + ' is unavailable.'));
+    }
+    control.click();
+  }
 
   return new Promise((resolve, reject) => {
     const timeout = Number.isFinite(timeoutMs) && timeoutMs > 0 ? timeoutMs : 10000;
