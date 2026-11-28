@@ -32,16 +32,20 @@ These are the approved Brightdesk versions, not a request to automatically insta
 - Preserve existing user data and file formats during migrations. Add tests for migration, compatibility and regression behaviour.
 - A deliberate `rust-version` value in Cargo metadata expresses a minimum compiler compatibility floor; it is not the selected compiler. The selected compiler is pinned by `rust-toolchain.toml` and CI. Do not confuse the two or lower the selected toolchain to satisfy an old metadata value.
 
-## Changing the approved baseline
+## Updating selected version pins
 
-A version-baseline change requires explicit owner approval. Before changing it:
+Routine compatible runtime, framework, toolchain and dependency updates follow the owner-approved latest-stable-first policy below and do not require a separate approval for every patch release. Do not promote a candidate until the required compatibility evidence exists.
 
-1. Verify the proposed version and supported APIs against authoritative release documentation.
-2. Check compatibility across the Suite, all ten products, shared Rust/native components and engineering repositories.
-3. Update every applicable manifest, lockfile, runtime selector, dev container, CI workflow, build script, installer configuration and version-sensitive documentation in one coordinated change.
+Before updating selected pins:
+
+1. Verify the newest stable candidate and supported APIs against authoritative upstream release documentation and current security advisories.
+2. Check compatibility across the Suite, all ten products, shared Rust/native components and relevant engineering repositories.
+3. Update every applicable manifest, lockfile, runtime selector, dev container, CI workflow, build script, installer configuration and version-sensitive documentation consistently.
 4. Port old code to the new APIs; do not leave mixed implementations or stale examples.
-5. Add tests proving the new exact pins are consistent and run them on the proposed toolchain.
-6. Record the migration and any remaining platform-specific verification limits.
+5. Run focused and full tests, type checks, builds, native-addon checks and applicable platform installer/smoke tests on the exact candidate and commit.
+6. If one component fails, retain or restore only its previous stable compatible version, record the failure evidence and retry condition, and continue unrelated updates.
+
+A major runtime migration must be treated as a separate compatibility trial. Do not silently replace a working major version merely because a newer major release exists.
 
 ## Enforcement
 
