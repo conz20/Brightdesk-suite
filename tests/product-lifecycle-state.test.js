@@ -50,7 +50,9 @@ test('running state is only exposed for a verified installed product', () => {
   const unsupported = deriveProductLifecycleState({ ...base, running: true });
 
   assert.equal(state.running, true);
-  assert.equal(unsupported.running, false);
+  assert.equal(unsupported.running, true);
+  const unavailable = deriveProductLifecycleState({ ...base, suiteEnabled: false, running: true });
+  assert.equal(unavailable.running, false);
 });
 
 test('a newer compatible release is an update only for a verified installation', () => {
@@ -85,8 +87,8 @@ test('Suite selection and standalone installation can be changed independently',
 
   assert.equal(inSuite.installed, true);
   assert.equal(outsideSuite.installed, true);
-  assert.deepEqual(inSuite.actions, ['open', 'remove-from-suite', 'uninstall']);
-  assert.deepEqual(outsideSuite.actions, ['open', 'add-to-suite', 'uninstall']);
+  assert.deepEqual(inSuite.actions, ['open-in-suite', 'remove-from-suite', 'open-standalone', 'uninstall']);
+  assert.deepEqual(outsideSuite.actions, ['open-standalone', 'add-to-suite', 'uninstall']);
 });
 
 test('unknown product identifiers are rejected', () => {
