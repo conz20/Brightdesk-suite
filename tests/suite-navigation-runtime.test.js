@@ -29,6 +29,8 @@ async function bootSuite(t) {
     nextOpenFile: null,
     savedProjects: [],
     updateChecks: 0,
+    downloadRequests: 0,
+    installRequests: 0,
     savedUpdateSettings: []
   };
   window.brightdesk = {
@@ -46,8 +48,8 @@ async function bootSuite(t) {
     checkForUpdates: async () => { calls.updateChecks += 1; return { ok: true, message: 'No update is currently available.' }; },
     getUpdateSettings: async () => ({ autoCheck: true }),
     setUpdateSettings: async settings => { calls.savedUpdateSettings.push(settings); return settings; },
-    downloadUpdate: async () => ({ ok: true }),
-    installUpdate: async () => ({ ok: true })
+    downloadUpdate: async () => { calls.downloadRequests += 1; return { ok: true }; },
+    installUpdate: async () => { calls.installRequests += 1; return { ok: true }; }
   };
 
   window.localStorage.setItem('brightdesk-app-setup-v1', JSON.stringify({
@@ -147,6 +149,16 @@ test('Settings actions open language preferences, return to Settings and save up
   assert.equal(calls.savedUpdateSettings.length, 1);
   assert.equal(calls.savedUpdateSettings[0].autoCheck, false);
 
+  byId(window, 'update-manual-check').click();
+  await tick();
+  assert.equal(calls.updateChecks, 2);
+  byId(window, 'update-manual-download').click();
+  await tick();
+  assert.equal(calls.downloadRequests, 1);
+  byId(window, 'update-manual-install').click();
+  await tick();
+  assert.equal(calls.installRequests, 1);
+
   byId(window, 'close-update-settings').click();
   assert.equal(byId(window, 'update-settings-panel').hidden, true);
   assert.equal(byId(window, 'update-settings-button').getAttribute('aria-expanded'), 'false');
@@ -226,11 +238,19 @@ test('product settings can hide Switch product navigation without removing local
   assert.equal(card.querySelector('.app-card-menu').hidden, false);
   card.querySelector('.app-card-menu-item').click();
   assert.equal(window.document.querySelector('#dynamic-app-nav [data-app="pages"]'), null);
+  const restoredCard = window.document.querySelector('[data-app-id="pages"]');
+  restoredCard.querySelector('.app-card-menu-trigger').click();
+  restoredCard.querySelector('.app-card-menu-item').click();
+  assert.ok(window.document.querySelector('#dynamic-app-nav [data-app="pages"]'));
 
   const workspaceCard = window.document.querySelector('[data-app-id="workspace"]');
   workspaceCard.querySelector('[data-action="remove-from-suite"]').click();
   const setup = JSON.parse(window.localStorage.getItem('brightdesk-app-setup-v1'));
   assert.equal(setup.installedApps.includes('workspace'), false);
+  const removedCard = window.document.querySelector('[data-app-id="workspace"]');
+  removedCard.querySelector('[data-action="add-to-suite"]').click();
+  const restoredSetup = JSON.parse(window.localStorage.getItem('brightdesk-app-setup-v1'));
+  assert.equal(restoredSetup.installedApps.includes('workspace'), true);
   const docs = JSON.parse(window.localStorage.getItem('brightdesk-docs-v3'));
   assert.equal(docs.pages.title, 'Protected project');
   assert.equal(docs.pages.html, '<p>Keep this document.</p>');
