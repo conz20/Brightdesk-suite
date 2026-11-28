@@ -31,19 +31,23 @@ test('packaged startup accepts the loaded Brightdesk navigation shell', () => {
     title: 'Brightdesk',
     hasSidebar: true,
     hasAppManager: true,
+    hasFilesManager: true,
     hasLanguageManager: true,
-    hasSettingsManager: true
+    hasSettingsManager: true,
+    hasNotificationPanel: true
   }), true);
 });
 
 test('packaged startup rejects a partial or unloaded interface', () => {
   for (const state of [
     null,
-    { title: 'Brightdesk', hasSidebar: false, hasAppManager: true, hasLanguageManager: true, hasSettingsManager: true },
-    { title: 'Brightdesk', hasSidebar: true, hasAppManager: false, hasLanguageManager: true, hasSettingsManager: true },
-    { title: 'Brightdesk', hasSidebar: true, hasAppManager: true, hasLanguageManager: false, hasSettingsManager: true },
-    { title: 'Brightdesk', hasSidebar: true, hasAppManager: true, hasLanguageManager: true, hasSettingsManager: false },
-    { title: 'Unexpected page', hasSidebar: true, hasAppManager: true, hasLanguageManager: true, hasSettingsManager: true }
+    { title: 'Brightdesk', hasSidebar: false, hasAppManager: true, hasFilesManager: true, hasLanguageManager: true, hasSettingsManager: true, hasNotificationPanel: true },
+    { title: 'Brightdesk', hasSidebar: true, hasAppManager: false, hasFilesManager: true, hasLanguageManager: true, hasSettingsManager: true, hasNotificationPanel: true },
+    { title: 'Brightdesk', hasSidebar: true, hasAppManager: true, hasFilesManager: false, hasLanguageManager: true, hasSettingsManager: true, hasNotificationPanel: true },
+    { title: 'Brightdesk', hasSidebar: true, hasAppManager: true, hasFilesManager: true, hasLanguageManager: false, hasSettingsManager: true, hasNotificationPanel: true },
+    { title: 'Brightdesk', hasSidebar: true, hasAppManager: true, hasFilesManager: true, hasLanguageManager: true, hasSettingsManager: false, hasNotificationPanel: true },
+    { title: 'Brightdesk', hasSidebar: true, hasAppManager: true, hasFilesManager: true, hasLanguageManager: true, hasSettingsManager: true, hasNotificationPanel: false },
+    { title: 'Unexpected page', hasSidebar: true, hasAppManager: true, hasFilesManager: true, hasLanguageManager: true, hasSettingsManager: true, hasNotificationPanel: true }
   ]) {
     assert.throws(
       () => assertMainWindowReady(state),
