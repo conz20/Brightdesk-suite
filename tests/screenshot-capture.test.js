@@ -74,29 +74,34 @@ test('product capture rejects a different product window even when its workspace
   }
 });
 
-test('screenshot targets cover five Suite screens and exactly ten approved products', () => {
-  assert.equal(SCREENSHOT_TARGETS.length, 15);
-  assert.deepEqual(SCREENSHOT_TARGETS.map(item => item.id), ['suite','suite-apps','suite-files','suite-settings','suite-notifications','pages','sheets','decks','notes','database','forms','lists','planner','todo','workspace']);
+test('screenshot targets cover seven Suite screens and exactly ten approved products', () => {
+  assert.equal(SCREENSHOT_TARGETS.length, 17);
+  assert.deepEqual(SCREENSHOT_TARGETS.map(item => item.id), ['suite','suite-apps','suite-files','suite-settings','suite-languages','suite-update-settings','suite-notifications','pages','sheets','decks','notes','database','forms','lists','planner','todo','workspace']);
   assert.equal(SCREENSHOT_TARGETS.find(item => item.id === 'decks').appId, 'slides');
   assert.equal(SCREENSHOT_TARGETS.find(item => item.id === 'workspace').appId, 'loop');
 });
 
 
-test('suite screenshot navigation opens Apps, Files, Settings and Notifications before capture', async () => {
+test('suite screenshot navigation opens every Suite screen before capture', async () => {
   const dom = new JSDOM([
     '<button id="home-nav"></button>',
     '<button id="app-centre-nav"></button>',
     '<button id="files-nav"></button>',
     '<button id="open-settings"></button>',
+    '<button id="manage-languages"></button>',
+    '<button id="update-settings-button"></button>',
+    '<button id="close-update-settings"></button>',
     '<button id="open-notifications"></button>',
-    '<section id="app-manager"></section>',
+    '<section id="app-manager" class="home-view"></section>',
     '<section id="files-manager" hidden></section>',
     '<section id="settings-manager" hidden></section>',
+    '<section id="language-manager" hidden></section>',
+    '<section id="update-settings-panel" hidden></section>',
     '<section id="notification-panel" hidden></section>'
   ].join(''), { url: 'https://brightdesk.local', runScripts: 'outside-only' });
   try {
     const doc = dom.window.document;
-    const screens = ['#app-manager', '#files-manager', '#settings-manager', '#notification-panel'];
+    const screens = ['#app-manager', '#files-manager', '#settings-manager', '#language-manager', '#update-settings-panel', '#notification-panel'];
     const activate = (selector, view) => {
       for (const screen of screens) doc.querySelector(screen).hidden = screen !== selector;
       if (selector === '#app-manager') doc.querySelector('#app-manager').classList.toggle('home-view', view === 'home');
@@ -105,19 +110,23 @@ test('suite screenshot navigation opens Apps, Files, Settings and Notifications 
     doc.querySelector('#app-centre-nav').addEventListener('click', () => activate('#app-manager', 'apps'));
     doc.querySelector('#files-nav').addEventListener('click', () => activate('#files-manager', 'files'));
     doc.querySelector('#open-settings').addEventListener('click', () => activate('#settings-manager', 'settings'));
+    doc.querySelector('#manage-languages').addEventListener('click', () => activate('#language-manager', 'languages'));
+    doc.querySelector('#update-settings-button').addEventListener('click', () => activate('#update-settings-panel', 'update-settings'));
+    doc.querySelector('#close-update-settings').addEventListener('click', () => { doc.querySelector('#update-settings-panel').hidden = true; });
     doc.querySelector('#open-notifications').addEventListener('click', () => activate('#notification-panel', 'notifications'));
 
-    for (const [view, button, selector] of [
-      ['home', '#home-nav', '#app-manager'],
-      ['apps', '#app-centre-nav', '#app-manager'],
-      ['files', '#files-nav', '#files-manager'],
-      ['settings', '#open-settings', '#settings-manager'],
-      ['notifications', '#open-notifications', '#notification-panel']
+    for (const [view, selector] of [
+      ['home', '#app-manager'],
+      ['apps', '#app-manager'],
+      ['files', '#files-manager'],
+      ['settings', '#settings-manager'],
+      ['languages', '#language-manager'],
+      ['update-settings', '#update-settings-panel'],
+      ['notifications', '#notification-panel']
     ]) {
       const result = await dom.window.eval('(' + waitForSuiteScreen.toString() + ')(' + JSON.stringify(view) + ',' + JSON.stringify(selector) + ',100)');
       assert.equal(result.active, true, view + ' must be visible before screenshot capture');
       assert.equal(doc.querySelector(selector).hidden, false, view + ' must not remain hidden');
-      assert.ok(doc.querySelector(button), view + ' must have a real navigation control');
     }
   } finally {
     dom.window.close();
