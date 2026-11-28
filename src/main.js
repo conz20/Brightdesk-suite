@@ -547,8 +547,10 @@ async function runPackagedStartupSmokeTest() {
       title: document.title,
       hasSidebar: Boolean(document.querySelector('.sidebar')),
       hasAppManager: Boolean(document.querySelector('#app-manager')),
+      hasFilesManager: Boolean(document.querySelector('#files-manager')),
       hasLanguageManager: Boolean(document.querySelector('#language-manager')),
-      hasSettingsManager: Boolean(document.querySelector('#settings-manager'))
+      hasSettingsManager: Boolean(document.querySelector('#settings-manager')),
+      hasNotificationPanel: Boolean(document.querySelector('#notification-panel'))
     })`);
     assertMainWindowReady(startupState);
     if (mainWindow && !mainWindow.isDestroyed()) mainWindow.destroy();
