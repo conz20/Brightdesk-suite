@@ -20,6 +20,7 @@ concurrency:
 
 jobs:
   build-macos:
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
     name: Build and verify macOS universal installer
     runs-on: ["self-hosted", "macOS", "ARM64"]
     timeout-minutes: 90
