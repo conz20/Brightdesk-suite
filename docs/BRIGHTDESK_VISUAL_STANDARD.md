@@ -14,7 +14,7 @@ This is the shared design contract for Brightdesk Office Suite and all ten appro
 
 ## Ten application identities
 
-Each product workspace must have its own top-level window, product name, original icon and local document context. When opened from Brightdesk Suite, a product opens or focuses its own independent window inside the Suite process and shares the Suite's on-device data store. It does not replace the Suite Home, Apps or Files window, and it is not a separate operating-system process. The Suite keeps at most one open window per product; closing one product window leaves the Suite and other product windows available. A separately packaged product installation retains its own native application identity and runs as its own operating-system application.
+Each product workspace must have its own top-level application window, product name, original icon and local document context. When opened from Brightdesk Suite, a product opens or focuses its own independent window inside the Suite process and shares the Suite's on-device data store. It does not replace the Suite Home, Apps or Files window, and it is not a separate operating-system process. The Suite keeps at most one open window per product; closing one product window leaves the Suite and other product windows available. A separately packaged product installation retains its own native application identity and runs as its own operating-system application.
 
 
 | Product | Icon metaphor | Accent family |
