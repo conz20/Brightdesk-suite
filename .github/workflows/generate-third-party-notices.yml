@@ -18,15 +18,12 @@ jobs:
   notices:
     permissions:
       contents: write
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     steps:
-      - name: Register post-job workspace cleanup
-        uses: conz20/Brightdesk-suite/.github/actions/runner-workspace-cleanup@7727da85c4e6e660f3376b5b330d78b6782c1976
-
       - name: Check out Brightdesk
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
       - name: Set up Node.js 24.22.2
-        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: 24.22.2
       - name: Prepare exact dependency lock

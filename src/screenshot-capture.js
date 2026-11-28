@@ -4,9 +4,8 @@ const { assertPackagedVersion } = require('./startup-smoke');
 const { SCREENSHOT_TARGETS, createScreenshotEvidence, writeScreenshotEvidence, verifyScreenshotSet } = require('./screenshot-evidence');
 
 const SAMPLE_DATA_DESCRIPTION = 'Fictional Brightdesk sample records created for visual review in an isolated disposable profile. No real customer documents, contacts or personal data are used.';
-const APP_IDS = ['pages', 'sheets', 'slides', 'notes', 'database', 'forms', 'lists', 'planner', 'todo', 'loop'];
-
 function seedRendererStorage() {
+  const APP_IDS = ['pages', 'sheets', 'slides', 'notes', 'database', 'forms', 'lists', 'planner', 'todo', 'loop'];
   const now = new Date('2026-11-14T10:00:00.000Z');
   const docs = {
     pages: {

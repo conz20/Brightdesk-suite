@@ -106,7 +106,7 @@ The runner application and its local log remain in the WSL distribution under `~
 
 ### Automatic post-job checkout erasure
 
-All eight self-hosted workflows register the pinned Brightdesk workspace-cleanup action as their first step. The action's post-job hook runs after GitHub has completed the checkout and other actions' own post-job cleanup, including checkout and setup-node. It runs with `post-if: always()`, so it also cleans up after failed or cancelled workflow steps when the runner can still execute post-job actions.
+The remaining legacy self-hosted infrastructure workflows register the pinned Brightdesk workspace-cleanup action as their first step. The action's post-job hook runs after GitHub has completed the checkout and other actions' own post-job cleanup, including checkout and setup-node. It runs with `post-if: always()`, so it also cleans up after failed or cancelled workflow steps when the runner can still execute post-job actions.
 
 The action verifies that the checked-out workspace is an ordinary directory beneath `RUNNER_WORKSPACE`, rejects symbolic-link paths and refuses to erase the runner work root or any path outside it. It removes the job checkout, including `.git`, source files, dependencies and generated build output. The action deliberately runs after GitHub's own post-job steps; it must not be moved back to an ordinary final shell step, because that can break GitHub's later checkout cleanup.
 

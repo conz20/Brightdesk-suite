@@ -15,13 +15,10 @@ concurrency:
 
 jobs:
   build:
-    # Reuse the already-configured private Mac runner; avoid paid hosted-runner usage.
-    runs-on: self-hosted
+    # GitHub-hosted macOS keeps integration checks independent of the owner's MacBook.
+    runs-on: macos-latest
     timeout-minutes: 30
     steps:
-      - name: Register post-job workspace cleanup
-        uses: conz20/Brightdesk-suite/.github/actions/runner-workspace-cleanup@7727da85c4e6e660f3376b5b330d78b6782c1976
-
       - name: Check out Brightdesk
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -70,3 +67,57 @@ jobs:
           path: ${{ runner.temp }}/brightdesk-screenshots/*
           if-no-files-found: error
           retention-days: 14
+
+  linux-native:
+    name: Validate native engine and full Suite tests on Linux
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Check out Brightdesk
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Set up required Node.js version
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24.22.2
+
+      - name: Set up pinned Rust toolchain
+        uses: dtolnay/rust-toolchain@683b588c487a69d01f6c6ddf40f036ff682cc2c8
+        with:
+          toolchain: 1.99.1
+          components: rustfmt, clippy
+
+      - name: Verify Node.js runtime and dependency lock
+        run: |
+          npm run check:node
+          npm run lock:verify
+
+      - name: Install locked dependencies
+        run: npm ci --no-audit --no-fund
+
+      - name: Verify third-party licence notices
+        run: npm run verify:licenses
+
+      - name: Check Rust formatting, lint and unit tests
+        run: |
+          cargo fmt --manifest-path rust/Cargo.toml --all -- --check
+          cargo clippy --manifest-path rust/Cargo.toml --workspace --all-targets -- -D warnings
+          cargo test --manifest-path rust/Cargo.toml --workspace
+
+      - name: Build the Linux native Node-API engine
+        run: npm run native:build
+
+      - name: Build and type-check approved product workspaces
+        run: |
+          npm run build
+          npm run typecheck
+
+      - name: Run all tests with the native engine required
+        env:
+          BRIGHTDESK_REQUIRE_NATIVE_ENGINE: "1"
+        run: npm test
+
+      - name: Verify release readiness
+        run: npm run release:preflight

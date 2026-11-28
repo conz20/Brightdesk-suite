@@ -59,15 +59,11 @@ test('rejects filesystem roots and unresolved paths', () => {
   assert.throws(() => removeRunnerWorkspace({ workspace: '', runnerWorkspace: process.cwd() }), /required/);
 });
 
-test('every release job registers cleanup as a post-job action', () => {
+test('hosted release workflow does not register persistent-runner cleanup hooks', () => {
   const workflow = fs.readFileSync(path.join(__dirname, '..', '.github', 'workflows', 'build-release.yml'), 'utf8');
-  const registrations = workflow.split('uses: conz20/Brightdesk-suite/.github/actions/runner-workspace-cleanup@').length - 1;
-  assert.equal(registrations, 4);
+  assert.equal(workflow.split('uses: conz20/Brightdesk-suite/.github/actions/runner-workspace-cleanup@').length - 1, 0);
   assert.ok(!workflow.includes('run: node scripts/cleanup-runner-workspace.js'));
-
-  const action = fs.readFileSync(path.join(__dirname, '..', '.github', 'actions', 'runner-workspace-cleanup', 'action.yml'), 'utf8');
-  assert.ok(action.includes('post: cleanup.js'));
-  assert.ok(action.includes('post-if: always()'));
+  assert.match(workflow, /runs-on: \$\{\{ matrix\.runner \}\}/);
 });
 
 test('release checkouts do not persist a GitHub token or use a cache post-job hook', () => {

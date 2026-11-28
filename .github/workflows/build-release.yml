@@ -20,13 +20,10 @@ concurrency:
 jobs:
   prepare:
     name: Test and lock dependencies
-    # Run on an already registered private runner; no hosted minutes are consumed.
-    runs-on: self-hosted
+    # Use GitHub-hosted Linux; this repository is public and standard runners are free.
+    runs-on: ubuntu-latest
     timeout-minutes: 60
     steps:
-      - name: Register post-job workspace cleanup
-        uses: conz20/Brightdesk-suite/.github/actions/runner-workspace-cleanup@7727da85c4e6e660f3376b5b330d78b6782c1976
-
       - name: Check out Brightdesk
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -75,19 +72,17 @@ jobs:
       matrix:
         include:
           - platform: Linux
-            runner: ["self-hosted", "Linux", "X64"]
+            runner: ubuntu-latest
             script: linux
           - platform: Windows
-            runner: ["self-hosted", "Windows", "X64"]
+            runner: windows-latest
             script: win
           - platform: macOS
-            runner: ["self-hosted", "macOS", "ARM64"]
+            runner: macos-latest
             script: mac
     runs-on: ${{ matrix.runner }}
+    timeout-minutes: 60
     steps:
-      - name: Register post-job workspace cleanup
-        uses: conz20/Brightdesk-suite/.github/actions/runner-workspace-cleanup@7727da85c4e6e660f3376b5b330d78b6782c1976
-
       - name: Check out Brightdesk
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -175,15 +170,12 @@ jobs:
   collect:
     name: Collect verified installers
     needs: [prepare, build]
-    # Collect on the existing private runner to avoid hosted-runner billing.
-    runs-on: self-hosted
+    # Collect artifacts on GitHub-hosted Linux; no local runner is required.
+    runs-on: ubuntu-latest
     timeout-minutes: 30
     outputs:
       version: ${{ steps.release-version.outputs.version }}
     steps:
-      - name: Register post-job workspace cleanup
-        uses: conz20/Brightdesk-suite/.github/actions/runner-workspace-cleanup@7727da85c4e6e660f3376b5b330d78b6782c1976
-
       - name: Check out the exact release source
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -237,15 +229,12 @@ jobs:
     name: Publish GitHub Release (manual approval only)
     needs: collect
     if: github.event_name == 'workflow_dispatch' && inputs.publish_release == true && github.ref == 'refs/heads/main'
-    # Publishing remains manual and uses the private runner too.
-    runs-on: self-hosted
+    # Publishing remains manual and runs on GitHub-hosted Linux.
+    runs-on: ubuntu-latest
     timeout-minutes: 15
     permissions:
       contents: write
     steps:
-      - name: Register post-job workspace cleanup
-        uses: conz20/Brightdesk-suite/.github/actions/runner-workspace-cleanup@7727da85c4e6e660f3376b5b330d78b6782c1976
-
       - name: Set up required Node.js version
         uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
