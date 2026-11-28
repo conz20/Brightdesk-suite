@@ -86,6 +86,8 @@ This is an upstream-version snapshot, not an approval to promote any candidate b
 | Vitest | 5.1.0 | 5.1.2 | Test the current stable patch and keep its Vite peer compatibility aligned with the selected Vite version. |
 | TypeScript | 5.9.3 (locked) | 7.0.2 | Treat as a separate major upgrade; run the full typecheck and product builds before promotion. |
 
+**Distribution-tag note:** npm currently lists electron-builder 26.18.1 under the `v26` dist-tag while `latest` still points to 26.18.0. The candidate must therefore be pinned explicitly to 26.18.1 after validation; a generic `@latest` install would not select the newest stable 26.x release.
+
 Official version sources checked: [Node.js downloads](https://nodejs.org/en/download/), [Electron stable releases](https://releases.electronjs.org/?channel=stable), [electron-builder changelog](https://www.electron.build/changelog/), [Rust release notes](https://dev.rust-lang.org/releases.html), [Vite npm releases](https://www.npmjs.com/package/vite), [Vitest npm releases](https://www.npmjs.com/package/vitest) and [TypeScript npm releases](https://www.npmjs.com/package/typescript).
 
 
