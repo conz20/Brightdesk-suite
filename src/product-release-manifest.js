@@ -14,7 +14,7 @@ const PRODUCT_REPOSITORIES = Object.freeze({
 });
 
 const RELEASE_ASSET_REPOSITORY = 'conz20/Brightdesk-suite';
-const VERSION_PATTERN = /^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$/;
+const VERSION_PATTERN = /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$/;
 const PACKAGE_RULES = Object.freeze({
   windows: Object.freeze({ architecture: 'x64', formats: Object.freeze({ 'nsis-exe': '.exe' }) }),
   macos: Object.freeze({ architecture: 'universal', formats: Object.freeze({ dmg: '.dmg', pkg: '.pkg', zip: '.zip' }) }),
@@ -22,7 +22,7 @@ const PACKAGE_RULES = Object.freeze({
 });
 
 function invalid(message) {
-  throw new TypeError(`Invalid Brightdesk product release manifest: ${message}`);
+  throw new TypeError(\`Invalid Brightdesk product release manifest: \${message}\`);
 }
 
 function isPlainObject(value) {
@@ -32,7 +32,7 @@ function isPlainObject(value) {
 }
 
 function validatePackage(record, index) {
-  if (!isPlainObject(record)) invalid(`packages[${index}] must be an object.`);
+  if (!isPlainObject(record)) invalid(\`packages[\${index}] must be an object.\`);
 
   const {
     productId,
@@ -48,48 +48,52 @@ function validatePackage(record, index) {
   } = record;
 
   if (typeof productId !== 'string' || !Object.hasOwn(PRODUCT_REPOSITORIES, productId)) {
-    invalid(`packages[${index}] references an unsupported product.`);
+    invalid(\`packages[\${index}] references an unsupported product.\`);
   }
   if (sourceRepository !== PRODUCT_REPOSITORIES[productId]) {
-    invalid(`packages[${index}] has an unexpected source repository.`);
+    invalid(\`packages[\${index}] has an unexpected source repository.\`);
   }
   if (typeof version !== 'string' || !VERSION_PATTERN.test(version)) {
-    invalid(`packages[${index}] has an invalid release version.`);
+    invalid(\`packages[\${index}] has an invalid release version.\`);
   }
 
+  if (typeof platform !== 'string' || !Object.hasOwn(PACKAGE_RULES, platform)) {
+    invalid(\`packages[\${index}] has an unsupported platform.\`);
+  }
   const platformRule = PACKAGE_RULES[platform];
-  if (!platformRule) invalid(`packages[${index}] has an unsupported platform.`);
   if (architecture !== platformRule.architecture) {
-    invalid(`packages[${index}] has an unsupported architecture for ${platform}.`);
+    invalid(\`packages[\${index}] has an unsupported architecture for \${platform}.\`);
+  }
+  if (typeof format !== 'string' || !Object.hasOwn(platformRule.formats, format)) {
+    invalid(\`packages[\${index}] has an unsupported package format for \${platform}.\`);
   }
   const extension = platformRule.formats[format];
-  if (!extension) invalid(`packages[${index}] has an unsupported package format for ${platform}.`);
 
   if (typeof fileName !== 'string'
     || fileName.length < 1
     || fileName.length > 180
     || fileName === '.'
     || fileName === '..'
-    || /[\\\\/\\u0000-\\u001f]/.test(fileName)
+    || /[\\\/\u0000-\u001f]/.test(fileName)
     || !fileName.toLowerCase().endsWith(extension.toLowerCase())) {
-    invalid(`packages[${index}] has an unsafe or mismatched file name.`);
+    invalid(\`packages[\${index}] has an unsafe or mismatched file name.\`);
   }
   if (!Number.isSafeInteger(sizeBytes) || sizeBytes <= 0) {
-    invalid(`packages[${index}] has an invalid package size.`);
+    invalid(\`packages[\${index}] has an invalid package size.\`);
   }
   if (typeof sha256 !== 'string' || !/^[a-fA-F0-9]{64}$/.test(sha256)) {
-    invalid(`packages[${index}] has an invalid SHA-256 digest.`);
+    invalid(\`packages[\${index}] has an invalid SHA-256 digest.\`);
   }
 
-  if (typeof downloadUrl !== 'string') invalid(`packages[${index}] has no download URL.`);
+  if (typeof downloadUrl !== 'string') invalid(\`packages[\${index}] has no download URL.\`);
   let parsedUrl;
   try {
     parsedUrl = new URL(downloadUrl);
   } catch {
-    invalid(`packages[${index}] has a malformed download URL.`);
+    invalid(\`packages[\${index}] has a malformed download URL.\`);
   }
 
-  const expectedPath = `/conz20/Brightdesk-suite/releases/download/v${version}/${encodeURIComponent(fileName)}`;
+  const expectedPath = \`/conz20/Brightdesk-suite/releases/download/v\${version}/\${encodeURIComponent(fileName)}\`;
   if (parsedUrl.protocol !== 'https:'
     || parsedUrl.hostname !== 'github.com'
     || parsedUrl.port
@@ -98,8 +102,8 @@ function validatePackage(record, index) {
     || parsedUrl.search
     || parsedUrl.hash
     || parsedUrl.pathname !== expectedPath
-    || parsedUrl.href !== `https://github.com${expectedPath}`) {
-    invalid(`packages[${index}] is not an approved Brightdesk Suite release asset URL.`);
+    || parsedUrl.href !== \`https://github.com\${expectedPath}\`) {
+    invalid(\`packages[\${index}] is not an approved Brightdesk Suite release asset URL.\`);
   }
 
   return Object.freeze({
@@ -128,7 +132,7 @@ function validateProductReleaseManifest(manifest) {
   const packages = manifest.packages.map((record, index) => {
     const item = validatePackage(record, index);
     const key = [item.productId, item.platform, item.architecture, item.format].join(':');
-    if (seenPackages.has(key)) invalid(`duplicate package entry for ${key}.`);
+    if (seenPackages.has(key)) invalid(\`duplicate package entry for \${key}.\`);
     if (seenUrls.has(item.downloadUrl)) invalid('duplicate package download URL.');
     seenPackages.add(key);
     seenUrls.add(item.downloadUrl);
