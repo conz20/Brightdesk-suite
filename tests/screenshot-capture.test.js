@@ -9,7 +9,7 @@ const forms = require('../src/forms-service');
 const planner = require('../src/planner-service');
 const database = require('../src/database-service');
 const workspace = require('../src/workspace-service');
-const { seedRendererStorage, waitForProductWorkspace, waitForSuiteHome } = require('../src/screenshot-capture');
+const { seedRendererStorage, waitForProductWorkspace, waitForSuiteHome, waitForSuiteScreen } = require('../src/screenshot-capture');
 const { SCREENSHOT_TARGETS } = require('../src/screenshot-evidence');
 
 test('renderer seed creates fictional local records for all ten approved products', () => {
@@ -75,8 +75,48 @@ test('product capture rejects a different product window even when its workspace
 });
 
 test('screenshot targets match the Suite and exactly ten approved products', () => {
-  assert.equal(SCREENSHOT_TARGETS.length, 11);
-  assert.deepEqual(SCREENSHOT_TARGETS.map(item => item.id), ['suite','pages','sheets','decks','notes','database','forms','lists','planner','todo','workspace']);
+  assert.equal(SCREENSHOT_TARGETS.length, 15);
+  assert.deepEqual(SCREENSHOT_TARGETS.map(item => item.id), ['suite','suite-apps','suite-files','suite-settings','suite-notifications','pages','sheets','decks','notes','database','forms','lists','planner','todo','workspace']);
   assert.equal(SCREENSHOT_TARGETS.find(item => item.id === 'decks').appId, 'slides');
   assert.equal(SCREENSHOT_TARGETS.find(item => item.id === 'workspace').appId, 'loop');
+});
+
+
+test('suite screenshot navigation opens Apps, Files, Settings and Notifications before capture', async () => {
+  const dom = new JSDOM([
+    '<button id="home-nav"></button>',
+    '<button id="app-centre-nav"></button>',
+    '<button id="files-nav"></button>',
+    '<button id="open-settings"></button>',
+    '<button id="open-notifications"></button>',
+    '<section id="app-manager"></section>',
+    '<section id="files-manager" hidden></section>',
+    '<section id="settings-manager" hidden></section>',
+    '<section id="notification-panel" hidden></section>'
+  ].join(''), { url: 'https://brightdesk.local', runScripts: 'outside-only' });
+  try {
+    const doc = dom.window.document;
+    const screens = ['#app-manager', '#files-manager', '#settings-manager', '#notification-panel'];
+    const activate = selector => {
+      for (const screen of screens) doc.querySelector(screen).hidden = screen !== selector;
+    };
+    doc.querySelector('#app-centre-nav').addEventListener('click', () => activate('#app-manager'));
+    doc.querySelector('#files-nav').addEventListener('click', () => activate('#files-manager'));
+    doc.querySelector('#open-settings').addEventListener('click', () => activate('#settings-manager'));
+    doc.querySelector('#open-notifications').addEventListener('click', () => activate('#notification-panel'));
+
+    for (const [view, button, selector] of [
+      ['apps', '#app-centre-nav', '#app-manager'],
+      ['files', '#files-nav', '#files-manager'],
+      ['settings', '#open-settings', '#settings-manager'],
+      ['notifications', '#open-notifications', '#notification-panel']
+    ]) {
+      const result = await dom.window.eval('(' + waitForSuiteScreen.toString() + ')(' + JSON.stringify(view) + ',' + JSON.stringify(selector) + ',100)');
+      assert.equal(result.active, true, view + ' must be visible before screenshot capture');
+      assert.equal(doc.querySelector(selector).hidden, false, view + ' must not remain hidden');
+      assert.ok(doc.querySelector(button), view + ' must have a real navigation control');
+    }
+  } finally {
+    dom.window.close();
+  }
 });
