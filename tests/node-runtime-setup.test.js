@@ -26,7 +26,7 @@ test('Node.js 24.22.2 remains the single exact Brightdesk runtime', () => {
     assert.ok(usesExactVersion || readsCanonicalVersion, workflow.file + ' must use the exact repository-pinned Node.js 24 runtime');
   }
   for (const file of ['generate-lockfile.yml', 'generate-third-party-notices.yml']) {
-    assert.match(read('.github/workflows/' + file), /node-version-file:\\s*\\.node-version/);
+    assert.match(read('.github/workflows/' + file), /node-version-file:\s*\.node-version/);
   }
   assert.match(read('AGENTS.md'), /exactly Node\.js \*\*24\.22\.2 LTS\*\*/);
   assert.match(read('PROJECT_MEMORY.md'), /standing project requirement/);
