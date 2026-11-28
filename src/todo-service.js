@@ -107,5 +107,7 @@
 
   const service = { createTask, updateTask, setCompleted, deleteTask, filterTasks };
   root.BrightdeskTodoService = service;
+  // Keep the renderer API available on the DOM window in embedded/test JS realms too.
+  if (typeof window !== 'undefined') window.BrightdeskTodoService = service;
   if (typeof module !== 'undefined' && module.exports) module.exports = service;
 })(typeof globalThis !== 'undefined' ? globalThis : window);
