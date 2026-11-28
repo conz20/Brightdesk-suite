@@ -74,6 +74,7 @@ test('product screenshot waits for the correct app title and sample document con
       window.document.querySelector('#editor').textContent = 'Website launch brief';
     }, 40);
     const result = await promise;
+    assert.equal(result.appId, 'pages');
     assert.equal(result.appTitle, 'Brightdesk Pages');
     assert.equal(result.documentTitle, 'Project brief');
     assert.equal(result.sampleContentVerified, true);
