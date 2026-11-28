@@ -116,7 +116,11 @@ test('suite screenshot navigation opens every Suite screen before capture', asyn
       doc.querySelector('#update-settings-panel').dataset.settingsLoaded = 'true';
     });
     doc.querySelector('#close-update-settings').addEventListener('click', () => { doc.querySelector('#update-settings-panel').hidden = true; });
-    doc.querySelector('#open-notifications').addEventListener('click', () => activate('#notification-panel', 'notifications'));
+    doc.querySelector('#open-notifications').addEventListener('click', () => {
+      const panel = doc.querySelector('#notification-panel');
+      if (panel.hidden) activate('#notification-panel', 'notifications');
+      else panel.hidden = true;
+    });
 
     for (const [view, selector] of [
       ['home', '#app-manager'],
