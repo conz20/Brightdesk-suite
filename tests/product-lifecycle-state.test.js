@@ -38,7 +38,7 @@ test('only verified and registered installation evidence counts as installed', (
   assert.equal(unverified.installed, false);
   assert.equal(unregistered.installed, false);
   assert.equal(verified.installed, true);
-  assert.deepEqual(verified.actions, ['open', 'remove-from-suite', 'uninstall']);
+  assert.deepEqual(verified.actions, ['open-in-suite', 'remove-from-suite', 'open-standalone', 'uninstall']);
 });
 
 test('running state reflects a verified standalone install or an active Suite workspace', () => {
@@ -68,7 +68,7 @@ test('a newer compatible release is an update only for a verified installation',
   });
 
   assert.equal(state.updateAvailable, true);
-  assert.deepEqual(state.actions, ['open', 'remove-from-suite', 'update', 'uninstall']);
+  assert.deepEqual(state.actions, ['open-in-suite', 'remove-from-suite', 'open-standalone', 'update', 'uninstall']);
   assert.equal(notInstalled.updateAvailable, false);
 });
 
@@ -88,7 +88,20 @@ test('Suite selection and standalone installation can be changed independently',
   assert.equal(inSuite.installed, true);
   assert.equal(outsideSuite.installed, true);
   assert.deepEqual(inSuite.actions, ['open-in-suite', 'remove-from-suite', 'open-standalone', 'uninstall']);
-  assert.deepEqual(outsideSuite.actions, ['open-standalone', 'add-to-suite', 'uninstall']);
+  assert.deepEqual(outsideSuite.actions, ['add-to-suite', 'open-standalone', 'uninstall']);
+});
+
+test('invalid installed versions do not create installed state or expose standalone actions', () => {
+  const state = deriveProductLifecycleState({
+    ...base,
+    installation: { version: 'latest', verified: true, registered: true }
+  });
+  assert.equal(state.installed, false);
+  assert.equal(state.installedVersion, null);
+  assert.equal(state.updateAvailable, false);
+  assert.ok(state.actions.includes('install'));
+  assert.ok(!state.actions.includes('open-standalone'));
+  assert.ok(!state.actions.includes('uninstall'));
 });
 
 test('unknown product identifiers are rejected', () => {
