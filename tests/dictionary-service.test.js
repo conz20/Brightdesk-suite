@@ -181,6 +181,7 @@ test('catalogue downloads stay disabled until verified Brightdesk resource packs
   const service = new DictionaryService('/tmp/brightdesk-dictionary-official-only-test', {
     fetch: async () => { networkCalls += 1; throw new Error('third-party network access must not occur'); }
   });
+  assert.equal(typeof service.fetchUpstreamFile, 'undefined');
   const catalogue = service.catalogue();
   assert.equal(catalogue.length, 92);
   assert.ok(catalogue.every(item => item.downloadAvailable === false && item.packStatus === 'not-built'));
