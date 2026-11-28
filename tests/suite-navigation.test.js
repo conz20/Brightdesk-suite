@@ -90,7 +90,7 @@ test('one Brightdesk Home artwork combines the suite sidebar and ten-product gri
   const svg = read('assets/product-experience/brightdesk-home.svg');
   assert.equal((svg.match(/id="sidebar-applications"/g) || []).length, 1);
   assert.doesNotMatch(svg, /id="sidebar-(?:pages|sheets|decks|notes|database|forms|lists|planner|todo|workspace)-/);
-  assert.match(svg, /Desktop productivity Home experience/);
+  assert.match(svg, /A narrow, full-height solid deep-navy navigation rail/);
   assert.match(svg, /Product shortcuts are not repeated beside the Home application grid/);
   assert.match(svg, /id="settings-cogwheel"/);
   assert.match(svg, /id="notifications-bell"/);
@@ -126,7 +126,7 @@ test('README and visual standard explain the contextual product-switching rule',
   assert.match(standard, /Home.*Apps.*Files/);
   assert.match(standard, /Create.*navigation item/);
   assert.match(standard, /online-service destinations/);
-  assert.match(home, /links Home, Apps and Files/);
+  assert.match(home, /Home, Apps and Files are three vertically stacked destinations/);
   assert.doesNotMatch(home, /Create<\/text>/);
   assert.ok(standard.includes("In the Suite's own workspace context"));
   assert.ok(standard.includes('Switch product'));
