@@ -184,6 +184,8 @@ test('Files buttons call the local open and save bridge actions', async t => {
   assert.equal(calls.savedProjects.length, 1);
   assert.equal(calls.savedProjects[0].docs.pages.title, 'Protected project');
   assert.equal(byId(window, 'save-status').textContent, 'Project saved');
+  assert.equal(byId(window, 'files-message').hidden, false);
+  assert.equal(byId(window, 'files-message').textContent, 'Project saved');
 
   calls.nextOpenFile = {
     kind: 'pages',
@@ -194,6 +196,7 @@ test('Files buttons call the local open and save bridge actions', async t => {
   await tick();
   assert.equal(calls.openedFiles, 1);
   assert.equal(byId(window, 'files-manager').hidden, true);
+  assert.equal(byId(window, 'files-message').hidden, true);
   assert.equal(byId(window, 'workspace').hidden, false);
   assert.equal(byId(window, 'editor').hidden, false);
   assert.equal(byId(window, 'doc-title').value, 'Opened document');
