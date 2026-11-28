@@ -15,14 +15,14 @@ test('screenshot runner uses a fresh disposable profile and does not publish any
   assert.doesNotMatch(runner, /gh release create|createRelease|uploadReleaseAsset/);
 });
 
-test('screenshot capture is optional CI evidence and only runs on main pushes', () => {
+test('screenshot capture runs on pull requests and main pushes, using the exact source commit', () => {
   const workflow = fs.readFileSync(path.join(root, '.github', 'workflows', 'ci.yml'), 'utf8');
   const manifest = require('../package.json');
   assert.equal(manifest.scripts['capture:screenshots'], 'node scripts/capture-suite-screenshots.js');
   assert.match(workflow, /github\.event_name == 'push' && github\.ref == 'refs\/heads\/main'/);
   assert.match(workflow, /actions\/upload-artifact@[a-f0-9]{40}/);
   assert.match(workflow, /retention-days: 14/);
-  assert.match(workflow, /continue-on-error: true/);
+  assert.match(workflow, /continue-on-error: \\u0024\\{\\{ github\\.event_name == 'push' \\}\\}/);
 });
 
 
