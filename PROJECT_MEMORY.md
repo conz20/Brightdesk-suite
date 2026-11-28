@@ -1,9 +1,9 @@
 # Brightdesk project memory
 
-The standing project requirement is to use exactly Node.js 24.22.2 LTS for development, testing and release builds.
-The approved cross-repository version baseline is Electron 45.2.1, electron-builder 26.18.0 and Rust 1.99.1 wherever those tools apply. Port older code and API guidance forward before reuse; do not mix old APIs or use an older runtime to pass tests. Changes to the baseline need explicit owner approval. See docs/VERSION_COMPATIBILITY.md.
+The standing project requirement is latest-stable-first. Before each runtime, framework, toolchain or dependency update, check official upstream releases, security advisories and support status, then adopt the newest stable version that passes Brightdesk compatibility checks. The current tested pins remain in place until their replacements pass; Node.js 24.22.3 is the security-patch candidate, while Node.js 26.13.1 is a separate major-runtime compatibility trial.
+The current tested cross-repository baseline remains Node.js 24.22.2, Electron 45.2.1, electron-builder 26.18.0 and Rust 1.99.1 wherever those tools apply. These are current pins, not a permanent ceiling. Routine compatible updates follow the owner-approved rolling policy and do not require separate approval for every patch. Port older code and API guidance forward before reuse; do not mix old APIs or use an older runtime to pass tests. See docs/VERSION_COMPATIBILITY.md.
 
-The approved product scope is fixed at ten apps:
+The approved customer-product scope is exactly ten products:
 - Pages
 - Sheets
 - Decks
@@ -15,7 +15,7 @@ The approved product scope is fixed at ten apps:
 - To Do
 - Workspace
 
-All ten approved app modules are integrated into the main Brightdesk suite. The codebase includes dedicated feature modules, service/workspace modules where appropriate, and automated tests. Integration is not the same as final product acceptance: real user workflows, accessibility, persistence, upgrades, uninstall and platform installers still require verification.
+All ten approved product modules are integrated into the main Brightdesk Suite. The codebase includes dedicated feature modules, service/workspace modules where appropriate, and automated tests. Integration is not the same as final product acceptance: real user workflows, accessibility, persistence, upgrades, uninstall and platform installers still require verification.
 
 Outlook, OneDrive and Teams are excluded. Do not add them.
 
