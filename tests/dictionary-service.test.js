@@ -124,19 +124,23 @@ test('users cannot import or remove dictionary files outside the protected catal
   await assert.rejects(() => service.remove('en-AU'), /Dictionary removal is disabled/);
 });
 
-test('reinstalling a matching catalogue dictionary never replaces its original files', async () => {
-  const userData = await fs.mkdtemp(path.join(os.tmpdir(), 'brightdesk-dictionary-no-overwrite-'));
+test('verified installed dictionaries remain usable offline while new catalogue packs stay unavailable', async () => {
+  const userData = await fs.mkdtemp(path.join(os.tmpdir(), 'brightdesk-dictionary-offline-retention-'));
   let networkCalls = 0;
-  const service = new DictionaryService(userData, { fetch: async () => { networkCalls += 1; throw new Error('network should not be used'); } });
+  const service = new DictionaryService(userData, {
+    fetch: async () => { networkCalls += 1; throw new Error('network must never be used'); }
+  });
   const catalogueEntry = service.catalogue().find(item => item.id === 'bg');
+  assert.equal(catalogueEntry.downloadAvailable, false);
+  assert.equal(catalogueEntry.packStatus, 'not-built');
   const folder = path.join(userData, 'dictionaries', 'bg');
   await fs.mkdir(folder, { recursive: true });
-  const legacyAff = 'SET UTF-8\n';
-  const legacyDic = '1\nword\n';
+  const legacyAff = 'SET UTF-8\\n';
+  const legacyDic = '1\\nword\\n';
   const legacyLicense = 'A fixed original licence text that is long enough to pass the validation rules.';
   const legacyReadme = 'Fixed original author and contributor attribution information for testing.';
   const hash = value => crypto.createHash('sha256').update(value).digest('hex');
-  const oldCatalogueManifest = {
+  const verifiedManifest = {
     schemaVersion: 1, catalogueId: catalogueEntry.id, locale: catalogueEntry.locale, name: catalogueEntry.name, nativeName: catalogueEntry.nativeName,
     authors: 'Original dictionary contributors are listed in UPSTREAM_README.md.',
     affFile: 'index.aff', dicFile: 'index.dic', licenseFile: 'LICENSE.txt', readmeFile: 'UPSTREAM_README.md',
@@ -144,14 +148,15 @@ test('reinstalling a matching catalogue dictionary never replaces its original f
     sourceUrl: catalogueEntry.sourceUrl, upstream: catalogueEntry.upstream, upstreamRevision: catalogueEntry.upstreamRevision,
     integrity: { aff: hash(legacyAff), dic: hash(legacyDic), license: hash(legacyLicense), readme: hash(legacyReadme) }
   };
-  await fs.writeFile(path.join(folder, 'manifest.json'), JSON.stringify(oldCatalogueManifest));
+  await fs.writeFile(path.join(folder, 'manifest.json'), JSON.stringify(verifiedManifest));
   await fs.writeFile(path.join(folder, 'dictionary.aff'), legacyAff);
   await fs.writeFile(path.join(folder, 'dictionary.dic'), legacyDic);
   await fs.writeFile(path.join(folder, 'LICENSE.txt'), legacyLicense);
   await fs.writeFile(path.join(folder, 'UPSTREAM_README.md'), legacyReadme);
   try {
-    const result = await service.installCatalogueEntry('bg');
-    assert.equal(result.alreadyInstalled, true);
+    await assert.rejects(() => service.installCatalogueEntry('bg'), /not yet available through official Brightdesk resources/);
+    const installed = await service.installed();
+    assert.ok(installed.some(item => item.locale === 'bg'), 'verified installed dictionary remains available offline');
     assert.equal(networkCalls, 0);
     await assert.rejects(() => service.remove('bg'), /Dictionary removal is disabled/);
   } finally {
@@ -171,25 +176,17 @@ test('catalogue installation rejects unknown IDs before making a network request
 });
 
 
-test('pinned catalogue downloader rejects URLs outside its fixed upstream repository', async () => {
+test('catalogue downloads stay disabled until verified Brightdesk resource packs are published', async () => {
   let networkCalls = 0;
-  const service = new DictionaryService('/tmp/brightdesk-dictionary-url-test', {
-    fetch: async () => { networkCalls += 1; return new Response('ok'); }
+  const service = new DictionaryService('/tmp/brightdesk-dictionary-official-only-test', {
+    fetch: async () => { networkCalls += 1; throw new Error('third-party network access must not occur'); }
   });
-  await assert.rejects(() => service.fetchUpstreamFile('https://example.com/dictionaries/bg/index.aff', 100), /pinned, approved upstream sources/);
-  await assert.rejects(() => service.fetchUpstreamFile('https://raw.githubusercontent.com/wooorm/dictionaries/main/dictionaries/bg/index.aff', 100), /pinned, approved upstream sources/);
-  await assert.rejects(() => service.fetchUpstreamFile('https://raw.githubusercontent.com/spdx/license-list-data/main/text/GPL-2.0-only.txt', 100), /pinned, approved upstream sources/);
+  const catalogue = service.catalogue();
+  assert.equal(catalogue.length, 92);
+  assert.ok(catalogue.every(item => item.downloadAvailable === false && item.packStatus === 'not-built'));
+  await assert.rejects(() => service.installCatalogueEntry('en-au'), /not yet available through official Brightdesk resources/);
   assert.equal(networkCalls, 0);
 });
-
-test('pinned catalogue downloader accepts a bounded file from an approved source', async () => {
-  const service = new DictionaryService('/tmp/brightdesk-dictionary-download-test', {
-    fetch: async () => new Response('SET UTF-8\n')
-  });
-  const bytes = await service.fetchUpstreamFile('https://raw.githubusercontent.com/wooorm/dictionaries/8cfea406b505e4d7df52d5a19bce525df98c54ab/dictionaries/bg/index.aff', 100);
-  assert.equal(bytes.toString('utf8'), 'SET UTF-8\n');
-});
-
 
 test('the two licence-file exceptions use bundled canonical GNU texts', async () => {
   const gpl = await fs.readFile(path.join(__dirname, '..', 'src', 'licenses', 'GPL-2.0.txt'), 'utf8');
