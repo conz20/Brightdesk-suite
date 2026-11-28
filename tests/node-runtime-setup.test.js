@@ -8,20 +8,28 @@ const path = require('node:path');
 const root = path.resolve(__dirname, '..');
 const read = (relative) => fs.readFileSync(path.join(root, relative), 'utf8');
 
-test('Node.js 24.22.2 remains the single exact Brightdesk runtime', () => {
+test('Node.js runtime selectors match the central tested baseline and contributor guidance stays latest-stable-first', () => {
+  const compatibility = read('docs/VERSION_COMPATIBILITY.md');
+  const documentedPin = compatibility.match(/^\|\s*Node\.js\s*\|\s*\*\*([0-9]+\.[0-9]+\.[0-9]+)\*\*/m);
+  assert.ok(documentedPin, 'the central compatibility standard must record the exact tested Node.js pin');
+  const expectedNode = documentedPin[1];
+  const nodePattern = new RegExp('node:' + expectedNode.replace(/\./g, '\\.') + '-bookworm', 'm');
+  const nodeWorkflowPattern = new RegExp("node-version:\\s*['\"]?" + expectedNode.replace(/\./g, '\\.'));
   const manifest = JSON.parse(read('package.json'));
-  assert.equal(manifest.engines.node, '24.22.2');
-  assert.equal(read('.nvmrc').trim(), '24.22.2');
-  assert.equal(read('.node-version').trim(), '24.22.2');
+  assert.equal(manifest.engines.node, expectedNode);
+  assert.equal(read('.nvmrc').trim(), expectedNode);
+  assert.equal(read('.node-version').trim(), expectedNode);
   assert.match(read('.npmrc'), /engine-strict=true/);
-  assert.match(read('.devcontainer/Dockerfile'), /^FROM node:24\.22\.2-bookworm/m);
+  assert.match(read('.devcontainer/Dockerfile'), new RegExp('^FROM ' + nodePattern.source, 'm'));
   assert.match(read('.devcontainer/devcontainer.json'), /npm run setup:dev/);
   const workflowDir = path.join(root, '.github', 'workflows');
   const workflowFiles = fs.readdirSync(workflowDir).filter(file => /\.ya?ml$/i.test(file));
   const nodeWorkflows = workflowFiles.map(file => ({ file, source: fs.readFileSync(path.join(workflowDir, file), 'utf8') })).filter(item => /uses:\s*actions\/setup-node/.test(item.source));
   assert.ok(nodeWorkflows.length > 0, 'at least one workflow must configure Node.js');
-  for (const workflow of nodeWorkflows) assert.match(workflow.source, /node-version:\s*['"]?24\.22\.2/, workflow.file + ' must use Node.js 24.22.2');
-  assert.match(read('AGENTS.md'), /exactly Node\.js \*\*24\.22\.2 LTS\*\*/);
+  for (const workflow of nodeWorkflows) assert.match(workflow.source, nodeWorkflowPattern, workflow.file + ' must use the central tested Node.js pin ' + expectedNode);
+  assert.match(read('AGENTS.md'), /newest stable version/i);
+  assert.match(read('AGENTS.md'), /docs\/VERSION_COMPATIBILITY\.md/);
+  assert.doesNotMatch(read('AGENTS.md'), /exactly Node\.js \*\*24\.22\.2 LTS\*\*/);
   assert.match(read('PROJECT_MEMORY.md'), /standing project requirement/);
 });
 
