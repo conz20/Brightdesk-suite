@@ -547,7 +547,8 @@ async function runPackagedStartupSmokeTest() {
       title: document.title,
       hasSidebar: Boolean(document.querySelector('.sidebar')),
       hasAppManager: Boolean(document.querySelector('#app-manager')),
-      hasLanguageManager: Boolean(document.querySelector('#language-manager'))
+      hasLanguageManager: Boolean(document.querySelector('#language-manager')),
+      hasSettingsManager: Boolean(document.querySelector('#settings-manager'))
     })`);
     assertMainWindowReady(startupState);
     if (mainWindow && !mainWindow.isDestroyed()) mainWindow.destroy();
