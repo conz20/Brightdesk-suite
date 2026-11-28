@@ -27,7 +27,10 @@
         <h3 id="included-apps-update-heading">Applications included in the suite</h3>
         <p>Pages, Sheets, Decks and Notes are updated with the Brightdesk Office Suite release. They do not have separate update downloads or settings in the suite, so an application update will not be applied independently.</p>
       </section>`;
-    byId('close-update-settings').addEventListener('click', () => { panel.hidden = true; });
+    byId('close-update-settings').addEventListener('click', () => {
+      panel.hidden = true;
+      byId('update-settings-button')?.setAttribute('aria-expanded', 'false');
+    });
     ['update-auto-check'].forEach(id => {
       byId(id).addEventListener('change', saveSettings);
     });
@@ -72,7 +75,7 @@
       try {
         if (status) { status.hidden = false; status.textContent = 'Working…'; }
         const result = await action();
-        if (status && result?.message) status.textContent = result.message;
+        if (status) status.textContent = result?.message || (result?.ok ? 'The update action was accepted.' : 'This update action is not available for this build yet.');
       } catch (error) {
         if (status) { status.hidden = false; status.textContent = error.message || 'That update action could not be completed.'; }
       }
@@ -83,6 +86,7 @@
     renderSections();
     const panel = byId('update-settings-panel');
     panel.hidden = !panel.hidden;
+    byId('update-settings-button')?.setAttribute('aria-expanded', String(!panel.hidden));
     if (!panel.hidden) await loadSettings();
   });
 
