@@ -41,7 +41,7 @@ test('only verified and registered installation evidence counts as installed', (
   assert.deepEqual(verified.actions, ['open', 'remove-from-suite', 'uninstall']);
 });
 
-test('running state is only exposed for a verified installed product', () => {
+test('running state reflects a verified standalone install or an active Suite workspace', () => {
   const state = deriveProductLifecycleState({
     ...base,
     running: true,
@@ -96,4 +96,19 @@ test('unknown product identifiers are rejected', () => {
     () => deriveProductLifecycleState({ ...base, productId: 'outlook' }),
     /Unsupported Brightdesk product/
   );
+});
+
+test('all ten approved Brightdesk product IDs are accepted', () => {
+  for (const productId of ['pages', 'sheets', 'slides', 'notes', 'database', 'forms', 'lists', 'planner', 'todo', 'loop']) {
+    assert.equal(deriveProductLifecycleState({ ...base, productId }).productId, productId);
+  }
+});
+
+test('release versions are compared numerically by major, minor and patch', () => {
+  const { compareReleaseVersions } = require('../src/product-lifecycle-state');
+  assert.equal(compareReleaseVersions('0.10.0', '0.9.0'), 1);
+  assert.equal(compareReleaseVersions('1.0.0', '0.99.99'), 1);
+  assert.equal(compareReleaseVersions('0.1.1', '0.1.2'), -1);
+  assert.equal(compareReleaseVersions('0.1.0', '0.1.0'), 0);
+  assert.equal(compareReleaseVersions('v0.1.0', '0.1.0'), null);
 });
