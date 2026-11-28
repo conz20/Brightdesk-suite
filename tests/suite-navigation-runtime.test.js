@@ -8,7 +8,7 @@ const { JSDOM } = require('jsdom');
 
 const root = path.join(__dirname, '..');
 const read = file => fs.readFileSync(path.join(root, file), 'utf8');
-const productIds = ['pages', 'sheets', 'slides', 'notes', 'database', 'forms', 'lists', 'planner', 'todo', 'loop'];
+const productIds = ['pages', 'sheets', 'slides', 'notes', 'database', 'forms', 'lists', 'planner', 'todo', 'workspace'];
 
 async function bootSuite(t) {
   const dom = new JSDOM(read('src/index.html'), {
