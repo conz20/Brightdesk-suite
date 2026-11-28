@@ -54,7 +54,7 @@
           <button type="button" class="todo-view" data-todo-view="completed">Completed</button>
         </nav>
         <div class="todo-content">
-          <header class="todo-heading"><div><div class="eyebrow">BRIGHTDESK TO DO</div><h2 id="todo-view-title">My Day</h2><p id="todo-view-description">Focus on what you want to get done today.</p></div></header>
+          <header class="todo-heading"><div><div class="eyebrow">BRIGHTDESK TO DO</div><h2 id="todo-view-title">My Day</h2><p id="todo-view-description">Focus on what you want to get done today.</p></div><span id="todo-task-count" class="todo-count">0 tasks</span></header>
           <label class="todo-search-label" for="todo-search">Search your tasks</label>
           <input id="todo-search" class="todo-search" type="search" placeholder="Search tasks and notes" autocomplete="off">
           <form id="todo-create-form" class="todo-create-form">
@@ -396,7 +396,7 @@
       <div class="manager-hero"><div><div class="eyebrow" data-i18n="language.eyebrow">BRIGHTDESK LANGUAGE CENTRE</div><h2 data-i18n="language.title">Language settings</h2><p data-i18n="language.description">Choose how Brightdesk displays and checks language.</p></div></div>
       <div class="language-settings-grid">
         <article class="language-setting-card"><h3 data-i18n="language.displayTitle">Display language</h3><p data-i18n="language.displayDescription">Changes the language used for Brightdesk menus, labels and messages.</p><select id="display-language" aria-label="Display language"></select></article>
-        <article class="language-setting-card"><h3 data-i18n="language.proofingTitle">Proofing language</h3><p data-i18n="language.proofingDescription">Sets the language used for spelling checks and document proofing.</p><select id="proofing-language" aria-label="Proofing language"></select></article>
+        <article class="language-setting-card"><h3 data-i18n="language.proofingTitle">Proofing language</h3><p data-i18n="language.proofingDescription">Sets the language used for spelling checks and document proofing.</p><select id="proofing-language" aria-label="Proofing language"></select><small id="proofing-status" class="language-help" role="status">Checking proofing support…</small></article>
       </div>
       <h3 class="language-section-title" data-i18n="language.installedTitle">Installed language packs</h3>
       <div class="manager-grid" id="installed-language-grid"></div>
