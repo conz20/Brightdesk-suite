@@ -180,6 +180,7 @@
     "common.zoomIn": "Zoom in",
     "common.zoomOut": "Zoom out",
     "sidebar.applications": "Apps",
-    "sidebar.applicationsDescription": "All your apps"
+    "sidebar.applicationsDescription": "All your apps",
+    "sidebar.settings": "Settings"
   }
 }
