@@ -184,7 +184,7 @@ test('Home sidebar footer and navigation match the production artwork', () => {
   const preload = read('src/preload.js');
   assert.ok(preload.includes('platform: process.platform,'));
   assert.ok(!app.includes("$('version-label').textContent ="));
-  assert.ok(styles.includes('.sidebar > .nav small { display: none; }'));
+  assert.ok(/\.sidebar > \.nav small\s*\{\s*display: none;\s*\}/.test(styles));
   assert.ok(styles.includes('body.suite-home .main > footer { display: none; }'));
   assert.ok(readme.includes('with no secondary captions'));
 });
@@ -206,7 +206,7 @@ test('Suite Home, Apps and Files share clean navigation and truthful product act
   const home = read('assets/product-experience/brightdesk-home.svg');
 
   assert.match(app, /\$\('sidebar-section-label'\)\.hidden = Boolean\(launchAppId\) \|\| suitePage;/);
-  assert.ok(styles.includes('.sidebar > .nav small { display: none; }'));
+  assert.ok(/\.sidebar > \.nav small\s*\{\s*display: none;\s*\}/.test(styles));
 
   assert.equal((home.match(/>IN YOUR SUITE<\/text>/g) || []).length, 10);
   assert.equal((home.match(/>Remove from Suite<\/text>/g) || []).length, 10);
