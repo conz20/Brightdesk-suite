@@ -8,7 +8,7 @@ const { JSDOM } = require('jsdom');
 
 const root = path.join(__dirname, '..');
 const read = file => fs.readFileSync(path.join(root, file), 'utf8');
-const productIds = ['pages', 'sheets', 'slides', 'notes', 'database', 'forms', 'lists', 'planner', 'todo', 'workspace'];
+const productIds = ['pages', 'sheets', 'slides', 'notes', 'database', 'forms', 'lists', 'planner', 'todo', 'loop'];
 
 async function bootSuite(t) {
   const dom = new JSDOM(read('src/index.html'), {
@@ -267,10 +267,10 @@ test('product settings can hide Switch product navigation without removing local
   restoredCard.querySelector('.app-card-menu-item').click();
   assert.ok(window.document.querySelector('#dynamic-app-nav [data-app="pages"]'));
 
-  const workspaceCard = window.document.querySelector('[data-app-id="workspace"]');
+  const workspaceCard = window.document.querySelector('[data-app-id="loop"]');
   workspaceCard.querySelector('[data-action="remove-from-suite"]').click();
   const setup = JSON.parse(window.localStorage.getItem('brightdesk-app-setup-v1'));
-  assert.equal(setup.installedApps.includes('workspace'), false);
+  assert.equal(setup.installedApps.includes('loop'), false);
   const removedCard = window.document.querySelector('[data-app-id="workspace"]');
   removedCard.querySelector('[data-action="add-to-suite"]').click();
   const restoredSetup = JSON.parse(window.localStorage.getItem('brightdesk-app-setup-v1'));
