@@ -22,3 +22,6 @@ Outlook, OneDrive and Teams are excluded. Do not add them.
 Brightdesk is an independent desktop product with original branding and implementation. Keep installers native to their target operating systems. Keep work within free/no-cost tooling. Do not request payment details, enable paid services or publish a release without explicit owner approval.
 
 Read README.md before each development stage and update it as work progresses. Do not claim tests or builds passed unless they were actually run successfully.
+
+## Version maintenance rule (owner-approved 28 November 2026)
+Always check the newest upstream stable versions before updates. Use the newest compatible stable version and prove it with tests/builds. If one candidate breaks compatibility, revert only that component to its previous stable compatible version, record the exception and continue unrelated updates. Do not globally roll back or stop the portfolio for one incompatible dependency. Keep exact versions and evidence recorded; recheck exceptions later. Older versions are acceptable in archives and explicit compatibility exceptions, not as assumed current versions. Continue fixing bugs and updating Brightdesk after 0.1.0.
