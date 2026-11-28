@@ -31,16 +31,19 @@ test('packaged startup accepts the loaded Brightdesk navigation shell', () => {
     title: 'Brightdesk',
     hasSidebar: true,
     hasAppManager: true,
-    hasLanguageManager: true
+    hasLanguageManager: true,
+    hasSettingsManager: true
   }), true);
 });
 
 test('packaged startup rejects a partial or unloaded interface', () => {
   for (const state of [
     null,
-    { title: 'Brightdesk', hasSidebar: false, hasAppManager: true, hasLanguageManager: true },
-    { title: 'Brightdesk', hasSidebar: true, hasAppManager: false, hasLanguageManager: true },
-    { title: 'Unexpected page', hasSidebar: true, hasAppManager: true, hasLanguageManager: true }
+    { title: 'Brightdesk', hasSidebar: false, hasAppManager: true, hasLanguageManager: true, hasSettingsManager: true },
+    { title: 'Brightdesk', hasSidebar: true, hasAppManager: false, hasLanguageManager: true, hasSettingsManager: true },
+    { title: 'Brightdesk', hasSidebar: true, hasAppManager: true, hasLanguageManager: false, hasSettingsManager: true },
+    { title: 'Brightdesk', hasSidebar: true, hasAppManager: true, hasLanguageManager: true, hasSettingsManager: false },
+    { title: 'Unexpected page', hasSidebar: true, hasAppManager: true, hasLanguageManager: true, hasSettingsManager: true }
   ]) {
     assert.throws(
       () => assertMainWindowReady(state),
@@ -71,12 +74,14 @@ test('screenshot capture mode isolates Electron profile paths and invokes the re
   assert.match(source, /await runScreenshotCaptureTest/);
 });
 
-test('main-branch CI uploads only pending-review screenshot evidence', () => {
+test('same-repository pull-request CI captures exact-head pending-review screenshots', () => {
   const workflow = fs.readFileSync(path.join(root, '.github', 'workflows', 'ci.yml'), 'utf8');
   const manifest = require('../package.json');
   assert.equal(manifest.scripts['capture:screenshots'], 'node scripts/capture-suite-screenshots.js');
-  assert.ok(workflow.includes("if: github.event_name == 'push' && github.ref == 'refs/heads/main'"));
+  assert.ok(workflow.includes("github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository"));
+  assert.ok(workflow.includes('ref: ${{ github.event.pull_request.head.sha || github.sha }}'));
+  assert.ok(workflow.includes("github.event_name == 'push' && github.ref == 'refs/heads/main'"));
   assert.match(workflow, /actions\/upload-artifact@[a-f0-9]{40}/);
   assert.ok(workflow.includes('retention-days: 14'));
-  assert.ok(workflow.includes('continue-on-error: true'));
+  assert.ok(workflow.includes("continue-on-error: ${{ github.event_name == 'push' }}"));
 });
