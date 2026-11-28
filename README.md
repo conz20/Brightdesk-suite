@@ -110,6 +110,14 @@ A genuine screenshot must come from the current Electron build with non-sensitiv
 
 The Windows NSIS installer and macOS DMG/PKG present the Brightdesk Terms and Conditions before installation can continue. Choose **Accept** or **Agree** to proceed, or **Decline** or **Disagree** to cancel; declining stops installation. Linux AppImage/DEB packages use a blocking in-product agreement on first launch because AppImage has no installer agreement page. The Brightdesk workspace does not open until the agreement is accepted; declining or closing it exits the product. For a first-time Mac installation, use the DMG or PKG rather than the update ZIP.
 
+## Visual preview and screenshots
+
+The preview below is a **design concept**, not a screenshot of a running Brightdesk build. Its example installation states, update counts and controls are illustrative. This repository does not yet contain captured, acceptance-tested screenshots of the running suite or the ten individual product workspaces. Do not treat concept artwork as evidence that a displayed action is implemented.
+
+![Brightdesk app-centre concept preview](assets/previews/suite-dashboard-concept.svg)
+
+Actual screenshots for the suite and each of the ten approved applications should be added only after the corresponding screen is implemented, launched and acceptance-tested.
+
 ## Local-first desktop software
 
 Brightdesk is designed to keep product data on the current device. The first-use features described above do not require an account, cloud workspace or online collaboration. Some tasks such as downloads and update checks may use network access when explicitly requested.
