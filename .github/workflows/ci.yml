@@ -63,7 +63,7 @@ jobs:
         continue-on-error: ${{ github.event_name == 'push' }}
         env:
           BRIGHTDESK_SCREENSHOT_OUTPUT_DIR: ${{ runner.temp }}/brightdesk-screenshots
-          GITHUB_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          BRIGHTDESK_SOURCE_COMMIT: ${{ github.event.pull_request.head.sha || github.sha }}
         run: npm run capture:screenshots
 
       - name: Upload pending-review screenshot evidence
