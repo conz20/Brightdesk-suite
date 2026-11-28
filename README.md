@@ -16,13 +16,13 @@ The Suite's identity belongs in the installed application identity and native ap
 
 ## The Brightdesk Suite experience
 
-<p align="center"><img src="assets/product-experience/brightdesk-home.svg" alt="Brightdesk Suite Home design showing the current 238-pixel Home, Apps and Files sidebar and all ten original product cards" width="100%"></p>
+<p align="center"><img src="assets/product-experience/brightdesk-home.svg" alt="Brightdesk Suite Home design showing a compact Home, Apps and Files icon-and-label navigation panel and all ten original product cards" width="100%"></p>
 
-The artwork above is the approved production Home screen design and the single visual source of truth for the desktop interface. It shows the intended Brightdesk Suite appearance: the Home, Apps and Files navigation, ten original product cards, and Notifications and Settings controls.
+The artwork above is the approved Home screen design reference. It shows the intended Brightdesk Suite appearance: a compact Home, Apps and Files navigation panel, ten original product cards, and Notifications and Settings controls.
 
-The approved sidebar uses **Home**, **Apps** and **Files**, with no secondary captions in the Home view. At the 1600 × 900 reference size, it is 238 px wide and uses a deep-navy vertical gradient. Its small uppercase heading is **YOUR WORKSPACE**. The three destinations appear in this order: **Home**, **Apps** and **Files**, each with its own original line icon. **Home** is selected in the Home view shown here. The Files icon is an open folder with a visible document stack.
+The artwork uses a compact 238 px-wide, deep-navy navigation panel containing only the small uppercase **YOUR WORKSPACE** heading and the three icon-and-label destinations: **Home**, **Apps** and **Files**. **Home** is selected. There are no secondary captions, repeated Brightdesk logo or wordmark, divider, or footer in this compact illustration. The Files icon is an open folder with a visible document stack.
 
-The Home sidebar deliberately does not repeat the Brightdesk logo or wordmark. The Suite identity remains in the installed application identity and native application window. A divider separates the navigation from the footer, which shows the **Desktop** platform label and **Local-first · Your files stay here**.
+This is a compact presentation of the navigation, not a change to the live application layout. The actual desktop sidebar remains full-height and retains its **Desktop** and **Local-first · Your files stay here** footer. The Suite identity remains in the installed application identity and native application window.
 
 The no-caption treatment applies specifically to Home. The same **Home**, **Apps** and **Files** destinations remain available when moving around the Suite; **Apps** becomes selected on product management and **Files** becomes selected on the local file-access page. Those non-Home views can show short explanatory captions beneath the navigation labels.
 
