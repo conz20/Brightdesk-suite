@@ -1,4 +1,5 @@
-'use strict';
+(function attachBrightdeskDatabaseService(root) {
+  'use strict';
 const TYPES=new Set(['text','number','date','email','url','checkbox','select']);
 const makeId=prefix=>globalThis.crypto?.randomUUID?.()||`${prefix}-${Date.now()}-${Math.random().toString(16).slice(2)}`;
 const stamp=value=>{const d=value instanceof Date?value:new Date(value||Date.now());if(Number.isNaN(d.getTime()))throw new Error('A valid date and time is required.');return d.toISOString();};
@@ -22,4 +23,6 @@ function deleteRecord(database,tableId,recordId,opts={}){const db=clone(database
 function queryRecords(database,tableId,options={}){const table=findTable(database,tableId),search=String(options.search||'').trim().toLowerCase();let rows=table.rows.filter(row=>!search||table.fields.some(f=>String(row.values[f.id]??'').toLowerCase().includes(search)));if(options.sortBy){const field=table.fields.find(f=>f.id===options.sortBy||f.name===options.sortBy);if(field)rows.sort((a,b)=>{const x=a.values[field.id],y=b.values[field.id];const result=x==null?(y==null?0:1):y==null?-1:typeof x==='number'&&typeof y==='number'?x-y:String(x).localeCompare(String(y),undefined,{numeric:true,sensitivity:'base'});return x==null||y==null?result:options.direction==='desc'?-result:result;});}return rows.map(r=>({...r,values:{...r.values}}));}
 function csvEscape(value){const raw=value===null||value===undefined?'':String(value);const s=typeof value==='string'&&/^[\u0000-\u0020]*[=+\-@]/.test(value)?`'${raw}`:raw;return /[",\r\n\t]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s;}
 function toCSV(database,tableId){const table=findTable(database,tableId),fields=table.fields;return[fields.map(f=>csvEscape(f.name)).join(','),...table.rows.map(row=>fields.map(f=>csvEscape(row.values[f.id])).join(','))].join('\n');}
-const api={createDatabase,addTable,renameTable,deleteTable,addField,updateField,deleteField,addRecord,updateRecord,deleteRecord,queryRecords,toCSV};if(typeof window!=='undefined')window.BrightdeskDatabaseService=api;if(typeof module!=='undefined'&&module.exports)module.exports=api;
+const api={createDatabase,addTable,renameTable,deleteTable,addField,updateField,deleteField,addRecord,updateRecord,deleteRecord,queryRecords,toCSV};if (root) root.BrightdeskDatabaseService = api;if(typeof module!=='undefined'&&module.exports)module.exports=api;
+
+})(typeof globalThis !== 'undefined' ? globalThis : window);
