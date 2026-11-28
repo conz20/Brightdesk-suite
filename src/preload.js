@@ -20,6 +20,8 @@ const supportedApps = new Set([
 
 contextBridge.exposeInMainWorld('brightdesk', {
   launchAppId: supportedApps.has(launchAppId) ? launchAppId : null,
+  listFonts: () => ipcRenderer.invoke('fonts:list'),
+  getFontStylesheetUrls: () => ipcRenderer.invoke('fonts:stylesheet-urls'),
   suiteLaunchedProduct,
   openApplication: (applicationId) => ipcRenderer.invoke('apps:open', applicationId),
   platform: process.platform,

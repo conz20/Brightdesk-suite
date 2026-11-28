@@ -1,0 +1,20 @@
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url("./assets/fonts/inter/Inter[opsz,wght].ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Inter";
+  font-style: italic;
+  font-weight: 100 900;
+  font-display: swap;
+  font-optical-sizing: auto;
+  src: url("./assets/fonts/inter/Inter-Italic[opsz,wght].ttf") format("truetype");
+}
+
+:root { --brightdesk-font-family: "Inter", system-ui, sans-serif; }
+body { font-family: var(--brightdesk-font-family); font-optical-sizing: auto; }
+button, input, select, textarea { font-family: inherit; }

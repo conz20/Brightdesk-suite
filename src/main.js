@@ -23,6 +23,7 @@ if (process.env.BRIGHTDESK_SCREENSHOT_CAPTURE_TEST === '1') {
 const { openOfficeFile, exportOfficeFile, cleanFileName, ensureExtension } = require('./file-service');
 const { BUILTIN_LANGUAGES, validateLanguagePack, getBuiltinLanguage } = require('./language-service');
 const { DictionaryService } = require('./dictionary-service');
+const { FontLibraryService } = require('./font-library-service');
 const { DEFAULT_UPDATE_SETTINGS, normalizeUpdateSettings, getUpdaterPreferences } = require('./update-policy');
 const { shouldRequireFirstLaunchTerms } = require('./installer-terms-policy');
 const { launchProduct, PRODUCT_MANIFEST } = require('./product-launcher');
@@ -38,6 +39,7 @@ let updateCheckTimeout = null;
 let updateCheckInterval = null;
 let automaticUpdateChecksEnabled = DEFAULT_UPDATE_SETTINGS.autoCheck;
 let dictionaryService;
+let fontLibraryService;
 const supportedApplications = new Set(Object.keys(PRODUCT_MANIFEST));
 const authorizedApplicationWindows = new Set();
 const applicationId = packageConfig.brightdeskAppId || null;
@@ -154,6 +156,16 @@ function senderIsMain(event) {
       && !event.sender.isDestroyed()
   );
 }
+ipcMain.handle('fonts:list', event => {
+  if (!senderIsMain(event)) throw new Error('Invalid sender.');
+  return fontLibraryService ? fontLibraryService.list() : {
+    available: false, packages: [], installedPackageIds: [], families: []
+  };
+});
+ipcMain.handle('fonts:stylesheet-urls', event => {
+  if (!senderIsMain(event)) throw new Error('Invalid sender.');
+  return fontLibraryService ? fontLibraryService.getStylesheetUrls() : [];
+});
 ipcMain.handle('apps:open', async (event, requestedApplicationId) => {
   if (!senderIsMain(event)) throw new Error('Invalid sender.');
   if (!supportedApplications.has(requestedApplicationId)) throw new Error('Unsupported Brightdesk application.');
@@ -575,6 +587,14 @@ app.whenReady().then(async () => {
   app.setName(packageConfig.productName || packageConfig.build?.productName || (applicationId ? `Brightdesk ${PRODUCT_MANIFEST[applicationId].name}` : 'Brightdesk Office Suite'));
   if (process.platform === 'win32') app.setAppUserModelId(applicationId ? `org.brightdesk.${applicationId}` : 'org.brightdesk.suite');
   const sharedResources = await ensureSharedResourcesDirectory();
+  fontLibraryService = new FontLibraryService({
+    bundledRoot: path.join(app.getAppPath(), 'packages', 'fonts'),
+    sharedRoot: path.join(sharedResources, 'font-library')
+  });
+  const fontLibraryStatus = fontLibraryService.initialize({ required: app.isPackaged });
+  if (!fontLibraryStatus.available) {
+    console.warn('The shared Brightdesk font library is not available in this development build.');
+  }
   dictionaryService = new DictionaryService(sharedResources);
   Menu.setApplicationMenu(null);
   if (process.env.BRIGHTDESK_SCREENSHOT_CAPTURE_TEST === '1') {

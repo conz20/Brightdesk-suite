@@ -38,12 +38,72 @@ const state = {
   slideTheme: 'lavender', focusMode: false, editorZoom: 100, sheetZoom: 100,
   languageCatalog: [], installedLanguagePacks: [], spellCheckerLanguages: [], usesNativeMacSpellChecker: false,
   displayLanguage: 'en-AU', proofingLanguage: 'en-AU',
-  installedDictionaries: [], dictionaryCatalogue: [], selectedDictionary: localStorage.getItem('brightdesk-selected-dictionary') || ''
+  installedDictionaries: [], dictionaryCatalogue: [], selectedDictionary: localStorage.getItem('brightdesk-selected-dictionary') || '',
+  fontLibrary: { available: false, packages: [], installedPackageIds: [], families: [] }
 };
 const editor = $('editor'), sheetWrap = $('sheet-wrap'), slideWrap = $('slide-wrap'), notesWrap = $('notes-wrap');
 const pageLayout = window.BrightdeskPageLayout;
 
 function clone(value) { return JSON.parse(JSON.stringify(value)); }
+
+const FONT_PREFERENCE_KEY = 'brightdesk-font-family-v1';
+function availableFontFamilies() {
+  if (!state.fontLibrary.available || !Array.isArray(state.fontLibrary.families)) return [];
+  return state.fontLibrary.families.map(font => ({
+    family: font.familyName,
+    id: font.packageId,
+    styles: font.styles,
+    scripts: font.scripts
+  }));
+}
+async function loadFontLibrary() {
+  if (typeof window.brightdesk.listFonts !== 'function') return;
+  try {
+    const library = await window.brightdesk.listFonts();
+    if (!library || library.available !== true || !Array.isArray(library.families)) return;
+    state.fontLibrary = library;
+    const urls = await window.brightdesk.getFontStylesheetUrls?.();
+    if (Array.isArray(urls)) {
+      for (const url of urls) {
+        if (typeof url !== 'string' || !url.startsWith('file://')) continue;
+        const exists = [...document.querySelectorAll('link[data-brightdesk-font-package]')]
+          .some(link => link.href === url);
+        if (exists) continue;
+        const link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.href = url;
+        link.dataset.brightdeskFontPackage = 'true';
+        document.head.append(link);
+      }
+    }
+  } catch (error) {
+    console.error('The shared Brightdesk font library could not be loaded.', error);
+  }
+}
+function fontStackFor(family) {
+  if (family === 'system') return 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+  const match = availableFontFamilies().find(font => font.family === family);
+  return match ? '"' + match.family + '", system-ui, sans-serif' : 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+}
+function applyFontPreference(family = localStorage.getItem(FONT_PREFERENCE_KEY) || 'Inter') {
+  const valid = family === 'system' || availableFontFamilies().some(font => font.family === family);
+  const selected = valid ? family : (availableFontFamilies()[0]?.family || 'system');
+  document.documentElement.style.setProperty('--brightdesk-font-family', fontStackFor(selected));
+  localStorage.setItem(FONT_PREFERENCE_KEY, selected);
+  const control = $('font-family-choice');
+  if (control && control.value !== selected) control.value = selected;
+  return selected;
+}
+function populateFontFamilyControl() {
+  const control = $('font-family-choice');
+  if (!control) return;
+  control.replaceChildren();
+  const system = document.createElement('option'); system.value = 'system'; system.textContent = 'System default'; control.append(system);
+  availableFontFamilies().forEach(font => { const option = document.createElement('option'); option.value = font.family; option.textContent = font.family; control.append(option); });
+  control.value = applyFontPreference();
+  control.addEventListener('change', () => applyFontPreference(control.value));
+}
+
 function activeDoc() { return state.docs[state.app]; }
 function setStatus(message) { $('save-status').textContent = message; }
 function persist() {
@@ -144,6 +204,14 @@ function renderToolbar() {
   if (app === 'pages') {
     if (tab === 'home') {
       const font = group('text');
+      const documentFont = document.createElement('select');
+      documentFont.className = 'font-family-select';
+      documentFont.setAttribute('aria-label', 'Document font');
+      const defaultFont = document.createElement('option'); defaultFont.value = ''; defaultFont.textContent = 'Default font'; documentFont.append(defaultFont);
+      availableFontFamilies().forEach(item => { const option = document.createElement('option'); option.value = item.family; option.textContent = item.family; documentFont.append(option); });
+      documentFont.value = activeDoc().fontFamily || '';
+      documentFont.addEventListener('change', () => { activeDoc().fontFamily = documentFont.value; applyPageLayout(); persist(); });
+      font.append(documentFont);
       [[label('bold'),'bold'],[label('italic'),'italic'],[label('underline'),'underline'],[label('heading1'),'heading'],[label('heading2'),'subheading']].forEach(([label, cmd]) => addButton(font, label, () => {
         editor.focus(); if (cmd === 'heading') document.execCommand('formatBlock', false, 'H1'); else if (cmd === 'subheading') document.execCommand('formatBlock', false, 'H2'); else document.execCommand(cmd); persist();
       }, label));
@@ -264,6 +332,7 @@ function applyPageLayout() {
   activeDoc().pageSettings = settings;
   Object.assign(editor.style, pageLayout.getPageStyle(settings));
   editor.style.maxWidth = 'calc(100% - 40px)';
+  editor.style.fontFamily = activeDoc().fontFamily ? fontStackFor(activeDoc().fontFamily) : 'var(--brightdesk-font-family)';
 }
 function changeEditorZoom(delta) { state.editorZoom = Math.max(70, Math.min(160, state.editorZoom + delta)); applyEditorZoom(); }
 function applyEditorZoom() { editor.style.fontSize = `${14 * state.editorZoom / 100}px`; setStatus(`Document zoom ${state.editorZoom}%`); }
@@ -855,6 +924,7 @@ function render() {
   $('welcome').hidden = suitePage || files || languages || ['todo','lists','forms','planner','database','loop'].includes(state.app);
   $('app-title').textContent = home ? t('home.title') : (manager ? t('sidebar.applications') : (files ? 'Files' : (languages ? t('language.title') : (catalog.find(item => item.id === state.app)?.name || state.app))));
   $('top-actions').hidden = languages;
+  $('font-family-control').hidden = suitePage || files || languages;
   $('save-status').hidden = suitePage || files || languages;
   $('open-button').hidden = suitePage || files || languages;
   $('save-project').hidden = suitePage || files || languages;
@@ -1099,5 +1169,7 @@ loadLocal();
   } catch (error) { console.warn('The desktop version could not be read.', error); }
   try { await refreshLanguageData(); } catch(error) { console.error('Language packs could not be loaded.',error); }
   try { await refreshDictionaries(); } catch(error) { console.error('Spelling dictionaries could not be loaded.',error); }
+  await loadFontLibrary();
+  populateFontFamilyControl();
   render();
 })();
