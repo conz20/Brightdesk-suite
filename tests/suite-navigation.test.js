@@ -140,7 +140,7 @@ test('production Home artwork matches the live desktop headings and card layout'
   const guide = read('docs/BRIGHTDESK_VISUAL_STANDARD.md');
   const home = read('assets/product-experience/brightdesk-home.svg');
   assert.ok(html.includes('<h1 id="app-title">Your apps</h1>'));
-  assert.ok(home.includes('y="65" font-family="Arial, sans-serif" font-size="12" font-weight="700" letter-spacing="2" fill="#7786A0">YOUR WORKSPACE</text>'));
+  assert.ok(home.includes('y="65" font-family="Arial, sans-serif" font-size="12" font-weight="700" letter-spacing="2" fill="#5F6F88">YOUR WORKSPACE</text>'));
   assert.ok(home.includes('y="111" font-family="Arial, sans-serif" font-size="34" font-weight="700" fill="#1B2941">Your apps</text>'));
   assert.ok(home.includes('y="202" font-family="Arial, sans-serif" font-size="20" font-weight="700" fill="#1B2941">Your products</text>'));
   assert.ok(home.includes('Ten focused tools, connected by one Brightdesk experience.'));
@@ -285,7 +285,7 @@ test('Settings screen keeps suite navigation available and language settings ret
   assert.match(html, /id="settings-manager"/);
   assert.match(app, /previousView: 'settings'/);
   assert.match(app, /state\.previousView = state\.view;/);
-  assert.match(app, /\$\('back-to-apps'\)\.addEventListener\('click',[\s\S]*?state\.view=state\.previousView/);
+  assert.match(app, /\$\('back-to-apps'\)\.addEventListener\('click',[\s\S]*?state\.view=\['settings','manager'\]\.includes\(state\.previousView\) \? state\.previousView : 'settings'/);
   assert.match(app, /\$\('home-nav'\)\.addEventListener/);
   assert.match(app, /\$\('app-centre-nav'\)\.addEventListener/);
   assert.match(app, /\$\('files-nav'\)\.addEventListener/);
@@ -293,12 +293,12 @@ test('Settings screen keeps suite navigation available and language settings ret
 
 
 test('Suite navigation image assets all exist in the packaged renderer', () => {
-  const html = read('src/index.html');
-  const imagePaths = [...html.matchAll(/<img\\b[^>]*\\bsrc="([^"]+)"/g)].map(match => match[1]);
-  assert.ok(imagePaths.length > 0);
-  for (const imagePath of imagePaths) {
-    assert.ok(!imagePath.startsWith('http'), imagePath + ' must stay local');
-    assert.ok(fs.existsSync(path.join(__dirname, '..', 'src', imagePath)), imagePath + ' must exist');
+  const catalog = require('../src/app-catalog');
+  const iconNames = ['home.svg', 'apps.svg', 'files.svg', ...catalog.map(item => item.iconAsset)];
+  assert.equal(catalog.length, 10);
+  for (const iconName of iconNames) {
+    assert.ok(!iconName.startsWith('http'), iconName + ' must stay local');
+    assert.ok(fs.existsSync(path.join(__dirname, '..', 'src', 'assets', 'icons', iconName)), iconName + ' must exist');
   }
 });
 
