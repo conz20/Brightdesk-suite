@@ -73,6 +73,8 @@ All ten approved product areas are integrated into the main suite source and hav
 
 This table describes the first-use scope represented in source code. It is not a claim of complete feature parity with other office suites, final accessibility sign-off or release acceptance. Each product has explicit boundaries and acceptance checks in its documentation.
 
+The Database and Sheets demo tables use fictional placeholder contact labels such as **Example Contact**; they are sample data, not real customer records.
+
 ## Rust Node-API engine
 
 The Suite includes a Rust engine exposed to the Electron main process through a Node-API 8 native module. Electron and JavaScript continue to own application orchestration, user-interface state, file access and provider selection. The renderer does not load native code directly.
