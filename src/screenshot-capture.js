@@ -139,7 +139,13 @@ function waitForSuiteScreen(view, screenSelector, timeoutMs = 10000) {
     if (notificationPanel && !notificationPanel.hidden && notificationButton) notificationButton.click();
   }
 
-  for (const selector of controls[view]) {
+  const controlSelectors = controls[view].slice();
+  const updatePanel = document.querySelector('#update-settings-panel');
+  const notificationPanel = document.querySelector('#notification-panel');
+  if (view === 'update-settings' && updatePanel && !updatePanel.hidden) controlSelectors.pop();
+  if (view === 'notifications' && notificationPanel && !notificationPanel.hidden) controlSelectors.pop();
+
+  for (const selector of controlSelectors) {
     const control = document.querySelector(selector);
     if (!control || control.hidden || control.disabled) {
       return Promise.reject(new Error('The ' + view + ' navigation control ' + selector + ' is unavailable.'));
