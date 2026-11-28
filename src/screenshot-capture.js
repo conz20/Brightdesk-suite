@@ -137,7 +137,10 @@ function waitForSuiteScreen(view, screenSelector, timeoutMs = 10000) {
     const deadline = Date.now() + timeout;
     function check() {
       const screen = document.querySelector(screenSelector);
-      if (screen && !screen.hidden) {
+      const correctAppManagerMode = view === 'home'
+        ? screen?.classList.contains('home-view')
+        : (view === 'apps' ? !screen?.classList.contains('home-view') : true);
+      if (screen && !screen.hidden && correctAppManagerMode) {
         resolve({ view, active: true, screenVisible: true });
         return;
       }
