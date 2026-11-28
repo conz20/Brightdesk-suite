@@ -533,7 +533,7 @@ function renderAppManager() {
         const open = document.createElement('button'); open.className = 'primary small-action app-install-action';
         open.textContent = 'Open'; open.dataset.action = 'open'; open.setAttribute('aria-label', `Open ${item.name}`);
         open.addEventListener('click', async () => {
-          try { await window.brightdesk.openApplication(item.id); }
+          closeNotificationPanel(); try { await window.brightdesk.openApplication(item.id); }
           catch (error) { alert(error.message || `Could not open ${item.name}.`); }
         }); footer.append(open);
       }
@@ -988,10 +988,15 @@ function importProject(data){
   if(kind==='notes')state.docs.notes={title:data.title||'Imported note',text:data.text||''};
   state.app=kind; state.view='workspace'; state.ribbonTab='home'; state.focusMode=false;
 }
+function closeNotificationPanel() {
+  const panel = $('notification-panel');
+  if (panel) panel.hidden = true;
+  $('open-notifications')?.setAttribute('aria-expanded', 'false');
+}
 function escapeHtml(value){return String(value).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));}
-async function openFile(){try{const data=await window.brightdesk.openFile();if(!data)return;importProject(data);persist();render();setStatus('File opened');}catch(error){alert(`Could not open file: ${error.message}`);}}
+async function openFile(){closeNotificationPanel();try{const data=await window.brightdesk.openFile();if(!data)return;importProject(data);persist();render();setStatus('File opened');}catch(error){alert(`Could not open file: ${error.message}`);}}
 async function saveProject(){try{const result=await window.brightdesk.saveProject({title:$('doc-title').value,docs:state.docs});if(!result?.canceled)setStatus('Project saved');}catch(error){alert(`Could not save project: ${error.message}`);}}
-function setApp(app){if((launchAppId && app !== launchAppId) || !(configs[app] || genericConfigs[app]) || !installedApp(app))return;state.app=app;state.view='workspace';state.ribbonTab='home';render();persist();}
+function setApp(app){closeNotificationPanel();if((launchAppId && app !== launchAppId) || !(configs[app] || genericConfigs[app]) || !installedApp(app))return;state.app=app;state.view='workspace';state.ribbonTab='home';render();persist();}
 
 document.querySelectorAll('.nav[data-app]').forEach(btn=>btn.addEventListener('click',()=>setApp(btn.dataset.app)));
 document.addEventListener('click', event => {
@@ -1002,22 +1007,22 @@ document.addEventListener('keydown', event => {
   if (event.key !== 'Escape') return;
   document.querySelectorAll('.app-card-menu').forEach(menu => { menu.hidden = true; menu.closest('.app-card-menu-wrap')?.querySelector('.app-card-menu-trigger')?.setAttribute('aria-expanded', 'false'); });
 });
-$('home-nav').addEventListener('click',()=>{if(launchAppId)return;state.view = 'home';render();});
-$('app-centre-nav').addEventListener('click',()=>{if(launchAppId)return;state.view = 'manager';render();});
-$('files-nav').addEventListener('click',()=>{if(launchAppId)return;state.view = 'files';render();});
+$('home-nav').addEventListener('click',()=>{if(launchAppId)return;closeNotificationPanel();state.view = 'home';render();});
+$('app-centre-nav').addEventListener('click',()=>{if(launchAppId)return;closeNotificationPanel();state.view = 'manager';render();});
+$('files-nav').addEventListener('click',()=>{if(launchAppId)return;closeNotificationPanel();state.view = 'files';render();});
 $('files-open-button').addEventListener('click', openFile);
 $('files-save-button').addEventListener('click', saveProject);
-$('open-settings').addEventListener('click',()=>{if (launchAppId) return; state.view='settings';render();});
+$('open-settings').addEventListener('click',()=>{if (launchAppId) return; closeNotificationPanel(); state.view='settings';render();});
 $('open-notifications').addEventListener('click',()=>{const panel=$('notification-panel');panel.hidden=!panel.hidden;$('open-notifications').setAttribute('aria-expanded',String(!panel.hidden));if(!panel.hidden)markNotificationsRead();});
 $('clear-notifications').addEventListener('click',clearNotifications);
-document.addEventListener('keydown',event=>{if(event.key==='Escape'&&!$('notification-panel').hidden){$('notification-panel').hidden=true;$('open-notifications').setAttribute('aria-expanded','false');}});
-$('manage-languages').addEventListener('click',openLanguageManager);
+document.addEventListener('keydown',event=>{if(event.key==='Escape'&&!$('notification-panel').hidden)closeNotificationPanel();});
+$('manage-languages').addEventListener('click',()=>{closeNotificationPanel();openLanguageManager();});
 $('display-language').addEventListener('change',event=>changeDisplayLanguage(event.target.value));
 $('proofing-language').addEventListener('change',event=>changeProofingLanguage(event.target.value));
 $('proofing-dictionary').addEventListener('change',event=>{state.selectedDictionary=event.target.value;localStorage.setItem('brightdesk-selected-dictionary',state.selectedDictionary);renderToolbar();});
 $('check-current-document').addEventListener('click',checkCurrentDocumentSpelling);
-$('back-to-apps').addEventListener('click',()=>{state.view=['settings','manager'].includes(state.previousView) ? state.previousView : 'settings';render();});
-$('finish-app-setup').addEventListener('click',()=>{if(state.setupComplete){state.view='home';render();}else completeAppSetup();});
+$('back-to-apps').addEventListener('click',()=>{closeNotificationPanel();state.view=['settings','manager'].includes(state.previousView) ? state.previousView : 'settings';render();});
+$('finish-app-setup').addEventListener('click',()=>{if(state.setupComplete){closeNotificationPanel();state.view='home';render();}else completeAppSetup();});
 $('doc-title').addEventListener('change',()=>{activeDoc().title=$('doc-title').value;persist();});
 editor.addEventListener('input',()=>{activeDoc().html=editor.innerHTML;persist();});
 $('notes-editor').addEventListener('input',()=>{activeDoc().text=$('notes-editor').value;persist();});
