@@ -35,7 +35,7 @@ Outlook, OneDrive and Teams are not part of Brightdesk and must not be added.
 
 ## Pricing, accounts and privacy lock
 
-- **Free forever:** no subscriptions, trials, paid tiers or billing.
+- **Free forever:** no subscriptions, trials, paid tiers or billing. No subscriptions, trials, paid tiers or billing are offered to customers.
 - No customer accounts, sign-in, passwords, profiles, activation codes, serial numbers or licence servers.
 - No telemetry, analytics, advertising, crash reporting, cloud sync or collaboration; no customer text uploads. No remote AI service or customer document uploads.
 - Product data, document processing and spelling checks stay on the device.
