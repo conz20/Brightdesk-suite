@@ -4,6 +4,10 @@ Ten focused desktop products. One consistent Brightdesk experience.
 
 Brightdesk is an independent, local-first desktop productivity suite. It uses original product names, code, interface design and artwork. It is not affiliated with Microsoft, Adobe or ArtCraft.
 
+The Brightdesk Suite source code is distributed under the standard MIT License. The complete grant, conditions and disclaimer are in [LICENSE](LICENSE). MIT permits use, modification and redistribution of covered code, including commercial redistribution, provided its notice requirements are followed. Brightdesk's official downloads remain free of charge. The MIT licence does not grant rights to use Brightdesk branding or imply that a modified build is an official release. Third-party components retain their own licences; see [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md). The ten separately maintained product source copies carry the same standard MIT terms and Brightdesk project attribution; their notices remain subject to the same third-party licence boundaries.
+
+<p align="center"><img src="assets/brand/brightdesk-copyright-mark.svg" alt="Brightdesk copyright identity mark" width="440"></p>
+
 ## The ten approved products
 
 | Product | Original icon | Purpose |
@@ -72,6 +76,10 @@ All ten approved product areas are integrated into the main suite source and hav
 | **Workspace** | Create workspaces and pages; add and organise text, heading, bullet, callout, divider and checklist blocks. |
 
 This table describes the first-use scope represented in source code. It is not a claim of complete feature parity with other office suites, final accessibility sign-off or release acceptance. Each product has explicit boundaries and acceptance checks in its documentation.
+
+The Database and Sheets demo tables use fictional placeholder contact labels such as **Example Contact**; they are sample data, not real customer records.
+
+The 92-entry spelling catalogue is source metadata only. No dictionary pack is currently built, licence-cleared, engine-verified or published. The Suite does not download dictionary files directly from third-party hosts; new packs will become installable only through the signed official Brightdesk resource channel. Previously installed integrity-verified dictionaries remain available offline.
 
 ## Rust Node-API engine
 
