@@ -74,7 +74,11 @@ Do not present a fake Install or Uninstall action when only the integrated Suite
 
 ### 3. Trusted release and package handling
 
-Use a Brightdesk-controlled release manifest as the source of package metadata. Each package record must identify the product, release version, operating system, architecture, package format, filename, download location, file size where available and SHA-256 digest.
+Use a Brightdesk-controlled release manifest as the source of package metadata. Each package record must identify the product, exact source repository, exact 40-character source commit, corresponding GitHub Actions workflow run URL, release version, operating system, architecture, package format, filename, public download location, non-zero file size and SHA-256 digest.
+
+The ten product packages must point to their own product repositories. The Suite's six package records use the Suite repository as their source. All six packages for a given product must be built from the same exact source commit. A complete 0.1.0 release contains exactly 66 unique package records: six formats for each of the ten products (60) plus six formats for the Suite.
+
+The validator checks manifest structure, package completeness, source-repository identity, commit-SHA format, per-repository commit consistency, approved release URLs and workflow-run URL ownership. It does not prove that a linked workflow passed or that an artifact is publicly reachable. The release pipeline must independently verify successful exact-commit jobs on GitHub-hosted Windows, macOS and Linux runners, then fetch each public asset and verify its actual size and SHA-256 before publication.
 
 - Resolve only approved Brightdesk release locations.
 - Select packages by the current operating system and architecture; never guess or silently substitute an incompatible build.
