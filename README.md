@@ -86,3 +86,11 @@ Product names must remain exactly: **Pages, Sheets, Decks, Notes, Database, Form
 Brightdesk is written as one word with a capital **B** in normal text. Keep the four-panel Suite mark, wordmark, colour palette, product names and original product icons consistent wherever Brightdesk is presented.
 
 Do not add products, alter approved product names, introduce unrelated visual marks, or place Suite branding inside the Home artwork. The Suite identity and the ten product identities work together as one original Brightdesk family.
+
+## Licensing, third-party notices and security
+
+The Suite's MIT-licensed source code is governed by the complete terms in [LICENSE](LICENSE). MIT permits use, modification, redistribution, sublicensing and commercial sale of covered code when its notice conditions are followed. Brightdesk's official downloads are intended to remain free of charge; that policy does not narrow rights granted by MIT.
+
+Third-party dependencies and assets retain their own licences and conditions. Preserve the applicable notices in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) and any item-specific licence files. Do not assume the Suite's MIT notice covers every bundled component or asset.
+
+For vulnerability reporting and release-security handling, follow [SECURITY.md](SECURITY.md). Do not publish sensitive vulnerability details in public issues. The portfolio's licensing, brand and asset-provenance rules are documented in [docs/LICENSING_AND_BRAND_STANDARD.md](docs/LICENSING_AND_BRAND_STANDARD.md).
