@@ -48,3 +48,26 @@ test('Brightdesk project licence must remain explicitly MIT', () => {
   fs.writeFileSync(path.join(paths.rootDir, 'package.json'), JSON.stringify({ name: 'brightdesk-suite', version: '0.3.4', license: 'UNLICENSED' }));
   assert.throws(() => auditProject(paths), /must keep its declared MIT licence/);
 });
+
+test('Suite and embedded product MIT notices use the standard copyright symbol', () => {
+  const notices = [
+    'LICENSE',
+    'Brightdesk-Pages/LICENSE',
+    'Brightdesk-Sheets/LICENSE',
+    'Brightdesk-Decks/LICENSE',
+    'Brightdesk-Notes/LICENSE',
+    'Brightdesk-Database/LICENSE',
+    'Brightdesk-Forms/LICENSE',
+    'Brightdesk-Lists/LICENSE',
+    'Brightdesk-Planner/LICENSE',
+    'Brightdesk-To-Do/LICENSE',
+    'Brightdesk-Workspace/LICENSE'
+  ];
+  for (const relativePath of notices) {
+    const text = fs.readFileSync(path.join(__dirname, '..', relativePath), 'utf8');
+    assert.match(text, /^MIT License\\r?\\n\\r?\\nCopyright © 2026 Bright Desk\\r?\\n/, relativePath);
+    assert.match(text, /Permission is hereby granted/, relativePath);
+    assert.match(text, /THE SOFTWARE IS PROVIDED "AS IS"/, relativePath);
+    assert.doesNotMatch(text, /Copyright \\(c\\) 2026 Bright Desk/, relativePath);
+  }
+});
