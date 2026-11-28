@@ -19,7 +19,7 @@ test('screenshot capture runs on pull requests and main pushes, using the exact 
   const workflow = fs.readFileSync(path.join(root, '.github', 'workflows', 'ci.yml'), 'utf8');
   const manifest = require('../package.json');
   assert.equal(manifest.scripts['capture:screenshots'], 'node scripts/capture-suite-screenshots.js');
-  assert.ok(workflow.includes("if: github.event_name == 'pull_request' ||"));
+  assert.ok(workflow.includes("github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository"));
   assert.ok(workflow.includes('ref: ${{ github.event.pull_request.head.sha || github.sha }}'));
   assert.ok(workflow.includes('GITHUB_SHA: ${{ github.event.pull_request.head.sha || github.sha }}'));
   assert.ok(workflow.includes("github.event_name == 'push' && github.ref == 'refs/heads/main'"));
