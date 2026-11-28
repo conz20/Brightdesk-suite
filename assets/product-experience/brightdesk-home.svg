@@ -1,37 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-labelledby="title desc">
-<title id="title">Brightdesk Suite Home with a slim icon-and-label navigation rail</title>
-<desc id="desc">Brightdesk Suite Home at 1600 by 900. A slim, full-height deep-navy navigation rail shows three simple destinations stacked vertically: Home, Apps and Files. Each destination has one original icon beside its name; Home is selected. There are no descriptions, extra headings or footer content in the rail. The main area shows all ten product cards and Notifications and Settings controls.</desc>
+<title id="title">Brightdesk Suite Home with a narrow vertical icon-and-label navigation rail</title>
+<desc id="desc">Brightdesk Suite Home at 1600 by 900. A narrow, full-height deep-navy navigation rail sits at the far left. Home, Apps and Files are three vertically stacked destinations, each with its original icon above its label; Home is selected. There are no secondary descriptions, extra sidebar heading or footer content. The main area begins beside the narrow rail and shows all ten product cards and Notifications and Settings controls.</desc>
 <defs><linearGradient id="side" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#14233F"/><stop offset="1" stop-color="#0D1930"/></linearGradient><linearGradient id="banner" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#E8F0FF"/><stop offset="1" stop-color="#F0ECFF"/></linearGradient><filter id="shadow" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="7" stdDeviation="14" flood-color="#1A2B4B" flood-opacity=".09"/></filter></defs>
 <rect width="1600" height="900" fill="#F2F5FA"/>
-<rect x="0" y="0" width="184" height="900" fill="url(#side)"/>
+<rect x="0" y="0" width="76" height="900" fill="url(#side)"/>
 <g id="sidebar-home">
-  <rect x="12" y="28" width="160" height="44" rx="7" fill="#293E65"/>
-  <g id="home-navigation-icon" transform="translate(22 35) scale(1.4167)" fill="none" stroke="#C9D6ED" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+  <rect x="8" y="12" width="60" height="64" rx="9" fill="#293E65"/>
+  <g id="home-navigation-icon" transform="translate(26 20) scale(1.0)" fill="none" stroke="#C9D6ED" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
     <path d="m3 10 9-7 9 7"/>
     <path d="M5 9.5V21h14V9.5"/>
     <path d="M9 21v-7h6v7"/>
   </g>
-  <text x="62" y="56" font-family="Arial, sans-serif" font-size="14" font-weight="700" fill="#FFFFFF">Home</text>
+  <text x="38" y="62" text-anchor="middle" font-family="Arial, sans-serif" font-size="10.5" font-weight="700" fill="#FFFFFF">Home</text>
 </g>
 <g id="sidebar-applications">
-  <g id="apps-launcher-icon" transform="translate(22 86) scale(1.0625)" fill="none" stroke="#C9D6ED" stroke-width="1.8">
+  <g id="apps-launcher-icon" transform="translate(26 91) scale(0.72)" fill="none" stroke="#C9D6ED" stroke-width="1.8">
     <rect x="3" y="3" width="11" height="11" rx="2.5"/>
     <rect x="18" y="3" width="11" height="11" rx="2.5"/>
     <rect x="3" y="18" width="11" height="11" rx="2.5"/>
     <rect x="18" y="18" width="11" height="11" rx="2.5"/>
   </g>
-  <text x="62" y="110" font-family="Arial, sans-serif" font-size="14" fill="#C4CFE2">Apps</text>
+  <text x="38" y="130" text-anchor="middle" font-family="Arial, sans-serif" font-size="10.5" fill="#C4CFE2">Apps</text>
 </g>
 <g id="sidebar-files">
-  <g id="files-folder-documents-icon" transform="translate(22 135) scale(1.4167)" fill="none" stroke="#C9D6ED" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+  <g id="files-folder-documents-icon" transform="translate(26 163) scale(1.0)" fill="none" stroke="#C9D6ED" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
     <path data-role="document-stack" d="M7 8V4.2A1.2 1.2 0 0 1 8.2 3h6.4L18 6.4V17H7z"/>
     <path d="M14.5 3.2v3.5H18M9.5 9.5h6M9.5 12.5h6"/>
     <path d="M3 9h5l1.8 2H21v8.2a1.3 1.3 0 0 1-1.3 1.3H4.3A1.3 1.3 0 0 1 3 19.2z"/>
     <path d="M3 9V7.3A1.3 1.3 0 0 1 4.3 6H7"/>
   </g>
-  <text x="62" y="164" font-family="Arial, sans-serif" font-size="14" fill="#C4CFE2">Files</text>
+  <text x="38" y="204" text-anchor="middle" font-family="Arial, sans-serif" font-size="10.5" fill="#C4CFE2">Files</text>
 </g>
+<g id="main-content" transform="translate(-102 0)">
 <text x="270" y="65" font-family="Arial, sans-serif" font-size="12" font-weight="700" letter-spacing="2" fill="#7786A0">YOUR WORKSPACE</text>
 <text x="270" y="111" font-family="Arial, sans-serif" font-size="34" font-weight="700" fill="#1B2941">Your apps</text>
 
@@ -231,4 +232,6 @@
 <rect x="1411" y="740" width="106" height="34" rx="9" fill="#FFFFFF" stroke="#DCE3ED"/><text x="1464" y="762" text-anchor="middle" font-family="Arial, sans-serif" font-size="10.5" font-weight="700" fill="#52627A">Uninstall</text></g>
 </g>
 <text x="270" y="850" font-family="Arial, sans-serif" font-size="11" fill="#8996AA">Ten original desktop products · Local-first files · Update alerts in Notifications</text>
+
+</g>
 </svg>
