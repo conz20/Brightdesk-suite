@@ -129,12 +129,28 @@ Each approved product has its own repository and product documentation:
 
 ## Connected developer ecosystem
 
-The Suite coordinates ten independently maintained product repositories: Pages, Sheets, Decks, Notes, Database, Forms, Lists, Planner, To Do and Workspace. The private [Brightdesk-AI](https://github.com/connormolloy12/Brightdesk-AI) repository supports engineering analysis and approved development workflows; it is not included in customer downloads and is not required to use the products.
+The Suite coordinates exactly ten independently maintained customer-product repositories: Pages, Sheets, Decks, Notes, Database, Forms, Lists, Planner, To Do and Workspace. Brightdesk-AI is separate private engineering tooling; it is not a customer product, is not included in customer downloads and is not required for normal product use.
 
-The ten existing shared infrastructure repositories are [Design System](https://github.com/connormolloy12/Brightdesk-Design-System), [Fonts](https://github.com/connormolloy12/Brightdesk-Fonts), [Localization](https://github.com/connormolloy12/Brightdesk-Localization), [Engine](https://github.com/connormolloy12/Brightdesk-Engine), [Common Libraries](https://github.com/connormolloy12/Brightdesk-Common-Libs), [Common Actions](https://github.com/connormolloy12/Brightdesk-Common-Actions), [Developer Tools](https://github.com/connormolloy12/Brightdesk-Developer-Tools), [Extensions](https://github.com/connormolloy12/Brightdesk-Extensions), [Wiki](https://github.com/connormolloy12/Brightdesk-Wiki) and [Release Tools](https://github.com/connormolloy12/Brightdesk-Release-Tools). Release Tools now exists as a private repository with an initial README; its release tooling implementation is still outstanding.
+### Current 28-repository portfolio — 28 November 2026
 
-Repository presence is not the same as completed integration. Shared packages and interfaces will be connected only after their source, tests, language compatibility and versioning are verified. Existing JavaScript, TypeScript, Rust and other languages remain supported; no language is being removed as part of this work. See the [developer ecosystem architecture](docs/DEVELOPER_ECOSYSTEM_ARCHITECTURE.md) for ownership, dependency direction and the safe integration sequence.
+The live GitHub inventory contains **28 active, unarchived repositories** owned by `conz20`; all 28 currently use `main` as their default branch:
 
+- **Suite (1):** [Brightdesk-suite](https://github.com/conz20/Brightdesk-suite).
+- **Customer products (exactly 10):** [Pages](https://github.com/conz20/Brightdesk-Pages), [Sheets](https://github.com/conz20/Brightdesk-Sheets), [Decks](https://github.com/conz20/Brightdesk-Decks), [Notes](https://github.com/conz20/Brightdesk-Notes), [Database](https://github.com/conz20/Brightdesk-Database), [Forms](https://github.com/conz20/Brightdesk-Forms), [Lists](https://github.com/conz20/Brightdesk-Lists), [Planner](https://github.com/conz20/Brightdesk-Planner), [To Do](https://github.com/conz20/Brightdesk-To-Do) and [Workspace](https://github.com/conz20/Brightdesk-Workspace).
+- **Separate AI engineering repository (1):** [Brightdesk-AI](https://github.com/conz20/Brightdesk-AI). It is internal engineering tooling, not customer product 11.
+- **Shared, engineering and supporting repositories (16):** [Fonts](https://github.com/conz20/Brightdesk-Fonts), [Localization](https://github.com/conz20/Brightdesk-Localization), [Engine](https://github.com/conz20/Brightdesk-Engine), [Design System](https://github.com/conz20/Brightdesk-Design-System), [Common Libraries](https://github.com/conz20/Brightdesk-Common-Libs), [Common Actions](https://github.com/conz20/Brightdesk-Common-Actions), [Developer Tools](https://github.com/conz20/Brightdesk-Developer-Tools), [Extensions](https://github.com/conz20/Brightdesk-Extensions), [Wiki](https://github.com/conz20/Brightdesk-Wiki), [Release Tools](https://github.com/conz20/Brightdesk-Release-Tools), [Services](https://github.com/conz20/Brightdesk-Services), [Type Preview](https://github.com/conz20/Brightdesk-Type-Preview), [Assets](https://github.com/conz20/Brightdesk-Assets), [Printing](https://github.com/conz20/Brightdesk-Printing), [Voice](https://github.com/conz20/Brightdesk-Voice) and [Archives](https://github.com/conz20/Brightdesk-Archives).
+
+GitHub currently reports **13 public and 15 private** repositories. The public repositories are Brightdesk-suite, Pages, Sheets, Decks, Database, Forms, Planner, To Do, Workspace, Design-System, Extensions, Wiki and Assets. This conflicts with the previously recorded requirement that all 28 repositories remain private. It is an observed policy discrepancy, not permission to change visibility. No repository visibility, permissions or settings were changed.
+
+### Repository boundaries and archive status
+
+- **Brightdesk-AI** is owner-controlled internal engineering/tooling only; it is not included in customer downloads and is not a customer runtime dependency.
+- **Brightdesk-Services** is experimental owner-operated infrastructure only. It is optional and must never become a customer runtime dependency.
+- **Brightdesk-Type-Preview** is local/offline preview infrastructure; it must not use hosted preview services.
+- **Brightdesk-Wiki** is a separate customer-help source, not a product, installed component, Suite dependency or product-UI entry.
+- **Brightdesk-Archives** is the private owner-controlled recovery repository. Its manifest lists all 28 repositories, but its baseline is still pending, every repository backup is marked `not_started`, and continuous backup plus restore testing are not configured or verified. Do not describe it as a completed automatic backup system.
+
+Repository presence, a README, a draft PR or a passing synthetic test suite is not proof of a working product integration. Shared capabilities must be verified in the Suite and each of the ten products independently.
 ## Development
 
 Use Node.js **24.22.2** for development, tests and release builds. Customers do not need to install Node.js; the desktop package includes its Electron runtime.
