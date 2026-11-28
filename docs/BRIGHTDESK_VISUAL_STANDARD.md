@@ -165,3 +165,10 @@ The **Apps** sidebar entry uses the original four-tile launcher icon from `asset
 - Pass each copied SVG to Windows, macOS and Linux Electron Builder targets. Electron Builder performs the platform conversion; do not maintain a second manually edited icon set.
 - Decks and Workspace use the `decks.svg` and `workspace.svg` build-resource names while retaining internal product IDs `slides` and `loop`.
 - Icon configuration is not proof of a verified installed icon. Check real Windows shortcuts and taskbar, macOS Dock and Finder, and Linux desktop launcher after each platform installer has been installed.
+
+
+## Suite navigation and product-window integrity
+
+The approved Suite sidebar uses **Home**, **Apps** and **Files**. No descriptive captions appear beneath those labels. The **Switch product** list appears only inside an active product workspace; it never replaces Suite navigation or appears as an online-service destination.
+
+Every product must pass Microsoft-style completeness checks and open in its own top-level application window. Opening a product must never silently replace the Suite renderer. Primary actions, navigation, dialogs, keyboard interaction, accessibility, local persistence and recovery must all work before a product is accepted.

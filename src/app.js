@@ -825,7 +825,7 @@ function render() {
     const isDatabase = state.app === 'database';
     const isWorkspace = state.app === 'loop';
     $('todo-wrap').hidden = !isTodo; $('lists-wrap').hidden = !isLists; $('forms-wrap').hidden = !isForms; $('planner-wrap').hidden = !isPlanner; $('database-wrap').hidden = !isDatabase; $('workspace-app-wrap').hidden = !isWorkspace;
-    $('open-button').hidden = isTodo || isLists || isForms || isPlanner || isDatabase || isWorkspace; $('save-project').hidden = isTodo || isLists || isForms || isPlanner || isDatabase || isWorkspace; $('export-button').hidden = isTodo || isLists || isForms || isPlanner || isDatabase || isWorkspace;
+    $('open-button').hidden = isTodo || isLists || isForms || isPlanner || isDatabase || isWorkspace; $('save-project').hidden = isTodo || isLists || isForms || isPlanner || isDatabase || isWorkspace; if ($('export-button')) $('export-button').hidden = isTodo || isLists || isForms || isPlanner || isDatabase || isWorkspace;
     document.querySelector('.document-bar').hidden = isTodo || isLists || isForms || isPlanner || isDatabase || isWorkspace; $('ribbon-tabs').hidden = isTodo || isLists || isForms || isPlanner || isDatabase || isWorkspace; $('toolbar').hidden = isTodo || isLists || isForms || isPlanner || isDatabase || isWorkspace;
     editor.hidden = !['pages'].includes(state.app); sheetWrap.hidden = state.app !== 'sheets'; slideWrap.hidden = state.app !== 'slides'; notesWrap.hidden = !['notes'].includes(state.app);
     editor.innerHTML = state.app === 'pages' ? safeHtml(doc.html) : '';
@@ -1039,7 +1039,7 @@ $('lists-sort-button').addEventListener('click',()=>{const list=currentList();if
 $('lists-rename').addEventListener('click',renameCurrentList);
 $('lists-delete').addEventListener('click',deleteCurrentList);
 $('lists-column-type').addEventListener('change',()=>{$('lists-column-options-wrap').hidden=$('lists-column-type').value!=='choice';});
-$('export-button').addEventListener('click',exportCurrent);$('open-button').addEventListener('click',openFile);$('save-project').addEventListener('click',saveProject);
+$('export-button')?.addEventListener('click',exportCurrent);$('open-button').addEventListener('click',openFile);$('save-project').addEventListener('click',saveProject);$('files-open-button').addEventListener('click',openFile);$('files-save-button').addEventListener('click',saveProject);
 $('update-settings-button').addEventListener('click',closeNotificationPanel);
 $('updates-button').addEventListener('click',async()=>{closeNotificationPanel();const msg=$('update-message');msg.hidden=false;msg.textContent=t('common.updateChecking');try{const r=await window.brightdesk.checkForUpdates();msg.textContent=r?.message||(r?.ok?'Update check started. You will be notified if an update is available.':'Update checks are not configured yet.');}catch(e){msg.textContent=`Update check failed: ${e.message}`;}});
 window.brightdesk.onUpdateState?.(handleUpdateState);
