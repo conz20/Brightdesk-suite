@@ -88,20 +88,22 @@ test('suite screenshot navigation opens every Suite screen before capture', asyn
     '<button id="app-centre-nav"></button>',
     '<button id="files-nav"></button>',
     '<button id="open-settings"></button>',
-    '<button id="manage-languages"></button>',
-    '<button id="update-settings-button"></button>',
-    '<button id="close-update-settings"></button>',
     '<button id="open-notifications"></button>',
     '<section id="app-manager" class="home-view"></section>',
     '<section id="files-manager" hidden></section>',
-    '<section id="settings-manager" hidden></section>',
+    '<section id="settings-manager" hidden>',
+    '  <button id="manage-languages"></button>',
+    '  <button id="update-settings-button"></button>',
+    '  <section id="update-settings-panel" hidden>',
+    '    <button id="close-update-settings"></button>',
+    '  </section>',
+    '</section>',
     '<section id="language-manager" hidden></section>',
-    '<section id="update-settings-panel" hidden></section>',
     '<section id="notification-panel" hidden></section>'
   ].join(''), { url: 'https://brightdesk.local', runScripts: 'outside-only' });
   try {
     const doc = dom.window.document;
-    const screens = ['#app-manager', '#files-manager', '#settings-manager', '#language-manager', '#update-settings-panel', '#notification-panel'];
+    const screens = ['#app-manager', '#files-manager', '#settings-manager', '#language-manager', '#notification-panel'];
     const activate = (selector, view) => {
       for (const screen of screens) doc.querySelector(screen).hidden = screen !== selector;
       if (selector === '#app-manager') doc.querySelector('#app-manager').classList.toggle('home-view', view === 'home');
@@ -112,7 +114,8 @@ test('suite screenshot navigation opens every Suite screen before capture', asyn
     doc.querySelector('#open-settings').addEventListener('click', () => activate('#settings-manager', 'settings'));
     doc.querySelector('#manage-languages').addEventListener('click', () => activate('#language-manager', 'languages'));
     doc.querySelector('#update-settings-button').addEventListener('click', () => {
-      activate('#update-settings-panel', 'update-settings');
+      doc.querySelector('#settings-manager').hidden = false;
+      doc.querySelector('#update-settings-panel').hidden = false;
       doc.querySelector('#update-settings-panel').dataset.settingsLoaded = 'true';
     });
     doc.querySelector('#close-update-settings').addEventListener('click', () => { doc.querySelector('#update-settings-panel').hidden = true; });
