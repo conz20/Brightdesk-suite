@@ -19,7 +19,7 @@ async function bootSuite(t) {
   t.after(() => dom.window.close());
 
   const { window } = dom;
-  Object.defineProperty(window, 'structuredClone', { value: global.structuredClone });
+  window.structuredClone = global.structuredClone;
   window.confirm = () => true;
   window.alert = () => {};
 
