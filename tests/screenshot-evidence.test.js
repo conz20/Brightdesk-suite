@@ -18,9 +18,9 @@ const base = {
   sampleDataDescription: 'Fictional sample content in a disposable profile.'
 };
 
-test('the capture plan contains five Suite screens and exactly the ten approved products', () => {
-  assert.equal(SCREENSHOT_TARGETS.length, 15);
-  assert.deepEqual(SCREENSHOT_TARGETS.map(item => item.id), ['suite','suite-apps','suite-files','suite-settings','suite-notifications','pages','sheets','decks','notes','database','forms','lists','planner','todo','workspace']);
+test('the capture plan contains seven Suite screens and exactly the ten approved products', () => {
+  assert.equal(SCREENSHOT_TARGETS.length, 17);
+  assert.deepEqual(SCREENSHOT_TARGETS.map(item => item.id), ['suite','suite-apps','suite-files','suite-settings','suite-languages','suite-update-settings','suite-notifications','pages','sheets','decks','notes','database','forms','lists','planner','todo','workspace']);
 });
 
 test('evidence records identify the product, exact commit and image checksum', () => {
@@ -57,7 +57,7 @@ test('evidence writer prevents overwriting and preserves pending-review status',
   }
 });
 
-test('capture-set verifier requires all fifteen matching PNG and evidence pairs', () => {
+test('capture-set verifier requires all seventeen matching PNG and evidence pairs', () => {
   const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'brightdesk-capture-set-'));
   try {
     for (const target of SCREENSHOT_TARGETS) {
@@ -65,10 +65,10 @@ test('capture-set verifier requires all fifteen matching PNG and evidence pairs'
       writeScreenshotEvidence({ outputDir: directory, targetId: target.id, imageBytes: png, evidence });
     }
     const result = verifyScreenshotSet(directory);
-    assert.equal(result.screenshotCount, 15);
-    assert.equal(result.files.length, 30);
+    assert.equal(result.screenshotCount, 17);
+    assert.equal(result.files.length, 34);
     fs.writeFileSync(path.join(directory, 'unexpected.txt'), 'not an image');
-    assert.throws(() => verifyScreenshotSet(directory), /exactly 30 expected image and evidence files/i);
+    assert.throws(() => verifyScreenshotSet(directory), /exactly 34 expected image and evidence files/i);
   } finally {
     fs.rmSync(directory, { recursive: true, force: true });
   }
