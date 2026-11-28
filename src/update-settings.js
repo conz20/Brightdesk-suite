@@ -100,6 +100,7 @@
       } catch (error) {
         if (status) { status.hidden = false; status.textContent = error.message || 'That update action could not be completed.'; }
       } finally {
+        if (id === 'update-manual-check') button.disabled = false;
         syncUpdateActions();
       }
     });
