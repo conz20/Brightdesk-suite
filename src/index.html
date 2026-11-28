@@ -339,20 +339,37 @@
       </section>
     </section>
     <section class="app-manager" id="app-manager" hidden>
-      <div class="settings-toolbar">
-        <div class="settings-context">
-          <span class="eyebrow">LOCAL APPLICATION SETTINGS</span>
-          <p>Manage the apps, language resources and updates installed on this device.</p>
-        </div>
-        <div class="settings-actions">
-          <button class="secondary settings-action" id="manage-languages" type="button">Languages &amp; dictionaries</button>
-          <button class="secondary settings-action" id="updates-button" type="button">Check for updates</button>
-          <button class="secondary settings-action" id="update-settings-button" type="button">Update settings</button>
-        </div>
-      </div>
       <div class="manager-hero"><div><div class="eyebrow" data-i18n="manager.eyebrow">MY APPS</div><h2 id="manager-title">Choose the apps you need</h2><p id="manager-description">Manage the applications available on this computer.</p></div></div>
       <div class="manager-grid" id="app-manager-grid"></div>
       <div class="manager-bottom"><p id="manager-note">Choose one or more apps. Your documents stay on this device, even if you remove an app from your workspace.</p><button class="primary" id="finish-app-setup" data-i18n="manager.done">Done</button></div>
+    </section>
+    <section class="settings-manager" id="settings-manager" hidden>
+      <div class="manager-hero">
+        <div>
+          <div class="eyebrow">BRIGHTDESK OFFICE SUITE</div>
+          <h2>Settings</h2>
+          <p>Manage language, spelling dictionaries and how Brightdesk receives updates on this device.</p>
+        </div>
+      </div>
+      <div class="settings-grid">
+        <article class="settings-card">
+          <div class="settings-card-icon"><img src="assets/icons/language.svg" alt="" aria-hidden="true" /></div>
+          <h3>Language &amp; dictionaries</h3>
+          <p>Choose Brightdesk's display language and document proofing language. Review installed language packs and spelling dictionaries.</p>
+          <button class="secondary settings-action" id="manage-languages" type="button">Open language settings</button>
+        </article>
+        <article class="settings-card">
+          <div class="settings-card-icon"><img src="assets/icons/updates.svg" alt="" aria-hidden="true" /></div>
+          <h3>Updates</h3>
+          <p>Check whether a Brightdesk Office Suite update is available. Downloads and installation always require your confirmation.</p>
+          <div class="settings-card-actions">
+            <button class="primary settings-action" id="updates-button" type="button">Check for updates</button>
+            <button class="secondary settings-action" id="update-settings-button" type="button">Update settings</button>
+          </div>
+        </article>
+      </div>
+      <section id="update-settings-panel" class="update-settings-panel" hidden></section>
+      <div class="update-message" id="update-message" role="status" aria-live="polite" hidden></div>
     </section>
     <section class="files-manager" id="files-manager" hidden>
       <div class="files-hero">
@@ -402,20 +419,6 @@
       </section>
       <div class="manager-bottom"><p id="language-status" role="status"></p><button class="secondary" id="back-to-apps" data-i18n="language.backToApps">Back to apps</button></div>
     </section>
-    <section id="update-settings-panel" class="update-settings-panel" hidden>
-      <div class="update-settings-header">
-        <h3>Update settings</h3>
-        <button class="secondary small-action" id="close-update-settings" type="button">Close</button>
-      </div>
-      <p>Automatic checking is optional. Downloading and installing an update always require your confirmation.</p>
-      <label class="toggle-row"><input type="checkbox" id="update-auto-check" /> Check for updates automatically</label>
-      <div class="update-settings-actions">
-        <button class="primary small-action" id="update-manual-check" type="button">Check now</button>
-        <button class="secondary small-action" id="update-manual-download" type="button">Download now</button>
-        <button class="secondary small-action" id="update-manual-install" type="button">Install now</button>
-      </div>
-    </section>
-    <div class="update-message" id="update-message" role="status" hidden></div>
     <footer><span id="footer-version">Brightdesk</span> · Independent software · Not affiliated with Microsoft</footer>
   </main>
   <script src="formula.js"></script>
