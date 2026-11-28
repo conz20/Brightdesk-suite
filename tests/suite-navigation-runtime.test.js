@@ -10,7 +10,7 @@ const root = path.join(__dirname, '..');
 const read = file => fs.readFileSync(path.join(root, file), 'utf8');
 const productIds = ['pages', 'sheets', 'slides', 'notes', 'database', 'forms', 'lists', 'planner', 'todo', 'loop'];
 
-async function bootSuite(t) {
+async function bootSuite(t, { launchAppId = null, suiteLaunchedProduct = false } = {}) {
   const dom = new JSDOM(read('src/index.html'), {
     url: 'http://brightdesk.test/',
     runScripts: 'outside-only',
@@ -35,8 +35,8 @@ async function bootSuite(t) {
     savedUpdateSettings: []
   };
   window.brightdesk = {
-    launchAppId: null,
-    suiteLaunchedProduct: false,
+    launchAppId,
+    suiteLaunchedProduct,
     platform: 'darwin',
     getVersion: async () => '0.1.0',
     openApplication: async id => { calls.openedProducts.push(id); return { ok: true }; },
@@ -305,4 +305,17 @@ test('Notifications closes cleanly when navigating to another Suite screen', asy
     assert.equal(trigger.getAttribute('aria-expanded'), 'false');
   }
   assert.equal(byId(window, 'settings-manager').hidden, false);
+});
+
+
+test('Switch product side navigation opens the selected installed product', async t => {
+  const { window, calls } = await bootSuite(t, { launchAppId: 'pages', suiteLaunchedProduct: true });
+  const switchNav = byId(window, 'dynamic-app-nav');
+  assert.equal(switchNav.hidden, false);
+  assert.equal(switchNav.querySelector('[data-app="pages"]'), null);
+  const sheets = switchNav.querySelector('[data-app="sheets"]');
+  assert.ok(sheets, 'Sheets should appear in the Switch product list');
+  sheets.click();
+  await tick();
+  assert.deepEqual(calls.openedProducts, ['sheets']);
 });
