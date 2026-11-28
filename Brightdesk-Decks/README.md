@@ -57,4 +57,9 @@ Use win on Windows or linux on Linux instead of mac.
 
 ## Identity and licence
 
+<p align="center"><img src="assets/brand/brightdesk-copyright-mark.svg" alt="Brightdesk copyright mark" width="48" height="48"></p>
+
+<p align="center"><strong>© 2026 Brightdesk</strong></p>
+
+
 Brightdesk is independent and is not affiliated with Microsoft. It uses original product names, code, interface design and artwork. See LICENSE, TERMS_AND_CONDITIONS.txt and THIRD_PARTY_NOTICES.md.
