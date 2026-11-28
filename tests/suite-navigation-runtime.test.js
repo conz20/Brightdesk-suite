@@ -130,10 +130,12 @@ test('Settings actions open language preferences, return to Settings and save up
   await tick();
   assert.equal(calls.updateChecks, 1);
   assert.equal(byId(window, 'update-message').hidden, false);
+  assert.equal(byId(window, 'update-message').textContent, 'No update is currently available.');
 
   byId(window, 'update-settings-button').click();
   await tick();
   assert.equal(byId(window, 'update-settings-panel').hidden, false);
+  assert.equal(byId(window, 'update-settings-button').getAttribute('aria-expanded'), 'true');
   const autoCheck = byId(window, 'update-auto-check');
   assert.equal(autoCheck.checked, true);
   autoCheck.checked = false;
@@ -144,6 +146,7 @@ test('Settings actions open language preferences, return to Settings and save up
 
   byId(window, 'close-update-settings').click();
   assert.equal(byId(window, 'update-settings-panel').hidden, true);
+  assert.equal(byId(window, 'update-settings-button').getAttribute('aria-expanded'), 'false');
 });
 
 test('all ten Home product Open actions reach the desktop bridge', async t => {
