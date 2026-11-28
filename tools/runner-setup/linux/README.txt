@@ -1,3 +1,17 @@
+DEPRECATED — RETIRED, DO NOT RUN
+
+
+
+***
+
+DEPRECATED — RETIRED, DO NOT RUN
+
+This document describes a former personal-device self-hosted GitHub Actions runner setup. It is no longer supported and must not be followed. Brightdesk now runs all authorised work on GitHub-hosted runners only. Do not install runner software, register a personal computer, start a local runner process or keep a device powered on for Brightdesk. If GitHub-hosted capacity is unavailable, report the blocker; do not use a local or paid runner.
+
+Current rule: see [GitHub-only build and release verification](../../docs/LOCAL-RELEASE-VERIFICATION.md) and the GitHub Actions workflows in the Brightdesk-suite repository.
+
+***
+
 BRIGHTDESK LINUX RUNNER SETUP (WINDOWS WSL 2)
 ==============================================
 
