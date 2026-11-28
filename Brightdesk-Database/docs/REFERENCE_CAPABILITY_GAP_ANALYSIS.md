@@ -56,7 +56,7 @@ These are capability targets to evaluate, not claims that every item must ship i
 
 1. Keep the exact ten-app catalogue and exclusions enforced.
 2. Make app readiness and installer availability truthful and separately represented.
-3. Run all tests on the exact Node.js 24.22.2 runtime.
+3. Run all tests on the exact Node.js 24.22.3 runtime.
 4. Build every suite and individual-product installer on native Windows, macOS and Linux runners.
 5. Smoke-test clean install, first launch, data persistence, upgrade, rollback/repair and uninstall on each platform.
 6. Verify each installer checksum, architecture, legal files and signing/notarisation claims.

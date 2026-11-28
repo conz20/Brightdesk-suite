@@ -40,7 +40,7 @@ Promote the Rust path only if it passes correctness, security, packaging and per
 - No network, telemetry, updater, installer or filesystem privilege behaviour inside the core library.
 - Validate lengths, indices, numeric edge cases and malformed input.
 - Run cargo fmt --check, cargo clippy --workspace --all-targets --all-features -- -D warnings and cargo test --workspace.
-- Keep the exact Node.js 24.22.2 pin unchanged.
+- Keep the exact Node.js 24.22.3 pin unchanged.
 - Manage Rust toolchain versions independently from Node.js.
 
 ## Exit criteria

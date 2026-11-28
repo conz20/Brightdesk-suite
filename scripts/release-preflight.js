@@ -29,7 +29,7 @@ function runPreflight({ rootDir, nodeVersion = process.versions.node, platform =
   const checks = [];
   const add = (name, passed, detail, blocking = true) => checks.push({ name, passed, detail, blocking });
 
-  add('Node.js version', nodeVersion === manifest.engines?.node, `Found ${nodeVersion}; requires exactly ${manifest.engines?.node || '24.22.2'}.`);
+  add('Node.js version', nodeVersion === manifest.engines?.node, `Found ${nodeVersion}; requires exactly ${manifest.engines?.node || '24.22.3'}.`);
   let lockValid = false;
   let lockDetail = 'A verified package-lock.json generated from this exact package.json is required before npm ci.';
   if (nodeVersion !== manifest.engines?.node) {

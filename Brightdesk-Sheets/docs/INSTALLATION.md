@@ -6,7 +6,7 @@
 
 The Brightdesk desktop installer includes the Electron application runtime it needs. Install Brightdesk using the installer for your computer, then open Brightdesk normally.
 
-Node.js 24.22.2 is used by the Brightdesk development team and automated build systems to prepare and test the installers. It is not a separate customer installation requirement.
+Node.js 24.22.3 is used by the Brightdesk development team and automated build systems to prepare and test the installers. It is not a separate customer installation requirement.
 
 ## Choose the installer for your computer
 

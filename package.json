@@ -91,7 +91,7 @@
   "author": "Bright Desk",
   "license": "MIT",
   "engines": {
-    "node": "24.22.2"
+    "node": "24.22.3"
   },
   "dependencies": {
     "docx": "9.15.1",

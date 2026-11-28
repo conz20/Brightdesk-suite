@@ -7,7 +7,7 @@ if [ ! -f package.json ] || [ ! -f scripts/install-node24.sh ]; then
   return 1 2>/dev/null || exit 1
 fi
 
-if command -v node >/dev/null 2>&1 && [ "$(node --version 2>/dev/null || true)" = "v24.22.2" ]; then
+if command -v node >/dev/null 2>&1 && [ "$(node --version 2>/dev/null || true)" = "v24.22.3" ]; then
   node scripts/check-node24.js
   return 0 2>/dev/null || exit 0
 fi

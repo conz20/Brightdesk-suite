@@ -8,13 +8,13 @@ const path = require('node:path');
 const root = path.resolve(__dirname, '..');
 const read = (relative) => fs.readFileSync(path.join(root, relative), 'utf8');
 
-test('Node.js 24.22.2 remains the single exact Brightdesk runtime', () => {
+test('Node.js 24.22.3 remains the single exact Brightdesk runtime', () => {
   const manifest = JSON.parse(read('package.json'));
-  assert.equal(manifest.engines.node, '24.22.2');
-  assert.equal(read('.nvmrc').trim(), '24.22.2');
-  assert.equal(read('.node-version').trim(), '24.22.2');
+  assert.equal(manifest.engines.node, '24.22.3');
+  assert.equal(read('.nvmrc').trim(), '24.22.3');
+  assert.equal(read('.node-version').trim(), '24.22.3');
   assert.match(read('.npmrc'), /engine-strict=true/);
-  assert.match(read('.devcontainer/Dockerfile'), /^FROM node:24\.22\.2-bookworm/m);
+  assert.match(read('.devcontainer/Dockerfile'), /^FROM node:24\.22\.3-bookworm/m);
   assert.match(read('.devcontainer/devcontainer.json'), /npm run setup:dev/);
   const productWorkflow = '.github/workflows/product-installers.yml';
   const buildWorkflow = fs.existsSync(path.join(root, '.github', 'workflows', 'build-release.yml'))
@@ -23,10 +23,10 @@ test('Node.js 24.22.2 remains the single exact Brightdesk runtime', () => {
   const auditWorkflow = fs.existsSync(path.join(root, '.github', 'workflows', 'security-audit.yml'))
     ? '.github/workflows/security-audit.yml'
     : productWorkflow;
-  assert.match(read(buildWorkflow), /node-version: 24\.22\.2/);
-  assert.match(read(auditWorkflow), /node-version: 24\.22\.2/);
-  assert.match(read('AGENTS.md'), /exactly Node\.js \*\*24\.22\.2 LTS\*\*/);
-  assert.match(read('PROJECT_MEMORY.md'), /Use exactly Node\.js 24\.22\.2 LTS for development, testing and release builds/);
+  assert.match(read(buildWorkflow), /node-version: 24\.22\.3/);
+  assert.match(read(auditWorkflow), /node-version: 24\.22\.3/);
+  assert.match(read('AGENTS.md'), /exactly Node\.js \*\*24\.22\.3 LTS\*\*/);
+  assert.match(read('PROJECT_MEMORY.md'), /Use exactly Node\.js 24\.22\.3 LTS for development, testing and release builds/);
 });
 
 test('macOS and Linux runtime installer downloads official archives and verifies SHA-256 before extraction', () => {
@@ -48,7 +48,7 @@ test('Windows runtime installer verifies the official archive hash and activates
   assert.match(script, /checksum mismatch/i);
   assert.match(script, /Expand-Archive/);
   assert.match(script, /\$env:Path/);
-  assert.match(script, /24\.22\.2/);
+  assert.match(script, /24\.22\.3/);
 });
 
 test('developer bootstrap creates a real lock only when needed, verifies it, then uses npm ci', () => {

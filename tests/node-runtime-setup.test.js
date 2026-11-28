@@ -8,20 +8,20 @@ const path = require('node:path');
 const root = path.resolve(__dirname, '..');
 const read = (relative) => fs.readFileSync(path.join(root, relative), 'utf8');
 
-test('Node.js 24.22.2 remains the single exact Brightdesk runtime', () => {
+test('Node.js 24.22.3 remains the single exact Brightdesk runtime', () => {
   const manifest = JSON.parse(read('package.json'));
-  assert.equal(manifest.engines.node, '24.22.2');
-  assert.equal(read('.nvmrc').trim(), '24.22.2');
-  assert.equal(read('.node-version').trim(), '24.22.2');
+  assert.equal(manifest.engines.node, '24.22.3');
+  assert.equal(read('.nvmrc').trim(), '24.22.3');
+  assert.equal(read('.node-version').trim(), '24.22.3');
   assert.match(read('.npmrc'), /engine-strict=true/);
-  assert.match(read('.devcontainer/Dockerfile'), /^FROM node:24\.22\.2-bookworm/m);
+  assert.match(read('.devcontainer/Dockerfile'), /^FROM node:24\.22\.3-bookworm/m);
   assert.match(read('.devcontainer/devcontainer.json'), /npm run setup:dev/);
   const workflowDir = path.join(root, '.github', 'workflows');
   const workflowFiles = fs.readdirSync(workflowDir).filter(file => /\.ya?ml$/i.test(file));
   const nodeWorkflows = workflowFiles.map(file => ({ file, source: fs.readFileSync(path.join(workflowDir, file), 'utf8') })).filter(item => /uses:\s*actions\/setup-node/.test(item.source));
   assert.ok(nodeWorkflows.length > 0, 'at least one workflow must configure Node.js');
-  for (const workflow of nodeWorkflows) assert.match(workflow.source, /node-version:\s*['"]?24\.22\.2/, workflow.file + ' must use Node.js 24.22.2');
-  assert.match(read('AGENTS.md'), /exactly Node\.js \*\*24\.22\.2 LTS\*\*/);
+  for (const workflow of nodeWorkflows) assert.match(workflow.source, /node-version:\s*['"]?24\.22\.3/, workflow.file + ' must use Node.js 24.22.3');
+  assert.match(read('AGENTS.md'), /exactly Node\.js \*\*24\.22\.3 LTS\*\*/);
   assert.match(read('PROJECT_MEMORY.md'), /standing project requirement/);
 });
 
@@ -44,7 +44,7 @@ test('Windows runtime installer verifies the official archive hash and activates
   assert.match(script, /checksum mismatch/i);
   assert.match(script, /Expand-Archive/);
   assert.match(script, /\$env:Path/);
-  assert.match(script, /24\.22\.2/);
+  assert.match(script, /24\.22\.3/);
 });
 
 test('developer bootstrap creates a real lock only when needed, verifies it, then uses npm ci', () => {

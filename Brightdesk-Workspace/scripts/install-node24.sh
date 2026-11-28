@@ -3,7 +3,7 @@
 # distribution archive and verify it against the published SHA-256 manifest.
 set -eu
 
-NODE_VERSION="24.22.2"
+NODE_VERSION="24.22.3"
 DIST_BASE="${BRIGHTDESK_NODE_DIST_URL:-https://nodejs.org/dist/v${NODE_VERSION}}"
 TOOLCHAIN_ROOT="${BRIGHTDESK_NODE_HOME:-${HOME}/.brightdesk/toolchains}"
 INSTALL_DIR="${TOOLCHAIN_ROOT}/node-v${NODE_VERSION}"

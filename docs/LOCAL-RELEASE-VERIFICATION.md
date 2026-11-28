@@ -5,7 +5,7 @@ Use this guide to run and verify Brightdesk's builds on computers you already ow
 ## Requirements
 
 - macOS, Windows or Linux
-- Exactly Node.js 24.22.2
+- Exactly Node.js 24.22.3
 - Internet access to install the project's public npm dependencies and run the npm security audit
 - No GitHub payment method, paid subscription or signing certificate is required for an unsigned local build
 

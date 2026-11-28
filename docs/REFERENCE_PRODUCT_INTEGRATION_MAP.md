@@ -48,7 +48,7 @@ A repository existing is not the same as a package being implemented, published 
 2. The Suite owns the desktop shell, product catalogue, integrated navigation, first-run experience and combined installer orchestration. It must not become a duplicate source of truth for product internals.
 3. Brightdesk-AI remains a private engineering control plane. It may assist audits and approved development work, but is never a customer runtime dependency and is excluded from customer packages.
 4. Shared libraries do not depend on product repositories. Products consume versioned interfaces only after contract tests pass.
-5. Keep Node.js at 24.22.2 where currently specified. Preserve Rust and all other existing languages and toolchains.
+5. Keep Node.js at 24.22.3 where currently specified. Preserve Rust and all other existing languages and toolchains.
 6. No new paid services, paid runners, metered model APIs or subscription dependencies.
 7. Use local-first data handling and explicit import/export boundaries.
 8. A product is not "up and running" until its tests pass and its packaged build has been installed and exercised on the target operating system.

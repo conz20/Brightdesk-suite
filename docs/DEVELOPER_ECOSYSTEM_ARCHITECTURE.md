@@ -91,7 +91,7 @@ Brightdesk-AI
 
 Preserve the programming languages already present in each repository. Do not remove, replace or rewrite an existing language to standardise the ecosystem. Rust remains a supported implementation language and must remain part of the engine and relevant product/AI workflows.
 
-Use each repository's existing toolchain, lockfiles and test commands. Pin Node.js to 24.22.2 where the repository already targets the Suite's Node runtime. Pin Rust toolchains where Rust is used. Native interfaces must have explicit compatibility tests and safe fallback behaviour where already supported.
+Use each repository's existing toolchain, lockfiles and test commands. Pin Node.js to 24.22.3 where the repository already targets the Suite's Node runtime. Pin Rust toolchains where Rust is used. Native interfaces must have explicit compatibility tests and safe fallback behaviour where already supported.
 
 ## 6. Safe integration sequence
 

@@ -4,8 +4,8 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 cd "$ROOT"
 
-if ! command -v node >/dev/null 2>&1 || [ "$(node --version 2>/dev/null || true)" != "v24.22.2" ]; then
-  echo "Brightdesk requires Node.js 24.22.2. Installing the official, checksum-verified runtime..."
+if ! command -v node >/dev/null 2>&1 || [ "$(node --version 2>/dev/null || true)" != "v24.22.3" ]; then
+  echo "Brightdesk requires Node.js 24.22.3. Installing the official, checksum-verified runtime..."
   sh scripts/install-node24.sh
   . scripts/activate-node24.sh
 else

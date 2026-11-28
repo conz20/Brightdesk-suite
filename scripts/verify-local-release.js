@@ -5,7 +5,7 @@ const { spawnSync } = require('node:child_process');
 const path = require('node:path');
 const packageConfig = require('../package.json');
 
-const requiredNode = packageConfig.engines?.node || '24.22.2';
+const requiredNode = packageConfig.engines?.node || '24.22.3';
 if (process.versions.node !== requiredNode) {
   console.error(`Brightdesk requires Node.js ${requiredNode}; found ${process.versions.node}.`);
   process.exit(1);

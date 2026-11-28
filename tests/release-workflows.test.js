@@ -10,11 +10,12 @@ const path = require('node:path');
 const root = path.resolve(__dirname, '..');
 const read = (file) => fs.readFileSync(path.join(root, file), 'utf8');
 
-test('Dependabot checks npm dependencies and GitHub Actions weekly', () => {
+test('Dependabot checks npm, Cargo and GitHub Actions weekly', () => {
   const workflow = read('.github/dependabot.yml');
   assert.match(workflow, /package-ecosystem: npm/);
+  assert.match(workflow, /package-ecosystem: cargo/);
   assert.match(workflow, /package-ecosystem: github-actions/);
-  assert.equal((workflow.match(/interval: weekly/g) || []).length, 2);
+  assert.equal((workflow.match(/interval: weekly/g) || []).length, 3);
 });
 
 test('one consolidated quality gate uses GitHub-hosted macOS and verifies the committed dependency lock', () => {
@@ -22,7 +23,7 @@ test('one consolidated quality gate uses GitHub-hosted macOS and verifies the co
   assert.match(workflow, /pull_request:\s*\n\s*branches: \[main\]/);
   assert.match(workflow, /cron:/);
   assert.match(workflow, /runs-on: macos-latest/);
-  assert.match(workflow, /node-version: 24\.22\.2/);
+  assert.match(workflow, /node-version: 24\.22\.3/);
   for (const command of [
     'npm run check:node',
     'npm run lock:verify',
@@ -47,7 +48,7 @@ test('release workflow builds and verifies all three desktop platforms', () => {
   for (const command of ['dist:linux', 'dist:win', 'dist:mac', 'dist:apps:linux', 'dist:apps:win', 'dist:apps:mac', 'release:verify:linux', 'release:verify:win', 'release:verify:mac', 'release:verify:products:linux', 'release:verify:products:win', 'release:verify:products:mac']) {
     assert.ok(workflow.includes(command), `workflow includes ${command}`);
   }
-  assert.match(workflow, /node-version: 24\.22\.2/);
+  assert.match(workflow, /node-version: 24\.22\.3/);
   assert.match(workflow, /\non:\s*\n\s*workflow_dispatch:/);
   assert.doesNotMatch(workflow, /^\s+push:/m, 'installer builds must be manual, not automatic on push');
   assert.doesNotMatch(workflow, /npm run lock:prepare/, 'release builds must not regenerate the committed lock');
@@ -99,7 +100,7 @@ test('platform release artifacts remain in separate folders and release lock met
   }
   assert.ok(workflow.includes('name: Check out the exact release source'));
   assert.ok(workflow.includes('ref: ${{ github.sha }}'));
-  assert.ok(workflow.includes('node-version: 24.22.2'));
+  assert.ok(workflow.includes('node-version: 24.22.3'));
   assert.ok(workflow.includes('name: Preserve the committed dependency lock in release metadata'));
   assert.ok(workflow.includes('cp package-lock.json release/build-metadata/package-lock.json'));
   assert.match(workflow, /files: release\/\*\*\/\*/);
@@ -112,12 +113,12 @@ test('platform release artifacts remain in separate folders and release lock met
 
 test('Node.js runtime is pinned consistently to the current 24 LTS patch', () => {
   const manifest = JSON.parse(read('package.json'));
-  assert.equal(manifest.engines.node, '24.22.2');
-  assert.equal(read('.nvmrc').trim(), '24.22.2');
-  assert.equal(read('.node-version').trim(), '24.22.2');
-  assert.match(read('.devcontainer/Dockerfile'), /^FROM node:24\.22\.2-bookworm/m);
-  assert.match(read('.github/workflows/build-release.yml'), /node-version: 24\.22\.2/);
-  assert.match(read('.github/workflows/quality.yml'), /node-version: 24\.22\.2/);
+  assert.equal(manifest.engines.node, '24.22.3');
+  assert.equal(read('.nvmrc').trim(), '24.22.3');
+  assert.equal(read('.node-version').trim(), '24.22.3');
+  assert.match(read('.devcontainer/Dockerfile'), /^FROM node:24\.22\.3-bookworm/m);
+  assert.match(read('.github/workflows/build-release.yml'), /node-version: 24\.22\.3/);
+  assert.match(read('.github/workflows/quality.yml'), /node-version: 24\.22\.3/);
 });
 
 test('individual app installer builds explicitly disable implicit publishing', () => {
@@ -296,7 +297,7 @@ test('release workflow uses ephemeral hosted runners without self-hosted cleanup
   assert.ok(!workflow.includes('run: node scripts/cleanup-runner-workspace.js'));
   assert.equal((workflow.match(/persist-credentials: false/g) || []).length, 3);
   assert.doesNotMatch(workflow, /cache: npm/);
-  assert.ok(workflow.includes('node-version: 24.22.2'));
+  assert.ok(workflow.includes('node-version: 24.22.3'));
 });
 
 test('Suite CI uses GitHub-hosted macOS and does not depend on local runners', () => {
@@ -312,8 +313,8 @@ test('Linux CI builds and tests the native engine on GitHub-hosted Ubuntu', () =
   const workflow = read('.github/workflows/ci.yml');
   const job = workflow.split('  linux-native:')[1] ?? '';
   assert.match(job, /runs-on: ubuntu-latest/);
-  assert.match(job, /node-version: 24\.22\.2/);
-  assert.match(job, /toolchain: 1\.99\.1/);
+  assert.match(job, /node-version: 24\.22\.3/);
+  assert.match(job, /toolchain: 1\.100\.1/);
   assert.match(job, /npm run native:build/);
   assert.match(job, /BRIGHTDESK_REQUIRE_NATIVE_ENGINE: "1"/);
   assert.match(job, /run: npm test/);

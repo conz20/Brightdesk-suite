@@ -19,7 +19,7 @@ test('scheduled dependency audit uses hosted Ubuntu and blocks high severity vul
   const workflow = read('.github/workflows/security-audit.yml');
   assert.match(workflow, /cron:/);
   assert.match(workflow, /runs-on: ubuntu-latest/);
-  assert.match(workflow, /node-version: 24\.22\.2/);
+  assert.match(workflow, /node-version: 24\.22\.3/);
   assert.match(workflow, /npm run lock:prepare/);
   assert.match(workflow, /npm run lock:verify/);
   assert.match(workflow, /npm ci --no-audit --no-fund/);
@@ -31,7 +31,7 @@ test('daily quality workflow uses hosted Ubuntu and never publishes a release', 
   const workflow = read('.github/workflows/continuous-quality.yml');
   assert.ok(workflow.includes("cron: '15 4 * * *'"));
   assert.match(workflow, /runs-on: ubuntu-latest/);
-  assert.ok(workflow.includes('node-version: 24.22.2'));
+  assert.ok(workflow.includes('node-version: 24.22.3'));
   assert.match(workflow, /npm run lock:prepare/);
   assert.match(workflow, /npm run lock:verify/);
   assert.match(workflow, /npm ci --no-audit --no-fund/);

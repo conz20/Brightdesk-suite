@@ -3,8 +3,8 @@ set -euo pipefail
 
 target="${1:-}"
 case "$target" in
-  linux) builder_image="brightdesk-electron-builder:24.22.2-linux" ;;
-  win) builder_image="brightdesk-electron-builder:24.22.2-windows" ;;
+  linux) builder_image="brightdesk-electron-builder:24.22.3-linux" ;;
+  win) builder_image="brightdesk-electron-builder:24.22.3-windows" ;;
   *)
     echo "Usage: bash scripts/build-in-docker.sh <linux|win>" >&2
     exit 2

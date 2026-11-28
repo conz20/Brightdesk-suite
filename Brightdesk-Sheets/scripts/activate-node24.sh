@@ -1,6 +1,6 @@
 #!/bin/sh
 # Source this file from the Brightdesk project root to activate its local Node.js.
-NODE_VERSION="24.22.2"
+NODE_VERSION="24.22.3"
 NODE_HOME="${BRIGHTDESK_NODE_HOME:-${HOME}/.brightdesk/toolchains}"
 NODE_BIN="${NODE_HOME}/node-v${NODE_VERSION}/bin"
 

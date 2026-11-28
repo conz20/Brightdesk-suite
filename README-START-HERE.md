@@ -32,6 +32,6 @@ Brightdesk uses original names, code, interface design and artwork. Application 
 
 ## Development requirements
 
-Use Node.js **24.22.2** for development, testing and release builds. Read the repository's README and contributor instructions before making changes. Keep release claims accurate: a concept preview is not a running screenshot, a committed build script is not proof of a successful installer, and no public release should be published without the owner's approval.
+Use Node.js **24.22.3** for development, testing and release builds. Read the repository's README and contributor instructions before making changes. Keep release claims accurate: a concept preview is not a running screenshot, a committed build script is not proof of a successful installer, and no public release should be published without the owner's approval.
 
 See [the main suite README](README.md), [the product scope lock](PRODUCT_SCOPE_LOCK.md) and [the shared visual standard](docs/BRIGHTDESK_VISUAL_STANDARD.md) for the canonical requirements.

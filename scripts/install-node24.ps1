@@ -1,7 +1,7 @@
 # Install and activate the exact Brightdesk Node.js patch in this PowerShell session.
 $ErrorActionPreference = 'Stop'
 if ($PSVersionTable.PSEdition -eq 'Desktop') { [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12 }
-$NodeVersion = '24.22.2'
+$NodeVersion = '24.22.3'
 $DistBase = if ($env:BRIGHTDESK_NODE_DIST_URL) { $env:BRIGHTDESK_NODE_DIST_URL.TrimEnd('/') } else { "https://nodejs.org/dist/v$NodeVersion" }
 $ToolchainRoot = if ($env:BRIGHTDESK_NODE_HOME) { $env:BRIGHTDESK_NODE_HOME } else { Join-Path $HOME '.brightdesk/toolchains' }
 $InstallDir = Join-Path $ToolchainRoot "node-v$NodeVersion"

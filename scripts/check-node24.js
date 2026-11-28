@@ -5,7 +5,7 @@ const expected = manifest.engines && manifest.engines.node;
 const actual = process.versions.node;
 
 if (!expected || actual !== expected) {
-  console.error(`Brightdesk requires Node.js ${expected || '24.22.2'} exactly. Current runtime: ${process.version}`);
+  console.error(`Brightdesk requires Node.js ${expected || '24.22.3'} exactly. Current runtime: ${process.version}`);
   process.exit(1);
 }
 

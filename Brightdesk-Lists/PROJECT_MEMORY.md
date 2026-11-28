@@ -1,7 +1,7 @@
 # Brightdesk project memory
 
 ## Runtime and release rules
-- Use exactly Node.js 24.22.2 LTS for development, testing and release builds. Never silently downgrade to Node.js 22 or an older Node 24 patch.
+- Use exactly Node.js 24.22.3 LTS for development, testing and release builds. Never silently downgrade to Node.js 22 or an older Node 24 patch.
 - Keep the existing native installer targets: Windows NSIS EXE; macOS DMG, PKG and ZIP; Linux AppImage and DEB.
 - Keep release publication manual and owner-approved. Never claim an installer was built or tested unless a real CI/build artifact and verification result exist.
 - Preserve user data and settings across upgrades and uninstall.
@@ -59,5 +59,5 @@ Brightdesk is an independent desktop product with original names, code, artwork,
 - The latest main and pull-request workflow attempts on 2026-11-03 failed before any job step ran (GitHub returned runner_id 0 and no steps). The latest workflow has been changed to hosted runners, but GitHub still did not allocate a runner.
 - The prior post-integration main build on 2026-11-01 completed Windows, macOS and Linux build/verification jobs successfully.
 - No verified current release artifact set has been produced from the latest main commit or the new ten-product installer workflow.
-- Confirm GitHub Actions availability/minutes, then verify Node.js 24.22.2, dependency lock, licence audit, full tests and all target installer smoke tests before release.
+- Confirm GitHub Actions availability/minutes, then verify Node.js 24.22.3, dependency lock, licence audit, full tests and all target installer smoke tests before release.
 - Signing/notarisation must be reported accurately; never claim signed status without actual credentials and verification.

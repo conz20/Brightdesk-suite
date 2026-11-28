@@ -73,5 +73,5 @@ test('release checkouts do not persist a GitHub token or use a cache post-job ho
   assert.equal(checkoutCount, 3);
   assert.equal(noCredentialPersistence, 3);
   assert.doesNotMatch(workflow, /cache: npm/);
-  assert.ok(workflow.includes('node-version: 24.22.2'));
+  assert.ok(workflow.includes('node-version: 24.22.3'));
 });
