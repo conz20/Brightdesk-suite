@@ -254,11 +254,6 @@ input:disabled, select:disabled, textarea:disabled, button:disabled { cursor: no
 /* Brightdesk management and product-card finish */
 .sidebar-meta { padding-top: 14px; border-top: 1px solid #e8edf3; }
 .sidebar-meta small { color: #8390a3; font-size: 10px; }
-.settings-toolbar {
-  display: flex; align-items: center; justify-content: space-between; gap: 18px;
-  padding: 17px 19px; margin: 0 0 15px; border: 1px solid #dfe6ef;
-  border-radius: 13px; background: linear-gradient(115deg,#fff 0%,#f7f9fc 100%);
-}
 .settings-action { min-height: 36px; white-space: nowrap; font-size: 11px; }
 .app-manager { max-width: 1500px; margin-inline: auto; }
 .app-manager .manager-hero { margin-bottom: 16px; }
@@ -303,14 +298,7 @@ input:disabled, select:disabled, textarea:disabled, button:disabled { cursor: no
 .app-card .small-action { border-radius: 7px; }
 .app-card .primary { background: var(--app-card-accent); border-color: var(--app-card-accent); }
 .app-card .primary:hover { filter: brightness(.92); }
-@media (max-width: 900px) {
-  .settings-toolbar { align-items: flex-start; flex-direction: column; }
-  .settings-actions { width: 100%; justify-content: flex-start; }
-}
 @media (max-width: 700px) {
-  .settings-toolbar { padding: 14px; }
-  .settings-actions { display: grid; grid-template-columns: 1fr; }
-  .settings-actions button { width: 100%; }
   .app-card   .app-card > p { min-height: 0; }
 }
 
