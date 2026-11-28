@@ -2,7 +2,7 @@
 
 **Status:** permanent follow-up register; do not treat these items as approved for the 0.1.0 release.
 **Created:** 2026-11-28
-**Scope:** all 27 private `conz20` repositories, the Brightdesk Suite, and the ten approved customer products.
+**Scope:** all 27 `conz20` repositories, the Brightdesk Suite, and the ten approved customer products.
 
 ## Operating rule — every update cycle, permanently
 
