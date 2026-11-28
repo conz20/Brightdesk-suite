@@ -314,7 +314,7 @@ test('Linux CI builds and tests the native engine on GitHub-hosted Ubuntu', () =
   const job = workflow.split('  linux-native:')[1] ?? '';
   assert.match(job, /runs-on: ubuntu-latest/);
   assert.match(job, /node-version: 24\.22\.3/);
-  assert.match(job, /toolchain: 1\.99\.1/);
+  assert.match(job, /toolchain: 1\.100\.1/);
   assert.match(job, /npm run native:build/);
   assert.match(job, /BRIGHTDESK_REQUIRE_NATIVE_ENGINE: "1"/);
   assert.match(job, /run: npm test/);

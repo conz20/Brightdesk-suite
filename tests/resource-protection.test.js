@@ -50,7 +50,7 @@ test('Windows installer displays the Brightdesk licence and offers a normal setu
 
 test('release workflow has working install and release permissions', () => {
   const workflow = read('.github/workflows/build-release.yml');
-  assert.match(workflow, /node-version: 24\.22\.2/);
+  assert.match(workflow, /node-version: 24\.22\.3/);
   assert.match(workflow, /run: npm ci/);
   assert.match(workflow, /npm run verify:licenses/);
   assert.match(workflow, /npm run release:preflight/);
