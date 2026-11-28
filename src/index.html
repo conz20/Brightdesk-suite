@@ -33,7 +33,7 @@
   <main class="main">
     <header class="topbar">
       <div><div class="eyebrow" data-i18n="sidebar.workspace">YOUR WORKSPACE</div><h1 id="app-title">Your apps</h1></div>
-      <div class="top-actions" id="top-actions"><span class="save-status" id="save-status" data-i18n="top.savedOnDevice">Saved on this device</span><button class="secondary" id="open-button" data-i18n="top.open">Open</button><button class="primary top-save-button" id="save-project"><img src="assets/icons/save.svg" alt="" aria-hidden="true" /><span data-i18n="top.saveProject">Save project</span></button><button type="button" id="open-notifications" class="icon-button top-notifications-button" aria-label="Open notifications" title="Notifications" aria-controls="notification-panel" aria-expanded="false"><img src="assets/icons/notifications.svg" alt="" aria-hidden="true" /><span id="notification-count" class="notification-count" hidden></span></button><section class="notification-popover" id="notification-panel" role="region" aria-label="Notifications" hidden><div class="notification-panel-header"><b>Notifications</b><button type="button" class="text-button" id="clear-notifications">Clear all</button></div><div class="notification-list" id="notification-list"><p class="notification-empty">No notifications yet.</p></div></section><div class="notification-toast" id="notification-toast" role="status" aria-live="polite" hidden></div><button type="button" id="open-settings" class="icon-button top-settings-button" aria-label="Open Brightdesk settings" title="Settings"><img src="assets/icons/settings.svg" alt="" aria-hidden="true" /></button></div>
+      <div class="top-actions" id="top-actions"><span class="save-status" id="save-status" data-i18n="top.savedOnDevice">Saved on this device</span><button class="secondary" id="open-button" data-i18n="top.open">Open</button><button class="primary top-save-button" id="save-project"><img src="assets/icons/save.svg" alt="" aria-hidden="true" /><span data-i18n="top.saveProject">Save project</span></button><button type="button" id="open-notifications" class="icon-button top-notifications-button" aria-label="Open notifications" title="Notifications" aria-controls="notification-panel" aria-expanded="false"><img src="assets/icons/notifications.svg" alt="" aria-hidden="true" /><span id="notification-count" class="notification-count" hidden></span></button><section class="notification-popover" id="notification-panel" role="region" aria-label="Notifications" hidden><div class="notification-panel-header"><b>Notifications</b><button type="button" class="text-button" id="clear-notifications">Clear all</button></div><div class="notification-list" id="notification-list"><p class="notification-empty">No notifications yet.</p></div></section><div class="notification-toast" id="notification-toast" role="status" aria-live="polite" hidden></div><button type="button" id="open-settings" class="icon-button top-settings-button" aria-label="Open Brightdesk settings" aria-controls="settings-manager" title="Settings"><img src="assets/icons/settings.svg" alt="" aria-hidden="true" /></button></div>
     </header>
     <section class="welcome" id="welcome"><div><div class="eyebrow" data-i18n="welcome.eyebrow">YOUR WORK. ONE DESKTOP SUITE.</div><h2 id="welcome-title">Make room for your ideas.</h2><p id="welcome-copy">Write letters, reports and documents with Brightdesk Pages.</p></div></section>
     <section class="workspace" id="workspace">
@@ -343,11 +343,11 @@
       <div class="manager-grid" id="app-manager-grid"></div>
       <div class="manager-bottom"><p id="manager-note">Choose one or more apps. Your documents stay on this device, even if you remove an app from your workspace.</p><button class="primary" id="finish-app-setup" data-i18n="manager.done">Done</button></div>
     </section>
-    <section class="settings-manager" id="settings-manager" hidden>
+    <section class="settings-manager" id="settings-manager" aria-labelledby="settings-title" hidden>
       <div class="manager-hero">
         <div>
           <div class="eyebrow">BRIGHTDESK OFFICE SUITE</div>
-          <h2>Settings</h2>
+          <h2 id="settings-title">Settings</h2>
           <p>Manage language, spelling dictionaries and how Brightdesk receives updates on this device.</p>
         </div>
       </div>
@@ -362,7 +362,7 @@
           <p>Check whether a Brightdesk Office Suite update is available. Downloads and installation always require your confirmation.</p>
           <div class="settings-card-actions">
             <button class="primary settings-action" id="updates-button" type="button">Check for updates</button>
-            <button class="secondary settings-action" id="update-settings-button" type="button">Update settings</button>
+            <button class="secondary settings-action" id="update-settings-button" type="button" aria-controls="update-settings-panel" aria-expanded="false">Update settings</button>
           </div>
         </article>
       </div>
