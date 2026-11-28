@@ -29,3 +29,6 @@ Always check the newest upstream stable versions before updates. Use the newest 
 
 ## Live version audit — 28 November 2026
 Current Suite pins are Node 24.22.2, Electron 45.2.1, electron-builder 26.18.0, Rust 1.99.1; lockfile versions are Vite 6.4.5, Vitest 5.1.0 and TypeScript 5.9.3. New stable candidates checked: Node 24.22.3 (and separately test Node 26.13.1 LTS), Electron 45.5.0, electron-builder 26.18.1, Rust 1.100.1, Vite 8.4.0, Vitest 5.1.2 and TypeScript 7.0.2. Rust upgrade PR #126 is under test. Vite PR #100 is stale (8.3.6) and fails a stale version assertion plus README freshness; it does not prove runtime incompatibility. Keep candidates unpromoted until tests pass. See docs/VERSION_COMPATIBILITY.md.
+
+
+Security priority: Node.js 24.22.3 is an 11 November 2026 security release with multiple high-severity fixes, and Electron 45.5.0 embeds Node.js 24.22.3. Prioritise the 24.22.3 / 45.5.0 patch-line update and test before rolling through the ten product repos. Test Node 26.13.1 separately as a major-runtime candidate.
