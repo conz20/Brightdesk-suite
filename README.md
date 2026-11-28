@@ -96,7 +96,7 @@ The **Brightdesk Suite CI** workflow now has a non-blocking capture step on push
 
 The automated capture records the full Brightdesk renderer content area through Electron's `webContents.capturePage()`. It does not include native operating-system window chrome. Images must be inspected for layout, readability, accidental sensitive content and correct product identity before any is copied into a product repository or customer guide. This automated first look is not a replacement for native install and workflow acceptance. See the [visual standard](docs/BRIGHTDESK_VISUAL_STANDARD.md).
 
-The capture harness has regression tests for all eleven targets, fictional local sample-data seeding (including Database schema field IDs and saved record values), product navigation, the isolated profile path, required provenance fields and SHA-256 image checks. Capture tests do not set the evidence record to verified.
+The capture harness has regression tests for all eleven targets, fictional local sample-data seeding (including Database schema field IDs and saved record values), product navigation, the isolated profile path, required provenance fields and SHA-256 image checks. The seed function keeps its approved product ID list inside the function so the same serialized function works in the Electron renderer and isolated test harness. Capture tests do not set the evidence record to verified.
 
 A genuine screenshot must come from the current Electron build with non-sensitive sample data, retain the complete Brightdesk workspace content, and be labelled with the tested build or commit. Do not crop away errors or incomplete controls, composite other images, or present approved SVG design references as runtime screenshots.
 
@@ -173,7 +173,7 @@ See [installation guidance](docs/INSTALLATION.md), [local release verification](
 
 The customer-facing package version in the current main-branch manifest is **0.1.0**. Product integration, automated tests, live desktop acceptance and installer release are separate checkpoints. The integrated source includes all ten approved product areas and the Rust Node-API engine, but that does not by itself establish complete product workflows, accessibility acceptance, local persistence/recovery, upgrade and uninstall behaviour, or verified installers on all three operating systems.
 
-The quality and Rust workflows are configured to use the repository's private self-hosted Mac runner. The native installer workflow is a separate manual workflow with Windows, macOS and Linux build jobs; release publication is opt-in and disabled by default. Workflow configuration is not evidence that a job has completed successfully. Do not describe the release as complete until current-head checks and native install/runtime acceptance have actually passed. No automatic update publishing provider is configured.
+The quality, Suite CI and Rust Node-API workflows use GitHub-hosted macOS runners, independently of the owner's MacBook. The manual installer workflow prepares the release on GitHub-hosted Linux, builds Windows, macOS and Linux packages on their matching GitHub-hosted runners, and collects the verified outputs on GitHub-hosted Linux. Release publication remains opt-in and disabled by default. Workflow configuration is not evidence that a job has completed successfully. Do not describe the release as complete until current-head checks and native install/runtime acceptance have actually passed. No automatic update publishing provider is configured.
 
 ## Reference-informed product development
 
