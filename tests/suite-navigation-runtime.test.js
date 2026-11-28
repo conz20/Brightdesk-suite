@@ -109,6 +109,17 @@ test('real renderer click flow switches correctly between Home, Apps, Files and 
   assert.equal(byId(window, 'app-centre-nav').hidden, false);
   assert.equal(byId(window, 'files-nav').hidden, false);
 
+  byId(window, 'app-centre-nav').click();
+  assert.equal(byId(window, 'app-title').textContent, 'Apps');
+  assert.equal(byId(window, 'app-manager').classList.contains('home-view'), false);
+
+  byId(window, 'open-settings').click();
+  byId(window, 'files-nav').click();
+  assert.equal(byId(window, 'files-manager').hidden, false);
+  assert.equal(byId(window, 'settings-manager').hidden, true);
+
+  byId(window, 'open-settings').click();
+  assert.equal(byId(window, 'settings-manager').hidden, false);
   byId(window, 'home-nav').click();
   assert.equal(byId(window, 'app-title').textContent, 'Your apps');
   assert.equal(byId(window, 'settings-manager').hidden, true);
