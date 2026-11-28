@@ -94,7 +94,7 @@
     "language.proofingUnavailable": "This language pack is installed, but a matching spelling dictionary is not available in this build. The editor language tag will still be set.",
     "language.selectDisplay": "Choose display language",
     "language.selectProofing": "Choose proofing language",
-    "language.backToApps": "Back to apps",
+    "language.backToApps": "Back to settings",
     "language.packImported": "Language pack imported.",
     "language.packInstalled": "Language pack installed.",
     "language.packRemoved": "Language pack removed.",
