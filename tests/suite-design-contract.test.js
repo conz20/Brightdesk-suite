@@ -145,7 +145,8 @@ test('README displays the current Home reference and documents the exact compact
   assert.match(readme, /20 px SVG icon beside its label/);
   assert.match(readme, /no descriptive captions appear beneath the labels/);
   assert.match(readme, /all ten products marked \*\*In your Suite\*\*/);
-  assert.match(readme, /not a screenshot captured from a running build/);
+  assert.match(readme, /17 real Electron screenshots at 1600 × 900/);
+  assert.match(readme, /pending primary-workflow and sensitive-data review/);
   assert.doesNotMatch(readme, /46 px Suite mark|25 px wordmark/);
   assert.equal((home.match(/>Home<\/text>/g) || []).length, 1);
   assert.equal((home.match(/>Apps<\/text>/g) || []).length, 1);
