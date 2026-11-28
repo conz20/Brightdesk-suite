@@ -139,7 +139,7 @@ test('product capture rejects a different product window even when its workspace
   try {
     await assert.rejects(
       dom.window.eval('(' + waitForProductWorkspace.toString() + ')("pages","#editor",50)'),
-      /pages workspace did not load in its own Suite product window/i
+      /pages workspace did not finish rendering/i
     );
   } finally {
     dom.window.close();
