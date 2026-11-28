@@ -21,12 +21,9 @@ concurrency:
 jobs:
   build-macos:
     name: Build and verify macOS universal installer
-    runs-on: ["self-hosted", "macOS", "ARM64"]
+    runs-on: macos-latest
     timeout-minutes: 90
     steps:
-      - name: Register post-job workspace cleanup
-        uses: conz20/Brightdesk-suite/.github/actions/runner-workspace-cleanup@7727da85c4e6e660f3376b5b330d78b6782c1976
-
       - name: Check out Brightdesk
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
