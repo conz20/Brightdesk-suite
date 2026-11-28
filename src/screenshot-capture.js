@@ -114,7 +114,7 @@ function waitForSuiteHome() {
       const manager = document.querySelector('#app-manager');
       const grid = document.querySelector('#app-manager-grid');
       const home = document.querySelector('#home-nav');
-      const columns = grid ? window.getComputedStyle(grid).gridTemplateColumns.trim().split(/\\s+/).filter(Boolean).length : 0;
+      const columns = grid ? window.getComputedStyle(grid).gridTemplateColumns.trim().split(/\s+/).filter(Boolean).length : 0;
       const cardRects = grid ? [...grid.children].map(card => card.getBoundingClientRect()) : [];
       const allCardsVisible = cardRects.length === 10 && cardRects.every(rect =>
         rect.width >= 230 && rect.height >= 220 &&
@@ -193,21 +193,36 @@ function waitForSuiteScreen(view, screenSelector, timeoutMs = 10000) {
   });
 }
 
-function waitForProductWorkspace(appId, workspaceSelector, timeoutMs = 10000) {
+function waitForProductWorkspace(appId, workspaceSelector, expectation = {}, timeoutMs = 20000) {
+  if (typeof expectation === 'number') {
+    timeoutMs = expectation;
+    expectation = {};
+  }
   return new Promise((resolve, reject) => {
-    const timeout = Number.isFinite(timeoutMs) && timeoutMs > 0 ? timeoutMs : 10000;
+    const timeout = Number.isFinite(timeoutMs) && timeoutMs > 0 ? timeoutMs : 20000;
     const deadline = Date.now() + timeout;
     function check() {
       const bridge = window.brightdesk;
       const workspace = document.querySelector('#workspace');
       const productView = document.querySelector(workspaceSelector);
+      const appTitle = document.querySelector('#app-title')?.textContent.trim() || '';
+      const documentTitle = document.querySelector('#doc-title')?.value?.trim() || '';
+      let sampleContent = productView?.textContent || '';
+      if (productView) {
+        for (const field of productView.querySelectorAll('input, textarea, select')) sampleContent += ' ' + (field.value || '');
+      }
+      const appTitleReady = !expectation.appTitle || appTitle === expectation.appTitle;
+      const documentTitleReady = !expectation.documentTitle || documentTitle === expectation.documentTitle;
+      const sampleContentReady = !expectation.sampleText || sampleContent.includes(expectation.sampleText);
       if (bridge?.launchAppId === appId && bridge?.suiteLaunchedProduct === true &&
-          workspace && !workspace.hidden && productView && !productView.hidden) {
-        resolve({ appId, active: true, workspaceVisible: true, productViewVisible: true });
+          workspace && !workspace.hidden && productView && !productView.hidden &&
+          appTitleReady && documentTitleReady && sampleContentReady) {
+        resolve({ appId, active: true, appTitle, documentTitle, workspaceVisible: true, productViewVisible: true, sampleContentVerified: sampleContentReady });
         return;
       }
       if (Date.now() >= deadline) {
-        reject(new Error(appId + ' workspace did not load in its own Suite product window.'));
+        reject(new Error(appId + ' workspace did not finish rendering. appTitle="' + appTitle +
+          '", documentTitle="' + documentTitle + '", sampleContentReady=' + sampleContentReady + '.'));
         return;
       }
       window.setTimeout(check, 50);
@@ -276,8 +291,14 @@ async function runScreenshotCaptureTest({ app, packageVersion, readTerms, readBu
         captureWindow = activeProductWindow;
         watchRendererConsole(captureWindow.webContents, target.productName);
         captureStage = `waiting for the ${target.productName} workspace`;
+        const readiness = {
+          appTitle: target.productName,
+          documentTitle: target.expectedDocumentTitle,
+          sampleText: target.expectedText
+        };
         const state = await captureWindow.webContents.executeJavaScript(
-          '(' + waitForProductWorkspace.toString() + ')(' + JSON.stringify(target.appId) + ',' + JSON.stringify(target.workspaceSelector) + ')',
+          '(' + waitForProductWorkspace.toString() + ')(' + JSON.stringify(target.appId) + ',' +
+          JSON.stringify(target.workspaceSelector) + ',' + JSON.stringify(readiness) + ')',
           true
         );
         if (!state.active || !state.workspaceVisible || !state.productViewVisible) {

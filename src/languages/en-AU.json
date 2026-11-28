@@ -181,6 +181,12 @@
     "common.zoomOut": "Zoom out",
     "sidebar.applications": "Apps",
     "sidebar.applicationsDescription": "All your apps",
-    "sidebar.settings": "Settings"
+    "sidebar.settings": "Settings",
+    "apps.database": "Database",
+    "apps.forms": "Forms",
+    "apps.lists": "Lists",
+    "apps.planner": "Planner",
+    "apps.todo": "To Do",
+    "apps.loop": "Workspace"
   }
 }

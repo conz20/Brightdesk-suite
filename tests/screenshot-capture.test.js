@@ -57,6 +57,31 @@ test('Suite Home capture requires ten visible cards in the approved five-column 
   }
 });
 
+
+test('product screenshot waits for the correct app title and sample document content', async () => {
+  const dom = new JSDOM('<!doctype html><html><body><h1 id="app-title">Your apps</h1><input id="doc-title" value="Untitled document"><main id="workspace"><div id="editor"></div></main></body></html>', {
+    url: 'https://brightdesk.local',
+    runScripts: 'outside-only'
+  });
+  try {
+    const { window } = dom;
+    window.brightdesk = { launchAppId: 'pages', suiteLaunchedProduct: true };
+    const readiness = { appTitle: 'Brightdesk Pages', documentTitle: 'Project brief', sampleText: 'Website launch brief' };
+    const promise = window.eval('(' + waitForProductWorkspace.toString() + ')(' + JSON.stringify('pages') + ', ' + JSON.stringify('#editor') + ', ' + JSON.stringify(readiness) + ', 1000)');
+    window.setTimeout(() => {
+      window.document.querySelector('#app-title').textContent = 'Brightdesk Pages';
+      window.document.querySelector('#doc-title').value = 'Project brief';
+      window.document.querySelector('#editor').textContent = 'Website launch brief';
+    }, 40);
+    const result = await promise;
+    assert.equal(result.appTitle, 'Brightdesk Pages');
+    assert.equal(result.documentTitle, 'Project brief');
+    assert.equal(result.sampleContentVerified, true);
+  } finally {
+    dom.window.close();
+  }
+});
+
 test('renderer seed creates fictional local records for all ten approved products', () => {
   const dom = new JSDOM('<main id="app-manager" hidden><div id="app-manager-grid"></div></main><button id="home-nav"></button>', { url: 'https://brightdesk.local', runScripts: 'outside-only' });
   try {

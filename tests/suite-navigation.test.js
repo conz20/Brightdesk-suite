@@ -255,7 +255,17 @@ test('English fallback Suite labels match the packaged Australian English langua
     'manager.install': 'Add to Suite',
     'manager.remove': 'Remove from Suite',
     'manager.inWorkspace': 'In your Suite',
-    'manager.notInstalled': 'Available to add'
+    'manager.notInstalled': 'Available to add',
+    'apps.pages': 'Pages',
+    'apps.sheets': 'Sheets',
+    'apps.slides': 'Decks',
+    'apps.notes': 'Notes',
+    'apps.database': 'Database',
+    'apps.forms': 'Forms',
+    'apps.lists': 'Lists',
+    'apps.planner': 'Planner',
+    'apps.todo': 'To Do',
+    'apps.loop': 'Workspace'
   };
   for (const [key, value] of Object.entries(expected)) {
     assert.equal(en[key], value, `${key} should match the approved Suite wording`);
