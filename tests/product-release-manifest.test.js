@@ -145,7 +145,7 @@ test('rejects malformed versions, filenames, package sizes and SHA-256 digests',
 test('rejects duplicate package identities and duplicate download URLs', () => {
   const first = packageRecord();
   assert.throws(() => validateProductReleaseManifest(manifest(first, { ...first, sizeBytes: 2048 })), /duplicate package entry/);
-  assert.throws(() => validateProductReleaseManifest(manifest(first, packageRecord({ productId: 'sheets', sourceRepository: 'conz20/Brightdesk-Sheets' }))), /duplicate package download URL/);
+  assert.throws(() => validateProductReleaseManifest(manifest(first, packageRecord({ productId: 'sheets', sourceRepository: 'conz20/Brightdesk-Sheets', buildWorkflowRunUrl: 'https://github.com/conz20/Brightdesk-Sheets/actions/runs/123456' }))), /duplicate package download URL/);
 });
 
 test('rejects malformed or unsupported manifest roots', () => {
