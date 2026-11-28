@@ -114,6 +114,43 @@ function waitForSuiteHome() {
   });
 }
 
+function waitForSuiteScreen(view, screenSelector, timeoutMs = 10000) {
+  const controls = {
+    home: '#home-nav',
+    apps: '#app-centre-nav',
+    files: '#files-nav',
+    settings: '#open-settings',
+    notifications: '#open-notifications'
+  };
+  if (!Object.hasOwn(controls, view)) {
+    return Promise.reject(new Error('Unsupported Suite screenshot view: ' + view));
+  }
+  const controlSelector = controls[view];
+  const control = controlSelector ? document.querySelector(controlSelector) : null;
+  if (controlSelector && (!control || control.hidden || control.disabled)) {
+    return Promise.reject(new Error('The ' + view + ' navigation control is unavailable.'));
+  }
+  if (control) control.click();
+
+  return new Promise((resolve, reject) => {
+    const timeout = Number.isFinite(timeoutMs) && timeoutMs > 0 ? timeoutMs : 10000;
+    const deadline = Date.now() + timeout;
+    function check() {
+      const screen = document.querySelector(screenSelector);
+      if (screen && !screen.hidden) {
+        resolve({ view, active: true, screenVisible: true });
+        return;
+      }
+      if (Date.now() >= deadline) {
+        reject(new Error('The Suite ' + view + ' screen did not become visible.'));
+        return;
+      }
+      window.setTimeout(check, 50);
+    }
+    check();
+  });
+}
+
 function waitForProductWorkspace(appId, workspaceSelector, timeoutMs = 10000) {
   return new Promise((resolve, reject) => {
     const timeout = Number.isFinite(timeoutMs) && timeoutMs > 0 ? timeoutMs : 10000;
@@ -183,11 +220,13 @@ async function runScreenshotCaptureTest({ app, packageVersion, readTerms, readBu
           throw new Error('The ' + target.productName + ' workspace was not ready in its product window.');
         }
       } else {
-        const visible = await captureWindow.webContents.executeJavaScript(
-          'Boolean(document.querySelector("#app-manager") && !document.querySelector("#app-manager").hidden && document.querySelector("#app-manager-grid")?.children.length === 10)',
+        const state = await captureWindow.webContents.executeJavaScript(
+          '(' + waitForSuiteScreen.toString() + ')(' + JSON.stringify(target.view) + ',' + JSON.stringify(target.workspaceSelector) + ')',
           true
         );
-        if (!visible) throw new Error('Suite Home was not visible before capture.');
+        if (!state.active || !state.screenVisible) {
+          throw new Error('The Suite ' + target.view + ' screen was not ready before capture.');
+        }
       }
 
       await captureWindow.webContents.executeJavaScript(
@@ -227,4 +266,4 @@ async function runScreenshotCaptureTest({ app, packageVersion, readTerms, readBu
   }
 }
 
-module.exports = { seedRendererStorage, waitForSuiteHome, waitForProductWorkspace, runScreenshotCaptureTest };
+module.exports = { seedRendererStorage, waitForSuiteHome, waitForSuiteScreen, waitForProductWorkspace, runScreenshotCaptureTest };
