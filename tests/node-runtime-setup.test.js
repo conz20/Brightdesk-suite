@@ -28,7 +28,7 @@ test('Node.js runtime selectors match the central tested baseline and contributo
   assert.ok(nodeWorkflows.length > 0, 'at least one workflow must configure Node.js');
   for (const workflow of nodeWorkflows) assert.match(workflow.source, nodeWorkflowPattern, workflow.file + ' must use the central tested Node.js pin ' + expectedNode);
   assert.match(read('AGENTS.md'), /newest stable version/i);
-  assert.match(read('AGENTS.md'), /docs\/VERSION_COMPATIBILITY\.md/);
+  assert.ok(read('AGENTS.md').includes('docs/VERSION_COMPATIBILITY.md'));
   assert.doesNotMatch(read('AGENTS.md'), /exactly Node\.js \*\*24\.22\.2 LTS\*\*/);
   assert.match(read('PROJECT_MEMORY.md'), /standing project requirement/);
 });
