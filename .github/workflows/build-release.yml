@@ -177,7 +177,7 @@ jobs:
     name: Collect verified installers
     needs: [prepare, build]
     # Collect artifacts on GitHub-hosted Linux; no local runner is required.
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     timeout-minutes: 30
     outputs:
       version: ${{ steps.release-version.outputs.version }}
@@ -239,7 +239,7 @@ jobs:
     needs: collect
     if: github.event_name == 'workflow_dispatch' && inputs.publish_release == true && github.ref == 'refs/heads/main'
     # Publishing remains manual and runs on GitHub-hosted Linux.
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     timeout-minutes: 15
     permissions:
       contents: write
