@@ -26,6 +26,7 @@ async function bootSuite(t) {
   const calls = {
     openedProducts: [],
     openedFiles: 0,
+    nextOpenFile: null,
     savedProjects: [],
     updateChecks: 0,
     savedUpdateSettings: []
@@ -36,7 +37,7 @@ async function bootSuite(t) {
     platform: 'darwin',
     getVersion: async () => '0.1.0',
     openApplication: async id => { calls.openedProducts.push(id); return { ok: true }; },
-    openFile: async () => { calls.openedFiles += 1; return null; },
+    openFile: async () => { calls.openedFiles += 1; return calls.nextOpenFile; },
     saveProject: async project => { calls.savedProjects.push(project); return { canceled: false }; },
     listLanguagePacks: async () => ({ available: [], installed: [JSON.parse(read('src/languages/en-AU.json'))], spellCheckerLanguages: ['en-AU'] }),
     setProofingLanguage: async () => ({ supported: true }),
@@ -165,15 +166,47 @@ test('Files buttons call the local open and save bridge actions', async t => {
   const { window, calls } = await bootSuite(t);
   byId(window, 'files-nav').click();
 
-  byId(window, 'files-open-button').click();
-  await tick();
-  assert.equal(calls.openedFiles, 1);
-
   byId(window, 'files-save-button').click();
   await tick();
   assert.equal(calls.savedProjects.length, 1);
   assert.equal(calls.savedProjects[0].docs.pages.title, 'Protected project');
   assert.equal(byId(window, 'save-status').textContent, 'Project saved');
+
+  calls.nextOpenFile = {
+    kind: 'pages',
+    title: 'Opened document',
+    html: '<h1>Opened from Files</h1><p>This document must become visible.</p>'
+  };
+  byId(window, 'files-open-button').click();
+  await tick();
+  assert.equal(calls.openedFiles, 1);
+  assert.equal(byId(window, 'files-manager').hidden, true);
+  assert.equal(byId(window, 'workspace').hidden, false);
+  assert.equal(byId(window, 'editor').hidden, false);
+  assert.equal(byId(window, 'doc-title').value, 'Opened document');
+  assert.match(byId(window, 'editor').innerHTML, /Opened from Files/);
+});
+
+test('opening each supported file type from Files displays its matching workspace', async t => {
+  const examples = [
+    { kind: 'pages', title: 'Opened page', html: '<p>Page content</p>', target: 'editor' },
+    { kind: 'sheets', title: 'Opened sheet', cells: [['Item', 'Count'], ['Apples', '3']], target: 'sheet-wrap' },
+    { kind: 'slides', title: 'Opened deck', slides: [{ title: 'First slide', body: 'Deck content' }], target: 'slide-wrap' },
+    { kind: 'notes', title: 'Opened note', text: 'Note content', target: 'notes-wrap' }
+  ];
+  for (const example of examples) {
+    await t.test(example.kind, async subtest => {
+      const { window, calls } = await bootSuite(subtest);
+      byId(window, 'files-nav').click();
+      calls.nextOpenFile = example;
+      byId(window, 'files-open-button').click();
+      await tick();
+      assert.equal(byId(window, 'files-manager').hidden, true);
+      assert.equal(byId(window, 'workspace').hidden, false);
+      assert.equal(byId(window, example.target).hidden, false);
+      assert.equal(byId(window, 'doc-title').value, example.title);
+    });
+  }
 });
 
 test('Notifications opens, announces expanded state and clears the list', async t => {
