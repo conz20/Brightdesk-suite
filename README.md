@@ -108,6 +108,10 @@ The Windows NSIS installer and macOS DMG/PKG present the Brightdesk Terms and Co
 
 Brightdesk is designed to keep product data on the current device. The first-use features described above do not require an account, cloud workspace or online collaboration. Some tasks such as downloads and update checks may use network access when explicitly requested.
 
+## Licensing
+
+The Brightdesk Suite source code is licensed under the MIT License; see [LICENSE](LICENSE). The MIT License permits use, copying, modification and redistribution of the covered software when its required copyright and permission notice is retained. Official Brightdesk downloads remain free of charge and do not require a subscription, trial, customer account, activation code or licence server. Third-party dependencies, fonts, dictionaries and other bundled resources remain subject to their own licences; see [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md). The MIT License does not itself grant rights to Brightdesk trademarks or make a modified or third-party build an official Brightdesk release.
+
 ## Product repositories
 
 Each approved product has its own repository and product documentation:
