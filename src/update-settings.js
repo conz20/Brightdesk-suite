@@ -115,7 +115,10 @@
     const panel = byId('update-settings-panel');
     panel.hidden = !panel.hidden;
     byId('update-settings-button')?.setAttribute('aria-expanded', String(!panel.hidden));
-    if (!panel.hidden) await loadSettings();
+    if (!panel.hidden) {
+      panel.dataset.settingsLoaded = 'false';
+      await loadSettings();
+    }
   });
 
   window.brightdesk.onUpdateState?.((state) => {
