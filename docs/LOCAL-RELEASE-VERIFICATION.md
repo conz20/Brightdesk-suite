@@ -1,3 +1,34 @@
+# GitHub-only build and release verification
+
+**This is the current release-verification rule.** Brightdesk engineering, tests, installer builds, artifact verification and release preparation run on GitHub-hosted GitHub Actions runners only. The owner's MacBook and all other personal computers are outside the project and must never be used, connected, awakened or required.
+
+## Current GitHub workflow
+
+The Suite release workflow is [Build and verify Brightdesk installers](https://github.com/conz20/Brightdesk-suite/actions/workflows/build-release.yml), defined in `.github/workflows/build-release.yml`.
+
+- Preparation and automated tests run on GitHub-hosted `ubuntu-latest`.
+- The platform matrix builds Linux on `ubuntu-latest`, Windows on `windows-latest`, and macOS on `macos-latest`.
+- Artifact collection and final bundle verification run on GitHub-hosted `ubuntu-latest`.
+- Each result must be checked against the exact commit SHA used by that workflow run. A skipped, queued, cancelled, failed or stale-head job is not a pass.
+- Installer output is retained as GitHub Actions artifacts for the configured retention period. A build or uploaded artifact alone is not proof that the installer was installed, launched, upgraded and uninstalled successfully.
+- The `publish_release` input defaults to `false`. Publishing is a separate manual action and must not occur without explicit owner approval.
+
+Pull-request quality workflows also run on GitHub-hosted runners. Use the repository's GitHub Actions tab to inspect run summaries, job results, logs, exact commit SHA and downloadable artifacts. Do not run local build commands as a substitute for a failed or missing hosted job.
+
+## No local or self-hosted fallback
+
+Do not register, start or use self-hosted runners on macOS, Windows, Linux, WSL or any personal device. Do not ask the owner to open Terminal, install runner software, sign in to a local GitHub CLI, keep a computer powered on, or perform local builds.
+
+Only the included GitHub-hosted Actions capacity is permitted. Do not enable paid overages, purchase minutes, use paid runner products or switch to a personal runner if included capacity is unavailable. Report the blocked job and continue other safe work that does not require unavailable compute. A queued or blocked job is not successful evidence.
+
+GitHub-hosted platform VMs provide automated operating-system build and verification evidence. Do not overstate this as testing on the owner's physical devices or as proof of hardware-specific behaviour that the workflow did not test.
+
+## Historical local-runner instructions
+
+The remaining instructions below are retained only as historical project records. **They are retired and must not be followed.** This includes the former macOS, Windows and WSL self-hosted runner registration steps. The matching files under `tools/runner-setup/` are legacy material, not supported setup instructions.
+
+---
+
 # Local release verification
 
 Use this guide to run and verify Brightdesk's builds on computers you already own. Each operating system requires its own native build and acceptance checks.

@@ -92,3 +92,10 @@ Product names must remain exactly: **Pages, Sheets, Decks, Notes, Database, Form
 Brightdesk is written as one word with a capital **B** in normal text. Keep the four-panel Suite mark, wordmark, colour palette, product names and original product icons consistent wherever Brightdesk is presented.
 
 Do not add products, alter approved product names, introduce unrelated visual marks, or place Suite branding inside the Home artwork. The Suite identity and the ten product identities work together as one original Brightdesk family.
+
+
+## GitHub-only build and release automation
+
+Brightdesk development, tests, installer builds, artifact verification and release preparation run on GitHub-hosted GitHub Actions runners. The Suite release pipeline uses GitHub-hosted Linux for preparation and collection, plus GitHub-hosted Linux, Windows and macOS runners for their matching platform builds. It does not require the owner's MacBook, another personal computer, WSL or a self-hosted runner.
+
+The included GitHub Actions usage is the only approved compute budget. Do not enable paid usage, purchase runner minutes or fall back to a personal/self-hosted runner if capacity is unavailable. When GitHub-hosted capacity is exhausted or a job cannot be allocated, report the blocker and wait for included capacity to be available. Publishing remains a separate, explicit owner-approved action; the release workflow defaults to no publishing.
