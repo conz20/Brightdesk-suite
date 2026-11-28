@@ -814,7 +814,7 @@ function render() {
     $('save-status').textContent = 'Settings';
   } else {
     const configKey = state.app;
-    const coreWelcome = ['pages','sheets','slides','notes'].includes(configKey); $('welcome-title').textContent = coreWelcome ? t(`welcome.${configKey}Heading`) : (genericConfigs[configKey]?.heading || configKey); $('welcome-copy').textContent = coreWelcome ? t(`welcome.${configKey}Desc`) : (genericConfigs[configKey]?.desc || '');
+    const coreWelcome = ['pages','sheets','slides','notes'].includes(configKey); $('welcome-title').textContent = coreWelcome ? t(`welcome.${configKey}Heading`) : (genericConfigs[configKey]?.heading || configKey); $('welcome-desc').textContent = coreWelcome ? t(`welcome.${configKey}Desc`) : (genericConfigs[configKey]?.desc || '');
     editor.setAttribute('data-placeholder', t('common.startTyping'));
     const doc = activeDoc();
     $('doc-title').value = doc.title || defaults[state.app].title;
