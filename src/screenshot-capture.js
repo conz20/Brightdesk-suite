@@ -133,17 +133,14 @@ function waitForSuiteScreen(view, screenSelector, timeoutMs = 10000) {
     const closeButton = document.querySelector('#close-update-settings');
     if (panel && !panel.hidden && closeButton) closeButton.click();
   }
-  if (view !== 'notifications') {
-    const notificationPanel = document.querySelector('#notification-panel');
-    const notificationButton = document.querySelector('#open-notifications');
-    if (notificationPanel && !notificationPanel.hidden && notificationButton) notificationButton.click();
-  }
+  const notificationPanel = document.querySelector('#notification-panel');
+  const notificationButton = document.querySelector('#open-notifications');
+  if (notificationPanel && !notificationPanel.hidden && notificationButton) notificationButton.click();
 
   const controlSelectors = controls[view].slice();
   const updatePanel = document.querySelector('#update-settings-panel');
   const notificationPanel = document.querySelector('#notification-panel');
   if (view === 'update-settings' && updatePanel && !updatePanel.hidden) controlSelectors.pop();
-  if (view === 'notifications' && notificationPanel && !notificationPanel.hidden) controlSelectors.pop();
 
   for (const selector of controlSelectors) {
     const control = document.querySelector(selector);
